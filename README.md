@@ -5,6 +5,7 @@ Chet el do'konlari, kuryerlar, bojxona kalkulyatori va bosqichma-bosqich qo'llan
 ## Loyiha tuzilishi
 
 ```
+index.html                     — GitHub Pages kirish nuqtasi (asosiy faylga yo'naltiradi)
 Xarid Yordamchisi v2.dc.html   — asosiy fayl: <x-dc> shabloni + ilova skripti
 support.js                     — dc-runtime (shablonni React bilan render qiladi)
 manifest.webmanifest           — PWA manifesti
@@ -23,11 +24,13 @@ guides/inline/                 — 7 ta platforma uchun to'liq qo'llanma (mustaq
 
 ## Ishga tushirish
 
-Fayllar statik — istalgan HTTP server yetarli (`file://` orqali ochilmaydi, chunki qo'llanmalar iframe'da yuklanadi):
+Onlayn: **https://nshakhobiddin.github.io/Pochtachi/** — `index.html` asosiy faylga yo'naltiradi.
+
+Lokal: fayllar statik, istalgan HTTP server yetarli (`file://` orqali ochilmaydi, chunki qo'llanmalar iframe'da yuklanadi):
 
 ```bash
 python3 -m http.server 8000
-# keyin brauzerda: http://localhost:8000/Xarid%20Yordamchisi%20v2.dc.html
+# keyin brauzerda: http://localhost:8000/
 ```
 
 ## Tashqi bog'liqliklar
