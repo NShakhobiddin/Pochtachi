@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Bog'liqliklarni o'rnatish
+        run: npm install --no-audit --no-fund
+
+      - name: Chromium o'rnatish
+        run: npx playwright install --with-deps chromium
+
+      - name: Generatsiya qilingan fayllar va o'lcham byudjeti
+        run: npm run check
+
+      - name: Smoke testlar
+        run: npm test

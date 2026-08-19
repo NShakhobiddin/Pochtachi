@@ -1,6 +1,6 @@
 /* Umumiy qo'llanma uslublari — bosib chiqarish, animatsiya va yordamchi sinflar. Manba: guides/inline/*.html dan ajratildi. */
 /* XaridYordamchisi ilovasi ichida ochilganda qo'llanmani ilova dizayniga moslash */
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Onest:wght@400;500;600;700;800&display=swap');
+/* Shriftlar <head> dagi <link> orqali bloklamasdan yuklanadi (tools/seo.mjs). */
 
 :root{
   --indigo-50:#EDEBFD; --indigo-100:#E4E1FB; --indigo-200:#D5D0F8; --indigo-300:#B6AEF3;

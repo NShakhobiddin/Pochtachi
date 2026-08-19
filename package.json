@@ -1,0 +1,19 @@
+{
+  "name": "xarid-yordamchisi",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Chet el do'konlari, kuryerlar, bojxona kalkulyatori va qo'llanmalar — O'zbekiston uchun",
+  "scripts": {
+    "build": "node tools/build.mjs && node tools/seo.mjs",
+    "check": "node tools/build.mjs --check && node tools/optimize-logos.mjs --check && node tools/check-budget.mjs",
+    "test": "node tests/smoke.mjs",
+    "links": "node tools/check-links.mjs",
+    "logos": "node tools/optimize-logos.mjs",
+    "cover": "node tools/og-cover.mjs",
+    "serve": "python3 -m http.server 8000"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.1"
+  }
+}

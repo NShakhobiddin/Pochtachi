@@ -1,0 +1,20 @@
+name: Havolalarni tekshirish
+
+on:
+  schedule:
+    # Har dushanba, 06:00 UTC (Toshkent vaqti bilan 11:00)
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Do'kon, kuryer va ilova havolalarini tekshirish
+        run: node tools/check-links.mjs

@@ -27,6 +27,18 @@ const GUIDES = [
   { id: 'ebay', title: 'eBay', flag: '🇺🇸', sections: 9, desc: "Auksion strategiyasi, eIS orqali to'g'ridan yetkazish" }
 ];
 
+const FONT_URL = 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Onest:wght@400;500;600;700;800&display=swap';
+/* Shriftlar sahifani bloklamasin: ilgari bu manzil guide-common.css ichida
+   @import bo'lib turardi va Google javob bermaguncha qo'llanma umuman
+   ochilmasdi (sekin tarmoqda ham, oflayn ham). Endi media hiylasi bilan
+   yuklanadi: matn darhol tizim shriftida chiqadi, keyin almashadi. */
+const FONT_LINKS = [
+  '<link rel="preconnect" href="https://fonts.googleapis.com">',
+  '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
+  `<link rel="stylesheet" href="${FONT_URL}" media="print" onload="this.media='all'">`,
+  `<noscript><link rel="stylesheet" href="${FONT_URL}"></noscript>`
+];
+
 const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const MARK_START = '<!-- seo:start -->';
 const MARK_END = '<!-- seo:end -->';
@@ -48,6 +60,7 @@ function guideMeta(g) {
     `<meta property="og:image" content="${OG_IMAGE}">`,
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta name="theme-color" content="#3B2CC9">`,
+    ...FONT_LINKS,
     MARK_END
   ].join('\n');
 }
@@ -110,6 +123,7 @@ const hub = `<!DOCTYPE html>
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#3B2CC9">
 <link rel="icon" href="../icons/icon-192.png" sizes="192x192">
+${FONT_LINKS.join('\n')}
 <link rel="stylesheet" href="guide-base.css">
 <link rel="stylesheet" href="guide-common.css">
 <style>

@@ -1,44 +1,73 @@
 # Xarid Yordamchisi
 
-Chet el do'konlari, kuryerlar, bojxona kalkulyatori va bosqichma-bosqich qo'llanmalar — O'zbekiston uchun mo'ljallangan mobil web-ilova (Claude Design `.dc.html` loyihasi).
+Chet el do'konlari, kuryerlar, bojxona kalkulyatori va bosqichma-bosqich qo'llanmalar — O'zbekiston uchun mo'ljallangan mobil web-ilova.
+
+**Onlayn:** https://nshakhobiddin.github.io/Pochtachi/
+
+## Manba qayerda
+
+Yagona manba — **`Xarid Yordamchisi v2.dc.html`**. Bu Claude Design loyihasining `.dc.html` fayli: `<x-dc>` shabloni va ilova skripti bir joyda. Dizaynni Claude Design'da tahrirlash mumkin, kodni esa shu faylda.
+
+`index.html` va `sw.js` — **generatsiya qilinadi**, ularni qo'lda tahrirlamang:
+
+```bash
+npm run build     # index.html + sw.js + SEO meta va qo'llanmalar ro'yxati
+```
 
 ## Loyiha tuzilishi
 
 ```
-index.html                     — GitHub Pages kirish nuqtasi (asosiy faylga yo'naltiradi)
-Xarid Yordamchisi v2.dc.html   — asosiy fayl: <x-dc> shabloni + ilova skripti
-support.js                     — dc-runtime (shablonni React bilan render qiladi)
-manifest.webmanifest           — PWA manifesti
-icons/                         — 3D bo'lim ikonkalari va tab-bar ikonkalari (webp) + PWA ikonkalari
-logos/                         — 20 ta kuryer xizmati logotipi (png)
-guides/inline/                 — 7 ta platforma uchun to'liq qo'llanma (mustaqil HTML, iframe'da ochiladi)
+Xarid Yordamchisi v2.dc.html   manba: <x-dc> shabloni + ilova skripti
+index.html                     GENERATSIYA: saytning kirish nuqtasi
+sw.js                          GENERATSIYA: offline uchun service worker
+support.js                     dc-runtime (shablonni React bilan render qiladi)
+manifest.webmanifest           PWA manifesti
+data/norms.json                bojxona me'yorlari (kodga tegmasdan yangilanadi)
+vendor/                        React va ReactDOM (unpkg'dagi asl fayllar)
+fonts/flags.woff2              23 ta bayroq emojisi (Noto subseti, 44 KB)
+icons/                         3D bo'lim ikonkalari, tab-bar ikonkalari, PWA ikonkalari
+logos/                         kuryer logotiplari (128 px WebP)
+logos/src/                     logotiplarning asl PNG nusxalari (saytga chiqmaydi)
+guides/index.html              GENERATSIYA: qo'llanmalarning indekslanadigan ro'yxati
+guides/inline/*.html           7 ta platforma qo'llanmasi (mustaqil sahifa ham)
+guides/guide-base.css          qo'llanmalarning umumiy uslublari
+guides/guide-common.css        umumiy yordamchi uslublar
+guides/guide.js                qo'llanmalarning umumiy skripti
+tools/                         build, SEO, rasm/shrift va tekshiruv skriptlari
+tests/smoke.mjs                asosiy yo'llarni tekshiruvchi smoke test
 ```
 
-### `icons/`
-
-| Fayl | Qayerda ishlatiladi |
-| --- | --- |
-| `stores-3d.webp`, `courier-3d.webp`, `customs-3d.webp`, `guides-3d.webp` | bosh sahifadagi 4 ta bo'lim kartasi |
-| `tab-home{,-off}.webp`, `tab-guides{,-off}.webp`, `tab-customs{,-off}.webp`, `tab-profile{,-off}.webp` | pastki tab-bar (faol / nofaol holat) |
-| `icon-192.png`, `apple-touch-icon.png` | favicon va PWA ikonkalari |
-
-## Ishga tushirish
-
-Onlayn: **https://nshakhobiddin.github.io/Pochtachi/** — `index.html` asosiy faylga yo'naltiradi.
-
-Lokal: fayllar statik, istalgan HTTP server yetarli (`file://` orqali ochilmaydi, chunki qo'llanmalar iframe'da yuklanadi):
+## Buyruqlar
 
 ```bash
-python3 -m http.server 8000
-# keyin brauzerda: http://localhost:8000/
+npm install              # playwright (skriptlar va testlar uchun)
+npm run build            # index.html, sw.js, SEO meta, qo'llanmalar ro'yxati
+npm run check            # generatsiya fayllari mos va o'lcham byudjeti joyidami
+npm test                 # smoke test (ilova, bo'limlar, kalkulyator, qo'llanma)
+npm run links            # tashqi havolalarni tekshirish (haftalik CI ham qiladi)
+npm run logos            # logos/src/*.png -> logos/*.webp qayta yasash
+npm run cover            # icons/og-cover.png ni qayta yasash
+npm run serve            # lokal server: http://localhost:8000
 ```
+
+Bayroq shriftini qayta yasash uchun (kamdan-kam kerak):
+
+```bash
+pip install fonttools brotli
+python3 tools/subset_flags.py <noto-color-emoji-flags.woff2>
+```
+
+## Ma'lumotni yangilash
+
+- **Bojxona me'yorlari** — `data/norms.json`. `from` — kuchga kirish sanasi; ilova joriy sanaga mos oxirgi qatorni oladi. Fayl yuklanmasa koddagi zaxira nusxa ishlatiladi, shuning uchun oflayn ham to'g'ri hisoblanadi. Kalkulyator matnlaridagi foizlar va summalar shu qiymatlardan hosil bo'ladi.
+- **Do'kon va kuryerlar** — hozircha `Xarid Yordamchisi v2.dc.html` ichidagi `STORES` va `COURIERS` massivlarida.
+- **Valyuta kursi** — Markaziy bankdan (cbu.uz) avtomatik olinadi, 6 soatda bir marta; olinmasa oxirgi saqlangan qiymat "oflayn zaxira" deb belgilanadi.
+- **Xato haqida xabar** — ilovadagi tugma `REPORT_URL` manziliga olib boradi (hozir GitHub Issues; Telegram havolasiga almashtirish mumkin).
 
 ## Tashqi bog'liqliklar
 
-Ilova ishga tushganda quyidagilarni internetdan yuklaydi:
+Sayt ishga tushganda faqat Google Fonts'ga murojaat qiladi (`Bricolage Grotesque`, `Onest`, `Noto Color Emoji`) va valyuta kursi uchun `cbu.uz` ga. React o'z domenimizdan yuklanadi, qolgan hamma narsa repozitoriy ichida. Birinchi ochilishdan keyin service worker qobiqni keshlaydi va ilova internetsiz ham ishlaydi.
 
-- `react@18.3.1` va `react-dom@18.3.1` (unpkg, SRI bilan) — `support.js` yuklaydi;
-- Google Fonts: `Bricolage Grotesque` (600/700/800), `Onest` (400–800), `Noto Color Emoji`;
-- valyuta kursi: `cbu.uz` ochiq API (yetib bo'lmasa oflayn zaxira kurs ishlatiladi).
+## O'lcham byudjeti
 
-Qolgan hamma narsa (ikonkalar, logotiplar, qo'llanmalar) repozitoriy ichida.
+`npm run check` quyidagilarni tekshiradi: logotiplar ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 80 KB, qo'llanmalar ≤ 620 KB, `index.html` ≤ 420 KB. Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.
