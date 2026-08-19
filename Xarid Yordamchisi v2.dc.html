@@ -8,9 +8,44 @@
 <link rel="icon" href="icons/icon-192.png" sizes="192x192">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
+<script>
+  /* React va ReactDOM o'z domenimizdan yuklanadi: unpkg bloklangan tarmoqlarda ham
+     ilova ochiladi va tashqi CDN'ga bog'liqlik yo'q. Fayllar unpkg'dagi asl
+     nusxalar (SRI hashlari support.js dagi qiymatlar bilan bir xil).
+     Bu xarita, shu bilan birga, dc-runtime'ning sahifani ikkinchi marta
+     yuklab olishini ham to'xtatadi. */
+  window.__resources = {
+    'https://unpkg.com/react@18.3.1/umd/react.production.min.js': 'vendor/react.production.min.js',
+    'https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js': 'vendor/react-dom.production.min.js'
+  };
+</script>
 <script src="support.js"></script>
 </head>
 <body>
+<noscript>
+  <div style="max-width:430px;margin:0 auto;padding:28px 20px;font:15px/1.6 system-ui,sans-serif;color:#151329">
+    <h1 style="font-size:20px;margin:0 0 10px">Xarid Yordamchisi</h1>
+    <p style="margin:0 0 14px">Ilova ishlashi uchun JavaScript kerak. Qo'llanmalarni JavaScriptsiz ham o'qishingiz mumkin:</p>
+    <p style="margin:0"><a href="guides/" style="color:#3B2CC9;font-weight:600">Barcha qo'llanmalar &rarr;</a></p>
+  </div>
+</noscript>
+<div id="boot-error" hidden style="max-width:430px;margin:0 auto;padding:28px 20px;font:15px/1.6 system-ui,sans-serif;color:#151329">
+  <h1 style="font-size:20px;margin:0 0 10px">Ilova yuklanmadi</h1>
+  <p style="margin:0 0 14px">Internet aloqasini tekshirib, sahifani yangilang.</p>
+  <p style="margin:0 0 14px"><button type="button" onclick="location.reload()" style="min-height:44px;padding:0 18px;border:none;border-radius:14px;background:#3B2CC9;color:#fff;font:600 15px system-ui,sans-serif;cursor:pointer">Qayta urinish</button></p>
+  <p style="margin:0"><a href="guides/" style="color:#3B2CC9;font-weight:600">Qo'llanmalar bu yerda ochiladi &rarr;</a></p>
+</div>
+<script>
+  /* Ilova 8 soniyada ko'tarilmasa (React yuklanmadi, skript xatosi va h.k.),
+     bo'sh oq sahifa o'rniga tushunarli xabar ko'rsatiladi. */
+  setTimeout(function () {
+    var root = document.getElementById('dc-root');
+    if (!root || !root.firstChild) {
+      var el = document.getElementById('boot-error');
+      if (el) el.hidden = false;
+    }
+  }, 8000);
+</script>
 <x-dc>
 <helmet>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
