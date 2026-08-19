@@ -1,0 +1,32 @@
+{
+  "checked": "2026-08-19",
+  "note": "Bojxona me'yorlari. 'from' — kuchga kirish sanasi; ilova joriy sanaga mos oxirgi qatorni ishlatadi. Ilova bu faylni ochilishda yuklaydi, yuklanmasa koddagi zaxira nusxa ishlatiladi.",
+  "fields": {
+    "bhm": "Bazaviy hisoblash miqdori, so'm",
+    "freeUsd": "Bojsiz me'yor, USD/oy",
+    "dutyPct": "Yagona boj ulushi",
+    "minPerKg": "Har kg uchun eng kam boj, USD",
+    "feeShare": "Bojxona yig'imi (BHM ulushi)",
+    "src": "Huquqiy manba"
+  },
+  "norms": [
+    {
+      "from": "2025-08-01",
+      "bhm": 412000,
+      "freeUsd": 200,
+      "dutyPct": 0.3,
+      "minPerKg": 3,
+      "feeShare": 0.25,
+      "src": "VMQ 244-son, 19.04.2025"
+    },
+    {
+      "from": "2026-09-01",
+      "bhm": 440000,
+      "freeUsd": 200,
+      "dutyPct": 0.3,
+      "minPerKg": 3,
+      "feeShare": 0.25,
+      "src": "VMQ 244-son, 19.04.2025 · BHM 440 000 so'm"
+    }
+  ]
+}

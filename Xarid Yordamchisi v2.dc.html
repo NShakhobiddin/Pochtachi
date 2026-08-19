@@ -847,7 +847,7 @@
 
           <div style="display:flex;flex-direction:column;gap:7px;background:#FFFFFF;border-radius:18px;padding:12px 14px">
             <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
-              <span style="font-size:13px;font-weight:700;color:#151329">Bojsiz me'yor · $200 / oy</span>
+              <span style="font-size:13px;font-weight:700;color:#151329">Bojsiz me'yor · ${{ freeUsdLabel }} / oy</span>
               <span style="font-size:13px;font-weight:700;color:{{ freeColor }};font-variant-numeric:tabular-nums">{{ freeText }}</span>
             </div>
             <div style="height:7px;background:#E4E3EE;border-radius:4px;overflow:hidden">
@@ -892,7 +892,7 @@
           </div>
           <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
             <h2 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Bojsiz olib kirish me'yori</h2>
-            <span style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.45">$200 chegara · notijorat maqsad · miqdoriy normalar</span>
+            <span style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.45">${{ freeUsdLabel }} chegara · notijorat maqsad · miqdoriy normalar</span>
           </div>
           <div style="width:30px;height:30px;border-radius:15px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;flex:none">
             <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
@@ -904,7 +904,7 @@
           </div>
           <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
             <h2 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Yagona bojxona to'lovi</h2>
-            <span style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.45">me'yordan ortiq qismga 30% yoki $3/kg</span>
+            <span style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.45">me'yordan ortiq qismga {{ dutyPctLabel }} yoki ${{ minPerKgLabel }}/kg</span>
           </div>
           <div style="width:30px;height:30px;border-radius:15px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;flex:none">
             <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
@@ -960,7 +960,7 @@
         <div style="background:#FFFFFF;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:8px">
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
             <span style="font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px">Bojsiz me'yor</span>
-            <span style="font-family:'Bricolage Grotesque','Onest','Noto Color Emoji',sans-serif;font-size:22px;font-weight:800;color:#3B2CC9;letter-spacing:-.5px;font-variant-numeric:tabular-nums">$200</span>
+            <span style="font-family:'Bricolage Grotesque','Onest','Noto Color Emoji',sans-serif;font-size:22px;font-weight:800;color:#3B2CC9;letter-spacing:-.5px;font-variant-numeric:tabular-nums">${{ freeUsdLabel }}</span>
           </div>
           <span style="font-size:13px;color:#63637E;line-height:1.6;text-wrap:pretty">Bir kalendar oy uchun. Kalendar oy — oyning 1-sanasidan so'nggi sanasigacha bo'lgan uzluksiz davr, masalan 1-yanvardan 31-yanvargacha.</span>
         </div>
@@ -1142,7 +1142,7 @@
 
         <div style="background:#FFFFFF;border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
-            <span style="font-size:13px;font-weight:700;color:#151329">Bojsiz me'yor · $200 / oy</span>
+            <span style="font-size:13px;font-weight:700;color:#151329">Bojsiz me'yor · ${{ freeUsdLabel }} / oy</span>
             <span style="font-size:13px;font-weight:700;color:{{ freeColor }};font-variant-numeric:tabular-nums">{{ freeText }}</span>
           </div>
           <div style="height:7px;background:#E4E3EE;border-radius:4px;overflow:hidden">
@@ -1605,6 +1605,7 @@
           <button sc-camel-on-click="{{ refreshRate }}" aria-label="Valyuta kursini yangilash" style="flex:none;height:44px;padding:0 15px;border-radius:18px;border:none;cursor:pointer;background:#EBE8FE;color:#3B2CC9;font-family:inherit;font-size:13px;font-weight:800" style-hover="background:#E1DBFB">{{ rateBtnLabel }}</button>
         </div>
         <div style="font-size:13px;color:#63637E;line-height:1.55;font-weight:500;text-wrap:pretty">Kurs Markaziy bank ochiq ma'lumotlaridan (cbu.uz) avtomatik olinadi va 6 soatda bir yangilanadi. Barcha so'mdagi hisob-kitob shu kursga asoslanadi.</div>
+        <div style="font-size:13px;color:#63637E;line-height:1.55;font-weight:500;text-wrap:pretty">Bojxona me'yorlari: {{ normsSrc }} · oxirgi tekshiruv {{ normsChecked }}.</div>
       </div>
       <div style="background:#FFFFFF;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
         <div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px">
@@ -2211,7 +2212,8 @@ const normsAt = (d = new Date()) => {
   const list = NORMS.filter(n => n.from <= iso);
   return list.length ? list[list.length - 1] : NORMS[0];
 };
-const BHM = normsAt().bhm, FREE_USD = normsAt().freeUsd;
+let BHM = normsAt().bhm, FREE_USD = normsAt().freeUsd;
+const NORMS_META = { checked: '', live: false };
 const RATE_META = { date:'', diff:0, live:false, loading:false, at:0 };
 const CBU_URL = 'https://cbu.uz/uz/arkhiv-kursov-valyut/json/USD/';
 
@@ -2241,11 +2243,16 @@ const BANNED = [
   { name:'Dori vositalari', level:'amber', src:'Sog\'liqni saqlash vazirligi tartibi', note:'Shaxsiy tibbiy foydalanish uchun retsept va tegishli ruxsat bilan olib kiriladi, miqdor davolash kursiga mos bo\'lishi kerak.' }
 ];
 
-const NORM_CARDS = [
-  { k:'Bojsiz me\'yor', v:'$200', note:'Bir kalendar oy uchun. Kalendar oy — oyning 1-sanasidan so\'nggi sanasigacha bo\'lgan uzluksiz davr, masalan 1-yanvardan 31-yanvargacha.' },
-  { k:'Yagona bojxona to\'lovi', v:'30%', note:'Me\'yordan ortiq qismning bojxona qiymatidan 30 foiz, lekin har bir kilogrami uchun $3 dan kam emas. Qaysi hisob ko\'p chiqsa, o\'sha olinadi.' },
-  { k:'Bojxona yig\'imi', v:'103 000', note:'BHM ning 25 foizi, BHM = 412 000 so\'m. To\'lov kunidagi kurs bo\'yicha so\'mda hisoblanadi.' }
-];
+/* Kartochkalardagi raqamlar amaldagi me'yordan hisoblanadi: BHM o'zgarganda
+   (masalan 2026-09-01 dan 440 000 so'm) matn o'zi yangilanadi. */
+const normCards = () => {
+  const N = normsAt();
+  return [
+    { k:'Bojsiz me\'yor', v:'$' + N.freeUsd, note:'Bir kalendar oy uchun. Kalendar oy — oyning 1-sanasidan so\'nggi sanasigacha bo\'lgan uzluksiz davr, masalan 1-yanvardan 31-yanvargacha.' },
+    { k:'Yagona bojxona to\'lovi', v:Math.round(N.dutyPct * 100) + '%', note:'Me\'yordan ortiq qismning bojxona qiymatidan ' + Math.round(N.dutyPct * 100) + ' foiz, lekin har bir kilogrami uchun $' + N.minPerKg + ' dan kam emas. Qaysi hisob ko\'p chiqsa, o\'sha olinadi.' },
+    { k:'Bojxona yig\'imi', v:money(Math.round(N.bhm * N.feeShare)), note:'BHM ning ' + Math.round(N.feeShare * 100) + ' foizi, BHM = ' + money(N.bhm) + ' so\'m. To\'lov kunidagi kurs bo\'yicha so\'mda hisoblanadi.' }
+  ];
+};
 
 const QTY_NORMS = [
   { k:'Atir va ifor taratuvchi suvlar', v:'3 dona', note:'300 ml dan oshmagan miqdorda.' },
@@ -2551,6 +2558,7 @@ class Component extends DCLogic {
 
   componentDidMount() {
     this.applyLang();
+    this.loadNorms();
     try {
       const raw = localStorage.getItem('xy_usd_rate');
       if (raw) {
@@ -2562,16 +2570,41 @@ class Component extends DCLogic {
     if (age > 6 * 3600 * 1000) this.refreshRate(true); else this.forceUpdate();
   }
 
+  /* Bojxona me'yorlari data/norms.json da turadi — ularni o'zgartirish uchun
+     kodga tegish shart emas. Fayl yuklanmasa yoki buzuq bo'lsa, koddagi
+     zaxira nusxa ishlatiladi, ya'ni ilova oflayn ham to'g'ri hisoblaydi. */
+  async loadNorms() {
+    try {
+      const r = await fetch('data/norms.json', { cache: 'no-cache' });
+      if (!r.ok) return;
+      const d = await r.json();
+      const rows = d && Array.isArray(d.norms) ? d.norms : null;
+      const ok = rows && rows.length && rows.every(n =>
+        /^\d{4}-\d{2}-\d{2}$/.test(n.from) && n.bhm > 0 && n.freeUsd > 0 &&
+        n.dutyPct > 0 && n.minPerKg >= 0 && n.feeShare >= 0 && n.src);
+      if (!ok) return;
+      NORMS.length = 0;
+      rows.slice().sort((a, b) => (a.from < b.from ? -1 : 1)).forEach(n => NORMS.push(n));
+      BHM = normsAt().bhm;
+      FREE_USD = normsAt().freeUsd;
+      NORMS_META.checked = d.checked || '';
+      NORMS_META.live = true;
+      this.forceUpdate();
+    } catch (e) {}
+  }
+
   async refreshRate(silent) {
     RATE_META.loading = true; this.forceUpdate();
-    const tries = [
-      CBU_URL,
-      'https://corsproxy.io/?url=' + encodeURIComponent(CBU_URL),
-      'https://api.allorigins.win/raw?url=' + encodeURIComponent(CBU_URL)
-    ];
-    for (const u of tries) {
+    /* Faqat Markaziy bankning o'z manzili so'raladi: uchinchi tomon proksilari
+       (corsproxy.io, allorigins.win) foydalanuvchi so'rovini ko'rardi va
+       ularning ishlashiga kafolat yo'q edi. So'rov 6 soniyada uziladi,
+       aks holda sekin tarmoqda "yangilanmoqda" holati osilib qolardi. */
+    for (const u of [CBU_URL]) {
+      const ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+      const timer = ctrl ? setTimeout(() => ctrl.abort(), 6000) : null;
       try {
-        const r = await fetch(u, { cache: 'no-store' });
+        const r = await fetch(u, { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined });
+        if (timer) clearTimeout(timer);
         if (!r.ok) continue;
         const j = await r.json();
         const row = Array.isArray(j) ? j[0] : j;
@@ -2585,7 +2618,9 @@ class Component extends DCLogic {
         this.forceUpdate();
         if (!silent) this.toast('Kurs yangilandi: 1 USD = ' + money(USD_RATE) + ' so\'m');
         return true;
-      } catch (e) {}
+      } catch (e) {
+        if (timer) clearTimeout(timer);
+      }
     }
     RATE_META.loading = false;
     this.forceUpdate();
@@ -3096,20 +3131,24 @@ class Component extends DCLogic {
       ].map(o => ({ ...o, bd: st.lang === o.key ? '#3B2CC9' : '#FFFFFF', pick: () => { this.pickLang(o.key); this.setState({ onbStep: 1 }); } })),
       calcRows: [
         { k:'Bojxona qiymati (ortiqcha)', v:'$' + Math.round(c.cv) },
-        { k: c.basis === 'weight' ? 'Yagona boj ($3 × kg)' : 'Yagona boj (30%)', v: money(c.duty) + ' so\'m' },
-        { k:'Bojxona yig\'imi (BHM 25%)', v: money(c.fee) + ' so\'m' }
+        { k: c.basis === 'weight' ? ('Yagona boj ($' + c.norms.minPerKg + ' × kg)') : ('Yagona boj (' + Math.round(c.norms.dutyPct * 100) + '%)'), v: money(c.duty) + ' so\'m' },
+        { k:'Bojxona yig\'imi (BHM ' + Math.round(c.norms.feeShare * 100) + '%)', v: money(c.fee) + ' so\'m' }
       ],
       calcNote: c.basis === 'none'
-        ? 'Summa $200 me\'yordan oshmadi — yagona bojxona to\'lovi undirilmaydi.'
+        ? 'Summa $' + c.norms.freeUsd + ' me\'yordan oshmadi — yagona bojxona to\'lovi undirilmaydi.'
         : (c.basis === 'weight'
-          ? 'Vazn bo\'yicha hisob ko\'proq chiqdi: ' + c.excessWeight.toFixed(1) + ' kg × $3 = $' + Math.round(c.byWeight) + ' (30% varianti $' + Math.round(c.byValue) + ' edi).'
-          : 'Qiymat bo\'yicha hisob ko\'proq chiqdi: $' + Math.round(c.cv) + ' × 30% = $' + Math.round(c.byValue) + ' (vazn varianti $' + Math.round(c.byWeight) + ' edi).'),
+          ? 'Vazn bo\'yicha hisob ko\'proq chiqdi: ' + c.excessWeight.toFixed(1) + ' kg × $' + c.norms.minPerKg + ' = $' + Math.round(c.byWeight) + ' (' + Math.round(c.norms.dutyPct * 100) + '% varianti $' + Math.round(c.byValue) + ' edi).'
+          : 'Qiymat bo\'yicha hisob ko\'proq chiqdi: $' + Math.round(c.cv) + ' × ' + Math.round(c.norms.dutyPct * 100) + '% = $' + Math.round(c.byValue) + ' (vazn varianti $' + Math.round(c.byWeight) + ' edi).'),
       calcSteps: [
-        { t:'Kalendar oyda kelgan barcha jo\'natmalar summasi qo\'shiladi, undan $200 imtiyoz ayriladi.' },
+        { t:'Kalendar oyda kelgan barcha jo\'natmalar summasi qo\'shiladi, undan $' + c.norms.freeUsd + ' imtiyoz ayriladi.' },
         { t:'Ortiqcha qismga to\'g\'ri keladigan vazn nisbat bo\'yicha ajratiladi: ' + c.excessWeight.toFixed(1) + ' kg.' },
         { t:'Shu vaznning yetkazish xarajati tovar qiymatiga qo\'shiladi — bu bojxona qiymati.' },
-        { t:'30% va har kg uchun $3 hisoblanadi, kattasi olinadi; ustiga BHM ning 25% yig\'imi qo\'shiladi.' }
+        { t: Math.round(normsAt().dutyPct * 100) + '% va har kg uchun $' + normsAt().minPerKg + ' hisoblanadi, kattasi olinadi; ustiga BHM ning ' + Math.round(normsAt().feeShare * 100) + '% yig\'imi qo\'shiladi.' }
       ],
+      dutyPctLabel: Math.round(normsAt().dutyPct * 100) + '%', minPerKgLabel: String(normsAt().minPerKg),
+      freeUsdLabel: String(normsAt().freeUsd),
+      normsSrc: normsAt().src,
+      normsChecked: NORMS_META.checked ? fmtDate(NORMS_META.checked) : 'ma\'lumot yo\'q',
       banQuery: st.banQuery,
       onBanQuery: e => this.setState({ banQuery: e.target.value, banOpen: null }),
       banFilters: ['Hammasi','Taqiqlangan','Cheklangan'].map((l, i) => ({
@@ -3119,7 +3158,7 @@ class Component extends DCLogic {
       })),
       banList: banRows,
       banEmpty: banRows.length === 0,
-      normCards: [NORM_CARDS[0]], payCards: [NORM_CARDS[1], NORM_CARDS[2]], qtyNorms: QTY_NORMS, criteria: CRITERIA,
+      ...(() => { const nc = normCards(); return { normCards: [nc[0]], payCards: [nc[1], nc[2]] }; })(), qtyNorms: QTY_NORMS, criteria: CRITERIA,
       procSteps: PROC_STEPS, holdReasons: HOLD_REASONS, offices: OFFICES,
 
       guides: GUIDES.map(g => ({ ...g, count: g.steps.length, open:() => { this.setState({ guideId:g.id, guideStep:0 }); this.push('guide'); } })),
