@@ -144,7 +144,7 @@
       <sc-if value="{{ onbLang }}" hint-placeholder-val="{{ true }}">
         <div style="display:flex;flex-direction:column;gap:10px">
           <div style="font-family:'Bricolage Grotesque','Onest','Noto Color Emoji',sans-serif;font-size:22px;font-weight:800;color:#151329;line-height:1.15;letter-spacing:-.7px">Tilni tanlang</div>
-          <div style="font-size:15px;color:#5F5E7C;line-height:1.55;font-weight:500">Keyinchalik sozlamalarda o'zgartirishingiz mumkin.</div>
+          <div style="font-size:15px;color:#5F5E7C;line-height:1.55;font-weight:500">Interfeys tili — keyinchalik sozlamalarda o'zgartirishingiz mumkin.</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:12px">
           <sc-for list="{{ onbLangs }}" as="l" hint-placeholder-count="3">
@@ -154,6 +154,7 @@
             </button>
           </sc-for>
         </div>
+        <div style="font-size:13px;color:#7A7A96;line-height:1.5;font-weight:500;text-wrap:pretty">Do'kon tavsiflari va qo'llanmalar hozircha faqat o'zbek tilida.</div>
       </sc-if>
       <sc-if value="{{ onbExp }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;flex-direction:column;gap:10px">
@@ -1608,7 +1609,7 @@
       </div>
       <div style="background:#FFFFFF;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
         <div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px">
-          <span style="font-size:15px;font-weight:600;color:#151329">Til</span>
+          <span style="font-size:15px;font-weight:600;color:#151329">Interfeys tili</span>
           <div style="display:flex;gap:8px">
             <sc-for list="{{ langOpts }}" as="l" hint-placeholder-count="3">
               <button sc-camel-on-click="{{ l.pick }}" aria-pressed="{{ l.on }}" style="flex:1;min-height:44px;padding:0 8px;border-radius:16px;border:1.5px solid {{ l.bd }};background:{{ l.bg }};color:{{ l.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ l.label }}</button>
@@ -1806,6 +1807,9 @@ const toCyr = s => {
 };
 
 const RU = {
+  'Interfeys tili':'Язык интерфейса',
+  'Interfeys tili — keyinchalik sozlamalarda o\'zgartirishingiz mumkin.':'Язык интерфейса — позже можно изменить в настройках.',
+  'Do\'kon tavsiflari va qo\'llanmalar hozircha faqat o\'zbek tilida.':'Описания магазинов и инструкции пока только на узбекском.',
   'Bosh sahifa':'Главная', "Qo'llanmalar":'Инструкции', "Yo'l":'Маршрут', 'Bojxona':'Таможня', 'Sozlamalar':'Настройки',
   "Do'konlar":'Магазины', 'Kuryerlar':'Курьеры', 'Kuzatuv':'Отслеживание', 'Taqqoslash':'Сравнение', 'Xarid rejasi':'План покупки',
   "Qo'llanma":'Инструкция', "5 qadamli yo'l":'Маршрут из 5 шагов', 'Mening rejalarim':'Мои планы', 'Bugungi foydali':'Совет дня',
@@ -1841,14 +1845,59 @@ const RU = {
   'Asosiy menyu':'Главное меню', 'Qaysi davlatdan':'Из какой страны', 'Yuborish turi':'Тип отправки', 'Saralash':'Сортировка',
   "Yo'nalishlar":'Направления', 'Avia':'Авиа', 'Quruqlik':'Наземная', 'Avto':'Авто'
 };
-const RU_REV = {}; Object.keys(RU).forEach(k => { RU_REV[RU[k]] = k; });
-const CYR_OF = {}; const CYR_REV = {};
-Object.keys(RU).forEach(k => { const c = toCyr(k); CYR_OF[k] = c; if (c !== k) CYR_REV[c] = k; });
+/* Matnlarda ASCII (') va tipografik (' ') apostroflar aralash uchraydi.
+   Lug'at kalitlari yagona ko'rinishga keltiriladi, aks holda "Ko'p" kabi
+   satrlar tarjima ham, kirillga o'girish ham qilinmay o'tib ketardi. */
+const dictKey = v => String(v == null ? '' : v).replace(/[‘’ʻʼ]/g, "'");
+const RU_OF = {}; const CYR_OF = {};
+Object.keys(RU).forEach(k => { const key = dictKey(k); RU_OF[key] = RU[k]; CYR_OF[key] = toCyr(key); });
+const RU_REV = {}; const CYR_REV = {};
+Object.keys(RU_OF).forEach(key => {
+  RU_REV[RU_OF[key]] = key;
+  if (CYR_OF[key] !== key) CYR_REV[CYR_OF[key]] = key;
+});
+/* Qidiruv uchun normallashtirish.
+   - katta/kichik harf farqi olib tashlanadi;
+   - tipografik apostroflar ('  ') va ASCII ' bir xil ko'rinishga keltiriladi;
+   - kirillcha so'rov lotinchaga o'giriladi ("почта" -> "pochta"), shuning uchun
+     foydalanuvchi qaysi alifboda yozishidan qat'i nazar natija topiladi;
+   - x/ks kabi yozilish farqlari yumshatiladi ("aliexpress" ~ "алиэкспресс"). */
+const LAT_OF_CYR = {
+  'а':'a','б':'b','в':'v','г':'g','ғ':'g','д':'d','е':'e','ё':'yo','ж':'j','з':'z',
+  'и':'i','й':'y','к':'k','қ':'q','л':'l','м':'m','н':'n','о':'o','ў':'o','п':'p',
+  'р':'r','с':'s','т':'t','у':'u','ф':'f','х':'x','ҳ':'h','ц':'ts','ч':'ch','ш':'sh',
+  'щ':'sh','ъ':'','ы':'i','ь':'','э':'e','ю':'yu','я':'ya'
+};
+const norm = v => String(v == null ? '' : v)
+  .toLowerCase()
+  .replace(/[‘’ʻʼ`´']/g, '')
+  .replace(/[Ѐ-ӿ]/g, ch => (LAT_OF_CYR[ch] !== undefined ? LAT_OF_CYR[ch] : ch))
+  .replace(/x/g, 'ks')
+  .replace(/\s+/g, ' ')
+  .trim();
+
+/* Qisqa so'rov uzun so'zning o'rtasiga tushib ketmasin: "ali" so'rovi
+   "kundalik" yoki "poyabzali" ichidan emas, so'z boshidan qidiriladi.
+   4 harfdan uzun so'rovlar odatdagidek istalgan joydan topiladi. */
+const matches = (hay, q) => {
+  if (!q) return true;
+  if (q.length >= 4) return hay.includes(q);
+  return new RegExp('(^|[ ,.·/-])' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).test(hay);
+};
+
+/* Natijalarni moslik darajasi bo'yicha tartiblash: nomi so'rov bilan boshlansa
+   yuqorida, nomida uchrasa o'rtada, faqat tavsifda uchrasa quyida. */
+const rank = (name, q) => {
+  const n = norm(name);
+  return n.startsWith(q) ? 0 : n.includes(q) ? 1 : 2;
+};
+
 const tr = (lang, s) => {
-  const base = RU_REV[s] || CYR_REV[s] || s;
-  if (lang === 'ru') return RU[base] || base;
-  if (lang === 'uzc') return CYR_OF[base] || base;
-  return base;
+  const key = dictKey(s);
+  const base = RU_REV[s] || CYR_REV[s] || key;
+  if (lang === 'ru') return RU_OF[base] || s;
+  if (lang === 'uzc') return CYR_OF[base] || s;
+  return RU_OF[base] !== undefined ? base : s;
 };
 
 const STORES = [
@@ -2449,9 +2498,9 @@ class Component extends DCLogic {
   }
 
   storesFiltered() {
-    const q = this.state.storeQuery.trim().toLowerCase();
+    const q = norm(this.state.storeQuery);
     return STORES.filter(s => {
-      if (q && !((s.name + ' ' + s.cat + ' ' + s.subcats + ' ' + s.type + ' ' + s.country + ' ' + s.tags.join(' ')).toLowerCase().includes(q))) return false;
+      if (q && !matches(norm([s.name, s.cat, s.subcats, s.type, s.country, s.segment, s.forWhom, (s.tags || []).join(' ')].join(' ')), q)) return false;
       if (this.state.storeCountries.length && !this.state.storeCountries.includes(s.country)) return false;
       if (this.state.storeCats.length && !this.state.storeCats.includes(s.cat)) return false;
       if (this.state.storeDirect && !s.direct) return false;
@@ -2840,19 +2889,20 @@ class Component extends DCLogic {
       onHq: e => this.setState({ homeQuery: e.target.value }),
       clearHq: () => this.setState({ homeQuery: '' }),
       ...(() => {
-        const q = (st.homeQuery || '').trim().toLowerCase();
+        const q = norm(st.homeQuery);
         if (q.length < 2) return { hqOn: false, hqEmpty: false, hqCount: '', hqResults: [] };
-        const hay = (...p) => p.filter(Boolean).join(' ').toLowerCase();
-        const stores = STORES
-          .filter(s => hay(s.name, s.cat, s.subcats, s.type, s.country, (s.tags || []).join(' ')).includes(q))
+        const hay = (...p) => norm(p.filter(Boolean).join(' '));
+        const byRank = (list, key) => [...list].sort((a, b) => rank(a[key], q) - rank(b[key], q));
+        const stores = byRank(STORES
+          .filter(s => matches(hay(s.name, s.cat, s.subcats, s.type, s.country, s.segment, s.forWhom, (s.tags || []).join(' ')), q)), 'name')
           .slice(0, 5)
           .map(s => ({
             kind: 'Do\'kon', name: s.name, sub: s.country + ' · ' + s.cat,
             mono: s.mono, color: s.color, bg: '#F4F3FA', fit: '66%', logoCss: s.logoCss,
             open: () => { this.setState({ storeId: s.id, homeQuery: '' }); this.push('store'); }
           }));
-        const couriers = COURIERS
-          .filter(c => hay(c.name, c.mode, c.route, (c.from || []).join(' ')).includes(q))
+        const couriers = byRank(COURIERS
+          .filter(c => matches(hay(c.name, c.mode, c.route, c.countries, c.note, (c.from || []).join(' ')), q)), 'name')
           .slice(0, 5)
           .map(c => ({
             kind: 'Kuryer', name: c.name, sub: c.days + ' · ' + c.mode,
@@ -2860,8 +2910,8 @@ class Component extends DCLogic {
             bg: c.logoBg === 'transparent' ? c.color : c.logoBg, fit: c.logoFit, logoCss: c.logoCss,
             open: () => { this.setState({ homeQuery: '' }); this.openCourierId(c.id); }
           }));
-        const guides = FULL_GUIDES
-          .filter(f => hay(f.title, f.desc).includes(q))
+        const guides = byRank(FULL_GUIDES
+          .filter(f => matches(hay(f.title, f.desc), q)), 'title')
           .slice(0, 4)
           .map(f => ({
             kind: 'Qo\'llanma', name: f.title, sub: f.sections + ' bo\'lim · kalkulyator',
