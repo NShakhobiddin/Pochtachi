@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>eBay → O'zbekiston · Interaktiv qo'llanma</title>
+<style>
+:root{
+  --indigo-50:#eef2ff; --indigo-100:#e0e7ff; --indigo-200:#c7d2fe; --indigo-300:#a5b4fc;
+  --indigo-500:#6366f1; --indigo-600:#4f46e5; --indigo-700:#4338ca; --indigo-900:#312e81;
+  --slate-50:#f8fafc; --slate-100:#f1f5f9; --slate-200:#e2e8f0; --slate-300:#cbd5e1;
+  --slate-400:#94a3b8; --slate-500:#64748b; --slate-600:#475569; --slate-700:#334155;
+  --slate-800:#1e293b; --slate-900:#0f172a;
+  --green:#059669; --green-bg:#ecfdf5; --amber:#d97706; --amber-bg:#fffbeb;
+  --red:#dc2626; --red-bg:#fef2f2; --sky:#0284c7; --sky-bg:#f0f9ff;
+  --brand:#E53238;
+  --radius:16px; --radius-sm:10px;
+  --shadow-sm:0 1px 2px rgba(15,23,42,.06), 0 1px 3px rgba(15,23,42,.04);
+  --shadow:0 4px 6px -1px rgba(15,23,42,.06), 0 10px 24px -6px rgba(49,46,129,.10);
+  --shadow-lg:0 12px 32px -8px rgba(49,46,129,.22);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);background:var(--slate-50);color:var(--slate-800);
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+
+header.hero{background:linear-gradient(155deg,var(--indigo-700) 0%,var(--indigo-600) 45%,#6d5ce7 100%);
+  color:#fff;padding:36px 0 76px;position:relative;overflow:hidden}
+header.hero::after{content:"";position:absolute;right:-90px;top:-90px;width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.22),rgba(255,255,255,0) 70%)}
+header.hero::before{content:"";position:absolute;left:-60px;bottom:-120px;width:240px;height:240px;border-radius:50%;
+  background:radial-gradient(circle at 60% 40%,rgba(255,255,255,.14),rgba(255,255,255,0) 70%)}
+.hero-in{max-width:960px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
+.badge-top{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.25);padding:5px 13px 5px 9px;border-radius:999px;
+  font-size:12px;font-weight:600;letter-spacing:.02em;backdrop-filter:blur(6px)}
+.badge-top .bd{width:9px;height:9px;border-radius:50%;background:var(--brand);
+  box-shadow:0 0 0 3px rgba(255,255,255,.22)}
+h1{font-size:30px;line-height:1.2;margin:16px 0 8px;font-weight:800;letter-spacing:-.02em}
+.hero p{margin:0;opacity:.9;font-size:15px;max-width:660px}
+.hero-stats{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.hstat{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);
+  border-radius:12px;padding:9px 14px;backdrop-filter:blur(6px)}
+.hstat b{display:block;font-size:17px;line-height:1.2}
+.hstat span{font-size:11.5px;opacity:.82}
+
+nav.tabs{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--slate-200);
+  margin-top:-40px;border-radius:var(--radius) var(--radius) 0 0;box-shadow:var(--shadow)}
+.tabs-scroll{display:flex;gap:4px;overflow-x:auto;padding:8px;scrollbar-width:none}
+.tabs-scroll::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:0;background:transparent;color:var(--slate-600);
+  font:inherit;font-size:13.5px;font-weight:600;padding:9px 14px;border-radius:10px;
+  cursor:pointer;white-space:nowrap;transition:.16s;display:flex;align-items:center;gap:6px}
+.tab:hover{background:var(--slate-100);color:var(--slate-800)}
+.tab.active{background:var(--indigo-600);color:#fff;box-shadow:0 4px 12px -3px rgba(79,70,229,.5)}
+.tab .n{font-size:11px;opacity:.7;font-weight:700}
+
+section.panel{display:none;padding-top:24px;animation:fade .28s ease}
+section.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2{font-size:21px;font-weight:750;letter-spacing:-.01em;margin:0 0 4px;color:var(--slate-900);
+  position:relative;padding-left:13px}
+h2::before{content:"";position:absolute;left:0;top:5px;bottom:5px;width:4px;border-radius:99px;background:var(--brand)}
+.sub{color:var(--slate-500);font-size:14px;margin:0 0 20px;padding-left:13px}
+h3{font-size:16px;font-weight:700;margin:26px 0 10px;color:var(--slate-900)}
+h4{font-size:15px;font-weight:700;margin:16px 0 6px;color:var(--slate-900)}
+p{margin:10px 0}
+
+.card{background:#fff;border:1px solid var(--slate-200);border-radius:var(--radius);
+  padding:18px;box-shadow:var(--shadow-sm);margin-bottom:14px}
+.card.tight{padding:14px}
+.grid{display:grid;gap:12px}
+@media(min-width:680px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
+
+.note{border-radius:var(--radius-sm);padding:12px 14px;font-size:13.5px;margin:12px 0;
+  border-left:3px solid;display:flex;gap:9px;align-items:flex-start}
+.note b{font-weight:700}
+.note.info{background:var(--sky-bg);border-color:var(--sky);color:#075985}
+.note.warn{background:var(--amber-bg);border-color:var(--amber);color:#92400e}
+.note.dang{background:var(--red-bg);border-color:var(--red);color:#991b1b}
+.note.ok{background:var(--green-bg);border-color:var(--green);color:#065f46}
+.note .ic{flex:0 0 auto;font-size:15px;line-height:1.4}
+
+.method{border:1.5px solid var(--slate-200);border-radius:var(--radius);padding:16px;background:#fff;
+  transition:.18s;position:relative;overflow:hidden;margin-bottom:0}
+.method:hover{border-color:var(--indigo-300);box-shadow:var(--shadow);transform:translateY(-2px)}
+.method .tag{position:absolute;top:0;right:0;background:var(--brand);color:#fff;
+  font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:0 var(--radius) 0 10px;letter-spacing:.02em}
+.method h4{margin:0 0 6px;font-size:16px;font-weight:750}
+.method .who{font-size:12.5px;color:var(--indigo-700);background:var(--indigo-50);
+  display:inline-block;padding:3px 9px;border-radius:6px;font-weight:600;margin-bottom:10px}
+.method ul{margin:8px 0 0;padding-left:0;list-style:none;font-size:13.5px}
+.method li{padding:3px 0 3px 20px;position:relative;color:var(--slate-600)}
+.method li.p::before{content:"+";position:absolute;left:4px;color:var(--green);font-weight:800}
+.method li.m::before{content:"\2212";position:absolute;left:4px;color:var(--red);font-weight:800}
+
+.wiz-progress{display:flex;gap:4px;margin-bottom:16px}
+.wiz-progress i{flex:1;height:5px;border-radius:99px;background:var(--slate-200);transition:.3s}
+.wiz-progress i.done{background:var(--indigo-300)}
+.wiz-progress i.now{background:var(--indigo-600)}
+.step-head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.step-num{flex:0 0 auto;width:38px;height:38px;border-radius:12px;
+  background:linear-gradient(150deg,var(--indigo-600),var(--indigo-500));color:#fff;
+  display:grid;place-items:center;font-weight:800;font-size:16px;
+  box-shadow:0 6px 14px -5px rgba(79,70,229,.65)}
+.step-title{font-size:18px;font-weight:750;letter-spacing:-.01em;color:var(--slate-900)}
+.step-meta{font-size:12px;color:var(--slate-500);font-weight:600}
+.step-body{font-size:14.5px;color:var(--slate-700)}
+.step-body ol,.step-body ul{padding-left:20px;margin:10px 0}
+.step-body li{margin:6px 0}
+.step-body strong{color:var(--slate-900)}
+.wiz-nav{display:flex;gap:8px;margin-top:18px}
+.btn{border:0;font:inherit;font-weight:650;font-size:14px;padding:11px 18px;border-radius:11px;
+  cursor:pointer;transition:.16s;display:inline-flex;align-items:center;gap:7px;justify-content:center}
+.btn.primary{background:var(--indigo-600);color:#fff;box-shadow:0 6px 16px -6px rgba(79,70,229,.7)}
+.btn.primary:hover{background:var(--indigo-700);transform:translateY(-1px)}
+.btn.ghost{background:var(--slate-100);color:var(--slate-700)}
+.btn.ghost:hover{background:var(--slate-200)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn.wide{flex:1}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.dot{width:30px;height:30px;border-radius:9px;border:1.5px solid var(--slate-200);background:#fff;
+  color:var(--slate-500);font-size:12.5px;font-weight:700;cursor:pointer;transition:.15s;font-family:inherit}
+.dot:hover{border-color:var(--indigo-300)}
+.dot.active{background:var(--indigo-600);border-color:var(--indigo-600);color:#fff}
+.dot.seen{border-color:var(--indigo-200);background:var(--indigo-50);color:var(--indigo-700)}
+
+label.f{display:block;font-size:12.5px;font-weight:650;color:var(--slate-600);margin-bottom:5px}
+input[type=text],input[type=number],select{width:100%;padding:10px 12px;border:1.5px solid var(--slate-200);
+  border-radius:10px;font:inherit;font-size:14.5px;background:#fff;color:var(--slate-800);transition:.15s}
+input:focus,select:focus{outline:0;border-color:var(--indigo-500);box-shadow:0 0 0 3px var(--indigo-100)}
+.field{margin-bottom:12px}
+.seg{display:flex;gap:4px;background:var(--slate-100);padding:4px;border-radius:11px}
+.seg button{flex:1;border:0;background:transparent;font:inherit;font-size:13px;font-weight:650;
+  padding:8px;border-radius:8px;cursor:pointer;color:var(--slate-600);transition:.15s}
+.seg button.on{background:#fff;color:var(--indigo-700);box-shadow:var(--shadow-sm)}
+.dim3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+
+.res{background:linear-gradient(155deg,var(--indigo-700),var(--indigo-600));color:#fff;
+  border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-lg)}
+.res .total{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.res .total small{font-size:14px;font-weight:600;opacity:.75}
+.res .sum{opacity:.85;font-size:13.5px;margin-top:2px}
+.rrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;font-size:13.5px;
+  border-bottom:1px solid rgba(255,255,255,.14)}
+.rrow:last-child{border:0}
+.rrow span:first-child{opacity:.8}
+.rrow span:last-child{font-weight:700;font-variant-numeric:tabular-nums}
+.bar{display:flex;height:9px;border-radius:99px;overflow:hidden;margin:14px 0 8px;background:rgba(255,255,255,.18)}
+.bar i{display:block;transition:.4s}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;opacity:.9}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend i{width:9px;height:9px;border-radius:3px;display:block}
+
+.tblwrap{overflow-x:auto;border:1px solid var(--slate-200);border-radius:var(--radius);background:#fff;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px}
+table.narrow{min-width:0}
+th{background:var(--slate-50);text-align:left;padding:11px 12px;font-weight:700;font-size:12px;
+  color:var(--slate-600);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--slate-200)}
+td{padding:11px 12px;border-bottom:1px solid var(--slate-100);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--indigo-50)}
+.pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.pill.g{background:var(--green-bg);color:var(--green)}
+.pill.a{background:var(--amber-bg);color:var(--amber)}
+.pill.r{background:var(--red-bg);color:var(--red)}
+.pill.b{background:var(--indigo-50);color:var(--indigo-700)}
+.pill.s{background:var(--sky-bg);color:var(--sky)}
+
+.search-box{position:relative;margin-bottom:12px}
+.search-box input{padding-left:38px}
+.search-box .ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--slate-400);font-size:15px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1.5px solid var(--slate-200);background:#fff;font:inherit;font-size:12.5px;font-weight:650;
+  padding:6px 12px;border-radius:99px;cursor:pointer;color:var(--slate-600);transition:.15s}
+.chip:hover{border-color:var(--indigo-300)}
+.chip.on{background:var(--indigo-600);border-color:var(--indigo-600);color:#fff}
+.item{border:1px solid var(--slate-200);border-radius:12px;padding:12px 14px;margin-bottom:8px;background:#fff;
+  display:flex;gap:12px;align-items:flex-start}
+.item .body{flex:1;min-width:0}
+.item .nm{font-weight:700;font-size:14.5px;color:var(--slate-900)}
+.item .ds{font-size:13px;color:var(--slate-600);margin-top:3px}
+.item.r{border-left:4px solid var(--red)}
+.item.a{border-left:4px solid var(--amber)}
+.item.g{border-left:4px solid var(--green)}
+.empty{text-align:center;padding:28px;color:var(--slate-400);font-size:14px}
+
+.acc{border:1px solid var(--slate-200);border-radius:12px;margin-bottom:8px;background:#fff;overflow:hidden}
+.acc button{width:100%;text-align:left;border:0;background:transparent;font:inherit;font-size:14.5px;
+  font-weight:650;padding:14px 44px 14px 16px;cursor:pointer;position:relative;color:var(--slate-800)}
+.acc button::after{content:"+";position:absolute;right:16px;top:50%;transform:translateY(-50%);
+  font-size:20px;font-weight:400;color:var(--indigo-500);transition:.2s}
+.acc.open button::after{content:"\2212"}
+.acc .ans{display:none;padding:0 16px 15px;font-size:14px;color:var(--slate-600)}
+.acc.open .ans{display:block}
+.acc.open{border-color:var(--indigo-200);box-shadow:var(--shadow-sm)}
+
+.chk{display:flex;gap:11px;align-items:flex-start;padding:11px 13px;border:1px solid var(--slate-200);
+  border-radius:11px;margin-bottom:7px;background:#fff;cursor:pointer;transition:.15s}
+.chk:hover{border-color:var(--indigo-300)}
+.chk.done{background:var(--green-bg);border-color:#a7f3d0}
+.chk.done .t{text-decoration:line-through;color:var(--slate-400)}
+.box{flex:0 0 auto;width:21px;height:21px;border-radius:7px;border:2px solid var(--slate-300);
+  display:grid;place-items:center;font-size:12px;color:#fff;transition:.15s;margin-top:1px}
+.chk.done .box{background:var(--green);border-color:var(--green)}
+.chk .t{font-size:14px;font-weight:600}
+.chk .d{font-size:12.5px;color:var(--slate-500);margin-top:2px}
+.chk-head{display:flex;justify-content:space-between;align-items:center;margin:22px 0 10px;gap:10px}
+.chk-head h3{margin:0}
+.prog-txt{font-size:12.5px;font-weight:700;color:var(--indigo-700);background:var(--indigo-50);
+  padding:4px 11px;border-radius:99px;white-space:nowrap}
+
+.gl{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--slate-200);
+  border-radius:11px;margin-bottom:6px;background:#fff}
+.gl .zh{font-size:16px;font-weight:700;color:var(--indigo-700);flex:0 0 auto;min-width:88px;line-height:1.35}
+.gl .uz{flex:1;font-size:13.5px;color:var(--slate-700)}
+.gl .cp{border:1px solid var(--slate-200);background:var(--slate-50);border-radius:8px;
+  font:inherit;font-size:11.5px;font-weight:650;padding:5px 10px;cursor:pointer;color:var(--slate-600);flex:0 0 auto}
+.gl .cp:hover{background:var(--indigo-50);border-color:var(--indigo-200);color:var(--indigo-700)}
+.gl .cp.ok{background:var(--green-bg);border-color:#a7f3d0;color:var(--green)}
+
+.foot{text-align:center;color:var(--slate-400);font-size:12px;padding:32px 16px 0;line-height:1.7}
+.kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--slate-100);
+  border:1px solid var(--slate-200);border-radius:6px;padding:1px 6px;font-size:12.5px;color:var(--slate-700)}
+.mini{font-size:12.5px;color:var(--slate-500)}
+ul.tick{list-style:none;padding-left:0;margin:10px 0}
+ul.tick li{position:relative;padding-left:24px;margin:7px 0;font-size:14.5px}
+ul.tick li::before{content:"\2713";position:absolute;left:4px;color:var(--green);font-weight:800}
+</style>
+<style>
+/* XaridYordamchisi ilovasi ichida ochilganda qo'llanmani ilova dizayniga moslash */
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Onest:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --indigo-50:#EDEBFD; --indigo-100:#E4E1FB; --indigo-200:#D5D0F8; --indigo-300:#B6AEF3;
+  --indigo-500:#5A46EC; --indigo-600:#3B2CC9; --indigo-700:#3423B3; --indigo-900:#1E1670;
+  --slate-50:#F8F8FC; --slate-100:#F1F1F8; --slate-200:#E4E3EE; --slate-300:#CFCEDD;
+  --slate-400:#9A99AE; --slate-500:#6C6C88; --slate-600:#6E6D8A; --slate-700:#333350;
+  --slate-800:#22213B; --slate-900:#151329;
+  --green:#0F7B3E; --green-bg:#E9F8EF; --amber:#B45309; --amber-bg:#FDF3E3;
+  --red:#C8102E; --red-bg:#FDECEE; --sky:#2456C8; --sky-bg:#E8EEFE;
+  --radius:22px; --radius-sm:14px;
+  --shadow-sm:0 1px 2px rgba(20,19,43,.045),0 6px 16px -10px rgba(20,19,43,.24);
+  --shadow:0 1px 2px rgba(20,19,43,.05),0 10px 26px -14px rgba(20,19,43,.30);
+  --shadow-lg:0 18px 38px -18px rgba(45,30,150,.65);
+  --font:'Onest','Noto Color Emoji',system-ui,-apple-system,sans-serif;
+}
+
+body{background:#F2F1F8;color:#22213B;font-size:14.5px;letter-spacing:-.012em}
+.wrap{max-width:100%;padding:0 14px 40px}
+::-webkit-scrollbar{width:0;height:0}
+*{scrollbar-width:none}
+
+/* Hero — gradient sarlavha o'rniga ilovadagi yengil karta */
+header.hero{background:#FFFFFF;color:#151329;padding:16px 0 20px;border-bottom:1px solid #E8E8F1}
+header.hero::before,header.hero::after{display:none}
+.hero-in{padding:0 16px}
+.badge-top{background:#F1F1F8;border:none;color:#6C6C88;font-size:10.5px;font-weight:800;letter-spacing:.4px;padding:5px 11px 5px 8px;backdrop-filter:none}
+h1{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:23px;font-weight:800;letter-spacing:-.7px;margin:12px 0 6px;color:#151329}
+.hero p{color:#6E6D8A;font-size:13.5px;opacity:1;line-height:1.55;text-wrap:pretty}
+.hero-stats{gap:7px;margin-top:14px}
+.hstat{background:#F1F1F8;border:none;border-radius:14px;padding:9px 12px;backdrop-filter:none}
+.hstat b{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:15px;font-weight:800;color:#3B2CC9;letter-spacing:-.3px}
+.hstat span{font-size:10.5px;color:#6C6C88;font-weight:600}
+
+/* Tab qatori — ilovadagi chip uslubi */
+nav.tabs{margin-top:0;border-radius:0;box-shadow:none;background:#F2F1F8;border-bottom:1px solid #E8E8F1;backdrop-filter:none}
+.tabs-scroll{padding:9px 12px;gap:6px}
+.tab{background:#FFFFFF;border-radius:999px;font-size:12.5px;font-weight:700;color:#151329;padding:8px 14px;box-shadow:var(--shadow-sm)}
+.tab:hover{background:#F0EFFC;color:#151329}
+.tab.active{background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;box-shadow:0 12px 26px -14px rgba(45,30,150,.7)}
+.tab .n{display:none}
+
+/* Sarlavhalar */
+section.panel{padding-top:20px}
+h2{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:21px;font-weight:800;letter-spacing:-.6px;padding-left:0;color:#151329}
+h2::before{display:none}
+.sub{padding-left:0;font-size:13.5px;color:#6E6D8A;line-height:1.55;margin-bottom:18px}
+h3{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:16px;font-weight:800;letter-spacing:-.3px;margin:24px 0 10px}
+h4{font-weight:800;letter-spacing:-.2px}
+
+/* Kartalar */
+.card,.method{border:none;border-radius:var(--radius);box-shadow:var(--shadow);background:#FFFFFF}
+.method:hover{border:none;box-shadow:0 2px 4px rgba(59,44,201,.10),0 14px 30px -14px rgba(59,44,201,.42);transform:none}
+.method .tag{border-radius:0 var(--radius) 0 14px;background:#3B2CC9;font-size:10px;letter-spacing:.4px}
+.method .who{background:#EDEBFD;color:#3B2CC9;border-radius:8px;font-size:11.5px;font-weight:700}
+
+/* Eslatma bloklari */
+.note{border-left:none;border-radius:18px;padding:13px 15px;font-size:13px;line-height:1.55}
+.note.info{background:#E8EEFE;color:#1E3F91}
+.note.warn{background:#FDF3E3;color:#8A4308}
+.note.dang{background:#FDECEE;color:#A50C24}
+.note.ok{background:#E9F8EF;color:#0B5B2E}
+
+/* Bosqichlar */
+.wiz-progress i{height:6px;background:#E4E3EE}
+.wiz-progress i.done{background:#B6AEF3}
+.wiz-progress i.now{background:#3B2CC9}
+.step-num{border-radius:14px;background:linear-gradient(155deg,#5A46EC,#3423B3);box-shadow:0 12px 24px -14px rgba(45,30,150,.8)}
+.step-title{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:17px;font-weight:800;letter-spacing:-.4px}
+.step-meta{font-size:11.5px;color:#6C6C88;font-weight:700}
+.step-body{font-size:14px;color:#333350}
+.dot{border:none;border-radius:12px;background:#FFFFFF;color:#6C6C88;box-shadow:var(--shadow-sm);width:32px;height:32px}
+.dot.active{background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff}
+.dot.seen{background:#EDEBFD;color:#3B2CC9}
+
+/* Tugmalar */
+.btn{border-radius:18px;padding:14px 20px;font-weight:700;font-size:14.5px}
+.btn.primary{background:linear-gradient(155deg,#5A46EC,#3423B3);box-shadow:0 18px 38px -18px rgba(45,30,150,.65)}
+.btn.primary:hover{background:linear-gradient(155deg,#4E3BE4,#2C1D9C);transform:none}
+.btn.ghost{background:#FFFFFF;color:#151329;box-shadow:var(--shadow-sm)}
+.btn.ghost:hover{background:#F0EFFC}
+
+/* Maydonlar */
+label.f{font-size:11.5px;font-weight:700;color:#6C6C88;letter-spacing:.1px}
+input[type=text],input[type=number],select{border:1.5px solid #E4E3EE;border-radius:14px;padding:12px 14px;font-size:15px;color:#151329}
+input:focus,select:focus{border-color:#3B2CC9;box-shadow:0 0 0 3px #EDEBFD}
+.seg{background:#F1F1F8;border-radius:16px;padding:5px}
+.seg button{border-radius:12px;font-size:12.5px;font-weight:700;color:#6C6C88}
+.seg button.on{background:#FFFFFF;color:#3B2CC9;box-shadow:var(--shadow-sm)}
+
+/* Natija kartasi */
+.res{background:linear-gradient(155deg,#5A46EC,#3423B3);border-radius:26px;padding:20px;box-shadow:var(--shadow-lg)}
+.res .total{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:31px;font-weight:800;letter-spacing:-1px}
+
+/* Jadvallar */
+.tblwrap{border:none;border-radius:var(--radius);box-shadow:var(--shadow)}
+table{font-size:13px;min-width:0}
+th{background:#F8F8FC;color:#6C6C88;font-size:10.5px;letter-spacing:.5px;border-bottom:1px solid #E8E8F1;padding:11px 12px}
+td{border-bottom:1px solid #F1F1F8;padding:11px 12px}
+tbody tr:hover{background:#F8F8FC}
+.pill{border-radius:9px;font-size:10.5px;font-weight:800;letter-spacing:.3px;padding:3px 8px}
+.pill.g{background:#E9F8EF;color:#0F7B3E}
+.pill.a{background:#FDF3E3;color:#B45309}
+.pill.r{background:#FDECEE;color:#C8102E}
+.pill.b{background:#EDEBFD;color:#3B2CC9}
+.pill.s{background:#E8EEFE;color:#2456C8}
+
+/* Qidiruv, chiplar, ro'yxatlar */
+.search-box input{padding-left:40px;background:#FFFFFF;box-shadow:var(--shadow-sm);border-color:transparent}
+.chip{border:none;background:#FFFFFF;border-radius:999px;font-size:12px;font-weight:700;color:#151329;box-shadow:var(--shadow-sm);padding:7px 13px}
+.chip:hover{background:#F0EFFC}
+.chip.on{background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff}
+.item{border:none;border-radius:18px;box-shadow:var(--shadow);padding:13px 15px}
+.item.r{border-left:4px solid #C8102E}
+.item.a{border-left:4px solid #B45309}
+.item.g{border-left:4px solid #0F7B3E}
+.item .nm{font-size:14px;font-weight:700;color:#151329}
+.item .ds{font-size:12.5px;color:#6E6D8A}
+.empty{color:#9A99AE;font-size:13px}
+
+/* Akkordeon, checklist, lug'at */
+.acc{border:none;border-radius:18px;box-shadow:var(--shadow)}
+.acc button{font-size:14px;font-weight:700;color:#151329;padding:15px 44px 15px 16px}
+.acc button::after{color:#3B2CC9}
+.acc.open{border:none;box-shadow:0 2px 4px rgba(59,44,201,.10),0 14px 30px -14px rgba(59,44,201,.42)}
+.acc .ans{font-size:13.5px;color:#6E6D8A;line-height:1.6}
+.chk{border:none;border-radius:18px;box-shadow:var(--shadow-sm);padding:13px 15px}
+.chk:hover{background:#FBFBFE}
+.chk.done{background:#E9F8EF;box-shadow:none}
+.box{border-radius:8px;border:2px solid #CFCEDD}
+.chk .t{font-size:13.5px;font-weight:700;color:#151329}
+.chk .d{font-size:12px;color:#6C6C88}
+.prog-txt{background:#EDEBFD;color:#3B2CC9;font-size:11.5px;font-weight:800;border-radius:999px}
+.gl{border:none;border-radius:16px;box-shadow:var(--shadow-sm);padding:11px 13px}
+.gl .zh{color:#3B2CC9;font-weight:800;font-size:15px}
+.gl .uz{font-size:13px;color:#333350}
+.gl .cp{border:none;background:#F1F1F8;border-radius:10px;color:#6C6C88;font-weight:700}
+.gl .cp:hover{background:#EDEBFD;color:#3B2CC9}
+.gl .cp.ok{background:#E9F8EF;color:#0F7B3E}
+
+.kbd{background:#F1F1F8;border:none;border-radius:8px;color:#333350;font-weight:600}
+.mini{font-size:12.5px;color:#6C6C88;line-height:1.55}
+ul.tick li{font-size:14px}
+.foot{color:#9A99AE;font-size:11.5px;padding-top:28px}
+
+/* ============ Interaktivlik qatlami ============ */
+body{padding-bottom:0}
+.wrap{padding-bottom:96px}
+
+/* O'qish progressi */
+nav.tabs{position:sticky;top:0}
+.xy-prog{position:absolute;left:0;bottom:-1px;height:2.5px;width:0;background:linear-gradient(90deg,#5A46EC,#3423B3);border-radius:0 3px 3px 0;transition:width .12s linear;display:block}
+
+/* Pastdagi bo'lim navigatsiyasi */
+.xy-secnav{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;align-items:center;gap:8px;
+  padding:9px 12px calc(9px + env(safe-area-inset-bottom));background:rgba(255,255,255,.94);
+  backdrop-filter:blur(14px);border-top:1px solid #E8E8F1}
+.xy-nb{flex:none;width:44px;height:44px;border:none;border-radius:16px;background:#F1F1F8;color:#3B2CC9;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,transform .12s}
+.xy-nb:hover{background:#EDEBFD}
+.xy-nb:active{transform:scale(.94)}
+.xy-nb:disabled{opacity:.32;cursor:not-allowed}
+.xy-mid{flex:1;min-width:0;border:none;background:#FFFFFF;border-radius:16px;height:44px;cursor:pointer;
+  font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  box-shadow:0 1px 2px rgba(20,19,43,.045),0 6px 16px -10px rgba(20,19,43,.24)}
+.xy-mid:active{transform:scale(.99)}
+.xy-mid b{font-size:13px;font-weight:800;color:#151329;letter-spacing:-.2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.xy-mid span{font-size:10px;font-weight:700;color:#6C6C88;letter-spacing:.4px;font-variant-numeric:tabular-nums}
+
+/* Kalkulyator natijasi ko'z oldida qoladi */
+#p-calc .res{position:sticky;bottom:86px;z-index:5}
+
+/* Tegish maydonlari va aks-sado */
+.tab{min-height:36px}
+.tab:active{transform:scale(.96)}
+.chip{min-height:34px}
+.chip:active{transform:scale(.96)}
+.btn{min-height:50px}
+.btn:active{transform:scale(.985)}
+.dot{width:36px;height:36px}
+.dot:active{transform:scale(.94)}
+.gl .cp{min-height:32px}
+.chk{min-height:52px;align-items:center}
+.acc button{min-height:52px}
+
+/* Akkordeon chevroni */
+.acc button::after,.acc.open button::after{content:"";width:8px;height:8px;border-right:2.4px solid #3B2CC9;
+  border-bottom:2.4px solid #3B2CC9;border-radius:1px;transform:translateY(-70%) rotate(45deg);transition:transform .22s ease}
+.acc.open button::after{transform:translateY(-20%) rotate(225deg)}
+
+/* Raqamlar tekis ustunda */
+table,.res,.hstat b,.step-meta,.prog-txt{font-variant-numeric:tabular-nums}
+
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-in">
+    <div class="badge-top"><span class="bd"></span>eBay · Yangilangan: 2026-yil avgust</div>
+    <h1>eBay'dan O'zbekistonga<br>buyurtma berish</h1>
+    <p>Dunyodagi eng katta ishlatilgan tovar va noyob buyumlar bozori. Auksion strategiyasi, sotuvchini tekshirish, eIS orqali to'g'ridan yetkazish va bojxona — to'liq interaktiv qo'llanma.</p>
+    <div class="hero-stats"><div class="hstat"><b>eIS</b><span>to'g'ridan yetkazish bor</span></div><div class="hstat"><b>$200</b><span>oylik bojsiz norma</span></div><div class="hstat"><b>10–25 kun</b><span>jami yetkazish</span></div></div>
+  </div>
+</header>
+<div class="wrap">
+  <nav class="tabs"><div class="tabs-scroll" id="tabs"></div></nav>
+  <section class="panel active" id="p-start"><h2>eBay nimasi bilan boshqacha?</h2><p class="sub">eBay — do'kon emas, bozor. Bu yerda millionlab xususiy shaxs va kichik do'kon sotadi. Shuning uchun bu yerda boshqa hech qayerda topilmaydigan narsalar bor — va boshqa hech qayerda bo'lmagan xavflar ham.</p>
+<div class="grid g3">
+  <div class="method">
+    <div class="tag">ENG SODDA</div>
+    <h4>1. eBay International Shipping</h4>
+    <div class="who">eBay o'zi yetkazadi</div>
+    <p class="mini">eIS — eBay'ning o'z xalqaro logistikasi. Sotuvchi tovarni AQShdagi eBay markaziga yuboradi, eBay esa sizga. 200 dan ortiq davlatga ishlaydi.</p>
+    <ul>
+      <li class="p">Vositachi va forwarder kerak emas</li>
+      <li class="p">Import to'lovlari checkout'da hisoblanadi</li>
+      <li class="p">30 kunlik qaytarish eBay orqali</li>
+      <li class="p">Money Back Guarantee amal qiladi</li>
+      <li class="m">Faqat eIS'ga ulangan sotuvchilarda</li>
+      <li class="m">Yetkazish forwarder'dan qimmatroq</li>
+    </ul>
+  </div>
+  <div class="method">
+    <h4>2. Sotuvchining o'z yetkazishi</h4>
+    <div class="who">«Worldwide shipping»</div>
+    <p class="mini">Ba'zi sotuvchilar o'zlari xalqaro jo'natadi. Listing'da «Ships to: Worldwide» yoki aniq davlatlar ro'yxati ko'rsatiladi.</p>
+    <ul>
+      <li class="p">Ba'zan eIS'dan arzon</li>
+      <li class="p">To'g'ridan-to'g'ri, oraliqsiz</li>
+      <li class="m">Trek raqami sifatsiz bo'lishi mumkin</li>
+      <li class="m">Yo'qolsa nizo murakkabroq</li>
+    </ul>
+  </div>
+  <div class="method">
+    <h4>3. AQSh / Yevropa manzili</h4>
+    <div class="who">Forwarder orqali</div>
+    <p class="mini">Sotuvchi faqat ichkariga jo'natsa — forwarder manzilini bering. eBay'ning <b>butun</b> katalogi ochiladi.</p>
+    <ul>
+      <li class="p">Tanlov 5–10 barobar kengroq</li>
+      <li class="p">Yetkazish ko'pincha arzon yoki bepul</li>
+      <li class="p">Bir necha lotni birlashtirish</li>
+      <li class="m">Qaytarish murakkab</li>
+      <li class="m">Soliqsiz shtat manzili muhim</li>
+    </ul>
+  </div>
+</div>
+
+<div class="note info">
+  <span class="ic">🔎</span>
+  <div><b>Amaliy tartib:</b> avval mahsulot sahifasida <b>«Shipping to: Uzbekistan»</b> ni tanlab ko'ring. Agar yetkazish narxi chiqsa — eIS yoki sotuvchining o'z yetkazishi ishlayapti, forwarder kerak emas. Chiqmasa — forwarder manzilini ishlating.</div>
+</div>
+
+<h3>🎯 eBay nimada tengsiz?</h3>
+<div class="grid g2">
+  <div class="card tight"><b style="color:var(--green)">✓ eBay'da izlash kerak</b>
+    <ul class="tick" style="margin:6px 0 0">
+      <li><b>Ehtiyot qismlar</b> — avtomobil, maishiy texnika, telefon, noutbuk qismlari</li>
+      <li><b>Eskirgan va noyob texnika</b> — ishlab chiqarishdan chiqqan modellar</li>
+      <li><b>Ishlatilgan elektronika</b> — kamera, obyektiv, audio texnika</li>
+      <li><b>Kolleksiya buyumlari</b> — tanga, marka, kartochka, vinil</li>
+      <li><b>Professional asboblar</b> — ishlatilgan, lekin sifatli</li>
+      <li><b>Musiqa asboblari</b> — gitara, pedal, sintezator</li>
+    </ul>
+  </div>
+  <div class="card tight"><b style="color:var(--red)">✗ eBay'dan olmagan ma'qul</b>
+    <ul style="margin:6px 0 0;padding-left:18px;font-size:14px">
+      <li><b>Oddiy yangi tovarlar</b> — Amazon'da arzonroq va ishonchliroq</li>
+      <li><b>Arzon xitoy tovarlari</b> — Taobao/PDD'da 2–3 barobar arzon</li>
+      <li><b>Brendli kiyim</b> — kontrafakt riski yuqori (Authenticity Guarantee bo'lmasa)</li>
+      <li><b>Og'ir va hajmli buyumlar</b> — yetkazish narxi tovar narxidan oshadi</li>
+      <li><b>Batareyali qurilmalar</b> — ko'p sotuvchi xalqaro jo'natmaydi</li>
+    </ul>
+  </div>
+</div>
+
+<h3>Sotuv formatlari</h3>
+<div class="tblwrap">
+  <table><thead><tr><th>Format</th><th>Qanday ishlaydi</th><th>Strategiya</th></tr></thead><tbody>
+    <tr><td><b>Buy It Now</b> (BIN)</td><td>Belgilangan narx, darhol sotib olasiz</td><td>Kerakli tovar bo'lsa — kutmang, noyob lotlar tez ketadi</td></tr>
+    <tr><td><b>Auction</b> (auksion)</td><td>Belgilangan vaqtgacha stavka qo'yiladi</td><td>Oxirgi 10 soniyada stavka qo'ying (sniping)</td></tr>
+    <tr><td><b>Best Offer</b></td><td>O'z narxingizni taklif qilasiz</td><td>Bozor narxidan 15–25% past taklif qiling — ko'pincha qabul qilinadi</td></tr>
+    <tr><td><b>Auction + BIN</b></td><td>Ikkalasi birga; birinchi stavkadan keyin BIN yo'qoladi</td><td>Narx yaxshi bo'lsa BIN'ni darhol bosing</td></tr>
+  </tbody></table>
+</div>
+</section><section class="panel" id="p-steps">
+      <h2>Bosqichma-bosqich</h2>
+      <p class="sub">12 ta qadam — yo'l tanlashdan tovarni qo'lga olishgacha, auksion taktikasi bilan.</p>
+      <div class="wiz-progress" id="wizbar"></div>
+      <div class="dots" id="wizdots"></div>
+      <div class="card" id="wizcard"></div>
+      <div class="wiz-nav">
+        <button class="btn ghost" id="wprev">← Orqaga</button>
+        <button class="btn primary wide" id="wnext">Keyingi qadam →</button>
+      </div></section><section class="panel" id="p-calc">
+      <h2>Narx va boj kalkulyatori</h2>
+      <p class="sub">Lot narxi + yetkazish + import to'lovlari + bojxona. Auksionda maksimal stavkangizni shu yerda aniqlang.</p>
+      
+    <div class="grid g2">
+      <div>
+        <div class="card">
+          <h3 style="margin-top:0">Tovar</h3>
+          <div class="field">
+            <label class="f">Tovar narxi</label>
+            <div class="seg" style="margin-bottom:8px">
+              <button class="" data-cur="loc" onclick="setCur('loc')">£ / € (Yevropa)</button>
+              <button class="on" data-cur="usd" onclick="setCur('usd')">$ Dollar</button>
+            </div>
+            <input type="number" id="price" value="85" min="0" step="1" oninput="calc()">
+          </div>
+          <div class="field">
+            <label class="f">Mahalliy yetkazish (£ yoki $) <span class="mini">— Sotuvchining ichki yetkazishi (AQSh/Yevropa ichida)</span></label>
+            <input type="number" id="inner" value="0" min="0" step="1" oninput="calc()">
+          </div>
+          
+          <div class="field">
+            <label class="f">Sales tax / import charges (%) <span class="mini">— soliqsiz shtatda 0; eIS'da checkout'dagi import charges foizini kiriting</span></label>
+            <input type="number" id="taxpct" value="0" min="0" step="0.5" oninput="calc()">
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">Og'irlik va o'lcham</h3>
+          <div class="field">
+            <label class="f">Haqiqiy og'irlik (kg)</label>
+            <input type="number" id="wkg" value="1.5" min="0" step="0.1" oninput="calc()">
+          </div>
+          <div class="field">
+            <label class="f">Quti o'lchami, sm <span class="mini">(uzunlik × eni × balandlik)</span></label>
+            <div class="dim3">
+              <input type="number" id="dl" value="35" min="0" oninput="calc()">
+              <input type="number" id="dw" value="25" min="0" oninput="calc()">
+              <input type="number" id="dh" value="15" min="0" oninput="calc()">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <h3 style="margin-top:0">Xalqaro yetkazish</h3>
+          <div class="field">
+            <label class="f">Yetkazish turi</label>
+            <div class="seg">
+              <button class="on" data-m="air" onclick="setMode('air')">⚡ Ekspress (5–10 kun)</button>
+              <button data-m="road" onclick="setMode('road')">📦 Standart (10–20 kun)</button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="f">Tarif ($ / kg)</label>
+            <input type="number" id="rate" value="12" min="0" step="0.1" oninput="calc()">
+          </div>
+          <div class="field">
+            <label class="f">Hajmiy og'irlik bo'luvchisi</label>
+            <select id="divisor" onchange="calc()">
+              <option value="6000">6000 — standart</option>
+              <option value="5000">5000 — qattiqroq</option>
+              <option value="0">Hisobga olinmasin</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">Bojxona va kurs</h3>
+          <div class="field">
+            <label class="f">Shu oyda allaqachon foydalanilgan norma ($)</label>
+            <input type="number" id="used" value="0" min="0" step="1" oninput="calc()">
+          </div>
+          <div class="field">
+            <label class="f">Kanal</label>
+            <select id="channel" onchange="calc()">
+              <option value="200">Kuryerlik / kargo — $200 oyiga</option>
+              <option value="100">Pochta (UzPost, EMS) — $100</option>
+            </select>
+          </div>
+          <div class="grid g2" style="gap:8px">
+            <div class="field" style="margin:0">
+              <label class="f">1 USD = ... so'm</label>
+              <input type="number" id="usdrate" value="11857" min="1" oninput="calc()">
+            </div>
+            <div class="field" style="margin:0">
+              <label class="f">1 USD = ... £</label>
+              <input type="number" id="fxrate" value="0.78" min="0.0001" step="0.01" oninput="calc()">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="res" id="result"></div>
+    
+    <div class="note info" style="margin-top:14px">
+      <span class="ic">📐</span>
+      <div><b>Hajmiy og'irlik nima?</b> Yengil, lekin katta hajmli tovar uchun yetkazish <b>hajm</b> bo'yicha hisoblanadi: <span class="kbd">U × E × B ÷ 6000</span>. Haqiqiy va hajmiy og'irlikning <b>kattarog'i</b> to'lanadi.</div>
+    </div>
+    <div class="note warn">
+      <span class="ic">🧮</span>
+      <div><b>Boj qanday hisoblanadi:</b> bojxona qiymati = <b>tovar narxi + soliq + yetkazib berish qiymati</b>. Normadan oshgan qismdan <b>30%</b> olinadi, lekin har bir kilogramm uchun <b>$3</b> dan kam bo'lmaydi. Kalkulyator ikkalasini hisoblab, kattarog'ini ko'rsatadi.</div>
+    </div>
+
+    <div class="note ok">
+      <span class="ic">🔨</span>
+      <div><b>Auksion uchun asosiy foydalanish:</b> «Sold Items» filtridan real bozor narxini oling, kalkulyatorga yetkazish va bojni kiriting, so'ng <b>maksimal stavkangizni</b> shunday belgilangki, jami summa bozor narxidan past qolsin. Auksionda hissiyotga berilmaslikning yagona usuli — raqamni oldindan yozib qo'yish.</div>
+    </div>
+    </section><section class="panel" id="p-customs">
+      <h2>Bojxona qoidalari</h2>
+      <p class="sub">O'zbekistonda jismoniy shaxslar uchun amaldagi normalar (2025-yil 1-maydan kuchga kirgan tartib).</p>
+      
+    <div class="grid g2">
+      <div class="card tight">
+        <div class="pill b">KURYERLIK / KARGO</div>
+        <div style="font-size:26px;font-weight:800;margin:8px 0 2px;color:var(--indigo-700)">$200</div>
+        <div class="mini">bir <b>kalendar oy</b> ichida, bojsiz. Barcha jo'natmalar jamlanib hisoblanadi.</div>
+      </div>
+      <div class="card tight">
+        <div class="pill s">POCHTA (UzPost / EMS)</div>
+        <div style="font-size:26px;font-weight:800;margin:8px 0 2px;color:var(--sky)">$100</div>
+        <div class="mini">bojsiz chegara. Kanal boshqacha — normalar alohida hisoblanadi.</div>
+      </div>
+      <div class="card tight">
+        <div class="pill a">NORMADAN OSHSA</div>
+        <div style="font-size:26px;font-weight:800;margin:8px 0 2px;color:var(--amber)">30%</div>
+        <div class="mini">faqat <b>ortiqcha summadan</b>, lekin 1 kg uchun $3 dan kam emas.</div>
+      </div>
+      <div class="card tight">
+        <div class="pill g">O'ZINGIZ OLIB KELSANGIZ</div>
+        <div style="font-size:26px;font-weight:800;margin:8px 0 2px;color:var(--green)">$1000</div>
+        <div class="mini">havo yo'li bilan. Temir yo'l/suv — $500, avtomobil va piyoda — $300.</div>
+      </div>
+    </div>
+
+    <h3>«Yashil», «sariq», «qizil» yo'laklar</h3>
+    <p style="font-size:14.5px;margin-top:0">2025-yil 6-noyabrdagi VM 700-son qarori bilan pochta va kuryerlik jo'natmalari <b>xavfni boshqarish tizimi</b> orqali uch yo'lakka ajratiladi:</p>
+    <div class="grid g3">
+      <div class="card tight" style="border-left:4px solid var(--green)">
+        <b style="color:var(--green)">🟢 Yashil</b>
+        <div class="mini" style="margin-top:5px">Hujjatlar to'g'ri, risk past. Jismoniy tekshiruvsiz o'tadi — eng tez.</div>
+      </div>
+      <div class="card tight" style="border-left:4px solid var(--amber)">
+        <b style="color:var(--amber)">🟡 Sariq</b>
+        <div class="mini" style="margin-top:5px">Hujjatlar tekshiriladi: invoys, chek, qiymat asoslanishi so'ralishi mumkin.</div>
+      </div>
+      <div class="card tight" style="border-left:4px solid var(--red)">
+        <b style="color:var(--red)">🔴 Qizil</b>
+        <div class="mini" style="margin-top:5px">Jo'natma ochib ko'riladi. Taqiq/cheklov, noaniq qiymat yoki tijorat belgisi bo'lsa.</div>
+      </div>
+    </div>
+
+    <h3>my.gov.uz orqali tasdiqlash</h3>
+    <p style="font-size:14.5px;margin-top:0">2026-yil may oyidan sizning nomingizga kelayotgan har bir xalqaro kuryerlik jo'natmasi <b>my.gov.uz</b> shaxsiy kabinetingizga push-xabar sifatida tushadi.</p>
+    <ol style="font-size:14.5px">
+      <li><b>my.gov.uz</b> → «Bojxona» bo'limi</li>
+      <li>«Xalqaro kuryerlik jo'natmasi to'g'risidagi xabarnomani tasdiqlash yoki rad etish» xizmati</li>
+      <li>Jo'natma nomi, qiymati, vazni ko'rsatiladi — tekshiring</li>
+      <li><b>Tasdiqlash</b> yoki <b>Rad etish</b></li>
+    </ol>
+    <div class="note dang">
+      <span class="ic">🚨</span>
+      <div><b>Faqat o'zingizniki bo'lgan jo'natmani tasdiqlang.</b> Notanish jo'natmani tasdiqlasangiz, u sizning oylik normangizni «yeydi» va kelajakda soliq/bojxona muammosiga aylanishi mumkin. Xizmat 24/7 ishlaydi.</div>
+    </div>
+
+      
+    <div class="note info">
+      <span class="ic">📦</span>
+      <div><b>eIS va O'zbekiston normasi.</b> eBay International Shipping checkout'da «Import charges» olgan bo'lsa ham, jo'natma O'zbekistonda sizning JShShIR raqamingiz bo'yicha ro'yxatga olinadi va oylik <b>$200</b> normangizdan hisoblanadi. my.gov.uz'dagi xabarnomani e'tiborsiz qoldirmang.</div>
+    </div>
+    <div class="note warn">
+      <span class="ic">🔩</span>
+      <div><b>Ehtiyot qismlar bo'yicha:</b> avtomobil, telefon va texnika qismlari erkin olib kiriladi, lekin bir xil qismdan ko'p dona bo'lsa tijorat partiyasi deb baholanadi. Ishlatilgan qismning qiymatini asoslash uchun eBay buyurtma sahifasi skrinshoti va to'lov ko'chirmasini saqlang.</div>
+    </div>
+
+      <h3>Taqiq va cheklovlar tekshiruvi</h3>
+      <div class="search-box">
+        <span class="ic">🔍</span>
+        <input type="text" id="banq" placeholder="Tovar nomini yozing: dron, dori, batareya..." oninput="renderBan()">
+      </div>
+      <div class="chips" id="banchips"></div>
+      <div id="banlist"></div>
+      <div class="note warn">
+        <span class="ic">⚖️</span>
+        <div>Bu ro'yxat — <b>yo'naltiruvchi</b>. Yakuniy qaror bojxona organi tomonidan aniq tovar, uning tavsifi va hujjatlari asosida qabul qilinadi.</div>
+      </div></section><section class="panel" id="p-cargo">
+      <h2>Yetkazish variantlari</h2>
+      <p class="sub">eBay lotlarini O'zbekistonga olib keluvchi yo'llar va xizmatlar.</p>
+      <div class="chips" id="cargochips"></div>
+      <div class="tblwrap">
+        <table>
+          <thead><tr><th>Kompaniya</th><th>Yo'nalish</th><th>Narx</th><th>Muddat</th><th>Xususiyati</th></tr></thead>
+          <tbody id="cargobody"></tbody>
+        </table>
+      </div>
+      
+<div class="note warn">
+  <span class="ic">📮</span>
+  <div><b>Arzon xalqaro pochta haqida ogohlantirish:</b> ba'zi sotuvchilar «Economy International Shipping» bilan yuboradi — bu ko'pincha trek raqamisiz oddiy pochta. Bunday jo'natma 40–60 kun ketishi yoki umuman yo'qolishi mumkin. Qimmat lotlarda <b>faqat trek raqamli</b> yetkazishni tanlang.</div>
+</div>
+</section><section class="panel" id="p-safety"><h2>Xavfsizlik, autentifikatsiya va nizo</h2><p class="sub">eBay — ochiq bozor. Himoya mexanizmlarini bilish bu yerda pul saqlaydi.</p>
+<h3>🛡️ eBay Money Back Guarantee</h3>
+<div class="card">
+  <p style="margin-top:0;font-size:14.5px">Har qanday eBay'da to'langan xarid avtomatik himoyalanadi. Qoplanadigan holatlar:</p>
+  <ul class="tick" style="margin:0">
+    <li>Tovar umuman kelmadi</li>
+    <li>Tovar tavsifga mos emas (boshqa model, holat, komplektatsiya)</li>
+    <li>Tovar shikastlangan holda keldi</li>
+    <li>Soxta (kontrafakt) chiqdi</li>
+  </ul>
+  <p class="mini" style="margin-bottom:0"><b>Shart:</b> to'lov eBay orqali amalga oshirilgan bo'lishi kerak va ariza <b>30 kun</b> ichida ochilishi kerak.</p>
+</div>
+
+<h3>✅ Authenticity Guarantee</h3>
+<p style="font-size:14.5px;margin-top:0">Ba'zi kategoriyalarda eBay tovarni <b>sizga yuborishdan oldin</b> mustaqil ekspertlarga tekshirtiradi. Sotuvchi tovarni avval autentifikatsiya markaziga jo'natadi, u yerda jismoniy ko'rikdan o'tkaziladi (odatda 2 ish kuni), so'ng sizga jo'natiladi.</p>
+<div class="tblwrap"><table><thead><tr><th>Kategoriya</th><th>Izoh</th></tr></thead><tbody>
+<tr><td><b>Krossovka</b></td><td>Autentifikatsiyadan keyin qo'shimcha yetkazish yig'imi bo'lishi mumkin</td></tr>
+<tr><td><b>Qo'l soatlari</b></td><td>Yuqori narx segmentida avtomatik; $500–$1999 oralig'ida ixtiyoriy (haq evaziga)</td></tr>
+<tr><td><b>Sumka va aksessuarlar</b></td><td>$200–$499 oralig'ida ixtiyoriy (haq evaziga)</td></tr>
+<tr><td><b>Zargarlik buyumlari</b></td><td>$200–$499 oralig'ida ixtiyoriy (haq evaziga)</td></tr>
+<tr><td><b>Kiyim</b></td><td>Tanlangan brendlar</td></tr>
+<tr><td><b>Kolleksiya kartochkalari</b></td><td>Baholash va kapsulaga joylash bilan</td></tr>
+</tbody></table></div>
+<div class="note warn"><span class="ic">🌍</span><div><b>Muhim cheklov:</b> Authenticity Guarantee faqat <b>ebay.com</b> da to'lov qilinganda va dastur qo'llab-quvvatlanadigan yetkazish manzillarida ishlaydi. Mintaqaviy saytlarda (ebay.de, ebay.fr) amal qilmaydi. Brendli tovar olayotgan bo'lsangiz, listing'da <b>«Authenticity Guarantee»</b> yashil belgisini qidiring.</div></div>
+
+<h3>🚩 Firibgarlik belgilari</h3>
+<div class="grid g2">
+  <div class="card tight"><b style="color:var(--red)">Darhol chetlab o'ting</b>
+    <ul style="margin:6px 0 0;padding-left:18px;font-size:14px">
+      <li>Narx bozor narxidan 3–5 barobar past</li>
+      <li>Sotuvchi eBay'dan tashqarida to'lashni so'raydi</li>
+      <li>Yangi akkaunt (0–5 feedback) + qimmat elektronika</li>
+      <li>Rasm internetdan olingan (Google rasm qidiruvida tekshiring)</li>
+      <li>Tavsif juda umumiy yoki boshqa tildan mashina tarjimasi</li>
+      <li>«Faqat naqd», «shoshilinch», «boshqa xaridor kutmoqda» bosimi</li>
+    </ul>
+  </div>
+  <div class="card tight"><b style="color:var(--green)">Yaxshi belgilar</b>
+    <ul class="tick" style="margin:6px 0 0">
+      <li>Feedback 98%+ va 100+ baho</li>
+      <li>«Top Rated Plus» belgisi</li>
+      <li>Sotuvchining o'z fotosuratlari, turli raqurslardan</li>
+      <li>Batafsil tavsif, nuqsonlar ochiq yozilgan</li>
+      <li>«30 day returns» qabul qilinadi</li>
+      <li>Savolga tez va aniq javob beradi</li>
+    </ul>
+  </div>
+</div>
+
+<h3>💬 Sotuvchi bilan bog'lanish</h3>
+<p style="font-size:14.5px">Listing'dagi <b>«Contact seller»</b> orqali savol bering. Foydali savollar:</p>
+<ul style="font-size:14px">
+<li><i>«Does this item work perfectly? Any defects I should know about?»</i></li>
+<li><i>«Can you send additional photos of the [aniq qism]?»</i></li>
+<li><i>«Will you ship to a freight forwarder address in Delaware?»</i></li>
+<li><i>«What is the exact model / part number?»</i></li>
+</ul>
+<div class="note info"><span class="ic">📝</span><div>Sotuvchining <b>yozma javobi</b> nizoda dalil bo'ladi. «Ishlaydi» deb yozgan bo'lsa va ishlamasa — bu «not as described» hisoblanadi va siz yutasiz. Shuning uchun muhim savollarni <b>eBay xabar tizimi orqali</b> bering, telefon yoki tashqi messenjerda emas.</div></div>
+</section><section class="panel" id="p-words">
+          <h2>eBay atamalari lug'ati</h2>
+          <p class="sub">Listing va buyurtma jarayonida uchraydigan inglizcha atamalar.</p>
+          <div class="search-box">
+            <span class="ic">🔍</span>
+            <input type="text" id="wq" placeholder="O'zbekcha yoki asl tilda qidiring..." oninput="renderWords()">
+          </div>
+          <div class="chips" id="wchips"></div>
+          <div id="wlist"></div>
+          
+<div class="note info"><span class="ic">✉️</span><div><b>Sotuvchiga yozish uchun tayyor ibora:</b> <i>«Hello! Before I buy — does this item work perfectly, and are there any defects not shown in the photos? Also, can you ship to a freight forwarder address in the US? Thank you!»</i></div></div>
+</section><section class="panel" id="p-faq">
+      <h2>Ko'p beriladigan savollar</h2>
+      <p class="sub">Amaliyotda eng ko'p uchraydigan 16 ta savol.</p>
+      <div id="faqlist"></div></section><section class="panel" id="p-check">
+      <h2>Nazorat ro'yxati</h2>
+      <p class="sub">Buyurtma berishdan oldin va keyin — hech narsani unutmaslik uchun.</p>
+      <div id="chklist"></div>
+      <div class="note info" style="margin-top:16px">
+        <span class="ic">💾</span>
+        <div>Belgilar sahifa yangilanganda tozalanadi. Web appga joylashtirganda ularni foydalanuvchi profiliga saqlashni qo'shsangiz — qulayroq bo'ladi.</div>
+      </div></section>
+  <div class="foot">
+    Ma'lumotlar 2026-yil avgust holatiga. Bojxona normalari, tariflar va platforma qoidalari o'zgarishi mumkin —<br>
+    muhim qarorlardan oldin <b>customs.uz</b> va tanlagan xizmatning rasmiy manbasini tekshiring.
+  </div>
+</div>
+<script>
+const TABS=[{"id": "p-start", "t": "Boshlash"}, {"id": "p-steps", "t": "Bosqichlar"}, {"id": "p-calc", "t": "Kalkulyator"}, {"id": "p-customs", "t": "Bojxona"}, {"id": "p-cargo", "t": "Yetkazish"}, {"id": "p-safety", "t": "Xavfsizlik"}, {"id": "p-words", "t": "Atamalar"}, {"id": "p-faq", "t": "FAQ"}, {"id": "p-check", "t": "Checklist"}];
+const STEPS=[{"t": "Yo'lni tanlang", "m": "10 daqiqa", "b": "\n<p>eBay'da har bir listing o'z yetkazish qoidasiga ega. Shuning uchun yo'l tovarga qarab o'zgaradi.</p>\n<ol>\n<li><b>Avval to'g'ridan-to'g'ri variantni tekshiring.</b> Mahsulot sahifasida «Shipping» bo'limida yetkazish davlati sifatida <b>Uzbekistan</b> ni tanlang. Narx va muddat chiqsa — hammasi joyida.</li>\n<li><b>Chiqmasa — forwarder.</b> AQSh yoki Yevropa manzili olib, sotuvchining ichki yetkazishidan foydalanasiz.</li>\n<li>Forwarder tanlashda <b>soliqsiz shtat</b>ni (Delaware, Oregon, New Hampshire, Montana) so'rang — AQSh sotuvchilari sales tax undiradi.</li>\n</ol>\n<div class=\"note ok\"><span class=\"ic\">🧭</span><div><b>Qoida:</b> qimmat, mo'rt yoki nizoga sabab bo'lishi mumkin bo'lgan tovarni <b>eIS orqali</b> oling — eBay kafolati to'liq ishlaydi. Arzon, oddiy va og'irroq tovarni <b>forwarder</b> orqali — arzonroq tushadi.</div></div>\n"}, {"t": "eBay akkaunti yarating", "m": "5 daqiqa", "b": "\n<ol>\n<li><b>ebay.com</b> → «Sign in» → «Create account» → <b>Personal account</b>.</li>\n<li>Ism, email, parol kiriting va emailni tasdiqlang.</li>\n<li>Telefon raqamini biriktiring (<b>+998</b> ishlaydi) — bu akkaunt xavfsizligi va nizolar uchun kerak.</li>\n<li>Ikki bosqichli tasdiqni (2FA) yoqing.</li>\n</ol>\n<div class=\"note warn\"><span class=\"ic\">🌐</span><div><b>Qaysi domen?</b> <span class=\"kbd\">ebay.com</span> (AQSh) — eng katta katalog. <span class=\"kbd\">ebay.co.uk</span>, <span class=\"kbd\">ebay.de</span> — Yevropa sotuvchilari, ba'zan yetkazish arzonroq. Muhim: <b>Authenticity Guarantee</b> faqat ebay.com da to'lov qilinganda ishlaydi.</div></div>\n<div class=\"note info\"><span class=\"ic\">🔐</span><div>Akkaunt yangi bo'lsa, eBay birinchi kunlarda katta summali xaridlarni cheklashi mumkin. Kichik lotdan boshlab, ijobiy feedback yig'ing.</div></div>\n"}, {"t": "Manzilni qo'shing", "m": "5 daqiqa", "b": "\n<ol>\n<li><span class=\"kbd\">My eBay → Account settings → Addresses → Add address</span></li>\n<li>To'g'ridan-to'g'ri yetkazish bo'lsa — <b>O'zbekiston manzilingizni</b> kiriting: viloyat, shahar, ko'cha, uy, indeks, telefon.</li>\n<li>Forwarder orqali bo'lsa — <b>AQSh/Yevropa manzili</b>, <b>Address line 2</b> maydoniga suite/ID kodini yozing.</li>\n<li>Saqlab, asosiy manzil qilib belgilang.</li>\n</ol>\n<div class=\"note dang\"><span class=\"ic\">⚠️</span><div>eBay manzilni tasdiqlashga urinsa, <b>«Use as entered»</b> ni tanlang. Avtomatik «tuzatilgan» manzilda suite raqami yo'qoladi.</div></div>\n<div class=\"note info\"><span class=\"ic\">📮</span><div>O'zbekiston manzilini <b>lotin harflarida</b> yozing va indeksni to'g'ri ko'rsating. Toshkent uchun indekslar 100000–100200 oralig'ida.</div></div>\n"}, {"t": "Qidiruv san'ati", "m": "15–40 daqiqa", "b": "\n<p>eBay qidiruvi Google'ga o'xshab operatorlarni tushunadi. Bu noyob tovar izlashda hal qiluvchi.</p>\n<div class=\"tblwrap\"><table><thead><tr><th>Operator</th><th>Misol</th><th>Nima qiladi</th></tr></thead><tbody>\n<tr><td><b>\"iboralar\"</b></td><td><span class=\"kbd\">\"canon 50mm 1.8\"</span></td><td>Aynan shu ketma-ketlikni qidiradi</td></tr>\n<tr><td><b>-so'z</b></td><td><span class=\"kbd\">iphone 13 -case -screen</span></td><td>«case» va «screen» so'zlarini chiqarib tashlaydi</td></tr>\n<tr><td><b>(a,b)</b></td><td><span class=\"kbd\">(canon,nikon) lens</span></td><td>Ikkalasidan birini qidiradi</td></tr>\n<tr><td><b>*</b></td><td><span class=\"kbd\">nikon*</span></td><td>So'z boshi bo'yicha qidiruv</td></tr>\n</tbody></table></div>\n<h4>Muhim filtrlar</h4>\n<ul>\n<li><b>Condition</b> — New / Open box / Certified refurbished / Seller refurbished / Used / For parts.</li>\n<li><b>Buying format</b> — Auction / Buy It Now / Accepts Offers.</li>\n<li><b>Item location</b> va <b>Shipping to</b> — bu ikkalasi kombinatsiyasi eng muhim filtr.</li>\n<li><b>Sold Items</b> — <b>narx tadqiqoti uchun asosiy vosita</b>. Filtrlar pastida «Sold Items» ni yoqsangiz, shu tovar <b>aslida qanchaga sotilgani</b>ni ko'rasiz. So'ralayotgan narx emas — real bozor narxi.</li>\n<li><b>Time: ending soonest</b> — tugayotgan auksionlar.</li>\n</ul>\n<div class=\"note ok\"><span class=\"ic\">📊</span><div><b>«Sold Items» — eBay'ning eng kuchli funksiyasi.</b> Har qanday tovarni sotib olishdan oldin shu filtrni yoqing va oxirgi 90 kunda u qanchaga sotilganini ko'ring. Bu sizga aniq bozor narxini beradi va ortiqcha to'lashdan saqlaydi.</div></div>\n"}, {"t": "Listing'ni to'g'ri o'qing", "m": "10 daqiqa", "b": "\n<h4>Holat (Condition) — eng muhim maydon</h4>\n<div class=\"tblwrap\"><table class=\"narrow\"><tbody>\n<tr><td><b>New</b></td><td>Yangi, ochilmagan, original qadoqda</td></tr>\n<tr><td><b>New (other)</b></td><td>Yangi, lekin qadoq ochilgan yoki yo'q</td></tr>\n<tr><td><b>Open box</b></td><td>Qutisi ochilgan, ishlatilmagan</td></tr>\n<tr><td><b>Certified Refurbished</b></td><td>Ishlab chiqaruvchi tiklagan, kafolat bilan — eng ishonchli «ikkilamchi» holat</td></tr>\n<tr><td><b>Seller refurbished</b></td><td>Sotuvchi o'zi tiklagan — sifat noma'lum</td></tr>\n<tr><td><b>Used</b></td><td>Ishlatilgan; tavsif va rasmlarni diqqat bilan o'qing</td></tr>\n<tr><td><b>For parts or not working</b></td><td><b>Ishlamaydi.</b> Faqat ehtiyot qism uchun. Ko'p xaridor shu yerda adashadi.</td></tr>\n</tbody></table></div>\n<h4>Tekshirish ro'yxati</h4>\n<ul class=\"tick\">\n<li><b>Item specifics</b> — model, MPN (ishlab chiqaruvchi qism raqami), moslik ro'yxati</li>\n<li><b>Rasmlar</b> — sotuvchining <b>o'z</b> rasmlarimi yoki katalog rasmi? Ishlatilgan tovarda faqat o'z rasmlari qabul qilinadi</li>\n<li><b>Returns accepted?</b> — «30 day returns» yaxshi, «No returns» xavfli</li>\n<li><b>Shipping</b> — narx, muddat, «Ships to» ro'yxati</li>\n<li><b>Item location</b> — tovar qayerda? Xitoydan bo'lsa, Taobao'da arzonroq bo'lishi mumkin</li>\n<li><b>Quantity available</b> — 1 dona bo'lsa bu noyob lot, ko'p bo'lsa oddiy do'kon</li>\n</ul>\n<div class=\"note dang\"><span class=\"ic\">🔍</span><div><b>«For parts or not working»</b> yozuvini o'qimaslik — eBay'dagi eng qimmat xato. Bunday lotlar bozor narxidan ancha arzon ko'rinadi, chunki ular <b>ishlamaydi</b>.</div></div>\n"}, {"t": "Sotuvchini tekshiring", "m": "5 daqiqa", "b": "\n<ul>\n<li><b>Feedback foizi</b> — 98% dan yuqori bo'lsin. 95% dan past — jiddiy signal.</li>\n<li><b>Feedback soni</b> — 100+ yaxshi. 0–5 bo'lsa, faqat arzon lotlarda tavakkal qiling.</li>\n<li><b>«Top Rated Seller» / «Top Rated Plus»</b> — eBay'ning sifat belgisi: tez jo'natish, qaytarish qabul qilish, kam nizo.</li>\n<li><b>Sotuvchi profili</b> → <b>Feedback</b> → salbiy va neytral izohlarni o'qing. «Item not as described» takrorlansa — chetlab o'ting.</li>\n<li><b>Ro'yxatdan o'tgan sana</b> va <b>joylashuvi</b> — yangi akkaunt + juda past narx = klassik firibgarlik sxemasi.</li>\n<li><b>Sotuvchining boshqa lotlari</b> — bir xil «noyob» tovar 50 dona bo'lsa, bu shubhali.</li>\n</ul>\n<div class=\"note dang\"><span class=\"ic\">🚩</span><div><b>Firibgarlik belgilari:</b> narx bozor narxidan 3–5 barobar past; sotuvchi eBay'dan tashqarida to'lashni so'raydi (email, bank o'tkazmasi, kripto); tavsif juda umumiy va rasm internetdan olingan; «yangi akkaunt + qimmat elektronika» kombinatsiyasi. <b>Hech qachon eBay'dan tashqarida to'lamang</b> — bunda Money Back Guarantee ishlamaydi.</div></div>\n"}, {"t": "Auksionda to'g'ri stavka qo'yish", "m": "5 daqiqa", "b": "\n<p>eBay auksioni <b>proksi-stavka</b> tizimida ishlaydi: siz maksimal narxingizni kiritasiz, tizim esa raqobatchidan bir qadam yuqori stavkani avtomatik qo'yadi.</p>\n<h4>To'g'ri strategiya</h4>\n<ol>\n<li><b>«Sold Items» orqali real bozor narxini aniqlang.</b> Bu sizning yuqori chegarangiz.</li>\n<li>Yetkazish, boj va forwarder xarajatini <b>qo'shib</b> hisoblang — jami narx bozor narxidan past bo'lsin.</li>\n<li>Maksimal stavkangizni <b>o'sha chegarada</b> belgilang va oshirmang.</li>\n<li>Stavkani <b>oxirgi 10–20 soniyada</b> qo'ying («sniping»). Erta stavka narxni ko'taradi va raqobatchilarni jalb qiladi.</li>\n<li>Notekis raqam ishlating: $52.37 kabi. Ko'pchilik yumaloq raqam qo'yadi — 37 sent sizni yutuqqa olib chiqishi mumkin.</li>\n</ol>\n<div class=\"note warn\"><span class=\"ic\">⏱️</span><div><b>Auksion tugash vaqti</b> AQSh vaqtida bo'ladi. Toshkent bilan farqni hisoblang — eng qizg'in auksionlar AQSh kechqurunida (Toshkentda erta tong) tugaydi. Telefonga eslatma qo'ying yoki sniping xizmatidan foydalaning.</div></div>\n<div class=\"note ok\"><span class=\"ic\">🤝</span><div><b>Best Offer</b> — kam baholanadigan imkoniyat. «Make Offer» tugmasi bo'lsa, so'ralgan narxdan 15–25% past taklif qiling va qisqa xushmuomala izoh qoldiring. Sotuvchilarning katta qismi qabul qiladi yoki qarshi taklif beradi.</div></div>\n"}, {"t": "To'lov va import to'lovlari", "m": "10 daqiqa", "b": "\n<p>eBay to'lovlarni o'zi boshqaradi (managed payments). Qabul qilinadigan usullar:</p>\n<ul>\n<li><b>Xalqaro Visa / Mastercard / American Express</b> — asosiy usul</li>\n<li><b>PayPal</b> — mavjud bo'lsa, qo'shimcha himoya beradi</li>\n<li><b>Google Pay / Apple Pay</b> — qurilmangizga bog'langan karta orqali</li>\n<li><b>eBay Gift Card</b> — faqat rasmiy manbadan</li>\n</ul>\n<h4>Import charges (eIS orqali olsangiz)</h4>\n<p>eIS orqali xarid qilganda checkout'da <b>«Import charges»</b> qatori chiqadi. Bu eBay hisoblagan bojxona va soliq depoziti — u oldindan to'lanadi va yetkazishda qo'shimcha so'ralmaydi.</p>\n<div class=\"note warn\"><span class=\"ic\">🇺🇿</span><div><b>Muhim nuance:</b> eBay import to'lovini oldindan olgan bo'lsa ham, jo'natma O'zbekistonda <b>sizning JShShIR raqamingiz</b> bo'yicha ro'yxatga olinadi va <b>oylik $200 normangizdan</b> hisoblanadi. my.gov.uz'da xabarnoma ko'rinsa — tekshirib tasdiqlang. Ba'zi hollarda mahalliy bojxona qo'shimcha to'lov talab qilishi mumkin; bu holda eBay bilan bog'lanib, to'lovni qaytarishni so'rashingiz mumkin.</div></div>\n<div class=\"note dang\"><span class=\"ic\">🛑</span><div><b>Hech qachon</b> sotuvchi bilan eBay'dan tashqarida kelishmang. To'lovni bank o'tkazmasi, Western Union yoki kripto orqali so'rasa — bu 100% firibgarlik va eBay himoyasi ishlamaydi.</div></div>\n"}, {"t": "Kuzatuv", "m": "7–20 kun", "b": "\n<ol>\n<li><span class=\"kbd\">My eBay → Purchases → Track package</span></li>\n<li><b>eIS orqali:</b> ikkita trek raqami bo'ladi — birinchisi sotuvchidan eBay markaziga, ikkinchisi markazdan sizga.</li>\n<li><b>Forwarder orqali:</b> sotuvchi trek raqamini beradi; uni forwarder kabinetiga kiriting, tovar nomi va real qiymati bilan.</li>\n<li><b>Invoys:</b> <span class=\"kbd\">Purchases → View order details → Print</span> — buyurtma tafsilotlari PDF/skrinshotini saqlang.</li>\n</ol>\n<div class=\"note info\"><span class=\"ic\">📅</span><div><b>«Estimated delivery» sanasini eslab qoling.</b> eBay Money Back Guarantee bo'yicha, tovar shu sanadan keyin ham kelmasa, siz «I didn't receive it» arizasini ochishingiz mumkin. Bu muddatni o'tkazib yubormang.</div></div>\n"}, {"t": "Bojxona", "m": "1–5 kun", "b": "\n<ol>\n<li><b>my.gov.uz</b>ga xabarnoma keladi → «Bojxona» bo'limi → tekshirib <b>Tasdiqlang</b>.</li>\n<li>Oylik norma ($200) ichida bo'lsa — boj yo'q.</li>\n<li>Oshgan bo'lsa — ortiqcha summadan <b>30%</b> (min $3/kg).</li>\n</ol>\n<div class=\"note warn\"><span class=\"ic\">🔧</span><div><b>Ishlatilgan tovar va ehtiyot qismlarga xos nuqta:</b> bojxona qiymatni sotib olish narxi bo'yicha qabul qiladi, lekin narx bozor narxidan keskin past bo'lsa (masalan, $400 lik obyektiv $60 ga), qiymatni asoslash so'ralishi mumkin. eBay buyurtma sahifasi skrinshoti va to'lov ko'chirmasi shu uchun kerak.</div></div>\n\n    <h3>📱 Telefon buyurtma qilsangiz — UzIMEI</h3>\n    <div class=\"card\">\n      <p style=\"margin-top:0;font-size:14.5px\">Chetdan kelgan telefon O'zbekiston tarmog'ida ishlashi uchun <b>UzIMEI</b> tizimida ro'yxatdan o'tishi shart. Aks holda telefon <b>30 kundan keyin tarmoqdan uziladi</b>.</p>\n      <div class=\"tblwrap\">\n        <table class=\"narrow\"><tbody>\n          <tr><td>Tarmoqqa ulangandan keyin <b>30 kun ichida</b></td><td><b>88 000 so'm</b> (BHMning 20%)</td></tr>\n          <tr><td>30 kundan <b>keyin</b></td><td><b>110 000 so'm</b> (BHMning 25%)</td></tr>\n          <tr><td>Xorij SIM-kartasi bilan (rezident emas)</td><td><b>Bepul</b></td></tr>\n        </tbody></table>\n      </div>\n      <p class=\"mini\" style=\"margin-bottom:0\">Ikki SIM-slotli telefonda <b>har bir IMEI alohida</b> kiritiladi — <span class=\"kbd\">*#06#</span> terib ko'ring. Deklaratsiya va UzIMEI ro'yxati — <b>ikki alohida jarayon</b>.</p>\n    </div>\n"}, {"t": "Qabul qilish va tekshirish", "m": "20 daqiqa", "b": "\n<ol>\n<li>Filialda <b>pasport</b> bilan oling.</li>\n<li>Qutini <b>joyida oching</b> va <b>ochish jarayonini videoga oling</b> — ishlatilgan tovarlarda bu ayniqsa muhim.</li>\n<li>Tovarni tavsif bilan solishtiring: model, seriya raqami, komplektatsiya, ko'rinish holati.</li>\n<li>Elektronika bo'lsa — darhol yoqib, barcha funksiyalarni sinang.</li>\n<li>Hammasi joyida bo'lsa — sotuvchiga <b>ijobiy feedback</b> qoldiring.</li>\n</ol>\n<div class=\"note ok\"><span class=\"ic\">⭐</span><div>eBay'da feedback tizimi ikki tomonlama ishlaydi. Sizning ijobiy reytingingiz kelajakda sotuvchilar bilan muomalani osonlashtiradi va ba'zi sotuvchilar past reytingli xaridorlarga sotmaydi.</div></div>\n"}, {"t": "Muammo chiqsa — Money Back Guarantee", "m": "kerak bo'lsa", "b": "\n<p>eBay xaridorni himoya qiladigan eng kuchli tizimlardan biriga ega. Lekin <b>muddat</b> hal qiluvchi.</p>\n<div class=\"tblwrap\"><table class=\"narrow\"><tbody>\n<tr><td><b>Muddat</b></td><td>Tovar yetkazilgan yoki «yetkazilishi kutilgan» sanadan <b>30 kun</b>.</td></tr>\n<tr><td><b>Qanday ochiladi</b></td><td><span class=\"kbd\">Purchases → «Return this item»</span> yoki <span class=\"kbd\">«I didn't receive it»</span></td></tr>\n<tr><td><b>Nimalar qoplanadi</b></td><td>Tovar kelmadi; tavsifga mos emas; shikastlangan; soxta chiqdi.</td></tr>\n<tr><td><b>Nimalar qoplanmaydi</b></td><td>Fikringiz o'zgardi (sotuvchi «no returns» qo'ygan bo'lsa); eBay'dan tashqarida to'lov; taqiqlangan tovar.</td></tr>\n<tr><td><b>Jarayon</b></td><td>Avval sotuvchi 3 kun ichida javob berishi kerak. Javob bo'lmasa yoki kelishilmasa — <b>«Ask eBay to step in»</b>. eBay odatda 48 soatda qaror qiladi.</td></tr>\n</tbody></table></div>\n<div class=\"note dang\"><span class=\"ic\">⏰</span><div><b>30 kunlik muddat forwarder orqali olganda tez tugaydi:</b> u tovar <b>AQSh manziliga</b> yetkazilgan kundan boshlanadi. O'zbekistonga yetguncha 2–3 hafta ketadi. Shuning uchun <b>foto-hisobot</b> xizmati — qimmat lotlarda majburiy: muammoni omborda aniqlab, muddat ichida ariza ochasiz.</div></div>\n<div class=\"note info\"><span class=\"ic\">📸</span><div>Ariza ochganda <b>fotosurat va video</b> biriktiring. eBay qarorlari deyarli har doim dalilga asoslanadi — dalili borroq tomon yutadi.</div></div>\n"}];
+const CALC={"curDefault": "usd", "airRate": 12, "roadRate": 9.5, "taxLabel": "Sales tax / import"};
+const BAN=[{"n": "Narkotik moddalar, prekursorlar", "s": "r", "c": "taqiq", "d": "Mutlaq taqiq. Jinoiy javobgarlik."}, {"n": "Qurol, o'q-dorilar va ularning qismlari", "s": "r", "c": "taqiq", "d": "Pnevmatik va gaz qurollari, elektroshoker, kastet, butterfly-pichoq ham kiradi."}, {"n": "Maxsus texnik vositalar (yashirin kamera, GPS-mayoq, signal skaneri)", "s": "r", "c": "taqiq", "d": "Ko'zoynak/soat/tugma shaklidagi kamera, telefon eshituvchi qurilmalar — jinoiy javobgarlik."}, {"n": "Signal glushitel (jammer)", "s": "r", "c": "taqiq", "d": "GSM/GPS/Wi-Fi glushitellar olib kirish taqiqlangan."}, {"n": "Elektron sigaret, vape, snus, nasvay", "s": "r", "c": "taqiq", "d": "O'zbekistonda savdosi va olib kirilishi cheklangan. Jo'natma ushlab qolinadi."}, {"n": "Tamaki mahsulotlari va alkogol", "s": "r", "c": "taqiq", "d": "Pochta va kuryerlik jo'natmalari orqali olib kirish taqiqlangan."}, {"n": "Portlovchi, oson yonuvchi, radioaktiv moddalar", "s": "r", "c": "taqiq", "d": "Petarda, feyerverk, gaz ballonchalari ham."}, {"n": "Pornografik materiallar", "s": "r", "c": "taqiq", "d": "Har qanday ko'rinishda — bosma, raqamli, buyum."}, {"n": "Ekstremistik va diniy targ'ibot materiallari", "s": "r", "c": "taqiq", "d": "Ekspertizasiz diniy adabiyot ham ushlab qolinadi."}, {"n": "Kontrafakt / brend nusxalari (replika)", "s": "r", "c": "taqiq", "d": "Intellektual mulk huquqi buzilishi. Tovar ushlab qolinadi va yo'q qilinishi mumkin."}, {"n": "Yovvoyi hayvon va o'simliklar (CITES ro'yxati)", "s": "r", "c": "taqiq", "d": "Suyak, teri, tishlar, ekzotik o'simliklar."}, {"n": "Soxta pul, hujjat, davlat ramzlari", "s": "r", "c": "taqiq", "d": "Suvenir «pul» ham muammo tug'diradi."}, {"n": "Dori vositalari", "s": "a", "c": "ruxsat", "d": "Farmatsevtika agentligi ruxsati kerak. Retseptli dorilar — jiddiy cheklov."}, {"n": "Biologik faol qo'shimchalar (BFQ), sport ozuqasi, protein", "s": "a", "c": "ruxsat", "d": "Miqdor chegarasi: 10 quti yoki 0.5 kg gacha (2025-yil 20-iyuldan). Undan ortig'i uchun ruxsat kerak."}, {"n": "Atir-upa (parfyumeriya)", "s": "a", "c": "cheklov", "d": "300 ml gacha. Avia bilan yonuvchi suyuqlik sifatida cheklanadi — avto yo'nalishini tanlang."}, {"n": "Mobil telefon", "s": "a", "c": "ruxsat", "d": "Deklaratsiya + UzIMEI ro'yxatidan o'tkazish shart. Aks holda 30 kundan keyin tarmoqdan uziladi."}, {"n": "Dron, kvadrokopter", "s": "a", "c": "ruxsat", "d": "Vazniga qarab ro'yxatdan o'tkazish va uchirish ruxsati talab qilinadi."}, {"n": "Radiostansiya, ratsiya, signal kuchaytirgich (repeater)", "s": "a", "c": "ruxsat", "d": "Radiochastota agentligi ruxsati kerak."}, {"n": "Sun'iy yo'ldosh aloqasi qurilmalari (Starlink, sputnik telefon)", "s": "a", "c": "ruxsat", "d": "Alohida ruxsatsiz olib kirilmaydi."}, {"n": "O'simlik urug'lari, ko'chat, tuproq", "s": "a", "c": "ruxsat", "d": "Fitosanitar (karantin) sertifikati talab qilinadi."}, {"n": "Oziq-ovqat mahsulotlari, ozuqa qo'shimchalari", "s": "a", "c": "cheklov", "d": "Sanitariya-epidemiologik xulosa kerak bo'lishi mumkin. Kichik miqdor odatda o'tadi."}, {"n": "Hayvonlar uchun dori va vaksinalar", "s": "a", "c": "ruxsat", "d": "Veterinariya sertifikati."}, {"n": "Kuchli lazer ko'rsatkichlar", "s": "a", "c": "cheklov", "d": "Yuqori quvvatlilari xavfli buyum sifatida ushlab qolinadi."}, {"n": "Powerbank, litiy batareyalar", "s": "a", "c": "cheklov", "d": "Avia bilan taqiq yoki quvvat chegarasi (odatda 100 Wh gacha). Avto yo'nalishi bilan yuboring."}, {"n": "Aerozol, lak, bo'yoq, yonuvchi suyuqliklar", "s": "a", "c": "cheklov", "d": "Avia bilan qabul qilinmaydi. Ba'zi kargolar avto bilan ham olmaydi."}, {"n": "Kimyoviy reaktivlar, laboratoriya moddalari", "s": "a", "c": "ruxsat", "d": "Ro'yxatga kiritilgan moddalar uchun ruxsat kerak."}, {"n": "Antikvariat, madaniy boyliklar", "s": "a", "c": "ruxsat", "d": "Madaniyat vazirligi ekspertizasi."}, {"n": "Tibbiy asboblar (tonometr, glyukometr, ingalyator)", "s": "a", "c": "cheklov", "d": "Ba'zilari ro'yxatdan o'tkazishni talab qiladi. Uy sharoiti uchun 1 dona odatda muammosiz."}, {"n": "Kripto-mayning uskunalari (ASIC, ferma)", "s": "a", "c": "cheklov", "d": "Alohida hisobga olish va energiya talablari. Jismoniy shaxs nomiga muammoli."}, {"n": "Kiyim-kechak, poyabzal", "s": "g", "c": "erkin", "d": "Shaxsiy ehtiyoj miqdorida erkin. Bir xil tovar ko'p bo'lsa — tijorat deb baholanishi mumkin."}, {"n": "Maishiy elektronika (quloqchin, sichqoncha, klaviatura)", "s": "g", "c": "erkin", "d": "Erkin. Bluetooth qurilmalari sertifikatlangan chastotada ishlaydi."}, {"n": "Kompyuter komplektuvchilari", "s": "g", "c": "erkin", "d": "Videokarta, protsessor, xotira — erkin. Qiymati katta bo'lsa norma oshadi."}, {"n": "Bolalar o'yinchoqlari", "s": "g", "c": "erkin", "d": "Erkin. Kichik magnitli o'yinchoqlarga ba'zan e'tibor beriladi."}, {"n": "Kitob va bosma nashrlar", "s": "g", "c": "erkin", "d": "Diniy va siyosiy mazmundagilaridan tashqari."}, {"n": "Uy-ro'zg'or buyumlari, mebel furniturasi", "s": "g", "c": "erkin", "d": "Erkin. Hajmiy og'irlikka e'tibor bering."}, {"n": "Sport anjomlari", "s": "g", "c": "erkin", "d": "Erkin. Jangovar sport anjomlari qurol sifatida baholanishi mumkin."}, {"n": "Avtoehtiyot qismlar", "s": "g", "c": "erkin", "d": "Erkin, lekin ko'p miqdorda — tijorat partiyasi belgisi."}, {"n": "Kosmetika (dekorativ)", "s": "g", "c": "erkin", "d": "Shaxsiy miqdorda erkin. Suyuq/aerozol shakli — avia cheklovi."}, {"n": "Bijuteriya, aksessuar", "s": "g", "c": "erkin", "d": "Erkin. Qimmatbaho metall/tosh bo'lsa — alohida tartib."}, {"n": "Soat (mexanik, kvarts)", "s": "g", "c": "erkin", "d": "Erkin. Smart-soat — aloqa moduli bo'lsa ham odatda muammosiz."}];
+const CARGO=[{"n": "eBay International Shipping (eIS)", "r": "AQSh, Britaniya, Kanada → O'zbekiston", "p": "Lot va vaznga qarab, checkout'da ko'rinadi", "t": "10–25 kun", "f": "Import to'lovlari oldindan; 2 ta trek raqami; eBay kafolati to'liq", "tag": "direct"}, {"n": "Sotuvchining o'z yetkazishi", "r": "Har xil", "p": "Sotuvchi belgilaydi", "t": "7–40 kun", "f": "«Ships to: Worldwide» listinglarida; trek sifati har xil", "tag": "direct"}, {"n": "Meest Shopping", "r": "AQSh, Angliya, Italiya, Kanada", "p": "€7.7–9.5/kg", "t": "7–20 kun", "f": "eBay uchun alohida yo'nalish sahifasi, Toshkentda ofis", "tag": "us,eu"}, {"n": "Boxette", "r": "AQSh, Turkiya", "p": "$11/kg dan", "t": "3–16 ish kuni", "f": "eBay do'koni sahifasi bor, ekspress tarif", "tag": "us"}, {"n": "Liteship", "r": "AQSh, Buyuk Britaniya, Italiya, Ispaniya, Turkiya", "p": "Economy $9.55 · FastBox $12.37", "t": "4–10 kun", "f": "Ko'p ombor, konsolidatsiya", "tag": "us,eu"}, {"n": "Globbing Uzbekistan", "r": "AQSh, Britaniya, Germaniya, Italiya, Ispaniya", "p": "$12/kg dan", "t": "7–21 kun", "f": "Kuchli ilova, sotib olish yordami", "tag": "us,eu"}, {"n": "Turon Express", "r": "AQSh", "p": "$10/kg", "t": "7–14 kun", "f": "Bepul konsolidatsiya", "tag": "us"}, {"n": "ColisExpat", "r": "Fransiya, Yevropa", "p": "Vaznga qarab", "t": "5–20 kun", "f": "YeI manzili, eBay buyurtmalarini qabul qiladi", "tag": "eu"}, {"n": "UzPost / EMS", "r": "Barcha davlatlar", "p": "Pochta tarifi", "t": "14–45 kun", "f": "Ba'zi sotuvchilar oddiy pochta bilan yuboradi — arzon, lekin trek zaif", "tag": "direct"}];
+const CARGOCATS=[{"k": "all", "t": "Hammasi"}, {"k": "direct", "t": "📮 To'g'ridan"}, {"k": "us", "t": "🇺🇸 AQSh manzili"}, {"k": "eu", "t": "🇪🇺 Yevropa manzili"}];
+const WORDS=[{"k": "New", "u": "Yangi, ochilmagan, original qadoqda", "c": "holat"}, {"k": "New (other)", "u": "Yangi, lekin qadoq ochilgan yoki yo'q", "c": "holat"}, {"k": "Open box", "u": "Qutisi ochilgan, ishlatilmagan", "c": "holat"}, {"k": "Certified Refurbished", "u": "Ishlab chiqaruvchi tiklagan, kafolat bilan", "c": "holat"}, {"k": "Seller refurbished", "u": "Sotuvchi o'zi tiklagan — sifat noma'lum", "c": "holat"}, {"k": "Used", "u": "Ishlatilgan", "c": "holat"}, {"k": "For parts or not working", "u": "ISHLAMAYDI — faqat ehtiyot qism uchun", "c": "holat"}, {"k": "Pre-owned", "u": "Ilgari egasi bo'lgan (ishlatilgan)", "c": "holat"}, {"k": "NIB / NWT", "u": "New In Box / New With Tags — yorlig'i bilan yangi", "c": "holat"}, {"k": "As-is", "u": "Qanday bo'lsa shundayligicha, kafolatsiz", "c": "holat"}, {"k": "Buy It Now", "u": "Belgilangan narxda darhol sotib olish", "c": "savdo"}, {"k": "Auction", "u": "Auksion — vaqt tugaguncha stavka", "c": "savdo"}, {"k": "Best Offer / Make Offer", "u": "O'z narxingizni taklif qilish", "c": "savdo"}, {"k": "Bid", "u": "Stavka", "c": "savdo"}, {"k": "Maximum bid", "u": "Maksimal stavka — tizim shu chegaraga qadar avtomatik oshiradi", "c": "savdo"}, {"k": "Reserve not met", "u": "Sotuvchining minimal narxiga yetilmadi", "c": "savdo"}, {"k": "Outbid", "u": "Sizning stavkangiz ortda qoldi", "c": "savdo"}, {"k": "Ending soonest", "u": "Tez tugaydiganlar bo'yicha saralash", "c": "savdo"}, {"k": "Sold Items", "u": "Sotilgan lotlar filtri — real bozor narxini ko'rsatadi", "c": "savdo"}, {"k": "Watchlist", "u": "Kuzatuv ro'yxati", "c": "savdo"}, {"k": "Item specifics", "u": "Tovar xususiyatlari: model, MPN, moslik", "c": "listing"}, {"k": "MPN", "u": "Ishlab chiqaruvchi qism raqami", "c": "listing"}, {"k": "OEM", "u": "Zavod original qismi (nusxa emas)", "c": "listing"}, {"k": "Aftermarket", "u": "Uchinchi tomon ishlab chiqargan analog", "c": "listing"}, {"k": "Compatible with", "u": "Qaysi modellarga mos keladi", "c": "listing"}, {"k": "Item location", "u": "Tovar qayerda joylashgan", "c": "listing"}, {"k": "Ships to", "u": "Qaysi davlatlarga jo'natadi", "c": "listing"}, {"k": "Quantity available", "u": "Mavjud miqdor", "c": "listing"}, {"k": "Top Rated Plus", "u": "eBay'ning eng yuqori sotuvchi belgisi", "c": "listing"}, {"k": "Authenticity Guarantee", "u": "eBay ekspertlari tekshirgan originallik kafolati", "c": "listing"}, {"k": "Feedback score", "u": "Sotuvchi reytingi (soni va foizi)", "c": "listing"}, {"k": "Add to cart", "u": "Savatga qo'shish", "c": "buyurtma"}, {"k": "Proceed to checkout", "u": "Rasmiylashtirishga o'tish", "c": "buyurtma"}, {"k": "Import charges", "u": "eIS'da oldindan olinadigan bojxona depoziti", "c": "buyurtma"}, {"k": "Estimated delivery", "u": "Taxminiy yetkazish sanasi — muhim, muddatlar shundan sanaladi", "c": "buyurtma"}, {"k": "Purchases", "u": "Xaridlarim", "c": "buyurtma"}, {"k": "View order details", "u": "Buyurtma tafsilotlari — bojxona uchun saqlang", "c": "buyurtma"}, {"k": "Combined shipping", "u": "Bir sotuvchidan bir necha lotni birga jo'natish (arzonroq)", "c": "buyurtma"}, {"k": "Request total", "u": "Bir necha lot uchun umumiy hisob so'rash", "c": "buyurtma"}, {"k": "Money Back Guarantee", "u": "eBay xaridor himoyasi", "c": "muammo"}, {"k": "Return this item", "u": "Tovarni qaytarish arizasi", "c": "muammo"}, {"k": "I didn't receive it", "u": "Tovar kelmadi arizasi", "c": "muammo"}, {"k": "Not as described", "u": "Tavsifga mos emas — eng kuchli asos", "c": "muammo"}, {"k": "Ask eBay to step in", "u": "eBay'ni nizoga aralashtirish", "c": "muammo"}, {"k": "Case", "u": "Nizo (ariza)", "c": "muammo"}, {"k": "Refund", "u": "Pulni qaytarish", "c": "muammo"}, {"k": "Return shipping paid by", "u": "Qaytarish pochtasini kim to'laydi", "c": "muammo"}, {"k": "No returns accepted", "u": "Qaytarish qabul qilinmaydi — ehtiyot bo'ling", "c": "muammo"}, {"k": "Contact seller", "u": "Sotuvchi bilan bog'lanish", "c": "muammo"}, {"k": "Leave feedback", "u": "Baho qoldirish", "c": "muammo"}];
+const WCATS=[{"k": "all", "t": "Hammasi"}, {"k": "holat", "t": "Tovar holati"}, {"k": "savdo", "t": "Sotuv formati"}, {"k": "listing", "t": "Listing"}, {"k": "buyurtma", "t": "Buyurtma"}, {"k": "muammo", "t": "Nizo va himoya"}];
+const FAQ=[{"q": "eBay O'zbekistonga yetkazadimi?", "a": "Ha, ikki yo'l bilan: (1) eBay International Shipping (eIS) — eBay'ning o'z xizmati, 200 dan ortiq davlatga ishlaydi; (2) sotuvchining o'z xalqaro yetkazishi. Har bir listing'da alohida tekshiring: «Shipping» bo'limida davlat sifatida Uzbekistan ni tanlab, narx chiqishini ko'ring. Chiqmasa — forwarder manzilini ishlating."}, {"q": "eIS va forwarder — qaysi biri yaxshiroq?", "a": "eIS: qimmatroq, lekin eBay kafolati to'liq ishlaydi, import to'lovlari oldindan hisoblanadi va qaytarish eBay orqali. Forwarder: arzonroq va katalog 5–10 barobar kengroq, lekin qaytarish murakkab. Qimmat/mo'rt tovarga eIS, arzon va oddiy tovarga forwarder."}, {"q": "«Sold Items» filtri nima uchun kerak?", "a": "Bu eBay'ning eng foydali funksiyasi. Qidiruv natijalarida filtrlar pastidan «Sold Items» ni yoqsangiz, shu tovar oxirgi 90 kunda <b>aslida qanchaga sotilgani</b> ko'rinadi. Sotuvchilar so'ragan narx real narxdan ancha yuqori bo'lishi mumkin. Har qanday xariddan oldin shu filtrni ishlating."}, {"q": "Auksionda qanday yutish mumkin?", "a": "Uch qoida: (1) «Sold Items» orqali maksimal narxingizni oldindan aniqlang va yozib qo'ying; (2) stavkani oxirgi 10–20 soniyada qo'ying — erta stavka narxni ko'taradi; (3) notekis raqam ishlating ($52.37 kabi). Va eng muhimi — belgilagan chegarangizdan oshmang."}, {"q": "«For parts or not working» nima degani?", "a": "Tovar <b>ishlamaydi</b>. U faqat ehtiyot qism sifatida sotiladi. Bu eBay'dagi eng ko'p uchraydigan xato: xaridor arzon narxni ko'rib, holat maydonini o'qimasdan sotib oladi. Bunday lotda Money Back Guarantee ham yordam bermaydi, chunki tovar tavsifga mos keladi."}, {"q": "Sotuvchi soxta tovar yuborsa?", "a": "eBay Money Back Guarantee kontrafaktni qoplaydi. 30 kun ichida «Return this item» → «Counterfeit / Not as described» ni tanlang, fotosurat biriktiring. Sotuvchi javob bermasa — «Ask eBay to step in». eBay odatda xaridor foydasiga qaror qiladi. Brendli tovarda esa avvaldan «Authenticity Guarantee» belgili lotlarni tanlang."}, {"q": "30 kunlik muddat forwarder orqali qanday ishlaydi?", "a": "Bu eng katta xavf. Muddat tovar <b>AQSh/Yevropa manziliga</b> yetkazilgan kundan boshlanadi, siz Toshkentda olgan kundan emas. Yetkazish 2–3 hafta ketsa, sizda 1 hafta qoladi. Yechim: forwarder'dan <b>foto-hisobot</b> buyurtma qiling — tovar omborga kelishi bilan tekshirtiring."}, {"q": "Kartam ishlaydimi?", "a": "Ha, eBay xalqaro Visa/Mastercard/Amex, PayPal, Google Pay va Apple Pay qabul qiladi. Rad etilsa: onlayn xorij to'lovlari yoqilganini, 3-D Secure raqamini va billing address'ni tekshiring. Yangi eBay akkauntida birinchi katta xarid ba'zan qo'shimcha tasdiq talab qiladi."}, {"q": "Sotuvchi eBay'dan tashqarida to'lashni so'rasa?", "a": "Bu 100% firibgarlik. Bank o'tkazmasi, Western Union, kripto yoki «do'stga o'tkazma» — barchasi eBay himoyasidan tashqarida qoladi va pulingizni qaytarib bo'lmaydi. Bunday sotuvchini eBay'ga shikoyat qiling va muomalani to'xtating."}, {"q": "Bir sotuvchidan bir necha lot olsam arzonroq bo'ladimi?", "a": "Ha — bu «combined shipping». Lotlarni savatga qo'shib, «Request total» tugmasini bosing: sotuvchi umumiy yetkazish narxini qayta hisoblab beradi. Ko'p sotuvchi bunday holatda sezilarli chegirma beradi. Bu funksiyani ko'pchilik bilmaydi."}, {"q": "Ishlatilgan elektronika olish xavflimi?", "a": "eBay aynan shu segmentda kuchli. Xavfni kamaytirish: «Certified Refurbished» yoki 98%+ reytingli sotuvchini tanlang; «30 day returns» bo'lsin; sotuvchidan yozma tasdiq oling («does it work perfectly?»); sotuvchining o'z fotosuratlari bo'lsin. Kamera, obyektiv, audio texnika va professional asboblarda eBay ko'pincha eng yaxshi narxni beradi."}, {"q": "Avtoehtiyot qism qanday tanlanadi?", "a": "Ikki usul: (1) <b>MPN / OEM raqami</b> bo'yicha qidiring — bu eng aniq yo'l; (2) eBay'ning «My Garage» funksiyasidan foydalanib avtomobilingizni kiriting — u faqat mos qismlarni ko'rsatadi. Listing'dagi «Compatible with» ro'yxatini albatta tekshiring. OEM — zavod originali, Aftermarket — analog."}, {"q": "Bojxona qancha oladi?", "a": "O'zbekistonda oylik $200 gacha (kuryerlik kanali) bojsiz. Oshgan qismdan 30%, lekin kg boshiga $3 dan kam emas. eIS import to'lovini oldindan olgan bo'lsa ham, jo'natma sizning normangizdan hisoblanadi va my.gov.uz'da ko'rinadi."}, {"q": "eBay'da narxni pasaytirish mumkinmi?", "a": "Ha, «Make Offer» tugmasi bo'lsa. So'ralgan narxdan 15–25% past taklif qiling va qisqa xushmuomala izoh yozing. Sotuvchilarning katta qismi qabul qiladi yoki qarshi taklif beradi. Lot uzoq vaqt sotilmay turgan bo'lsa, ehtimol yanada yuqori."}, {"q": "Qaysi domenni tanlash kerak: ebay.com yoki ebay.de?", "a": "ebay.com — eng katta katalog va Authenticity Guarantee faqat shu yerda ishlaydi. ebay.de / ebay.co.uk — Yevropa sotuvchilari, Yevropa forwarder'i bo'lsa yetkazish arzonroq bo'lishi mumkin. Bir xil tovarni ikkalasida ham tekshirib, jami narxni solishtiring."}, {"q": "Feedback qoldirishim shartmi?", "a": "Shart emas, lekin foydali. eBay'da reyting ikki tomonlama: sizning ijobiy reytingingiz kelajakda sotuvchilar bilan muomalani osonlashtiradi. Ba'zi sotuvchilar 0 reytingli xaridorlarga sotmaydi. Muammo bo'lsa — avval sotuvchi bilan hal qilishga urinib ko'ring, salbiy feedback oxirgi chora."}];
+const CHECK=[{"g": "Xariddan oldin", "items": [{"t": "«Shipping to: Uzbekistan» tekshirildi", "d": "Chiqmasa — forwarder manzili kerak"}, {"t": "«Sold Items» filtri bilan real bozor narxi aniqlandi", "d": "So'ralgan narx emas — sotilgan narx"}, {"t": "Kalkulyatorda jami narx hisoblandi", "d": "Lot + yetkazish + import + boj"}, {"t": "Condition maydoni o'qildi", "d": "«For parts or not working» emasligiga ishonch hosil qilindi"}, {"t": "Sotuvchi feedback 98%+ va 100+ baho", "d": "Salbiy izohlar o'qildi"}, {"t": "«Returns accepted» borligi tekshirildi", "d": "«No returns» — qo'shimcha xavf"}, {"t": "Kerak bo'lsa sotuvchiga savol berildi", "d": "eBay xabar tizimi orqali — javob dalil bo'ladi"}, {"t": "Brendli tovarda Authenticity Guarantee bormi", "d": "Faqat ebay.com da ishlaydi"}]}, {"g": "Xarid paytida", "items": [{"t": "Auksionda maksimal stavka oldindan belgilandi", "d": "Chegaradan oshmaslikka ahd qilindi"}, {"t": "Manzil to'g'ri tanlandi", "d": "«Use as entered», suite/ID kod joyida"}, {"t": "Import charges qatori ko'rildi", "d": "eIS orqali olsangiz"}, {"t": "Bir sotuvchidan bir necha lot bo'lsa — «Request total»", "d": "Combined shipping chegirmasi"}, {"t": "To'lov eBay orqali amalga oshirildi", "d": "Hech qachon tashqarida to'lamang"}, {"t": "Buyurtma tafsilotlari saqlandi", "d": "Bojxona uchun skrinshot/PDF"}]}, {"g": "Yo'lda", "items": [{"t": "Estimated delivery sanasi yozib olindi", "d": "Money Back Guarantee muddati shundan"}, {"t": "Trek raqami forwarder'ga kiritildi", "d": "Forwarder orqali olsangiz"}, {"t": "Foto-hisobot buyurtma qilindi", "d": "Qimmat lotlarda majburiy — 30 kunlik muddat tez tugaydi"}, {"t": "Konsolidatsiya va qadoq tanlandi", "d": "Bir necha lot bo'lsa"}, {"t": "Sug'urta rasmiylashtirildi", "d": "$200+ tovar uchun"}]}, {"g": "Yetib kelgach", "items": [{"t": "my.gov.uz'da xabarnoma tasdiqlandi", "d": "Ma'lumotlar tekshirilgandan keyin"}, {"t": "Boj hisoblandi va to'landi (kerak bo'lsa)", "d": "Muddatni o'tkazib yubormang"}, {"t": "Quti videoga olib ochildi", "d": "Ishlatilgan tovarlarda ayniqsa muhim"}, {"t": "Tovar tavsif bilan solishtirildi", "d": "Model, seriya raqami, komplektatsiya"}, {"t": "Elektronika sinab ko'rildi", "d": "30 kunlik muddat tugamasdan"}, {"t": "Feedback qoldirildi", "d": "Kelajakdagi xaridlar uchun foydali"}, {"t": "Telefon bo'lsa — UzIMEI ro'yxatidan o'tkazildi", "d": "30 kun ichida, 88 000 so'm"}]}];
+
+
+/* ---------- TABS ---------- */
+const tabsEl=document.getElementById('tabs');
+TABS.forEach((t,i)=>{
+  const b=document.createElement('button');
+  b.className='tab'+(i===0?' active':'');
+  b.innerHTML='<span class="n">'+(i+1)+'</span>'+t.t;
+  b.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById(t.id).classList.add('active');
+    b.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+  tabsEl.appendChild(b);
+});
+
+/* ---------- WIZARD ---------- */
+let wi=0; const seen=new Set([0]);
+const bar=document.getElementById('wizbar');
+const dots=document.getElementById('wizdots');
+STEPS.forEach((_,i)=>{
+  bar.appendChild(document.createElement('i'));
+  const d=document.createElement('button');
+  d.className='dot'; d.textContent=i+1;
+  d.onclick=()=>{wi=i;seen.add(i);drawWiz()};
+  dots.appendChild(d);
+});
+function drawWiz(){
+  const s=STEPS[wi];
+  document.getElementById('wizcard').innerHTML=
+    '<div class="step-head"><div class="step-num">'+(wi+1)+'</div><div>'+
+    '<div class="step-title">'+s.t+'</div>'+
+    '<div class="step-meta">⏱ '+s.m+' · '+(wi+1)+' / '+STEPS.length+'</div></div></div>'+
+    '<div class="step-body">'+s.b+'</div>';
+  [...bar.children].forEach((el,i)=>{el.className = i<wi?'done' : i===wi?'now' : ''});
+  [...dots.children].forEach((el,i)=>{el.className='dot'+(i===wi?' active':(seen.has(i)?' seen':''))});
+  document.getElementById('wprev').disabled = wi===0;
+  const nx=document.getElementById('wnext');
+  nx.disabled = wi===STEPS.length-1;
+  nx.textContent = wi===STEPS.length-1 ? '✓ Qo’llanma tugadi' : 'Keyingi qadam →';
+}
+document.getElementById('wprev').onclick=()=>{if(wi>0){wi--;seen.add(wi);drawWiz();document.getElementById('wizcard').scrollIntoView({behavior:'smooth',block:'center'})}};
+document.getElementById('wnext').onclick=()=>{if(wi<STEPS.length-1){wi++;seen.add(wi);drawWiz();document.getElementById('wizcard').scrollIntoView({behavior:'smooth',block:'center'})}};
+drawWiz();
+
+/* ---------- CALCULATOR ---------- */
+let cur=CALC.curDefault, mode='air';
+function setCur(c){cur=c;document.querySelectorAll('[data-cur]').forEach(b=>b.classList.toggle('on',b.dataset.cur===c));calc()}
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  document.getElementById('rate').value = m==='air'?CALC.airRate:CALC.roadRate;
+  calc();
+}
+const num=id=>{const e=document.getElementById(id);if(!e)return 0;const v=parseFloat(e.value);return isNaN(v)?0:v};
+const fmt=n=>n.toLocaleString('ru-RU',{maximumFractionDigits:0});
+const fmt2=n=>n.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+function calc(){
+  const fx=Math.max(num('fxrate'),0.0001);
+  const usdUzs=num('usdrate');
+  const rawPrice=num('price');
+  const goodsUsd = cur==='loc' ? rawPrice/fx : rawPrice;
+  const innerUsd = cur==='loc' ? num('inner')/fx : num('inner');
+  const taxPct = num('taxpct');
+  const localTax = (goodsUsd+innerUsd)*taxPct/100;
+
+  const actual=num('wkg');
+  const div=num('divisor');
+  const vol = div>0 ? (num('dl')*num('dw')*num('dh'))/div : 0;
+  const billed=Math.max(actual,vol);
+
+  const shipUsd=billed*num('rate');
+  const customsValue=goodsUsd+innerUsd+localTax+shipUsd;
+
+  const limit=num('channel');
+  const remain=Math.max(0,limit-num('used'));
+  const excess=Math.max(0,customsValue-remain);
+
+  let duty=0, dutyNote='';
+  if(excess>0){
+    const pct=excess*0.30, perKg=billed*3;
+    duty=Math.max(pct,perKg);
+    dutyNote = perKg>pct ? 'min $3/kg qoidasi qo’llandi' : '30% stavka';
+  }
+  const totalUsd=goodsUsd+innerUsd+localTax+shipUsd+duty;
+  const totalUzs=totalUsd*usdUzs;
+
+  const parts=[
+    {l:'Tovar',v:goodsUsd+innerUsd,c:'#c7d2fe'},
+    {l:CALC.taxLabel,v:localTax,c:'#818cf8'},
+    {l:'Yetkazish',v:shipUsd,c:'#a5b4fc'},
+    {l:'Boj',v:duty,c:'#fbbf24'}
+  ].filter(p=>p.v>0);
+  const sum=parts.reduce((a,b)=>a+b.v,0)||1;
+
+  document.getElementById('result').innerHTML=
+   '<div class="total">'+fmt(totalUzs)+' <small>so’m</small></div>'+
+   '<div class="sum">≈ $'+fmt2(totalUsd)+' · hisob og’irligi '+fmt2(billed)+' kg</div>'+
+   '<div class="bar">'+parts.map(p=>'<i style="width:'+(p.v/sum*100)+'%;background:'+p.c+'"></i>').join('')+'</div>'+
+   '<div class="legend">'+parts.map(p=>'<span><i style="background:'+p.c+'"></i>'+p.l+' $'+fmt2(p.v)+'</span>').join('')+'</div>'+
+   '<div style="margin-top:14px">'+
+   '<div class="rrow"><span>Tovar qiymati</span><span>$'+fmt2(goodsUsd)+'</span></div>'+
+   (innerUsd>0?'<div class="rrow"><span>Mahalliy yetkazish</span><span>$'+fmt2(innerUsd)+'</span></div>':'')+
+   (localTax>0?'<div class="rrow"><span>'+CALC.taxLabel+' ('+taxPct+'%)</span><span>$'+fmt2(localTax)+'</span></div>':'')+
+   '<div class="rrow"><span>Haqiqiy / hajmiy og’irlik</span><span>'+fmt2(actual)+' / '+fmt2(vol)+' kg</span></div>'+
+   '<div class="rrow"><span>Xalqaro yetkazish ($'+num('rate')+'/kg)</span><span>$'+fmt2(shipUsd)+'</span></div>'+
+   '<div class="rrow"><span>Bojxona qiymati</span><span>$'+fmt2(customsValue)+'</span></div>'+
+   '<div class="rrow"><span>Bojsiz qolgan norma</span><span>$'+fmt2(remain)+'</span></div>'+
+   (excess>0
+     ? '<div class="rrow"><span>Normadan oshgan qism</span><span>$'+fmt2(excess)+'</span></div>'+
+       '<div class="rrow"><span>Bojxona to’lovi <span style="opacity:.7;font-weight:400">('+dutyNote+')</span></span><span>$'+fmt2(duty)+'</span></div>'
+     : '<div class="rrow"><span>Bojxona to’lovi</span><span>Yo’q ✓</span></div>')+
+   '</div>';
+}
+calc();
+
+/* ---------- BAN CHECKER ---------- */
+let banFilter='all';
+const BANCATS=[{k:'all',t:'Hammasi'},{k:'r',t:'🔴 Taqiqlangan'},{k:'a',t:'🟡 Ruxsat/cheklov'},{k:'g',t:'🟢 Erkin'}];
+const bc=document.getElementById('banchips');
+BANCATS.forEach(c=>{
+  const b=document.createElement('button');
+  b.className='chip'+(c.k==='all'?' on':''); b.textContent=c.t;
+  b.onclick=()=>{banFilter=c.k;[...bc.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderBan()};
+  bc.appendChild(b);
+});
+function renderBan(){
+  const q=document.getElementById('banq').value.trim().toLowerCase();
+  const list=BAN.filter(x=>(banFilter==='all'||x.s===banFilter)&&(!q||x.n.toLowerCase().includes(q)||x.d.toLowerCase().includes(q)));
+  const el=document.getElementById('banlist');
+  if(!list.length){el.innerHTML='<div class="empty">Hech narsa topilmadi. Boshqa so’z bilan qidirib ko’ring — ro’yxat to’liq emas.</div>';return}
+  const txtmap={taqiq:'TAQIQ',ruxsat:'RUXSAT KERAK',cheklov:'CHEKLOV',erkin:'ERKIN'};
+  el.innerHTML=list.map(x=>
+    '<div class="item '+x.s+'"><div class="body"><div class="nm">'+x.n+'</div>'+
+    '<div class="ds">'+x.d+'</div></div>'+
+    '<span class="pill '+x.s+'">'+txtmap[x.c]+'</span></div>').join('');
+}
+renderBan();
+
+/* ---------- CARGO ---------- */
+let cargoF='all';
+const cch=document.getElementById('cargochips');
+if(cch){
+  CARGOCATS.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='chip'+(c.k==='all'?' on':''); b.textContent=c.t;
+    b.onclick=()=>{cargoF=c.k;[...cch.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderCargo()};
+    cch.appendChild(b);
+  });
+}
+function renderCargo(){
+  const list=CARGO.filter(x=>cargoF==='all'||x.tag.includes(cargoF));
+  document.getElementById('cargobody').innerHTML=list.map(x=>
+    '<tr><td><b>'+x.n+'</b></td><td>'+x.r+'</td><td>'+x.p+'</td><td>'+x.t+'</td><td class="mini">'+x.f+'</td></tr>').join('');
+}
+renderCargo();
+
+/* ---------- GLOSSARY ---------- */
+function fallbackCopy(txt,cb){
+  const ta=document.createElement('textarea');
+  ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try{document.execCommand('copy');cb()}catch(e){}
+  document.body.removeChild(ta);
+}
+let wcat='all';
+const wch=document.getElementById('wchips');
+if(wch){
+  WCATS.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='chip'+(c.k==='all'?' on':''); b.textContent=c.t;
+    b.onclick=()=>{wcat=c.k;[...wch.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderWords()};
+    wch.appendChild(b);
+  });
+}
+function renderWords(){
+  if(!document.getElementById('wlist'))return;
+  const q=document.getElementById('wq').value.trim().toLowerCase();
+  const list=WORDS.filter(x=>(wcat==='all'||x.c===wcat)&&(!q||x.u.toLowerCase().includes(q)||x.k.toLowerCase().includes(q)));
+  const el=document.getElementById('wlist');
+  if(!list.length){el.innerHTML='<div class="empty">Topilmadi.</div>';return}
+  el.innerHTML=list.map(x=>
+    '<div class="gl"><div class="zh">'+x.k+'</div><div class="uz">'+x.u+'</div>'+
+    '<button class="cp" data-k="'+x.k.replace(/"/g,'&quot;')+'">Nusxa</button></div>').join('');
+  el.querySelectorAll('.cp').forEach(b=>{
+    b.onclick=()=>{
+      const txt=b.dataset.k;
+      const done=()=>{b.textContent='✓ Ok';b.classList.add('ok');setTimeout(()=>{b.textContent='Nusxa';b.classList.remove('ok')},1400)};
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));
+      } else fallbackCopy(txt,done);
+    };
+  });
+}
+renderWords();
+
+/* ---------- FAQ ---------- */
+document.getElementById('faqlist').innerHTML=FAQ.map((f,i)=>
+  '<div class="acc" id="acc'+i+'"><button type="button" onclick="document.getElementById(\'acc'+i+'\').classList.toggle(\'open\')">'+f.q+'</button>'+
+  '<div class="ans">'+f.a+'</div></div>').join('');
+
+/* ---------- CHECKLIST ---------- */
+const state={};
+function renderChk(){
+  let total=0,done=0;
+  CHECK.forEach((g,gi)=>g.items.forEach((_,ii)=>{total++;if(state[gi+'-'+ii])done++}));
+  document.getElementById('chklist').innerHTML=CHECK.map((g,gi)=>{
+    const gd=g.items.filter((_,ii)=>state[gi+'-'+ii]).length;
+    return '<div class="chk-head"><h3>'+g.g+'</h3><span class="prog-txt">'+gd+' / '+g.items.length+'</span></div>'+
+    g.items.map((it,ii)=>{
+      const k=gi+'-'+ii, on=!!state[k];
+      return '<div class="chk'+(on?' done':'')+'" data-k="'+k+'"><div class="box">'+(on?'✓':'')+'</div>'+
+      '<div><div class="t">'+it.t+'</div><div class="d">'+it.d+'</div></div></div>';
+    }).join('');
+  }).join('')+
+  '<div style="text-align:center;margin-top:18px"><span class="prog-txt" style="font-size:14px;padding:8px 18px">Umumiy: '+done+' / '+total+'</span></div>';
+  document.querySelectorAll('.chk').forEach(el=>{
+    el.onclick=()=>{state[el.dataset.k]=!state[el.dataset.k];renderChk()};
+  });
+}
+renderChk();
+
+</script>
+<script>
+/* Qo'llanmalarni ilova ichida yanada qulay qilish: bo'lim navigatsiyasi,
+   svayp, checklist saqlash, o'qish progressi. Barcha 7 qo'llanma uchun umumiy. */
+(function () {
+  var KEY = 'xy-chk:' + location.pathname.split('/').pop();
+  var tabsWrap = document.getElementById('tabs');
+  if (!tabsWrap) return;
+  var tabs = function () { return Array.prototype.slice.call(document.querySelectorAll('.tab')); };
+  var idx = function () { var t = tabs(); for (var i = 0; i < t.length; i++) if (t[i].classList.contains('active')) return i; return 0; };
+  var label = function (el) { return el ? el.textContent.replace(/^\d+/, '').trim() : ''; };
+
+  /* --- o'qish progressi --- */
+  var prog = document.createElement('i');
+  prog.className = 'xy-prog';
+  document.querySelector('nav.tabs').appendChild(prog);
+  var onScroll = function () {
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    prog.style.width = (h > 40 ? Math.min(100, Math.max(0, window.scrollY / h * 100)) : 0) + '%';
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  /* --- pastdagi bo'lim navigatsiyasi --- */
+  var bar = document.createElement('nav');
+  bar.className = 'xy-secnav';
+  bar.innerHTML =
+    '<button type="button" class="xy-nb" data-d="-1" aria-label="Oldingi bo\'lim">' +
+      '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>' +
+    '</button>' +
+    '<button type="button" class="xy-mid"><b></b><span></span></button>' +
+    '<button type="button" class="xy-nb" data-d="1" aria-label="Keyingi bo\'lim">' +
+      '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>' +
+    '</button>';
+  document.body.appendChild(bar);
+  var mid = bar.querySelector('.xy-mid');
+  var midB = mid.querySelector('b'), midS = mid.querySelector('span');
+
+  var refresh = function () {
+    var t = tabs(), i = idx();
+    midB.textContent = label(t[i]);
+    midS.textContent = (i + 1) + ' / ' + t.length;
+    bar.querySelector('[data-d="-1"]').disabled = i <= 0;
+    bar.querySelector('[data-d="1"]').disabled = i >= t.length - 1;
+  };
+  var jump = function (d) {
+    var t = tabs(), n = idx() + d;
+    if (n < 0 || n >= t.length) return;
+    t[n].click();
+    refresh();
+  };
+  bar.addEventListener('click', function (e) {
+    var b = e.target.closest('.xy-nb');
+    if (b) { jump(+b.dataset.d); return; }
+    if (e.target.closest('.xy-mid')) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      var a = tabs()[idx()];
+      if (a) a.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  });
+  tabsWrap.addEventListener('click', function () { setTimeout(refresh, 0); });
+  refresh();
+
+  /* --- svayp: bo'limlar orasida, wizard ichida qadamlar orasida --- */
+  var sx = 0, sy = 0, sw = null;
+  document.addEventListener('touchstart', function (e) {
+    var t = e.touches[0];
+    sx = t.clientX; sy = t.clientY;
+    sw = e.target.closest('.tabs-scroll,.tblwrap,input,select,textarea') ? 'skip'
+       : e.target.closest('#wizcard,.wiz-nav') ? 'wiz' : 'sec';
+  }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (sw === 'skip' || !sw) return;
+    var t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+    if (Math.abs(dx) < 65 || Math.abs(dy) > 55) return;
+    var back = dx > 0;
+    if (sw === 'wiz') {
+      var b = document.getElementById(back ? 'wprev' : 'wnext');
+      if (b && !b.disabled) b.click();
+    } else jump(back ? -1 : 1);
+  }, { passive: true });
+
+  document.addEventListener('keydown', function (e) {
+    if (/^(INPUT|SELECT|TEXTAREA)$/.test((e.target.tagName || ''))) return;
+    if (e.key === 'ArrowRight') jump(1);
+    if (e.key === 'ArrowLeft') jump(-1);
+  });
+
+  /* --- checklist belgilarini saqlash --- */
+  var save = function () {
+    var done = Array.prototype.slice.call(document.querySelectorAll('.chk.done')).map(function (el) { return el.dataset.k; });
+    try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (err) {}
+  };
+  document.addEventListener('click', function (e) { if (e.target.closest('.chk')) setTimeout(save, 0); });
+
+  var restore = function () {
+    var saved;
+    try { saved = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (err) { saved = []; }
+    if (!saved.length || !document.querySelector('.chk')) return;
+    saved.forEach(function (k) {
+      var el = document.querySelector('.chk[data-k="' + k + '"]');
+      if (el && !el.classList.contains('done')) el.click();
+    });
+  };
+  restore();
+
+  /* Eski izohni to'g'rilash: belgilar endi saqlanadi */
+  Array.prototype.slice.call(document.querySelectorAll('.note')).forEach(function (n) {
+    if (/tozalanadi/.test(n.textContent)) {
+      var d = n.querySelector('div');
+      if (d) d.innerHTML = 'Belgilangan bandlar <b>shu qurilmada saqlanadi</b> — qo\'llanmani yopib, keyin davom ettirsangiz ham joyida qoladi.';
+    }
+  });
+})();
+
+</script>
+</body>
+</html>

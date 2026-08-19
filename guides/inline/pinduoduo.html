@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pinduoduo → O'zbekiston · Interaktiv qo'llanma</title>
+<style>
+:root{
+  --indigo-50:#eef2ff; --indigo-100:#e0e7ff; --indigo-200:#c7d2fe; --indigo-300:#a5b4fc;
+  --indigo-500:#6366f1; --indigo-600:#4f46e5; --indigo-700:#4338ca; --indigo-900:#312e81;
+  --slate-50:#f8fafc; --slate-100:#f1f5f9; --slate-200:#e2e8f0; --slate-300:#cbd5e1;
+  --slate-400:#94a3b8; --slate-500:#64748b; --slate-600:#475569; --slate-700:#334155;
+  --slate-800:#1e293b; --slate-900:#0f172a;
+  --green:#059669; --green-bg:#ecfdf5; --amber:#d97706; --amber-bg:#fffbeb;
+  --red:#dc2626; --red-bg:#fef2f2; --sky:#0284c7; --sky-bg:#f0f9ff;
+  --brand:#E02E24;
+  --radius:16px; --radius-sm:10px;
+  --shadow-sm:0 1px 2px rgba(15,23,42,.06), 0 1px 3px rgba(15,23,42,.04);
+  --shadow:0 4px 6px -1px rgba(15,23,42,.06), 0 10px 24px -6px rgba(49,46,129,.10);
+  --shadow-lg:0 12px 32px -8px rgba(49,46,129,.22);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);background:var(--slate-50);color:var(--slate-800);
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+
+header.hero{background:linear-gradient(155deg,var(--indigo-700) 0%,var(--indigo-600) 45%,#6d5ce7 100%);
+  color:#fff;padding:36px 0 76px;position:relative;overflow:hidden}
+header.hero::after{content:"";position:absolute;right:-90px;top:-90px;width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.22),rgba(255,255,255,0) 70%)}
+header.hero::before{content:"";position:absolute;left:-60px;bottom:-120px;width:240px;height:240px;border-radius:50%;
+  background:radial-gradient(circle at 60% 40%,rgba(255,255,255,.14),rgba(255,255,255,0) 70%)}
+.hero-in{max-width:960px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
+.badge-top{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.25);padding:5px 13px 5px 9px;border-radius:999px;
+  font-size:12px;font-weight:600;letter-spacing:.02em;backdrop-filter:blur(6px)}
+.badge-top .bd{width:9px;height:9px;border-radius:50%;background:var(--brand);
+  box-shadow:0 0 0 3px rgba(255,255,255,.22)}
+h1{font-size:30px;line-height:1.2;margin:16px 0 8px;font-weight:800;letter-spacing:-.02em}
+.hero p{margin:0;opacity:.9;font-size:15px;max-width:660px}
+.hero-stats{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.hstat{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);
+  border-radius:12px;padding:9px 14px;backdrop-filter:blur(6px)}
+.hstat b{display:block;font-size:17px;line-height:1.2}
+.hstat span{font-size:11.5px;opacity:.82}
+
+nav.tabs{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--slate-200);
+  margin-top:-40px;border-radius:var(--radius) var(--radius) 0 0;box-shadow:var(--shadow)}
+.tabs-scroll{display:flex;gap:4px;overflow-x:auto;padding:8px;scrollbar-width:none}
+.tabs-scroll::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:0;background:transparent;color:var(--slate-600);
+  font:inherit;font-size:13.5px;font-weight:600;padding:9px 14px;border-radius:10px;
+  cursor:pointer;white-space:nowrap;transition:.16s;display:flex;align-items:center;gap:6px}
+.tab:hover{background:var(--slate-100);color:var(--slate-800)}
+.tab.active{background:var(--indigo-600);color:#fff;box-shadow:0 4px 12px -3px rgba(79,70,229,.5)}
+.tab .n{font-size:11px;opacity:.7;font-weight:700}
+
+section.panel{display:none;padding-top:24px;animation:fade .28s ease}
+section.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2{font-size:21px;font-weight:750;letter-spacing:-.01em;margin:0 0 4px;color:var(--slate-900);
+  position:relative;padding-left:13px}
+h2::before{content:"";position:absolute;left:0;top:5px;bottom:5px;width:4px;border-radius:99px;background:var(--brand)}
+.sub{color:var(--slate-500);font-size:14px;margin:0 0 20px;padding-left:13px}
+h3{font-size:16px;font-weight:700;margin:26px 0 10px;color:var(--slate-900)}
+h4{font-size:15px;font-weight:700;margin:16px 0 6px;color:var(--slate-900)}
+p{margin:10px 0}
+
+.card{background:#fff;border:1px solid var(--slate-200);border-radius:var(--radius);
+  padding:18px;box-shadow:var(--shadow-sm);margin-bottom:14px}
+.card.tight{padding:14px}
+.grid{display:grid;gap:12px}
+@media(min-width:680px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
+
+.note{border-radius:var(--radius-sm);padding:12px 14px;font-size:13.5px;margin:12px 0;
+  border-left:3px solid;display:flex;gap:9px;align-items:flex-start}
+.note b{font-weight:700}
+.note.info{background:var(--sky-bg);border-color:var(--sky);color:#075985}
+.note.warn{background:var(--amber-bg);border-color:var(--amber);color:#92400e}
+.note.dang{background:var(--red-bg);border-color:var(--red);color:#991b1b}
+.note.ok{background:var(--green-bg);border-color:var(--green);color:#065f46}
+.note .ic{flex:0 0 auto;font-size:15px;line-height:1.4}
+
+.method{border:1.5px solid var(--slate-200);border-radius:var(--radius);padding:16px;background:#fff;
+  transition:.18s;position:relative;overflow:hidden;margin-bottom:0}
+.method:hover{border-color:var(--indigo-300);box-shadow:var(--shadow);transform:translateY(-2px)}
+.method .tag{position:absolute;top:0;right:0;background:var(--brand);color:#fff;
+  font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:0 var(--radius) 0 10px;letter-spacing:.02em}
+.method h4{margin:0 0 6px;font-size:16px;font-weight:750}
+.method .who{font-size:12.5px;color:var(--indigo-700);background:var(--indigo-50);
+  display:inline-block;padding:3px 9px;border-radius:6px;font-weight:600;margin-bottom:10px}
+.method ul{margin:8px 0 0;padding-left:0;list-style:none;font-size:13.5px}
+.method li{padding:3px 0 3px 20px;position:relative;color:var(--slate-600)}
+.method li.p::before{content:"+";position:absolute;left:4px;color:var(--green);font-weight:800}
+.method li.m::before{content:"\2212";position:absolute;left:4px;color:var(--red);font-weight:800}
+
+.wiz-progress{display:flex;gap:4px;margin-bottom:16px}
+.wiz-progress i{flex:1;height:5px;border-radius:99px;background:var(--slate-200);transition:.3s}
+.wiz-progress i.done{background:var(--indigo-300)}
+.wiz-progress i.now{background:var(--indigo-600)}
+.step-head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.step-num{flex:0 0 auto;width:38px;height:38px;border-radius:12px;
+  background:linear-gradient(150deg,var(--indigo-600),var(--indigo-500));color:#fff;
+  display:grid;place-items:center;font-weight:800;font-size:16px;
+  box-shadow:0 6px 14px -5px rgba(79,70,229,.65)}
+.step-title{font-size:18px;font-weight:750;letter-spacing:-.01em;color:var(--slate-900)}
+.step-meta{font-size:12px;color:var(--slate-500);font-weight:600}
+.step-body{font-size:14.5px;color:var(--slate-700)}
+.step-body ol,.step-body ul{padding-left:20px;margin:10px 0}
+.step-body li{margin:6px 0}
+.step-body strong{color:var(--slate-900)}
+.wiz-nav{display:flex;gap:8px;margin-top:18px}
+.btn{border:0;font:inherit;font-weight:650;font-size:14px;padding:11px 18px;border-radius:11px;
+  cursor:pointer;transition:.16s;display:inline-flex;align-items:center;gap:7px;justify-content:center}
+.btn.primary{background:var(--indigo-600);color:#fff;box-shadow:0 6px 16px -6px rgba(79,70,229,.7)}
+.btn.primary:hover{background:var(--indigo-700);transform:translateY(-1px)}
+.btn.ghost{background:var(--slate-100);color:var(--slate-700)}
+.btn.ghost:hover{background:var(--slate-200)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn.wide{flex:1}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.dot{width:30px;height:30px;border-radius:9px;border:1.5px solid var(--slate-200);background:#fff;
+  color:var(--slate-500);font-size:12.5px;font-weight:700;cursor:pointer;transition:.15s;font-family:inherit}
+.dot:hover{border-color:var(--indigo-300)}
+.dot.active{background:var(--indigo-600);border-color:var(--indigo-600);color:#fff}
+.dot.seen{border-color:var(--indigo-200);background:var(--indigo-50);color:var(--indigo-700)}
+
+label.f{display:block;font-size:12.5px;font-weight:650;color:var(--slate-600);margin-bottom:5px}
+input[type=text],input[type=number],select{width:100%;padding:10px 12px;border:1.5px solid var(--slate-200);
+  border-radius:10px;font:inherit;font-size:14.5px;background:#fff;color:var(--slate-800);transition:.15s}
+input:focus,select:focus{outline:0;border-color:var(--indigo-500);box-shadow:0 0 0 3px var(--indigo-100)}
+.field{margin-bottom:12px}
+.seg{display:flex;gap:4px;background:var(--slate-100);padding:4px;border-radius:11px}
+.seg button{flex:1;border:0;background:transparent;font:inherit;font-size:13px;font-weight:650;
+  padding:8px;border-radius:8px;cursor:pointer;color:var(--slate-600);transition:.15s}
+.seg button.on{background:#fff;color:var(--indigo-700);box-shadow:var(--shadow-sm)}
+.dim3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+
+.res{background:linear-gradient(155deg,var(--indigo-700),var(--indigo-600));color:#fff;
+  border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-lg)}
+.res .total{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.res .total small{font-size:14px;font-weight:600;opacity:.75}
+.res .sum{opacity:.85;font-size:13.5px;margin-top:2px}
+.rrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;font-size:13.5px;
+  border-bottom:1px solid rgba(255,255,255,.14)}
+.rrow:last-child{border:0}
+.rrow span:first-child{opacity:.8}
+.rrow span:last-child{font-weight:700;font-variant-numeric:tabular-nums}
+.bar{display:flex;height:9px;border-radius:99px;overflow:hidden;margin:14px 0 8px;background:rgba(255,255,255,.18)}
+.bar i{display:block;transition:.4s}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;opacity:.9}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend i{width:9px;height:9px;border-radius:3px;display:block}
+
+.tblwrap{overflow-x:auto;border:1px solid var(--slate-200);border-radius:var(--radius);background:#fff;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px}
+table.narrow{min-width:0}
+th{background:var(--slate-50);text-align:left;padding:11px 12px;font-weight:700;font-size:12px;
+  color:var(--slate-600);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--slate-200)}
+td{padding:11px 12px;border-bottom:1px solid var(--slate-100);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--indigo-50)}
+.pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.pill.g{background:var(--green-bg);color:var(--green)}
+.pill.a{background:var(--amber-bg);color:var(--amber)}
+.pill.r{background:var(--red-bg);color:var(--red)}
+.pill.b{background:var(--indigo-50);color:var(--indigo-700)}
+.pill.s{background:var(--sky-bg);color:var(--sky)}
+
+.search-box{position:relative;margin-bottom:12px}
+.search-box input{padding-left:38px}
+.search-box .ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--slate-400);font-size:15px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1.5px solid var(--slate-200);background:#fff;font:inherit;font-size:12.5px;font-weight:650;
+  padding:6px 12px;border-radius:99px;cursor:pointer;color:var(--slate-600);transition:.15s}
+.chip:hover{border-color:var(--indigo-300)}
+.chip.on{background:var(--indigo-600);border-color:var(--indigo-600);color:#fff}
+.item{border:1px solid var(--slate-200);border-radius:12px;padding:12px 14px;margin-bottom:8px;background:#fff;
+  display:flex;gap:12px;align-items:flex-start}
+.item .body{flex:1;min-width:0}
+.item .nm{font-weight:700;font-size:14.5px;color:var(--slate-900)}
+.item .ds{font-size:13px;color:var(--slate-600);margin-top:3px}
+.item.r{border-left:4px solid var(--red)}
+.item.a{border-left:4px solid var(--amber)}
+.item.g{border-left:4px solid var(--green)}
+.empty{text-align:center;padding:28px;color:var(--slate-400);font-size:14px}
+
+.acc{border:1px solid var(--slate-200);border-radius:12px;margin-bottom:8px;background:#fff;overflow:hidden}
+.acc button{width:100%;text-align:left;border:0;background:transparent;font:inherit;font-size:14.5px;
+  font-weight:650;padding:14px 44px 14px 16px;cursor:pointer;position:relative;color:var(--slate-800)}
+.acc button::after{content:"+";position:absolute;right:16px;top:50%;transform:translateY(-50%);
+  font-size:20px;font-weight:400;color:var(--indigo-500);transition:.2s}
+.acc.open button::after{content:"\2212"}
+.acc .ans{display:none;padding:0 16px 15px;font-size:14px;color:var(--slate-600)}
+.acc.open .ans{display:block}
+.acc.open{border-color:var(--indigo-200);box-shadow:var(--shadow-sm)}
+
+.chk{display:flex;gap:11px;align-items:flex-start;padding:11px 13px;border:1px solid var(--slate-200);
+  border-radius:11px;margin-bottom:7px;background:#fff;cursor:pointer;transition:.15s}
+.chk:hover{border-color:var(--indigo-300)}
+.chk.done{background:var(--green-bg);border-color:#a7f3d0}
+.chk.done .t{text-decoration:line-through;color:var(--slate-400)}
+.box{flex:0 0 auto;width:21px;height:21px;border-radius:7px;border:2px solid var(--slate-300);
+  display:grid;place-items:center;font-size:12px;color:#fff;transition:.15s;margin-top:1px}
+.chk.done .box{background:var(--green);border-color:var(--green)}
+.chk .t{font-size:14px;font-weight:600}
+.chk .d{font-size:12.5px;color:var(--slate-500);margin-top:2px}
+.chk-head{display:flex;justify-content:space-between;align-items:center;margin:22px 0 10px;gap:10px}
+.chk-head h3{margin:0}
+.prog-txt{font-size:12.5px;font-weight:700;color:var(--indigo-700);background:var(--indigo-50);
+  padding:4px 11px;border-radius:99px;white-space:nowrap}
+
+.gl{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--slate-200);
+  border-radius:11px;margin-bottom:6px;background:#fff}
+.gl .zh{font-size:16px;font-weight:700;color:var(--indigo-700);flex:0 0 auto;min-width:88px;line-height:1.35}
+.gl .uz{flex:1;font-size:13.5px;color:var(--slate-700)}
+.gl .cp{border:1px solid var(--slate-200);background:var(--slate-50);border-radius:8px;
+  font:inherit;font-size:11.5px;font-weight:650;padding:5px 10px;cursor:pointer;color:var(--slate-600);flex:0 0 auto}
+.gl .cp:hover{background:var(--indigo-50);border-color:var(--indigo-200);color:var(--indigo-700)}
+.gl .cp.ok{background:var(--green-bg);border-color:#a7f3d0;color:var(--green)}
+
+.foot{text-align:center;color:var(--slate-400);font-size:12px;padding:32px 16px 0;line-height:1.7}
+.kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--slate-100);
+  border:1px solid var(--slate-200);border-radius:6px;padding:1px 6px;font-size:12.5px;color:var(--slate-700)}
+.mini{font-size:12.5px;color:var(--slate-500)}
+ul.tick{list-style:none;padding-left:0;margin:10px 0}
+ul.tick li{position:relative;padding-left:24px;margin:7px 0;font-size:14.5px}
+ul.tick li::before{content:"\2713";position:absolute;left:4px;color:var(--green);font-weight:800}
+</style>
+<style>
+/* XaridYordamchisi ilovasi ichida ochilganda qo'llanmani ilova dizayniga moslash */
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Onest:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --indigo-50:#EDEBFD; --indigo-100:#E4E1FB; --indigo-200:#D5D0F8; --indigo-300:#B6AEF3;
+  --indigo-500:#5A46EC; --indigo-600:#3B2CC9; --indigo-700:#3423B3; --indigo-900:#1E1670;
+  --slate-50:#F8F8FC; --slate-100:#F1F1F8; --slate-200:#E4E3EE; --slate-300:#CFCEDD;
+  --slate-400:#9A99AE; --slate-500:#6C6C88; --slate-600:#6E6D8A; --slate-700:#333350;
+  --slate-800:#22213B; --slate-900:#151329;
+  --green:#0F7B3E; --green-bg:#E9F8EF; --amber:#B45309; --amber-bg:#FDF3E3;
+  --red:#C8102E; --red-bg:#FDECEE; --sky:#2456C8; --sky-bg:#E8EEFE;
+  --radius:22px; --radius-sm:14px;
+  --shadow-sm:0 1px 2px rgba(20,19,43,.045),0 6px 16px -10px rgba(20,19,43,.24);
+  --shadow:0 1px 2px rgba(20,19,43,.05),0 10px 26px -14px rgba(20,19,43,.30);
+  --shadow-lg:0 18px 38px -18px rgba(45,30,150,.65);
+  --font:'Onest','Noto Color Emoji',system-ui,-apple-system,sans-serif;
+}
+
+body{background:#F2F1F8;color:#22213B;font-size:14.5px;letter-spacing:-.012em}
+.wrap{max-width:100%;padding:0 14px 40px}
+::-webkit-scrollbar{width:0;height:0}
+*{scrollbar-width:none}
+
+/* Hero — gradient sarlavha o'rniga ilovadagi yengil karta */
+header.hero{background:#FFFFFF;color:#151329;padding:16px 0 20px;border-bottom:1px solid #E8E8F1}
+header.hero::before,header.hero::after{display:none}
+.hero-in{padding:0 16px}
+.badge-top{background:#F1F1F8;border:none;color:#6C6C88;font-size:10.5px;font-weight:800;letter-spacing:.4px;padding:5px 11px 5px 8px;backdrop-filter:none}
+h1{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:23px;font-weight:800;letter-spacing:-.7px;margin:12px 0 6px;color:#151329}
+.hero p{color:#6E6D8A;font-size:13.5px;opacity:1;line-height:1.55;text-wrap:pretty}
+.hero-stats{gap:7px;margin-top:14px}
+.hstat{background:#F1F1F8;border:none;border-radius:14px;padding:9px 12px;backdrop-filter:none}
+.hstat b{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:15px;font-weight:800;color:#3B2CC9;letter-spacing:-.3px}
+.hstat span{font-size:10.5px;color:#6C6C88;font-weight:600}
+
+/* Tab qatori — ilovadagi chip uslubi */
+nav.tabs{margin-top:0;border-radius:0;box-shadow:none;background:#F2F1F8;border-bottom:1px solid #E8E8F1;backdrop-filter:none}
+.tabs-scroll{padding:9px 12px;gap:6px}
+.tab{background:#FFFFFF;border-radius:999px;font-size:12.5px;font-weight:700;color:#151329;padding:8px 14px;box-shadow:var(--shadow-sm)}
+.tab:hover{background:#F0EFFC;color:#151329}
+.tab.active{background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;box-shadow:0 12px 26px -14px rgba(45,30,150,.7)}
+.tab .n{display:none}
+
+/* Sarlavhalar */
+section.panel{padding-top:20px}
+h2{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:21px;font-weight:800;letter-spacing:-.6px;padding-left:0;color:#151329}
+h2::before{display:none}
+.sub{padding-left:0;font-size:13.5px;color:#6E6D8A;line-height:1.55;margin-bottom:18px}
+h3{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:16px;font-weight:800;letter-spacing:-.3px;margin:24px 0 10px}
+h4{font-weight:800;letter-spacing:-.2px}
+
+/* Kartalar */
+.card,.method{border:none;border-radius:var(--radius);box-shadow:var(--shadow);background:#FFFFFF}
+.method:hover{border:none;box-shadow:0 2px 4px rgba(59,44,201,.10),0 14px 30px -14px rgba(59,44,201,.42);transform:none}
+.method .tag{border-radius:0 var(--radius) 0 14px;background:#3B2CC9;font-size:10px;letter-spacing:.4px}
+.method .who{background:#EDEBFD;color:#3B2CC9;border-radius:8px;font-size:11.5px;font-weight:700}
+
+/* Eslatma bloklari */
+.note{border-left:none;border-radius:18px;padding:13px 15px;font-size:13px;line-height:1.55}
+.note.info{background:#E8EEFE;color:#1E3F91}
+.note.warn{background:#FDF3E3;color:#8A4308}
+.note.dang{background:#FDECEE;color:#A50C24}
+.note.ok{background:#E9F8EF;color:#0B5B2E}
+
+/* Bosqichlar */
+.wiz-progress i{height:6px;background:#E4E3EE}
+.wiz-progress i.done{background:#B6AEF3}
+.wiz-progress i.now{background:#3B2CC9}
+.step-num{border-radius:14px;background:linear-gradient(155deg,#5A46EC,#3423B3);box-shadow:0 12px 24px -14px rgba(45,30,150,.8)}
+.step-title{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:17px;font-weight:800;letter-spacing:-.4px}
+.step-meta{font-size:11.5px;color:#6C6C88;font-weight:700}
+.step-body{font-size:14px;color:#333350}
+.dot{border:none;border-radius:12px;background:#FFFFFF;color:#6C6C88;box-shadow:var(--shadow-sm);width:32px;height:32px}
+.dot.active{background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff}
+.dot.seen{background:#EDEBFD;color:#3B2CC9}
+
+/* Tugmalar */
+.btn{border-radius:18px;padding:14px 20px;font-weight:700;font-size:14.5px}
+.btn.primary{background:linear-gradient(155deg,#5A46EC,#3423B3);box-shadow:0 18px 38px -18px rgba(45,30,150,.65)}
+.btn.primary:hover{background:linear-gradient(155deg,#4E3BE4,#2C1D9C);transform:none}
+.btn.ghost{background:#FFFFFF;color:#151329;box-shadow:var(--shadow-sm)}
+.btn.ghost:hover{background:#F0EFFC}
+
+/* Maydonlar */
+label.f{font-size:11.5px;font-weight:700;color:#6C6C88;letter-spacing:.1px}
+input[type=text],input[type=number],select{border:1.5px solid #E4E3EE;border-radius:14px;padding:12px 14px;font-size:15px;color:#151329}
+input:focus,select:focus{border-color:#3B2CC9;box-shadow:0 0 0 3px #EDEBFD}
+.seg{background:#F1F1F8;border-radius:16px;padding:5px}
+.seg button{border-radius:12px;font-size:12.5px;font-weight:700;color:#6C6C88}
+.seg button.on{background:#FFFFFF;color:#3B2CC9;box-shadow:var(--shadow-sm)}
+
+/* Natija kartasi */
+.res{background:linear-gradient(155deg,#5A46EC,#3423B3);border-radius:26px;padding:20px;box-shadow:var(--shadow-lg)}
+.res .total{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:31px;font-weight:800;letter-spacing:-1px}
+
+/* Jadvallar */
+.tblwrap{border:none;border-radius:var(--radius);box-shadow:var(--shadow)}
+table{font-size:13px;min-width:0}
+th{background:#F8F8FC;color:#6C6C88;font-size:10.5px;letter-spacing:.5px;border-bottom:1px solid #E8E8F1;padding:11px 12px}
+td{border-bottom:1px solid #F1F1F8;padding:11px 12px}
+tbody tr:hover{background:#F8F8FC}
+.pill{border-radius:9px;font-size:10.5px;font-weight:800;letter-spacing:.3px;padding:3px 8px}
+.pill.g{background:#E9F8EF;color:#0F7B3E}
+.pill.a{background:#FDF3E3;color:#B45309}
+.pill.r{background:#FDECEE;color:#C8102E}
+.pill.b{background:#EDEBFD;color:#3B2CC9}
+.pill.s{background:#E8EEFE;color:#2456C8}
+
+/* Qidiruv, chiplar, ro'yxatlar */
+.search-box input{padding-left:40px;background:#FFFFFF;box-shadow:var(--shadow-sm);border-color:transparent}
+.chip{border:none;background:#FFFFFF;border-radius:999px;font-size:12px;font-weight:700;color:#151329;box-shadow:var(--shadow-sm);padding:7px 13px}
+.chip:hover{background:#F0EFFC}
+.chip.on{background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff}
+.item{border:none;border-radius:18px;box-shadow:var(--shadow);padding:13px 15px}
+.item.r{border-left:4px solid #C8102E}
+.item.a{border-left:4px solid #B45309}
+.item.g{border-left:4px solid #0F7B3E}
+.item .nm{font-size:14px;font-weight:700;color:#151329}
+.item .ds{font-size:12.5px;color:#6E6D8A}
+.empty{color:#9A99AE;font-size:13px}
+
+/* Akkordeon, checklist, lug'at */
+.acc{border:none;border-radius:18px;box-shadow:var(--shadow)}
+.acc button{font-size:14px;font-weight:700;color:#151329;padding:15px 44px 15px 16px}
+.acc button::after{color:#3B2CC9}
+.acc.open{border:none;box-shadow:0 2px 4px rgba(59,44,201,.10),0 14px 30px -14px rgba(59,44,201,.42)}
+.acc .ans{font-size:13.5px;color:#6E6D8A;line-height:1.6}
+.chk{border:none;border-radius:18px;box-shadow:var(--shadow-sm);padding:13px 15px}
+.chk:hover{background:#FBFBFE}
+.chk.done{background:#E9F8EF;box-shadow:none}
+.box{border-radius:8px;border:2px solid #CFCEDD}
+.chk .t{font-size:13.5px;font-weight:700;color:#151329}
+.chk .d{font-size:12px;color:#6C6C88}
+.prog-txt{background:#EDEBFD;color:#3B2CC9;font-size:11.5px;font-weight:800;border-radius:999px}
+.gl{border:none;border-radius:16px;box-shadow:var(--shadow-sm);padding:11px 13px}
+.gl .zh{color:#3B2CC9;font-weight:800;font-size:15px}
+.gl .uz{font-size:13px;color:#333350}
+.gl .cp{border:none;background:#F1F1F8;border-radius:10px;color:#6C6C88;font-weight:700}
+.gl .cp:hover{background:#EDEBFD;color:#3B2CC9}
+.gl .cp.ok{background:#E9F8EF;color:#0F7B3E}
+
+.kbd{background:#F1F1F8;border:none;border-radius:8px;color:#333350;font-weight:600}
+.mini{font-size:12.5px;color:#6C6C88;line-height:1.55}
+ul.tick li{font-size:14px}
+.foot{color:#9A99AE;font-size:11.5px;padding-top:28px}
+
+/* ============ Interaktivlik qatlami ============ */
+body{padding-bottom:0}
+.wrap{padding-bottom:96px}
+
+/* O'qish progressi */
+nav.tabs{position:sticky;top:0}
+.xy-prog{position:absolute;left:0;bottom:-1px;height:2.5px;width:0;background:linear-gradient(90deg,#5A46EC,#3423B3);border-radius:0 3px 3px 0;transition:width .12s linear;display:block}
+
+/* Pastdagi bo'lim navigatsiyasi */
+.xy-secnav{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;align-items:center;gap:8px;
+  padding:9px 12px calc(9px + env(safe-area-inset-bottom));background:rgba(255,255,255,.94);
+  backdrop-filter:blur(14px);border-top:1px solid #E8E8F1}
+.xy-nb{flex:none;width:44px;height:44px;border:none;border-radius:16px;background:#F1F1F8;color:#3B2CC9;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,transform .12s}
+.xy-nb:hover{background:#EDEBFD}
+.xy-nb:active{transform:scale(.94)}
+.xy-nb:disabled{opacity:.32;cursor:not-allowed}
+.xy-mid{flex:1;min-width:0;border:none;background:#FFFFFF;border-radius:16px;height:44px;cursor:pointer;
+  font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  box-shadow:0 1px 2px rgba(20,19,43,.045),0 6px 16px -10px rgba(20,19,43,.24)}
+.xy-mid:active{transform:scale(.99)}
+.xy-mid b{font-size:13px;font-weight:800;color:#151329;letter-spacing:-.2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.xy-mid span{font-size:10px;font-weight:700;color:#6C6C88;letter-spacing:.4px;font-variant-numeric:tabular-nums}
+
+/* Kalkulyator natijasi ko'z oldida qoladi */
+#p-calc .res{position:sticky;bottom:86px;z-index:5}
+
+/* Tegish maydonlari va aks-sado */
+.tab{min-height:36px}
+.tab:active{transform:scale(.96)}
+.chip{min-height:34px}
+.chip:active{transform:scale(.96)}
+.btn{min-height:50px}
+.btn:active{transform:scale(.985)}
+.dot{width:36px;height:36px}
+.dot:active{transform:scale(.94)}
+.gl .cp{min-height:32px}
+.chk{min-height:52px;align-items:center}
+.acc button{min-height:52px}
+
+/* Akkordeon chevroni */
+.acc button::after,.acc.open button::after{content:"";width:8px;height:8px;border-right:2.4px solid #3B2CC9;
+  border-bottom:2.4px solid #3B2CC9;border-radius:1px;transform:translateY(-70%) rotate(45deg);transition:transform .22s ease}
+.acc.open button::after{transform:translateY(-20%) rotate(225deg)}
+
+/* Raqamlar tekis ustunda */
+table,.res,.hstat b,.step-meta,.prog-txt{font-variant-numeric:tabular-nums}
+
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-in">
+    <div class="badge-top"><span class="bd"></span>拼多多 Pinduoduo · Yangilangan: 2026-yil avgust</div>
+    <h1>Pinduoduo'dan O'zbekistonga<br>buyurtma berish</h1>
+    <p>Xitoyning eng arzon savdo maydonchasi. Guruh xaridi mexanikasi, ilovani o'rnatishdan bojxonagacha — bosqichma-bosqich qo'llanma, kalkulyator va xitoycha lug'at.</p>
+    <div class="hero-stats"><div class="hstat"><b>30–50%</b><span>Taobao'dan arzonroq</span></div><div class="hstat"><b>$200</b><span>oylik bojsiz norma</span></div><div class="hstat"><b>10–25 kun</b><span>kargo bilan yetkazish</span></div></div>
+  </div>
+</header>
+<div class="wrap">
+  <nav class="tabs"><div class="tabs-scroll" id="tabs"></div></nav>
+  <section class="panel active" id="p-start"><h2>Pinduoduo nima va kimga mos?</h2><p class="sub">PDD — Xitoyning ichki bozorida Taobao bilan raqobatlashadigan platforma. Asosiy g'oyasi: guruh bo'lib olsangiz — arzonroq. Lekin xorijliklar uchun eng qiyin platformalardan biri.</p>
+<div class="note warn">
+  <span class="ic">⚠️</span>
+  <div><b>Ochiq gapiraylik:</b> Pinduoduo xorijliklar uchun <b>maxsus qiyin</b>. Ilova faqat xitoy tilida, til almashtirish yo'q, veb-versiyasi deyarli ishlamaydi, xorij raqami bilan ro'yxatdan o'tgan akkauntlar <b>xavf nazorati</b> (风控) tizimi tomonidan tez-tez bloklanadi. Shuning uchun quyidagi 3 usuldan qaysi biri sizga mos kelishini avval hal qiling.</div>
+</div>
+
+<div class="grid g3">
+  <div class="method">
+    <div class="tag">ENG SODDA</div>
+    <h4>1. Vositachi orqali</h4>
+    <div class="who">Ular sotib olib beradi</div>
+    <p class="mini">Havolani yoki skrinshotni yuborasiz — vositachi PDD'da o'z akkaunti bilan sotib oladi, omborda tekshiradi va yetkazadi.</p>
+    <ul>
+      <li class="p">Xitoy tili, ilova, to'lov muammosi yo'q</li>
+      <li class="p">Akkaunt bloklanishi xavfi yo'q</li>
+      <li class="p">Sifatni oldindan tekshirib beradi</li>
+      <li class="m">Komissiya 5–15%</li>
+      <li class="m">Har bir tovarni alohida so'rash kerak</li>
+    </ul>
+  </div>
+  <div class="method">
+    <h4>2. O'zingiz + kargo</h4>
+    <div class="who">PDD ilovasi + Xitoy manzili</div>
+    <p class="mini">Kargo sizga Xitoydagi ombor manzilini beradi, siz PDD ilovasida o'zingiz buyurtma qilasiz.</p>
+    <ul>
+      <li class="p">Eng past narx — komissiyasiz</li>
+      <li class="p">百亿补贴 (subsidiya) bo'limiga to'liq kirish</li>
+      <li class="m">Faqat xitoycha interfeys</li>
+      <li class="m">To'lov ko'pincha rad etiladi</li>
+      <li class="m">Akkaunt bloklanishi mumkin</li>
+    </ul>
+  </div>
+  <div class="method">
+    <h4>3. Temu</h4>
+    <div class="who">PDD'ning xalqaro versiyasi</div>
+    <p class="mini">Temu — aynan Pinduoduo kompaniyasining xalqaro brendi. O'zbek tilida ishlaydi va to'g'ridan-to'g'ri yetkazadi.</p>
+    <ul>
+      <li class="p">Kargo va vositachi kerak emas</li>
+      <li class="p">Interfeys tushunarli, ingliz/rus tilida</li>
+      <li class="p">UzPost bilan hamkorlikda yetkazish</li>
+      <li class="m">Assortiment PDD'dan ancha kichik</li>
+      <li class="m">Narx PDD ichki narxidan qimmatroq</li>
+    </ul>
+  </div>
+</div>
+
+<h3>Pinduoduo, Temu, Taobao va 1688 — qaysi biri?</h3>
+<div class="tblwrap">
+  <table><thead><tr><th>Platforma</th><th>Narx darajasi</th><th>Sifat</th><th>Til</th><th>Kimga mos</th></tr></thead><tbody>
+    <tr><td><b>Pinduoduo</b> (拼多多)</td><td><span class="pill g">Eng arzon</span></td><td>Beqaror — arzon segmentda past</td><td>Faqat xitoycha</td><td>Narxni birinchi o'ringa qo'yadiganlar; uy-ro'zg'or, mayda buyumlar</td></tr>
+    <tr><td><b>Temu</b></td><td><span class="pill a">Arzon</span></td><td>PDD bilan bir xil manba, filtrlangan</td><td>Ingliz / rus</td><td>Birinchi marta buyurtma qilayotganlar</td></tr>
+    <tr><td><b>Taobao</b> (淘宝)</td><td><span class="pill a">O'rtacha</span></td><td>Yaxshi — sotuvchi reytingi kuchli</td><td>Xitoycha (tarjima ishlaydi)</td><td>Assortiment va tanlov muhim bo'lganlar</td></tr>
+    <tr><td><b>1688</b></td><td><span class="pill g">Zavod narxi</span></td><td>Kelishuvga bog'liq</td><td>Faqat xitoycha</td><td>Optomchilar, biznes</td></tr>
+  </tbody></table>
+</div>
+
+<h3>PDD nimada kuchli, nimada zaif?</h3>
+<div class="grid g2">
+  <div class="card tight"><b style="color:var(--green)">✓ Kuchli tomonlari</b>
+    <ul class="tick" style="margin:6px 0 0">
+      <li>Uy-ro'zg'or, oshxona, tashkilotchi qutilar, mayda buyumlar — bozordagi eng past narx</li>
+      <li><b>百亿补贴</b> («10 milliard subsidiya») bo'limida original brend tovarlar davlat/platforma subsidiyasi bilan arzon</li>
+      <li>Xaridor foydasiga ishlaydigan <b>仅退款</b> siyosati — tovarni qaytarmasdan pul qaytarish</li>
+      <li>Xitoy ichida yetkazish deyarli har doim bepul (包邮)</li>
+    </ul>
+  </div>
+  <div class="card tight"><b style="color:var(--red)">✗ Zaif tomonlari</b>
+    <ul style="margin:6px 0 0;padding-left:18px;font-size:14px">
+      <li>Arzon segmentda sifat lotereya — 5 yuanlik tovardan ko'p narsa kutmang</li>
+      <li>Kontrafakt va brend nusxalari juda ko'p — bojxonada muammo</li>
+      <li>Sotuvchi bilan bog'lanish qiyin, ko'pi faqat bot bilan javob beradi</li>
+      <li>Xorij akkauntlariga qattiq xavf nazorati</li>
+      <li>O'lchamlar jadvali ko'pincha noaniq yoki umuman yo'q</li>
+    </ul>
+  </div>
+</div>
+</section><section class="panel" id="p-steps">
+      <h2>Bosqichma-bosqich</h2>
+      <p class="sub">11 ta qadam — ilovani o'rnatishdan tovarni qo'lga olishgacha. Har bir qadamda PDD'ga xos nozikliklar.</p>
+      <div class="wiz-progress" id="wizbar"></div>
+      <div class="dots" id="wizdots"></div>
+      <div class="card" id="wizcard"></div>
+      <div class="wiz-nav">
+        <button class="btn ghost" id="wprev">← Orqaga</button>
+        <button class="btn primary wide" id="wnext">Keyingi qadam →</button>
+      </div></section><section class="panel" id="p-calc">
+      <h2>Narx va boj kalkulyatori</h2>
+      <p class="sub">Tovar narxi + kargo + bojxona to'lovi. PDD'da mahalliy yetkazish odatda bepul (包邮).</p>
+      
+    <div class="grid g2">
+      <div>
+        <div class="card">
+          <h3 style="margin-top:0">Tovar</h3>
+          <div class="field">
+            <label class="f">Tovar narxi</label>
+            <div class="seg" style="margin-bottom:8px">
+              <button class="on" data-cur="loc" onclick="setCur('loc')">¥ Yuan</button>
+              <button class="" data-cur="usd" onclick="setCur('usd')">$ Dollar</button>
+            </div>
+            <input type="number" id="price" value="180" min="0" step="1" oninput="calc()">
+          </div>
+          <div class="field">
+            <label class="f">Mahalliy yetkazish (¥ yoki $) <span class="mini">— 包邮 bo'lsa 0 qoldiring</span></label>
+            <input type="number" id="inner" value="0" min="0" step="1" oninput="calc()">
+          </div>
+          <input type="hidden" id="taxpct" value="0">
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">Og'irlik va o'lcham</h3>
+          <div class="field">
+            <label class="f">Haqiqiy og'irlik (kg)</label>
+            <input type="number" id="wkg" value="3" min="0" step="0.1" oninput="calc()">
+          </div>
+          <div class="field">
+            <label class="f">Quti o'lchami, sm <span class="mini">(uzunlik × eni × balandlik)</span></label>
+            <div class="dim3">
+              <input type="number" id="dl" value="35" min="0" oninput="calc()">
+              <input type="number" id="dw" value="25" min="0" oninput="calc()">
+              <input type="number" id="dh" value="15" min="0" oninput="calc()">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <h3 style="margin-top:0">Xalqaro yetkazish</h3>
+          <div class="field">
+            <label class="f">Yetkazish turi</label>
+            <div class="seg">
+              <button class="on" data-m="air" onclick="setMode('air')">✈️ Avia (7–12 kun)</button>
+              <button data-m="road" onclick="setMode('road')">🚚 Avto (15–30 kun)</button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="f">Tarif ($ / kg)</label>
+            <input type="number" id="rate" value="10" min="0" step="0.1" oninput="calc()">
+          </div>
+          <div class="field">
+            <label class="f">Hajmiy og'irlik bo'luvchisi</label>
+            <select id="divisor" onchange="calc()">
+              <option value="6000">6000 — standart</option>
+              <option value="5000">5000 — qattiqroq</option>
+              <option value="0">Hisobga olinmasin</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">Bojxona va kurs</h3>
+          <div class="field">
+            <label class="f">Shu oyda allaqachon foydalanilgan norma ($)</label>
+            <input type="number" id="used" value="0" min="0" step="1" oninput="calc()">
+          </div>
+          <div class="field">
+            <label class="f">Kanal</label>
+            <select id="channel" onchange="calc()">
+              <option value="200">Kuryerlik / kargo — $200 oyiga</option>
+              <option value="100">Pochta (UzPost, EMS) — $100</option>
+            </select>
+          </div>
+          <div class="grid g2" style="gap:8px">
+            <div class="field" style="margin:0">
+              <label class="f">1 USD = ... so'm</label>
+              <input type="number" id="usdrate" value="11857" min="1" oninput="calc()">
+            </div>
+            <div class="field" style="margin:0">
+              <label class="f">1 USD = ... ¥</label>
+              <input type="number" id="fxrate" value="6.74" min="0.0001" step="0.01" oninput="calc()">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="res" id="result"></div>
+    
+    <div class="note info" style="margin-top:14px">
+      <span class="ic">📐</span>
+      <div><b>Hajmiy og'irlik nima?</b> Yengil, lekin katta hajmli tovar uchun yetkazish <b>hajm</b> bo'yicha hisoblanadi: <span class="kbd">U × E × B ÷ 6000</span>. Haqiqiy va hajmiy og'irlikning <b>kattarog'i</b> to'lanadi.</div>
+    </div>
+    <div class="note warn">
+      <span class="ic">🧮</span>
+      <div><b>Boj qanday hisoblanadi:</b> bojxona qiymati = <b>tovar narxi + soliq + yetkazib berish qiymati</b>. Normadan oshgan qismdan <b>30%</b> olinadi, lekin har bir kilogramm uchun <b>$3</b> dan kam bo'lmaydi. Kalkulyator ikkalasini hisoblab, kattarog'ini ko'rsatadi.</div>
+    </div>
+
+    <div class="note ok">
+      <span class="ic">🧮</span>
+      <div><b>PDD uchun asosiy tekshiruv:</b> «Yetkazish» qatoridagi summa «Tovar» qatoridan katta bo'lsa — bu buyurtma iqtisodiy jihatdan mantiqsiz. Yechim: boshqa tovarlar bilan birlashtiring yoki avto tarifga o'ting.</div>
+    </div>
+    </section><section class="panel" id="p-customs">
+      <h2>Bojxona qoidalari</h2>
+      <p class="sub">O'zbekistonda jismoniy shaxslar uchun amaldagi normalar (2025-yil 1-maydan kuchga kirgan tartib).</p>
+      
+    <div class="grid g2">
+      <div class="card tight">
+        <div class="pill b">KURYERLIK / KARGO</div>
+        <div style="font-size:26px;font-weight:800;margin:8px 0 2px;color:var(--indigo-700)">$200</div>
+        <div class="mini">bir <b>kalendar oy</b> ichida, bojsiz. Barcha jo'natmalar jamlanib hisoblanadi.</div>
+      </div>
+      <div class="card tight">
+        <div class="pill s">POCHTA (UzPost / EMS)</div>
+        <div style="font-size:26px;font-weight:800;margin:8px 0 2px;color:var(--sky)">$100</div>
+        <div class="mini">bojsiz chegara. Kanal boshqacha — normalar alohida hisoblanadi.</div>
+      </div>
+      <div class="card tight">
+        <div class="pill a">NORMADAN OSHSA</div>
+        <div style="font-size:26px;font-weight:800;margin:8px 0 2px;color:var(--amber)">30%</div>
+        <div class="mini">faqat <b>ortiqcha summadan</b>, lekin 1 kg uchun $3 dan kam emas.</div>
+      </div>
+      <div class="card tight">
+        <div class="pill g">O'ZINGIZ OLIB KELSANGIZ</div>
+        <div style="font-size:26px;font-weight:800;margin:8px 0 2px;color:var(--green)">$1000</div>
+        <div class="mini">havo yo'li bilan. Temir yo'l/suv — $500, avtomobil va piyoda — $300.</div>
+      </div>
+    </div>
+
+    <h3>«Yashil», «sariq», «qizil» yo'laklar</h3>
+    <p style="font-size:14.5px;margin-top:0">2025-yil 6-noyabrdagi VM 700-son qarori bilan pochta va kuryerlik jo'natmalari <b>xavfni boshqarish tizimi</b> orqali uch yo'lakka ajratiladi:</p>
+    <div class="grid g3">
+      <div class="card tight" style="border-left:4px solid var(--green)">
+        <b style="color:var(--green)">🟢 Yashil</b>
+        <div class="mini" style="margin-top:5px">Hujjatlar to'g'ri, risk past. Jismoniy tekshiruvsiz o'tadi — eng tez.</div>
+      </div>
+      <div class="card tight" style="border-left:4px solid var(--amber)">
+        <b style="color:var(--amber)">🟡 Sariq</b>
+        <div class="mini" style="margin-top:5px">Hujjatlar tekshiriladi: invoys, chek, qiymat asoslanishi so'ralishi mumkin.</div>
+      </div>
+      <div class="card tight" style="border-left:4px solid var(--red)">
+        <b style="color:var(--red)">🔴 Qizil</b>
+        <div class="mini" style="margin-top:5px">Jo'natma ochib ko'riladi. Taqiq/cheklov, noaniq qiymat yoki tijorat belgisi bo'lsa.</div>
+      </div>
+    </div>
+
+    <h3>my.gov.uz orqali tasdiqlash</h3>
+    <p style="font-size:14.5px;margin-top:0">2026-yil may oyidan sizning nomingizga kelayotgan har bir xalqaro kuryerlik jo'natmasi <b>my.gov.uz</b> shaxsiy kabinetingizga push-xabar sifatida tushadi.</p>
+    <ol style="font-size:14.5px">
+      <li><b>my.gov.uz</b> → «Bojxona» bo'limi</li>
+      <li>«Xalqaro kuryerlik jo'natmasi to'g'risidagi xabarnomani tasdiqlash yoki rad etish» xizmati</li>
+      <li>Jo'natma nomi, qiymati, vazni ko'rsatiladi — tekshiring</li>
+      <li><b>Tasdiqlash</b> yoki <b>Rad etish</b></li>
+    </ol>
+    <div class="note dang">
+      <span class="ic">🚨</span>
+      <div><b>Faqat o'zingizniki bo'lgan jo'natmani tasdiqlang.</b> Notanish jo'natmani tasdiqlasangiz, u sizning oylik normangizni «yeydi» va kelajakda soliq/bojxona muammosiga aylanishi mumkin. Xizmat 24/7 ishlaydi.</div>
+    </div>
+
+      
+    <h3>📱 Telefon buyurtma qilsangiz — UzIMEI</h3>
+    <div class="card">
+      <p style="margin-top:0;font-size:14.5px">Chetdan kelgan telefon O'zbekiston tarmog'ida ishlashi uchun <b>UzIMEI</b> tizimida ro'yxatdan o'tishi shart. Aks holda telefon <b>30 kundan keyin tarmoqdan uziladi</b>.</p>
+      <div class="tblwrap">
+        <table class="narrow"><tbody>
+          <tr><td>Tarmoqqa ulangandan keyin <b>30 kun ichida</b></td><td><b>88 000 so'm</b> (BHMning 20%)</td></tr>
+          <tr><td>30 kundan <b>keyin</b></td><td><b>110 000 so'm</b> (BHMning 25%)</td></tr>
+          <tr><td>Xorij SIM-kartasi bilan (rezident emas)</td><td><b>Bepul</b></td></tr>
+        </tbody></table>
+      </div>
+      <p class="mini" style="margin-bottom:0">Ikki SIM-slotli telefonda <b>har bir IMEI alohida</b> kiritiladi — <span class="kbd">*#06#</span> terib ko'ring. Deklaratsiya va UzIMEI ro'yxati — <b>ikki alohida jarayon</b>.</p>
+    </div>
+
+    <div class="note dang">
+      <span class="ic">🎭</span>
+      <div><b>PDD'ga xos bojxona riski — kontrafakt.</b> Platformada brend nusxalari juda keng tarqalgan. Bunday tovar «qizil yo'lak»ka tushib ochilsa, intellektual mulk huquqi buzilishi sifatida <b>ushlab qolinadi</b> va yo'q qilinishi mumkin — pul ham, tovar ham qaytmaydi. Brendli buyum kerak bo'lsa, faqat <b>百亿补贴</b> yoki <b>旗舰店</b> dan oling.</div>
+    </div>
+    <div class="note warn">
+      <span class="ic">🧾</span>
+      <div><b>Invoys muammosi.</b> PDD rasmiy hisob-fakturani (发票) ko'pincha bermaydi. Har bir buyurtmaning <b>skrinshotini</b> (tovar nomi, narx, sana, buyurtma raqami ko'rinadigan) saqlang — bojxona qiymatni asoslashda shuni so'raydi.</div>
+    </div>
+
+      <h3>Taqiq va cheklovlar tekshiruvi</h3>
+      <div class="search-box">
+        <span class="ic">🔍</span>
+        <input type="text" id="banq" placeholder="Tovar nomini yozing: dron, dori, batareya..." oninput="renderBan()">
+      </div>
+      <div class="chips" id="banchips"></div>
+      <div id="banlist"></div>
+      <div class="note warn">
+        <span class="ic">⚖️</span>
+        <div>Bu ro'yxat — <b>yo'naltiruvchi</b>. Yakuniy qaror bojxona organi tomonidan aniq tovar, uning tavsifi va hujjatlari asosida qabul qilinadi.</div>
+      </div></section><section class="panel" id="p-cargo">
+      <h2>Xitoydan yetkazish xizmatlari</h2>
+      <p class="sub">PDD buyurtmalarini O'zbekistonga olib keluvchi kargolar. PDD uchun konsolidatsiya narxi eng muhim mezon.</p>
+      <div class="chips" id="cargochips"></div>
+      <div class="tblwrap">
+        <table>
+          <thead><tr><th>Kompaniya</th><th>Yo'nalish</th><th>Narx</th><th>Muddat</th><th>Xususiyati</th></tr></thead>
+          <tbody id="cargobody"></tbody>
+        </table>
+      </div>
+      
+<div class="note info">
+  <span class="ic">📦</span>
+  <div><b>PDD uchun kargo tanlash mezonlari:</b> (1) <b>konsolidatsiya bepulmi</b> — PDD'da 5–15 ta posilka odatiy hol; (2) <b>minimal og'irlik</b> qanchadan boshlanadi; (3) <b>bepul saqlash muddati</b> — barcha posilkalar yig'ilishi 2–3 hafta olishi mumkin; (4) <b>极兔/申通</b> kabi arzon kuryerlarni qabul qiladimi.</div>
+</div>
+</section><section class="panel" id="p-temu"><h2>Temu — eng oson muqobil</h2><p class="sub">Temu Pinduoduo kompaniyasining xalqaro brendi. Agar xitoycha interfeys va to'lov muammosi qiynasa — shu yerdan boshlang.</p>
+<div class="note ok">
+  <span class="ic">🌍</span>
+  <div><b>Temu O'zbekistonda ishlaydi.</b> <span class="kbd">temu.com/uz-en</span> — mamlakat sifatida O'zbekiston tanlanadi, tovarlar to'g'ridan-to'g'ri uyingizgacha yetkaziladi. 2024-yil dekabrdan <b>UzPost</b> bilan hamkorlikda — mamlakat bo'ylab 1600 dan ortiq filial orqali.</div>
+</div>
+
+<h3>Temu va Pinduoduo — nima farqi bor?</h3>
+<div class="tblwrap">
+  <table><thead><tr><th></th><th>Pinduoduo (ichki)</th><th>Temu (xalqaro)</th></tr></thead><tbody>
+    <tr><td><b>Til</b></td><td>Faqat xitoycha</td><td>Ingliz, rus va boshqalar</td></tr>
+    <tr><td><b>Yetkazish</b></td><td>Faqat Xitoy ichida → kargo kerak</td><td>To'g'ridan-to'g'ri O'zbekistonga</td></tr>
+    <tr><td><b>To'lov</b></td><td>WeChat Pay / Alipay / Duoduo Pay</td><td>Xalqaro Visa / Mastercard</td></tr>
+    <tr><td><b>Narx</b></td><td>Eng past</td><td>Yetkazish qo'shilgani uchun qimmatroq</td></tr>
+    <tr><td><b>Assortiment</b></td><td>Deyarli cheksiz</td><td>Filtrlangan, ancha kichik</td></tr>
+    <tr><td><b>Muddat</b></td><td>Kargo bilan 10–25 kun</td><td>7–20 kun</td></tr>
+    <tr><td><b>Qaytarish</b></td><td>Amalda imkonsiz</td><td>90 kunlik siyosat, ko'pincha bepul</td></tr>
+    <tr><td><b>Bojxona</b></td><td>Siz o'zingiz hal qilasiz</td><td>Ko'pincha narxga kiritilgan</td></tr>
+  </tbody></table>
+</div>
+
+<h3>Temu'dan buyurtma berish</h3>
+<ol style="font-size:14.5px">
+<li><b>temu.com</b> saytiga kiring yoki ilovani yuklab oling. Yuqori o'ng burchakdan mamlakatni <b>O'zbekiston</b>, valyutani <b>USD</b> yoki <b>UZS</b> qilib tanlang.</li>
+<li>Ro'yxatdan o'ting — email yoki telefon raqami yetarli.</li>
+<li>Tovarni tanlang. <b>«Local warehouse»</b> yoki <b>«Fast delivery»</b> belgisi bo'lsa — tezroq keladi.</li>
+<li>Manzilingizni kiriting: viloyat, shahar, ko'cha, uy, indeks, telefon.</li>
+<li>To'lov: <b>xalqaro Visa / Mastercard</b>. Mahalliy kartalar (Uzcard/Humo) bo'yicha holat o'zgarib turadi — checkout'da mavjud usullarni tekshiring.</li>
+<li>Buyurtmani kuzating; UzPost filialidan yoki uyingizdan qabul qiling.</li>
+</ol>
+
+<h3>Temu'ning kuchli va zaif tomonlari</h3>
+<div class="grid g2">
+  <div class="card tight"><b style="color:var(--green)">✓ Nimasi yaxshi</b>
+    <ul class="tick" style="margin:6px 0 0">
+      <li>Kargo, Xitoy manzili, xitoy tili kerak emas</li>
+      <li>Narx ko'rsatilgan — yetkazish ko'pincha bepul yoki narxga kirgan</li>
+      <li>90 kunlik qaytarish siyosati</li>
+      <li>Yangi foydalanuvchiga katta chegirmalar</li>
+    </ul>
+  </div>
+  <div class="card tight"><b style="color:var(--red)">✗ Nimasiga ehtiyot bo'lish kerak</b>
+    <ul style="margin:6px 0 0;padding-left:18px;font-size:14px">
+      <li>Sifat PDD bilan bir xil — arzon segmentda past</li>
+      <li>«Original narx» ko'rsatkichlari ko'pincha shartli</li>
+      <li>Interfeys sizni ko'proq sotib olishga undaydi (taymer, g'ildirak, bonus)</li>
+      <li>Yevropa Komissiyasi xavfsizlik va reklama amaliyotini tekshirmoqda</li>
+      <li>Bojxona normasi baribir sizning $200 limitingizdan hisoblanadi</li>
+    </ul>
+  </div>
+</div>
+
+<div class="note warn">
+  <span class="ic">💵</span>
+  <div><b>Bojxona bo'yicha muhim eslatma:</b> Temu jo'natmalari ham xalqaro kuryerlik jo'natmasi hisoblanadi va sizning <b>oylik $200</b> normangizga kiradi. Temu narxga «bojxona to'lovi» ni kiritgan bo'lsa ham, norma hisobi <b>sizning JShShIR raqamingiz</b> bo'yicha yuritiladi — my.gov.uz'da ko'rinadi.</div>
+</div>
+</section><section class="panel" id="p-size"><h2>Xitoy o'lchamlari jadvali</h2><p class="sub">PDD'da o'lchamlar Xitoy tizimida va ko'pincha jadvalsiz beriladi. Santimetrga suyaning.</p>
+<div class="note dang"><span class="ic">📏</span><div><b>PDD'ga xos ogohlantirish:</b> arzon sotuvchilarda <b>尺码表</b> (o'lchamlar jadvali) ko'pincha umuman bo'lmaydi yoki noaniq. Bunday tovarda o'lcham lotereya. Kiyim olsangiz — jadvali bor sotuvchini tanlang yoki 1–2 razmer katta oling.</div></div>
+
+<h3>👕 Erkaklar kiyimi</h3>
+<div class="tblwrap"><table><thead><tr><th>Xitoy (CN)</th><th>EU / RU</th><th>Xalqaro</th><th>Ko'krak, sm</th><th>Bo'y, sm</th></tr></thead><tbody>
+<tr><td><b>M</b></td><td>44–46</td><td>S</td><td>88–92</td><td>165–170</td></tr>
+<tr><td><b>L</b></td><td>46–48</td><td>M</td><td>92–96</td><td>170–175</td></tr>
+<tr><td><b>XL</b></td><td>48–50</td><td>L</td><td>96–100</td><td>175–180</td></tr>
+<tr><td><b>2XL</b></td><td>50–52</td><td>XL</td><td>100–106</td><td>178–183</td></tr>
+<tr><td><b>3XL</b></td><td>52–54</td><td>2XL</td><td>106–112</td><td>180–185</td></tr>
+<tr><td><b>4XL</b></td><td>54–56</td><td>3XL</td><td>112–118</td><td>183–188</td></tr>
+</tbody></table></div>
+
+<h3>👗 Ayollar kiyimi</h3>
+<div class="tblwrap"><table><thead><tr><th>Xitoy (CN)</th><th>EU</th><th>RU</th><th>Ko'krak, sm</th><th>Bel, sm</th></tr></thead><tbody>
+<tr><td><b>S / 160</b></td><td>34–36</td><td>42</td><td>80–84</td><td>60–64</td></tr>
+<tr><td><b>M / 165</b></td><td>36–38</td><td>44</td><td>84–88</td><td>64–68</td></tr>
+<tr><td><b>L / 170</b></td><td>38–40</td><td>46</td><td>88–92</td><td>68–73</td></tr>
+<tr><td><b>XL / 175</b></td><td>40–42</td><td>48</td><td>92–98</td><td>73–78</td></tr>
+<tr><td><b>2XL</b></td><td>42–44</td><td>50</td><td>98–104</td><td>78–84</td></tr>
+</tbody></table></div>
+
+<h3>👟 Poyabzal</h3>
+<p class="mini" style="margin-top:0">Xitoyda poyabzal <b>oyoq uzunligi mm</b> bilan yoziladi: «250» = 25.0 sm.</p>
+<div class="tblwrap"><table><thead><tr><th>Oyoq uzunligi</th><th>CN</th><th>EU</th><th>UK</th><th>US (E)</th></tr></thead><tbody>
+<tr><td>23.5 sm</td><td>235</td><td>37</td><td>4.5</td><td>5.5</td></tr>
+<tr><td>24.0 sm</td><td>240</td><td>38</td><td>5</td><td>6</td></tr>
+<tr><td>24.5 sm</td><td>245</td><td>39</td><td>6</td><td>6.5</td></tr>
+<tr><td>25.0 sm</td><td>250</td><td>40</td><td>6.5</td><td>7</td></tr>
+<tr><td>25.5 sm</td><td>255</td><td>40.5</td><td>7</td><td>7.5</td></tr>
+<tr><td>26.0 sm</td><td>260</td><td>41</td><td>7.5</td><td>8</td></tr>
+<tr><td>26.5 sm</td><td>265</td><td>42</td><td>8</td><td>8.5</td></tr>
+<tr><td>27.0 sm</td><td>270</td><td>43</td><td>8.5</td><td>9</td></tr>
+<tr><td>27.5 sm</td><td>275</td><td>44</td><td>9.5</td><td>10</td></tr>
+<tr><td>28.0 sm</td><td>280</td><td>45</td><td>10</td><td>11</td></tr>
+<tr><td>29.0 sm</td><td>290</td><td>46</td><td>11</td><td>12</td></tr>
+</tbody></table></div>
+</section><section class="panel" id="p-words">
+          <h2>Pinduoduo xitoycha lug'ati</h2>
+          <p class="sub">Ilovada uchraydigan asosiy iyerogliflar. «Nusxa» tugmasi bilan qidiruvga qo'ying.</p>
+          <div class="search-box">
+            <span class="ic">🔍</span>
+            <input type="text" id="wq" placeholder="O'zbekcha yoki asl tilda qidiring..." oninput="renderWords()">
+          </div>
+          <div class="chips" id="wchips"></div>
+          <div id="wlist"></div>
+          
+<div class="note info"><span class="ic">📸</span><div><b>Eng samarali usul — rasm orqali qidiruv.</b> Qidiruv maydonidagi kamera belgisini bosib, tovar suratini yuklang. PDD'ning rasm qidiruvi juda kuchli va til bilishni talab qilmaydi.</div></div>
+</section><section class="panel" id="p-faq">
+      <h2>Ko'p beriladigan savollar</h2>
+      <p class="sub">Amaliyotda eng ko'p uchraydigan 17 ta savol.</p>
+      <div id="faqlist"></div></section><section class="panel" id="p-check">
+      <h2>Nazorat ro'yxati</h2>
+      <p class="sub">Buyurtma berishdan oldin va keyin — hech narsani unutmaslik uchun.</p>
+      <div id="chklist"></div>
+      <div class="note info" style="margin-top:16px">
+        <span class="ic">💾</span>
+        <div>Belgilar sahifa yangilanganda tozalanadi. Web appga joylashtirganda ularni foydalanuvchi profiliga saqlashni qo'shsangiz — qulayroq bo'ladi.</div>
+      </div></section>
+  <div class="foot">
+    Ma'lumotlar 2026-yil avgust holatiga. Bojxona normalari, tariflar va platforma qoidalari o'zgarishi mumkin —<br>
+    muhim qarorlardan oldin <b>customs.uz</b> va tanlagan xizmatning rasmiy manbasini tekshiring.
+  </div>
+</div>
+<script>
+const TABS=[{"id": "p-start", "t": "Boshlash"}, {"id": "p-steps", "t": "Bosqichlar"}, {"id": "p-calc", "t": "Kalkulyator"}, {"id": "p-customs", "t": "Bojxona"}, {"id": "p-cargo", "t": "Yetkazish"}, {"id": "p-temu", "t": "Temu"}, {"id": "p-size", "t": "O'lchamlar"}, {"id": "p-words", "t": "Lug'at"}, {"id": "p-faq", "t": "FAQ"}, {"id": "p-check", "t": "Checklist"}];
+const STEPS=[{"t": "Kargo tanlang va Xitoy manzilini oling", "m": "10 daqiqa", "b": "\n<p>PDD faqat Xitoy ichiga jo'natadi. Shuning uchun avval Xitoydagi manzilingiz bo'lishi kerak.</p>\n<ol>\n<li>«Yetkazish» bo'limidan kargoni tanlang. PDD uchun muhim mezon — <b>kichik posilkalarni ko'p qabul qilishi</b> va <b>konsolidatsiya bepulligi</b>: PDD'da odam odatda 5–15 ta arzon tovar oladi, ular alohida qutilarda keladi.</li>\n<li>Ro'yxatdan o'ting, <b>shaxsiy ID kod</b> oling (masalan <span class=\"kbd\">UZ-48213</span>).</li>\n<li><b>Xitoy ombori manzili</b>ni xitoycha holicha nusxalab saqlang.</li>\n</ol>\n<div class=\"note info\"><span class=\"ic\">📦</span><div><b>PDD'ga xos nuqta:</b> arzon tovarlar ko'pincha <b>极兔 (J&amp;T)</b>, <b>申通 (STO)</b> yoki <b>韵达 (Yunda)</b> kuryerlari bilan keladi. Ba'zi kargo omborlari bu kuryerlarni qabul qilmaydi yoki qo'shimcha haq oladi — oldindan so'rang.</div></div>\n"}, {"t": "Ilovani o'rnating", "m": "10–20 daqiqa", "b": "\n<p>Pinduoduo <b>amalda faqat ilova</b>. Veb-versiya (pinduoduo.com) juda cheklangan — qidiruv ham to'liq ishlamaydi.</p>\n<h4>iPhone</h4>\n<ol>\n<li>App Store'da <b>Pinduoduo</b> yoki <b>拼多多</b> deb qidiring.</li>\n<li>Topilmasa — App Store akkauntingiz mintaqasini vaqtincha <b>Xitoy (mainland China)</b> ga o'zgartirish kerak bo'ladi. Buning uchun alohida Apple ID ochish tavsiya etiladi.</li>\n</ol>\n<h4>Android</h4>\n<ol>\n<li>Google Play'da ko'pincha yo'q. Rasmiy <b>APK</b> ni <span class=\"kbd\">mobile.pinduoduo.com</span> saytidan yuklab oling.</li>\n<li>APK'ni faqat rasmiy manbadan oling — uchinchi tomon saytlaridagi fayllarda zararli kod bo'lishi mumkin.</li>\n</ol>\n<h4>Eng oson muqobil: WeChat mini-ilova</h4>\n<ol>\n<li>WeChat (微信) o'rnating va ro'yxatdan o'ting.</li>\n<li>Qidiruvga <b>拼多多</b> yozing → «小程序» (mini-ilova) bo'limidan oching.</li>\n<li>WeChat'ning ichki <b>tarjima</b> funksiyasi shu yerda ishlaydi — bu til muammosini sezilarli yengillashtiradi.</li>\n</ol>\n<div class=\"note warn\"><span class=\"ic\">🔐</span><div>Apple ID mintaqasini o'zgartirish oldin balansingizni sarflab bo'lishni talab qiladi va ba'zi obunalarni bekor qiladi. Shuning uchun <b>alohida Apple ID</b> yaratish xavfsizroq.</div></div>\n"}, {"t": "Ro'yxatdan o'ting", "m": "5–15 daqiqa", "b": "\n<ol>\n<li>Ilovani oching → <b>登录/注册</b> (kirish/ro'yxatdan o'tish).</li>\n<li>Mamlakat kodini <b>+998</b> ga o'zgartiring va raqamingizni kiriting.</li>\n<li>SMS kodni kiriting. Kelmasa — VPN'ni o'chiring va qayta urinib ko'ring.</li>\n<li>Muqobil: <b>WeChat orqali kirish</b> (微信登录) — bu eng barqaror usul, chunki WeChat akkaunti allaqachon tasdiqlangan hisoblanadi.</li>\n</ol>\n<div class=\"note dang\"><span class=\"ic\">🚫</span><div><b>风控 — xavf nazorati.</b> PDD xorij raqami, xorij IP va yangi akkaunt kombinatsiyasini shubhali deb baholaydi. Belgilari: to'lov «tizim xatosi» bilan rad etiladi, buyurtma avtomatik bekor qilinadi yoki akkaunt «cheklangan» holatga o'tadi.<br><br><b>Xavfni kamaytirish:</b> birinchi kuni katta summaga buyurtma qilmang; bir-ikki arzon tovardan boshlang; VPN'ni doim yoqib-o'chirib turmang; bitta qurilmadan foydalaning.</div></div>\n"}, {"t": "Til to'sig'ini yengib o'ting", "m": "—", "b": "\n<p>Ilovada til almashtirish tugmasi <b>yo'q</b>. Ishlaydigan usullar:</p>\n<ul>\n<li><b>WeChat mini-ilova + tarjima</b> — eng qulay yechim. Sahifani bosib turib «翻译» (tarjima) ni tanlang.</li>\n<li><b>Telefon kamerasi tarjimasi</b> — Google Lens yoki Yandex Translate ekrandagi iyeroglifni real vaqtda o'giradi. Skrinshot olib, galereyadan tarjima qilish ham ishlaydi.</li>\n<li><b>Rasm orqali qidiruv</b> — qidiruv maydonidagi 📷 belgisi. Til umuman kerak emas, natijasi ajoyib.</li>\n<li><b>Tayyor iyerogliflar</b> — «Lug'at» bo'limidan nusxalab qidiruvga qo'ying.</li>\n</ul>\n<div class=\"note info\"><span class=\"ic\">📸</span><div><b>Amaliy usul:</b> tovarni Taobao yoki Google'da toping, rasmini saqlang, so'ng PDD'da rasm orqali qidiring. Bir xil tovar PDD'da ko'pincha 20–40% arzon chiqadi.</div></div>\n"}, {"t": "Tovarni toping va sotuvchini tekshiring", "m": "15–30 daqiqa", "b": "\n<h4>Qidiruv natijasini o'qish</h4>\n<ul>\n<li><b>已拼XX件</b> — necha dona sotilgani. 1万+ (10 000+) bo'lsa — tovar sinovdan o'tgan.</li>\n<li><b>拼单价</b> — guruh narxi (asosiy, arzon narx). <b>单独购买</b> — yolg'iz sotib olish, qimmatroq.</li>\n<li><b>百亿补贴</b> — platforma subsidiyasi bo'limi. Bu yerda original brend tovarlar (telefon, kosmetika, elektronika) rasmiy kanaldan va arzon sotiladi. <b>Yangi boshlovchilar uchun eng xavfsiz bo'lim.</b></li>\n<li><b>旗舰店 / 官方</b> — rasmiy do'kon.</li>\n<li><b>限时秒杀</b> — vaqt cheklangan chaqmoq chegirma.</li>\n</ul>\n<h4>Sotuvchini tekshirish</h4>\n<ul>\n<li>Do'kon reytingi <b>4.8</b> dan yuqori bo'lsin (PDD'da 4.5 dan past — jiddiy signal).</li>\n<li><b>评价</b> (sharhlar) → <b>有图</b> (rasmli) filtri. PDD'da rasmli sharhlar juda ko'p va foydali.</li>\n<li>Yomon sharhlarni (<b>差评</b>) o'qing: bir xil shikoyat takrorlansa — tizimli muammo.</li>\n<li><b>发货地</b> (jo'natish joyi) — Guangdong, Zhejiang, Jiangsu odatda tez; uzoq viloyatlardan kargo omboriga borishi 4–7 kun.</li>\n</ul>\n<div class=\"note dang\"><span class=\"ic\">🎭</span><div><b>Kontrafakt xavfi:</b> PDD'da brend nusxalari juda ko'p. «Nike» krossovkasi 80 yuanga bo'lsa — bu original emas. Kontrafakt O'zbekiston bojxonasida <b>ushlab qolinadi va yo'q qilinishi mumkin</b>. Brend kerak bo'lsa — faqat <b>百亿补贴</b> bo'limidan yoki 旗舰店 dan oling.</div></div>\n"}, {"t": "Guruh xaridi (拼单) qanday ishlaydi", "m": "3 daqiqa", "b": "\n<p>PDD'ning nomi ham shundan: <b>拼</b> (pin) — «birlashtirmoq», <b>多多</b> (duoduo) — «ko'p-ko'p».</p>\n<h4>Ikki narx</h4>\n<div class=\"tblwrap\"><table class=\"narrow\"><tbody>\n<tr><td><b>单独购买</b> (yolg'iz olish)</td><td>Qimmatroq narx. Darhol rasmiylashtiriladi.</td></tr>\n<tr><td><b>发起拼单 / 一键开团</b> (guruh boshlash)</td><td>Arzon narx. Guruh to'lishini kutish kerak.</td></tr>\n<tr><td><b>参与拼单</b> (guruhga qo'shilish)</td><td>Arzon narx, allaqachon boshlangan guruhga qo'shilasiz — odatda darhol to'ladi.</td></tr>\n</tbody></table></div>\n<div class=\"note ok\"><span class=\"ic\">✅</span><div><b>Amaliyotda:</b> hozirgi PDD'da guruhlar deyarli har doim <b>bir necha soniyada</b> avtomatik to'ldiriladi — platformaning o'zi sizni boshqa xaridorlar bilan bog'laydi. Ya'ni <b>拼单</b> ni bemalol tanlang: do'st taklif qilish shart emas, narx esa arzonroq.</div></div>\n<div class=\"note warn\"><span class=\"ic\">🪓</span><div><b>砍一刀 dan qochish.</b> «Bepul olish uchun do'stlaringizni taklif qiling» mexanikasi (砍价免费拿) — vaqt yeydigan o'yin. Deyarli hech kim oxirigacha yetmaydi. Buni o'tkazib yuboring.</div></div>\n"}, {"t": "Kargo manzilini kiriting", "m": "5 daqiqa", "b": "\n<ol>\n<li><span class=\"kbd\">个人中心 → 收货地址 → 新增收货地址</span> (Shaxsiy kabinet → Manzillar → Yangi manzil)</li>\n<li><b>收货人</b> (qabul qiluvchi): kargo bergan ism + <b>sizning ID kodingiz</b></li>\n<li><b>手机号码</b> (telefon): <b>kargo omborining</b> xitoy raqami</li>\n<li><b>所在地区</b> (hudud): viloyat → shahar → tuman</li>\n<li><b>详细地址</b> (batafsil manzil): ombor manzili + ID kod</li>\n<li><b>设为默认地址</b> — asosiy qilib belgilang</li>\n</ol>\n<div class=\"note dang\"><span class=\"ic\">⚠️</span><div>Manzilni <b>qo'lda yozmang</b> — nusxalang. PDD ba'zan manzilni «tozalab» yuboradi; saqlagandan keyin <b>qayta ochib tekshiring</b>, ID kod joyidami.</div></div>\n"}, {"t": "To'lovni amalga oshiring", "m": "10–30 daqiqa", "b": "\n<p>PDD'da to'lov — eng ko'p muammo chiqadigan joy. Ishlash ehtimoli bo'yicha tartiblangan:</p>\n<ol>\n<li><b>Vositachi / kargo balansi</b> — eng ishonchli. Kargoga so'm o'tkazasiz, ular yuan bilan to'laydi. Komissiya 3–10%.</li>\n<li><b>多多支付 (Duoduo Pay)</b> — PDD'ning o'z to'lov tizimi. Ba'zi hollarda <b>xalqaro Visa/Mastercard</b> ni qabul qiladi. To'lov ekranida <b>银行卡支付</b> yoki <b>国际信用卡</b> variantini qidiring.</li>\n<li><b>WeChat Pay (微信支付)</b> — WeChat hamyoniga xalqaro karta bog'lansa ishlaydi. Kunlik limit past.</li>\n<li><b>Alipay (支付宝)</b> — TourPass orqali balans to'ldirib to'lash.</li>\n<li><b>Xitoydagi tanish orqali</b> — «代付» (boshqa odam to'lasin) funksiyasi bor: buyurtmani yaratib, to'lov havolasini yuborasiz.</li>\n</ol>\n<div class=\"note dang\"><span class=\"ic\">🛑</span><div><b>To'lov rad etilsa:</b> darhol qayta-qayta urinmang — bu xavf nazoratini kuchaytiradi va akkauntni bloklaydi. 1–2 soat kuting, boshqa to'lov usulini sinang yoki vositachiga o'ting.</div></div>\n<div class=\"note info\"><span class=\"ic\">🛡️</span><div>PDD ham <b>escrow</b> tizimida ishlaydi: pul sotuvchiga darhol o'tmaydi. Siz <b>确认收货</b> (tovarni oldim) tugmasini bosgunga yoki avtomatik muddat tugagunga qadar platformada turadi. Tovar kargo omboriga yetmaguncha bu tugmani <b>bosmang</b>.</div></div>\n"}, {"t": "Trek raqamini kargoga kiriting", "m": "3 daqiqa", "b": "\n<ol>\n<li><span class=\"kbd\">个人中心 → 我的订单 → 查看物流</span> — trek raqami va kuryer nomi ko'rinadi.</li>\n<li>Kargo ilovasida «Kutilayotgan jo'natma» bo'limiga trek raqamini kiriting.</li>\n<li>Tovar nomi (o'zbekcha/ruscha), <b>miqdori</b> va <b>real qiymati</b>ni yozing.</li>\n</ol>\n<div class=\"note warn\"><span class=\"ic\">🧾</span><div><b>PDD'ga xos muammo:</b> platformada rasmiy invoys (发票) ko'pincha berilmaydi. Shuning uchun buyurtma sahifasining <b>skrinshotini</b> saqlang — narx, tovar nomi va sana ko'rinadigan qilib. Bu bojxonada qiymatni asoslash uchun kerak bo'ladi.</div></div>\n<div class=\"note info\"><span class=\"ic\">📦</span><div>PDD'da 5–10 ta arzon tovar buyurtma qilsangiz, ular <b>5–10 ta alohida posilka</b>da keladi. Har birining trek raqamini alohida kiriting, keyin omborda <b>birlashtiring</b> — aks holda har biri uchun minimal og'irlik to'laysiz.</div></div>\n"}, {"t": "Konsolidatsiya va jo'natish", "m": "5 daqiqa", "b": "\n<ul>\n<li><b>Birlashtirish majburiy</b> — PDD buyurtmalarida bu eng katta tejash manbai. 8 ta posilkani bitta qutiga jamlash 3–5 barobar arzonlashtiradi.</li>\n<li><b>Ortiqcha qadoqni olib tashlash</b> — PDD sotuvchilari ko'pincha katta karton ishlatadi. Repacking hajmiy og'irlikni sezilarli kamaytiradi.</li>\n<li><b>Foto-hisobot</b> — PDD'da sifat beqaror bo'lgani uchun bu xizmat ayniqsa foydali. Noto'g'ri yoki nuqsonli tovarni <b>Xitoydan chiqmasdan turib</b> qaytarish mumkin.</li>\n<li><b>Avia yoki avto</b> — arzon tovarlarda avto mantiqiy: yetkazish narxi tovar narxidan oshib ketmasin.</li>\n</ul>\n<div class=\"note ok\"><span class=\"ic\">🧮</span><div><b>Oddiy qoida:</b> agar yetkazish narxi tovar narxidan qimmat bo'lsa — bu tovarni PDD'dan olish ma'nosiz. 15 yuanlik (≈$2.2) buyum uchun $6 avia to'lash o'rniga, o'sha buyumni mahalliy bozordan qidiring yoki avto bilan boshqa tovarlar ichida qo'shib yuboring.</div></div>\n"}, {"t": "Bojxona va qabul qilish", "m": "1–5 kun", "b": "\n<ol>\n<li><b>my.gov.uz</b>ga xabarnoma keladi → «Bojxona» bo'limi → tekshirib <b>Tasdiqlang</b>.</li>\n<li>Oylik norma ($200) ichida bo'lsa — boj yo'q. Oshgan bo'lsa — ortiqchasidan 30% (min $3/kg).</li>\n<li>Filialda pasport bilan oling, qutini <b>joyida oching</b>.</li>\n<li>Muammo bo'lsa — ochish jarayonini videoga oling.</li>\n</ol>\n<h4>Sifat muammosi chiqsa — 仅退款</h4>\n<p>PDD xaridor foydasiga ishlaydigan siyosat bilan mashhur:</p>\n<ul>\n<li><b>仅退款</b> — «faqat pulni qaytarish»: arzon tovarlarda PDD ko'pincha tovarni qaytarishni talab qilmay, pulni qaytarib beradi.</li>\n<li>Buning uchun buyurtma sahifasida <b>退款/售后</b> → sababni tanlash → <b>fotosurat yuklash</b>.</li>\n<li>Muddat: odatda tovar yetkazilgandan keyin <b>15 kun</b> ichida (Xitoy ichida yetkazilgan sana bo'yicha).</li>\n</ul>\n<div class=\"note dang\"><span class=\"ic\">⏰</span><div><b>Muhim vaqt muammosi:</b> 15 kunlik muddat tovar <b>kargo omboriga</b> yetkazilgan kundan boshlanadi, siz Toshkentda olgan kundan emas. Ya'ni siz tovarni qo'lga olganingizda muddat allaqachon tugagan bo'ladi. <b>Yagona yechim — foto-hisobot</b>: omborda tekshirtirib, muammoni o'sha yerda aniqlash.</div></div>\n"}];
+const CALC={"curDefault": "loc", "airRate": 10, "roadRate": 6, "taxLabel": "Soliq"};
+const BAN=[{"n": "Narkotik moddalar, prekursorlar", "s": "r", "c": "taqiq", "d": "Mutlaq taqiq. Jinoiy javobgarlik."}, {"n": "Qurol, o'q-dorilar va ularning qismlari", "s": "r", "c": "taqiq", "d": "Pnevmatik va gaz qurollari, elektroshoker, kastet, butterfly-pichoq ham kiradi."}, {"n": "Maxsus texnik vositalar (yashirin kamera, GPS-mayoq, signal skaneri)", "s": "r", "c": "taqiq", "d": "Ko'zoynak/soat/tugma shaklidagi kamera, telefon eshituvchi qurilmalar — jinoiy javobgarlik."}, {"n": "Signal glushitel (jammer)", "s": "r", "c": "taqiq", "d": "GSM/GPS/Wi-Fi glushitellar olib kirish taqiqlangan."}, {"n": "Elektron sigaret, vape, snus, nasvay", "s": "r", "c": "taqiq", "d": "O'zbekistonda savdosi va olib kirilishi cheklangan. Jo'natma ushlab qolinadi."}, {"n": "Tamaki mahsulotlari va alkogol", "s": "r", "c": "taqiq", "d": "Pochta va kuryerlik jo'natmalari orqali olib kirish taqiqlangan."}, {"n": "Portlovchi, oson yonuvchi, radioaktiv moddalar", "s": "r", "c": "taqiq", "d": "Petarda, feyerverk, gaz ballonchalari ham."}, {"n": "Pornografik materiallar", "s": "r", "c": "taqiq", "d": "Har qanday ko'rinishda — bosma, raqamli, buyum."}, {"n": "Ekstremistik va diniy targ'ibot materiallari", "s": "r", "c": "taqiq", "d": "Ekspertizasiz diniy adabiyot ham ushlab qolinadi."}, {"n": "Kontrafakt / brend nusxalari (replika)", "s": "r", "c": "taqiq", "d": "Intellektual mulk huquqi buzilishi. Tovar ushlab qolinadi va yo'q qilinishi mumkin."}, {"n": "Yovvoyi hayvon va o'simliklar (CITES ro'yxati)", "s": "r", "c": "taqiq", "d": "Suyak, teri, tishlar, ekzotik o'simliklar."}, {"n": "Soxta pul, hujjat, davlat ramzlari", "s": "r", "c": "taqiq", "d": "Suvenir «pul» ham muammo tug'diradi."}, {"n": "Dori vositalari", "s": "a", "c": "ruxsat", "d": "Farmatsevtika agentligi ruxsati kerak. Retseptli dorilar — jiddiy cheklov."}, {"n": "Biologik faol qo'shimchalar (BFQ), sport ozuqasi, protein", "s": "a", "c": "ruxsat", "d": "Miqdor chegarasi: 10 quti yoki 0.5 kg gacha (2025-yil 20-iyuldan). Undan ortig'i uchun ruxsat kerak."}, {"n": "Atir-upa (parfyumeriya)", "s": "a", "c": "cheklov", "d": "300 ml gacha. Avia bilan yonuvchi suyuqlik sifatida cheklanadi — avto yo'nalishini tanlang."}, {"n": "Mobil telefon", "s": "a", "c": "ruxsat", "d": "Deklaratsiya + UzIMEI ro'yxatidan o'tkazish shart. Aks holda 30 kundan keyin tarmoqdan uziladi."}, {"n": "Dron, kvadrokopter", "s": "a", "c": "ruxsat", "d": "Vazniga qarab ro'yxatdan o'tkazish va uchirish ruxsati talab qilinadi."}, {"n": "Radiostansiya, ratsiya, signal kuchaytirgich (repeater)", "s": "a", "c": "ruxsat", "d": "Radiochastota agentligi ruxsati kerak."}, {"n": "Sun'iy yo'ldosh aloqasi qurilmalari (Starlink, sputnik telefon)", "s": "a", "c": "ruxsat", "d": "Alohida ruxsatsiz olib kirilmaydi."}, {"n": "O'simlik urug'lari, ko'chat, tuproq", "s": "a", "c": "ruxsat", "d": "Fitosanitar (karantin) sertifikati talab qilinadi."}, {"n": "Oziq-ovqat mahsulotlari, ozuqa qo'shimchalari", "s": "a", "c": "cheklov", "d": "Sanitariya-epidemiologik xulosa kerak bo'lishi mumkin. Kichik miqdor odatda o'tadi."}, {"n": "Hayvonlar uchun dori va vaksinalar", "s": "a", "c": "ruxsat", "d": "Veterinariya sertifikati."}, {"n": "Kuchli lazer ko'rsatkichlar", "s": "a", "c": "cheklov", "d": "Yuqori quvvatlilari xavfli buyum sifatida ushlab qolinadi."}, {"n": "Powerbank, litiy batareyalar", "s": "a", "c": "cheklov", "d": "Avia bilan taqiq yoki quvvat chegarasi (odatda 100 Wh gacha). Avto yo'nalishi bilan yuboring."}, {"n": "Aerozol, lak, bo'yoq, yonuvchi suyuqliklar", "s": "a", "c": "cheklov", "d": "Avia bilan qabul qilinmaydi. Ba'zi kargolar avto bilan ham olmaydi."}, {"n": "Kimyoviy reaktivlar, laboratoriya moddalari", "s": "a", "c": "ruxsat", "d": "Ro'yxatga kiritilgan moddalar uchun ruxsat kerak."}, {"n": "Antikvariat, madaniy boyliklar", "s": "a", "c": "ruxsat", "d": "Madaniyat vazirligi ekspertizasi."}, {"n": "Tibbiy asboblar (tonometr, glyukometr, ingalyator)", "s": "a", "c": "cheklov", "d": "Ba'zilari ro'yxatdan o'tkazishni talab qiladi. Uy sharoiti uchun 1 dona odatda muammosiz."}, {"n": "Kripto-mayning uskunalari (ASIC, ferma)", "s": "a", "c": "cheklov", "d": "Alohida hisobga olish va energiya talablari. Jismoniy shaxs nomiga muammoli."}, {"n": "Kiyim-kechak, poyabzal", "s": "g", "c": "erkin", "d": "Shaxsiy ehtiyoj miqdorida erkin. Bir xil tovar ko'p bo'lsa — tijorat deb baholanishi mumkin."}, {"n": "Maishiy elektronika (quloqchin, sichqoncha, klaviatura)", "s": "g", "c": "erkin", "d": "Erkin. Bluetooth qurilmalari sertifikatlangan chastotada ishlaydi."}, {"n": "Kompyuter komplektuvchilari", "s": "g", "c": "erkin", "d": "Videokarta, protsessor, xotira — erkin. Qiymati katta bo'lsa norma oshadi."}, {"n": "Bolalar o'yinchoqlari", "s": "g", "c": "erkin", "d": "Erkin. Kichik magnitli o'yinchoqlarga ba'zan e'tibor beriladi."}, {"n": "Kitob va bosma nashrlar", "s": "g", "c": "erkin", "d": "Diniy va siyosiy mazmundagilaridan tashqari."}, {"n": "Uy-ro'zg'or buyumlari, mebel furniturasi", "s": "g", "c": "erkin", "d": "Erkin. Hajmiy og'irlikka e'tibor bering."}, {"n": "Sport anjomlari", "s": "g", "c": "erkin", "d": "Erkin. Jangovar sport anjomlari qurol sifatida baholanishi mumkin."}, {"n": "Avtoehtiyot qismlar", "s": "g", "c": "erkin", "d": "Erkin, lekin ko'p miqdorda — tijorat partiyasi belgisi."}, {"n": "Kosmetika (dekorativ)", "s": "g", "c": "erkin", "d": "Shaxsiy miqdorda erkin. Suyuq/aerozol shakli — avia cheklovi."}, {"n": "Bijuteriya, aksessuar", "s": "g", "c": "erkin", "d": "Erkin. Qimmatbaho metall/tosh bo'lsa — alohida tartib."}, {"n": "Soat (mexanik, kvarts)", "s": "g", "c": "erkin", "d": "Erkin. Smart-soat — aloqa moduli bo'lsa ham odatda muammosiz."}];
+const CARGO=[{"n": "MK Express", "r": "Xitoy → O'zbekiston", "p": "Avia ~114 000 so'm/kg · Avto ~66–84 000 so'm/kg", "t": "Avia 2–7 kun · Avto 10–30 kun", "f": "30+ filial, 9 bosqichli kuzatuv, ilova", "tag": "avia,avto"}, {"n": "Meest China", "r": "Xitoy, Koreya", "p": "Avia $10/kg · Avto $6/kg", "t": "Avia 8+ kun · Avto 17+ kun", "f": "Guanchjou ombori, ZTO bilan Xitoy ichida bepul yetkazish", "tag": "avia,avto"}, {"n": "Green Post", "r": "Xitoy", "p": "$5.5–13/kg", "t": "7–25 kun", "f": "Bir nechta tarif — tejamkordan ekspressgacha", "tag": "avia,avto"}, {"n": "Jana Post", "r": "Xitoy", "p": "~$0.61 / 100 g", "t": "10–20 kun", "f": "Aynan Pinduoduo va Taobao'ga ixtisoslashgan", "tag": "avia,avto"}, {"n": "D2D (Door to Door)", "r": "Xitoy", "p": "Kelishuv bo'yicha", "t": "7–25 kun", "f": "Xitoy onlayn xaridlarini uygacha yetkazish", "tag": "avia,avto"}, {"n": "Express Cargo", "r": "Xitoy", "p": "Arzon tariflar", "t": "10–25 kun", "f": "Avto yo'nalishiga urg'u", "tag": "avto"}, {"n": "Transit Pro", "r": "Xitoy", "p": "Kelishuv bo'yicha", "t": "7–25 kun", "f": "Sotib olish yordami ham bor", "tag": "avia,avto"}, {"n": "Sellmate", "r": "Xitoy", "p": "Kelishuv bo'yicha", "t": "7–25 kun", "f": "Tovar qidirish va sotib olish xizmati", "tag": "avia,avto"}, {"n": "Yumecs", "r": "Xitoy, Turkiya, BAA, Koreya, AQSh", "p": "$4.4–20/kg", "t": "5–30 kun", "f": "Ko'p yo'nalish", "tag": "avia,avto"}];
+const CARGOCATS=[{"k": "all", "t": "Hammasi"}, {"k": "avia", "t": "✈️ Avia bor"}, {"k": "avto", "t": "🚚 Avto bor"}];
+const WORDS=[{"k": "拼单", "u": "Guruh xaridi — arzon narx (asosiy variant)", "c": "pdd"}, {"k": "单独购买", "u": "Yolg'iz sotib olish — qimmatroq", "c": "pdd"}, {"k": "发起拼单", "u": "Guruh boshlash", "c": "pdd"}, {"k": "参与拼单", "u": "Mavjud guruhga qo'shilish", "c": "pdd"}, {"k": "一键开团", "u": "Bir bosishda guruh ochish", "c": "pdd"}, {"k": "百亿补贴", "u": "«10 milliard subsidiya» — original brendlar arzon narxda", "c": "pdd"}, {"k": "限时秒杀", "u": "Vaqt cheklangan chaqmoq chegirma", "c": "pdd"}, {"k": "砍价免费拿", "u": "Do'st taklif qilib bepul olish o'yini — vaqt yeydi, qochish tavsiya etiladi", "c": "pdd"}, {"k": "已拼", "u": "Necha dona sotilgan (masalan 已拼1万件)", "c": "pdd"}, {"k": "多多支付", "u": "Duoduo Pay — PDD'ning o'z to'lov tizimi", "c": "pdd"}, {"k": "多多果园", "u": "O'yin-mexanika (meva o'stirish) — sotib olishga undaydi", "c": "pdd"}, {"k": "包邮", "u": "Bepul yetkazish (Xitoy ichida)", "c": "savdo"}, {"k": "现货", "u": "Omborda bor, darhol jo'natiladi", "c": "savdo"}, {"k": "预售", "u": "Oldindan sotuv — kutish kerak", "c": "savdo"}, {"k": "旗舰店", "u": "Rasmiy brend do'koni", "c": "savdo"}, {"k": "官方", "u": "Rasmiy", "c": "savdo"}, {"k": "正品", "u": "Original mahsulot", "c": "savdo"}, {"k": "假货", "u": "Soxta / kontrafakt", "c": "savdo"}, {"k": "全新", "u": "Butunlay yangi", "c": "savdo"}, {"k": "二手", "u": "Ishlatilgan", "c": "savdo"}, {"k": "优惠券", "u": "Chegirma kuponi", "c": "savdo"}, {"k": "发货地", "u": "Jo'natish joyi (viloyat)", "c": "savdo"}, {"k": "登录", "u": "Kirish", "c": "interfeys"}, {"k": "注册", "u": "Ro'yxatdan o'tish", "c": "interfeys"}, {"k": "微信登录", "u": "WeChat orqali kirish — eng barqaror usul", "c": "interfeys"}, {"k": "个人中心", "u": "Shaxsiy kabinet", "c": "interfeys"}, {"k": "我的订单", "u": "Mening buyurtmalarim", "c": "interfeys"}, {"k": "收货地址", "u": "Yetkazish manzili", "c": "interfeys"}, {"k": "新增收货地址", "u": "Yangi manzil qo'shish", "c": "interfeys"}, {"k": "收货人", "u": "Qabul qiluvchi (ism)", "c": "interfeys"}, {"k": "手机号码", "u": "Telefon raqami", "c": "interfeys"}, {"k": "详细地址", "u": "Batafsil manzil", "c": "interfeys"}, {"k": "设为默认地址", "u": "Asosiy manzil qilib belgilash", "c": "interfeys"}, {"k": "搜索", "u": "Qidirish", "c": "interfeys"}, {"k": "分类", "u": "Kategoriyalar", "c": "interfeys"}, {"k": "购物车", "u": "Savat", "c": "interfeys"}, {"k": "立即支付", "u": "Darhol to'lash", "c": "interfeys"}, {"k": "代付", "u": "Boshqa odam to'lasin", "c": "interfeys"}, {"k": "男装", "u": "Erkaklar kiyimi", "c": "tovar"}, {"k": "女装", "u": "Ayollar kiyimi", "c": "tovar"}, {"k": "童装", "u": "Bolalar kiyimi", "c": "tovar"}, {"k": "运动鞋", "u": "Krossovka", "c": "tovar"}, {"k": "家居用品", "u": "Uy-ro'zg'or buyumlari", "c": "tovar"}, {"k": "厨房用品", "u": "Oshxona buyumlari", "c": "tovar"}, {"k": "收纳", "u": "Saqlash/tashkilotchi qutilar", "c": "tovar"}, {"k": "数码配件", "u": "Raqamli aksessuarlar", "c": "tovar"}, {"k": "手机壳", "u": "Telefon g'ilofi", "c": "tovar"}, {"k": "数据线", "u": "USB kabel", "c": "tovar"}, {"k": "充电器", "u": "Zaryadlagich", "c": "tovar"}, {"k": "蓝牙耳机", "u": "Bluetooth quloqchin", "c": "tovar"}, {"k": "工具", "u": "Asbob-uskuna", "c": "tovar"}, {"k": "文具", "u": "Kanselyariya", "c": "tovar"}, {"k": "玩具", "u": "O'yinchoq", "c": "tovar"}, {"k": "汽车用品", "u": "Avto aksessuarlar", "c": "tovar"}, {"k": "尺码", "u": "O'lcham", "c": "olcham"}, {"k": "尺码表", "u": "O'lchamlar jadvali", "c": "olcham"}, {"k": "颜色", "u": "Rang", "c": "olcham"}, {"k": "材质", "u": "Material", "c": "olcham"}, {"k": "重量", "u": "Og'irlik", "c": "olcham"}, {"k": "胸围", "u": "Ko'krak aylanasi", "c": "olcham"}, {"k": "腰围", "u": "Bel aylanasi", "c": "olcham"}, {"k": "快递单号", "u": "Trek raqami", "c": "logistika"}, {"k": "查看物流", "u": "Yetkazishni kuzatish", "c": "logistika"}, {"k": "发货", "u": "Jo'natish", "c": "logistika"}, {"k": "已签收", "u": "Qabul qilindi", "c": "logistika"}, {"k": "确认收货", "u": "Tovarni oldim (tasdiqlash)", "c": "logistika"}, {"k": "极兔", "u": "J&T Express — PDD'da eng ko'p ishlatiladi", "c": "logistika"}, {"k": "申通", "u": "STO Express", "c": "logistika"}, {"k": "韵达", "u": "Yunda Express", "c": "logistika"}, {"k": "中通", "u": "ZTO Express", "c": "logistika"}, {"k": "评价", "u": "Sharhlar", "c": "muammo"}, {"k": "有图", "u": "Rasmli sharhlar filtri", "c": "muammo"}, {"k": "差评", "u": "Yomon sharh", "c": "muammo"}, {"k": "仅退款", "u": "Faqat pulni qaytarish (tovarni qaytarmasdan)", "c": "muammo"}, {"k": "退款/售后", "u": "Pul qaytarish / sotuvdan keyingi xizmat", "c": "muammo"}, {"k": "退货", "u": "Tovarni qaytarish", "c": "muammo"}, {"k": "客服", "u": "Qo'llab-quvvatlash", "c": "muammo"}, {"k": "投诉", "u": "Shikoyat", "c": "muammo"}, {"k": "质量问题", "u": "Sifat muammosi", "c": "muammo"}, {"k": "与描述不符", "u": "Tavsifga mos emas", "c": "muammo"}, {"k": "你好，有货吗？", "u": "Salom, omborda bormi?", "c": "muammo"}];
+const WCATS=[{"k": "all", "t": "Hammasi"}, {"k": "pdd", "t": "PDD mexanikasi"}, {"k": "savdo", "t": "Savdo"}, {"k": "interfeys", "t": "Interfeys"}, {"k": "tovar", "t": "Tovarlar"}, {"k": "olcham", "t": "O'lcham"}, {"k": "logistika", "t": "Logistika"}, {"k": "muammo", "t": "Nizo"}];
+const FAQ=[{"q": "Pinduoduo O'zbekistonga yetkazadimi?", "a": "Yo'q, PDD faqat Xitoy ichiga jo'natadi. Sizga Xitoydagi kargo ombori manzili kerak. Agar to'g'ridan-to'g'ri yetkazish kerak bo'lsa — Temu'dan foydalaning: bu aynan Pinduoduo kompaniyasining xalqaro brendi va O'zbekistonga yetkazadi."}, {"q": "Ilovani qanday o'rnataman?", "a": "iPhone'da App Store'da «拼多多» qidiring; topilmasa akkaunt mintaqasini Xitoyga o'zgartirish kerak (alohida Apple ID ochgan ma'qul). Android'da Google Play'da ko'pincha yo'q — rasmiy APK'ni mobile.pinduoduo.com dan oling. Eng oson yo'l esa WeChat mini-ilovasi: WeChat qidiruviga 拼多多 yozing, u yerda tarjima funksiyasi ham ishlaydi."}, {"q": "Nima uchun to'lovim rad etilyapti?", "a": "PDD'ning 风控 (xavf nazorati) tizimi xorij kartasi + xorij IP + yangi akkaunt kombinatsiyasini bloklaydi. Qayta-qayta urinish holatni yomonlashtiradi. Ishlaydigan variantlar: kargo/vositachi balansi orqali to'lash, WeChat Pay'ga xalqaro karta bog'lash, yoki «代付» funksiyasi bilan Xitoydagi tanishga to'lattirish."}, {"q": "拼单 (guruh xaridi) uchun do'st topishim kerakmi?", "a": "Yo'q. Hozirgi PDD'da guruhlar avtomatik va bir necha soniyada to'ldiriladi — platforma sizni boshqa xaridorlar bilan o'zi bog'laydi. Shuning uchun har doim 拼单 variantini tanlang: bu arzonroq va hech qanday qo'shimcha harakat talab qilmaydi. Faqat 砍价免费拿 («bepul olish») o'yinidan qoching — bu boshqa narsa va vaqt yeydi."}, {"q": "PDD'da sifat qanday?", "a": "Segmentga bog'liq. 5–30 yuanlik tovarlar — lotereya, sifat past bo'lishi mumkin. 百亿补贴 bo'limidagi brend tovarlar esa original va rasmiy kanaldan keladi. Umumiy qoida: sotuvchi reytingi 4.8+, sotuv soni 10 000+, rasmli sharhlar ko'p bo'lsa — xavf ancha kam."}, {"q": "Taobao'dan qanchalik arzon?", "a": "Bir xil tovarda odatda 20–40% arzon, ba'zan 50%. Lekin bu har doim ham foyda emas: yetkazish narxi bir xil, shuning uchun arzon mayda buyumlarda tejash yo'qoladi. PDD asosan uy-ro'zg'or, kanselyariya, oshxona, tashkilotchi qutilar, mayda asbob kabi kategoriyalarda foydali."}, {"q": "Kontrafakt tovar olsam nima bo'ladi?", "a": "O'zbekiston bojxonasi brend nusxalarini intellektual mulk huquqi buzilishi sifatida ushlab qoladi va yo'q qilishi mumkin — pul ham, tovar ham qaytmaydi. PDD'da brend nusxalari juda ko'p, shuning uchun brendli buyumni faqat 百亿补贴 yoki 旗舰店 (rasmiy do'kon) dan oling."}, {"q": "仅退款 (faqat pul qaytarish) qanday ishlaydi?", "a": "PDD arzon tovarlarda ko'pincha qaytarishni talab qilmay pulni qaytaradi. Buyurtma sahifasida 退款/售后 → sabab → fotosurat. Muddat odatda Xitoy ichida yetkazilgandan keyin 15 kun. Muammo shundaki, tovar O'zbekistonga yetguncha bu muddat tugab qoladi — shuning uchun kargodan foto-hisobot xizmatini oling."}, {"q": "Akkauntim bloklandi, nima qilay?", "a": "Odatda telefon raqami bilan qayta tasdiqlash so'raladi. Agar ochilmasa — yangi akkaunt yaratishdan ko'ra vositachiga o'tish samaraliroq. PDD bir marta xavf belgisini qo'ygan qurilma/raqamga qayta-qayta cheklov qo'yadi."}, {"q": "Bir buyurtmada nechta tovar olish mumkin?", "a": "Cheklov yo'q, lekin har bir sotuvchi alohida posilka yuboradi. 10 ta sotuvchidan olsangiz — 10 ta posilka. Kargo omborida ularni birlashtirish (konsolidatsiya) majburiy, aks holda har biri uchun minimal og'irlik to'laysiz va yetkazish tovar narxidan qimmat tushadi."}, {"q": "Temu'mi yoki Pinduoduo'mi?", "a": "Birinchi marta buyurtma qilayotgan bo'lsangiz — Temu: kargo, xitoy tili va to'lov muammosi yo'q. Narxni maksimal tushirish kerak bo'lsa va bir vaqtning o'zida ko'p tovar olsangiz — Pinduoduo + kargo. Assortiment kerak bo'lsa — Taobao. Ko'pchilik amalda ikkalasidan foydalanadi."}, {"q": "Xitoy Yangi yili buyurtmaga ta'sir qiladimi?", "a": "Ha, kuchli. Yanvar oxiri – fevral boshida zavodlar va omborlar 2–4 haftaga yopiladi. Bayramdan 2 hafta oldin buyurtma qilsangiz, tovar mart oyida kelishi mumkin. Rejalashtirilgan xaridlarni dekabrga yoki mart oxiriga suring."}, {"q": "11.11 va 6.18 aksiyalari PDD'da bormi?", "a": "Ha, lekin PDD'da ular Taobao'dagichalik keskin emas — chunki PDD'ning kunlik narxlari allaqachon past. Aksiya kunlarida 百亿补贴 bo'limidagi brend tovarlar sezilarli arzonlashadi. Bunday kunlarda logistika 2–3 haftaga cho'zilishini hisobga oling."}, {"q": "O'lchamni qanday tanlayman?", "a": "尺码表 (o'lchamlar jadvali) rasmini toping va u yerdagi sm raqamlarini o'zingizning eng yaxshi kiyimingizni o'lchab solishtiring. Jadval bo'lmasa — sotuvchiga bo'y va vazningizni yozib, o'lcham so'rang (客服 orqali). Umumiy qoida: xitoy o'lchamlari yevropaga nisbatan 1–2 razmer kichik."}, {"q": "Sotuvchi bilan qanday bog'lanaman?", "a": "Mahsulot sahifasidagi 客服 tugmasi orqali. Xitoycha yozing (Google Translate yetarli). PDD'da ko'p sotuvchi avval bot bilan javob beradi — «人工客服» (jonli operator) deb yozsangiz odamga ulanadi. Javob ba'zan bir necha soat kechikadi."}, {"q": "Invoys (发票) olishim mumkinmi?", "a": "PDD'da rasmiy invoys ko'pincha berilmaydi, ayniqsa kichik sotuvchilarda. Shuning uchun har bir buyurtmaning skrinshotini saqlang: tovar nomi, narx, sana va buyurtma raqami ko'rinsin. Bojxonada qiymatni asoslash uchun shu yetarli bo'ladi."}, {"q": "PDD'dan telefon yoki elektronika olsam bo'ladimi?", "a": "百亿补贴 bo'limidan — ha, u yerda rasmiy distribyutorlar sotadi va narx bozor narxidan past bo'ladi. Oddiy sotuvchilardan — ehtiyot bo'ling: qayta tiklangan yoki soxta qurilmalar uchraydi. Telefon olsangiz UzIMEI ro'yxati, chastota mosligi va kafolat masalasini oldindan o'ylang."}];
+const CHECK=[{"g": "Boshlashdan oldin", "items": [{"t": "Usul tanlandi: vositachi, o'zim+kargo yoki Temu", "d": "Birinchi tajriba bo'lsa — vositachi yoki Temu"}, {"t": "Kargo tanlandi, ID kod olindi", "d": "Konsolidatsiya bepulmi — PDD uchun eng muhim mezon"}, {"t": "Ilova o'rnatildi yoki WeChat mini-ilova ochildi", "d": "WeChat varianti tarjima bilan ishlaydi"}, {"t": "Akkaunt yaratildi va ishlayapti", "d": "Iloji bo'lsa WeChat orqali kirish"}, {"t": "To'lov usuli sinab ko'rildi", "d": "Kichik summada test buyurtma"}]}, {"g": "Buyurtmadan oldin", "items": [{"t": "Sotuvchi reytingi 4.8+ va sotuv soni yuqori", "d": "已拼 raqamiga qarang"}, {"t": "Rasmli sharhlar va 差评 o'qildi", "d": "有图 filtri orqali"}, {"t": "Brendli tovar bo'lsa — 百亿补贴 yoki 旗舰店 dan", "d": "Kontrafakt bojxonada ushlab qolinadi"}, {"t": "O'lcham 尺码表 bo'yicha sm'da tekshirildi", "d": "Jadval yo'q bo'lsa — sotuvchidan so'rang"}, {"t": "Kalkulyatorda yetkazish tovar narxidan arzonligi tekshirildi", "d": "Aks holda buyurtma mantiqsiz"}, {"t": "Tovar taqiq/cheklov ro'yxatida emas", "d": "Batareya, suyuqlik, aerozol — avia cheklovi"}]}, {"g": "Buyurtma paytida", "items": [{"t": "拼单 (guruh narxi) tanlandi", "d": "单独购买 dan arzonroq"}, {"t": "Manzil nusxalab kiritildi, ID kod joyida", "d": "Saqlagandan keyin qayta tekshirildi"}, {"t": "Telefon raqami — omborniki", "d": "Xitoy raqami"}, {"t": "To'lov o'tdi, buyurtma skrinshoti saqlandi", "d": "Narx va sana ko'rinadigan"}]}, {"g": "Jo'natishdan keyin", "items": [{"t": "Barcha trek raqamlari kargoga kiritildi", "d": "Har bir sotuvchi alohida posilka yuboradi"}, {"t": "Posilkalar omborga yetib kelgani tasdiqlandi", "d": "Statuslarni birma-bir tekshiring"}, {"t": "Foto-hisobot buyurtma qilindi", "d": "PDD'da sifat beqaror — bu eng muhim himoya"}, {"t": "Konsolidatsiya qilindi", "d": "Barcha posilkalar bitta qutiga"}, {"t": "Ortiqcha qadoq olib tashlandi", "d": "Hajmiy og'irlikni kamaytiradi"}, {"t": "Avia/avto tanlandi", "d": "Arzon tovarlarda avto mantiqiy"}]}, {"g": "Yetib kelgach", "items": [{"t": "my.gov.uz'da xabarnoma tasdiqlandi", "d": "Ma'lumotlar tekshirilgandan keyin"}, {"t": "Boj hisoblandi va to'landi (kerak bo'lsa)", "d": "Muddatni o'tkazib yubormang"}, {"t": "Quti joyida ochib tekshirildi", "d": "Ochish jarayoni videoga olindi"}, {"t": "Barcha tovarlar ro'yxat bo'yicha solishtirildi", "d": "PDD buyurtmalarida 1–2 ta buyum yetishmasligi uchraydi"}, {"t": "Telefon bo'lsa — UzIMEI ro'yxatidan o'tkazildi", "d": "30 kun ichida, 88 000 so'm"}]}];
+
+
+/* ---------- TABS ---------- */
+const tabsEl=document.getElementById('tabs');
+TABS.forEach((t,i)=>{
+  const b=document.createElement('button');
+  b.className='tab'+(i===0?' active':'');
+  b.innerHTML='<span class="n">'+(i+1)+'</span>'+t.t;
+  b.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById(t.id).classList.add('active');
+    b.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+  tabsEl.appendChild(b);
+});
+
+/* ---------- WIZARD ---------- */
+let wi=0; const seen=new Set([0]);
+const bar=document.getElementById('wizbar');
+const dots=document.getElementById('wizdots');
+STEPS.forEach((_,i)=>{
+  bar.appendChild(document.createElement('i'));
+  const d=document.createElement('button');
+  d.className='dot'; d.textContent=i+1;
+  d.onclick=()=>{wi=i;seen.add(i);drawWiz()};
+  dots.appendChild(d);
+});
+function drawWiz(){
+  const s=STEPS[wi];
+  document.getElementById('wizcard').innerHTML=
+    '<div class="step-head"><div class="step-num">'+(wi+1)+'</div><div>'+
+    '<div class="step-title">'+s.t+'</div>'+
+    '<div class="step-meta">⏱ '+s.m+' · '+(wi+1)+' / '+STEPS.length+'</div></div></div>'+
+    '<div class="step-body">'+s.b+'</div>';
+  [...bar.children].forEach((el,i)=>{el.className = i<wi?'done' : i===wi?'now' : ''});
+  [...dots.children].forEach((el,i)=>{el.className='dot'+(i===wi?' active':(seen.has(i)?' seen':''))});
+  document.getElementById('wprev').disabled = wi===0;
+  const nx=document.getElementById('wnext');
+  nx.disabled = wi===STEPS.length-1;
+  nx.textContent = wi===STEPS.length-1 ? '✓ Qo’llanma tugadi' : 'Keyingi qadam →';
+}
+document.getElementById('wprev').onclick=()=>{if(wi>0){wi--;seen.add(wi);drawWiz();document.getElementById('wizcard').scrollIntoView({behavior:'smooth',block:'center'})}};
+document.getElementById('wnext').onclick=()=>{if(wi<STEPS.length-1){wi++;seen.add(wi);drawWiz();document.getElementById('wizcard').scrollIntoView({behavior:'smooth',block:'center'})}};
+drawWiz();
+
+/* ---------- CALCULATOR ---------- */
+let cur=CALC.curDefault, mode='air';
+function setCur(c){cur=c;document.querySelectorAll('[data-cur]').forEach(b=>b.classList.toggle('on',b.dataset.cur===c));calc()}
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  document.getElementById('rate').value = m==='air'?CALC.airRate:CALC.roadRate;
+  calc();
+}
+const num=id=>{const e=document.getElementById(id);if(!e)return 0;const v=parseFloat(e.value);return isNaN(v)?0:v};
+const fmt=n=>n.toLocaleString('ru-RU',{maximumFractionDigits:0});
+const fmt2=n=>n.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+function calc(){
+  const fx=Math.max(num('fxrate'),0.0001);
+  const usdUzs=num('usdrate');
+  const rawPrice=num('price');
+  const goodsUsd = cur==='loc' ? rawPrice/fx : rawPrice;
+  const innerUsd = cur==='loc' ? num('inner')/fx : num('inner');
+  const taxPct = num('taxpct');
+  const localTax = (goodsUsd+innerUsd)*taxPct/100;
+
+  const actual=num('wkg');
+  const div=num('divisor');
+  const vol = div>0 ? (num('dl')*num('dw')*num('dh'))/div : 0;
+  const billed=Math.max(actual,vol);
+
+  const shipUsd=billed*num('rate');
+  const customsValue=goodsUsd+innerUsd+localTax+shipUsd;
+
+  const limit=num('channel');
+  const remain=Math.max(0,limit-num('used'));
+  const excess=Math.max(0,customsValue-remain);
+
+  let duty=0, dutyNote='';
+  if(excess>0){
+    const pct=excess*0.30, perKg=billed*3;
+    duty=Math.max(pct,perKg);
+    dutyNote = perKg>pct ? 'min $3/kg qoidasi qo’llandi' : '30% stavka';
+  }
+  const totalUsd=goodsUsd+innerUsd+localTax+shipUsd+duty;
+  const totalUzs=totalUsd*usdUzs;
+
+  const parts=[
+    {l:'Tovar',v:goodsUsd+innerUsd,c:'#c7d2fe'},
+    {l:CALC.taxLabel,v:localTax,c:'#818cf8'},
+    {l:'Yetkazish',v:shipUsd,c:'#a5b4fc'},
+    {l:'Boj',v:duty,c:'#fbbf24'}
+  ].filter(p=>p.v>0);
+  const sum=parts.reduce((a,b)=>a+b.v,0)||1;
+
+  document.getElementById('result').innerHTML=
+   '<div class="total">'+fmt(totalUzs)+' <small>so’m</small></div>'+
+   '<div class="sum">≈ $'+fmt2(totalUsd)+' · hisob og’irligi '+fmt2(billed)+' kg</div>'+
+   '<div class="bar">'+parts.map(p=>'<i style="width:'+(p.v/sum*100)+'%;background:'+p.c+'"></i>').join('')+'</div>'+
+   '<div class="legend">'+parts.map(p=>'<span><i style="background:'+p.c+'"></i>'+p.l+' $'+fmt2(p.v)+'</span>').join('')+'</div>'+
+   '<div style="margin-top:14px">'+
+   '<div class="rrow"><span>Tovar qiymati</span><span>$'+fmt2(goodsUsd)+'</span></div>'+
+   (innerUsd>0?'<div class="rrow"><span>Mahalliy yetkazish</span><span>$'+fmt2(innerUsd)+'</span></div>':'')+
+   (localTax>0?'<div class="rrow"><span>'+CALC.taxLabel+' ('+taxPct+'%)</span><span>$'+fmt2(localTax)+'</span></div>':'')+
+   '<div class="rrow"><span>Haqiqiy / hajmiy og’irlik</span><span>'+fmt2(actual)+' / '+fmt2(vol)+' kg</span></div>'+
+   '<div class="rrow"><span>Xalqaro yetkazish ($'+num('rate')+'/kg)</span><span>$'+fmt2(shipUsd)+'</span></div>'+
+   '<div class="rrow"><span>Bojxona qiymati</span><span>$'+fmt2(customsValue)+'</span></div>'+
+   '<div class="rrow"><span>Bojsiz qolgan norma</span><span>$'+fmt2(remain)+'</span></div>'+
+   (excess>0
+     ? '<div class="rrow"><span>Normadan oshgan qism</span><span>$'+fmt2(excess)+'</span></div>'+
+       '<div class="rrow"><span>Bojxona to’lovi <span style="opacity:.7;font-weight:400">('+dutyNote+')</span></span><span>$'+fmt2(duty)+'</span></div>'
+     : '<div class="rrow"><span>Bojxona to’lovi</span><span>Yo’q ✓</span></div>')+
+   '</div>';
+}
+calc();
+
+/* ---------- BAN CHECKER ---------- */
+let banFilter='all';
+const BANCATS=[{k:'all',t:'Hammasi'},{k:'r',t:'🔴 Taqiqlangan'},{k:'a',t:'🟡 Ruxsat/cheklov'},{k:'g',t:'🟢 Erkin'}];
+const bc=document.getElementById('banchips');
+BANCATS.forEach(c=>{
+  const b=document.createElement('button');
+  b.className='chip'+(c.k==='all'?' on':''); b.textContent=c.t;
+  b.onclick=()=>{banFilter=c.k;[...bc.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderBan()};
+  bc.appendChild(b);
+});
+function renderBan(){
+  const q=document.getElementById('banq').value.trim().toLowerCase();
+  const list=BAN.filter(x=>(banFilter==='all'||x.s===banFilter)&&(!q||x.n.toLowerCase().includes(q)||x.d.toLowerCase().includes(q)));
+  const el=document.getElementById('banlist');
+  if(!list.length){el.innerHTML='<div class="empty">Hech narsa topilmadi. Boshqa so’z bilan qidirib ko’ring — ro’yxat to’liq emas.</div>';return}
+  const txtmap={taqiq:'TAQIQ',ruxsat:'RUXSAT KERAK',cheklov:'CHEKLOV',erkin:'ERKIN'};
+  el.innerHTML=list.map(x=>
+    '<div class="item '+x.s+'"><div class="body"><div class="nm">'+x.n+'</div>'+
+    '<div class="ds">'+x.d+'</div></div>'+
+    '<span class="pill '+x.s+'">'+txtmap[x.c]+'</span></div>').join('');
+}
+renderBan();
+
+/* ---------- CARGO ---------- */
+let cargoF='all';
+const cch=document.getElementById('cargochips');
+if(cch){
+  CARGOCATS.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='chip'+(c.k==='all'?' on':''); b.textContent=c.t;
+    b.onclick=()=>{cargoF=c.k;[...cch.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderCargo()};
+    cch.appendChild(b);
+  });
+}
+function renderCargo(){
+  const list=CARGO.filter(x=>cargoF==='all'||x.tag.includes(cargoF));
+  document.getElementById('cargobody').innerHTML=list.map(x=>
+    '<tr><td><b>'+x.n+'</b></td><td>'+x.r+'</td><td>'+x.p+'</td><td>'+x.t+'</td><td class="mini">'+x.f+'</td></tr>').join('');
+}
+renderCargo();
+
+/* ---------- GLOSSARY ---------- */
+function fallbackCopy(txt,cb){
+  const ta=document.createElement('textarea');
+  ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try{document.execCommand('copy');cb()}catch(e){}
+  document.body.removeChild(ta);
+}
+let wcat='all';
+const wch=document.getElementById('wchips');
+if(wch){
+  WCATS.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='chip'+(c.k==='all'?' on':''); b.textContent=c.t;
+    b.onclick=()=>{wcat=c.k;[...wch.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderWords()};
+    wch.appendChild(b);
+  });
+}
+function renderWords(){
+  if(!document.getElementById('wlist'))return;
+  const q=document.getElementById('wq').value.trim().toLowerCase();
+  const list=WORDS.filter(x=>(wcat==='all'||x.c===wcat)&&(!q||x.u.toLowerCase().includes(q)||x.k.toLowerCase().includes(q)));
+  const el=document.getElementById('wlist');
+  if(!list.length){el.innerHTML='<div class="empty">Topilmadi.</div>';return}
+  el.innerHTML=list.map(x=>
+    '<div class="gl"><div class="zh">'+x.k+'</div><div class="uz">'+x.u+'</div>'+
+    '<button class="cp" data-k="'+x.k.replace(/"/g,'&quot;')+'">Nusxa</button></div>').join('');
+  el.querySelectorAll('.cp').forEach(b=>{
+    b.onclick=()=>{
+      const txt=b.dataset.k;
+      const done=()=>{b.textContent='✓ Ok';b.classList.add('ok');setTimeout(()=>{b.textContent='Nusxa';b.classList.remove('ok')},1400)};
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));
+      } else fallbackCopy(txt,done);
+    };
+  });
+}
+renderWords();
+
+/* ---------- FAQ ---------- */
+document.getElementById('faqlist').innerHTML=FAQ.map((f,i)=>
+  '<div class="acc" id="acc'+i+'"><button type="button" onclick="document.getElementById(\'acc'+i+'\').classList.toggle(\'open\')">'+f.q+'</button>'+
+  '<div class="ans">'+f.a+'</div></div>').join('');
+
+/* ---------- CHECKLIST ---------- */
+const state={};
+function renderChk(){
+  let total=0,done=0;
+  CHECK.forEach((g,gi)=>g.items.forEach((_,ii)=>{total++;if(state[gi+'-'+ii])done++}));
+  document.getElementById('chklist').innerHTML=CHECK.map((g,gi)=>{
+    const gd=g.items.filter((_,ii)=>state[gi+'-'+ii]).length;
+    return '<div class="chk-head"><h3>'+g.g+'</h3><span class="prog-txt">'+gd+' / '+g.items.length+'</span></div>'+
+    g.items.map((it,ii)=>{
+      const k=gi+'-'+ii, on=!!state[k];
+      return '<div class="chk'+(on?' done':'')+'" data-k="'+k+'"><div class="box">'+(on?'✓':'')+'</div>'+
+      '<div><div class="t">'+it.t+'</div><div class="d">'+it.d+'</div></div></div>';
+    }).join('');
+  }).join('')+
+  '<div style="text-align:center;margin-top:18px"><span class="prog-txt" style="font-size:14px;padding:8px 18px">Umumiy: '+done+' / '+total+'</span></div>';
+  document.querySelectorAll('.chk').forEach(el=>{
+    el.onclick=()=>{state[el.dataset.k]=!state[el.dataset.k];renderChk()};
+  });
+}
+renderChk();
+
+</script>
+<script>
+/* Qo'llanmalarni ilova ichida yanada qulay qilish: bo'lim navigatsiyasi,
+   svayp, checklist saqlash, o'qish progressi. Barcha 7 qo'llanma uchun umumiy. */
+(function () {
+  var KEY = 'xy-chk:' + location.pathname.split('/').pop();
+  var tabsWrap = document.getElementById('tabs');
+  if (!tabsWrap) return;
+  var tabs = function () { return Array.prototype.slice.call(document.querySelectorAll('.tab')); };
+  var idx = function () { var t = tabs(); for (var i = 0; i < t.length; i++) if (t[i].classList.contains('active')) return i; return 0; };
+  var label = function (el) { return el ? el.textContent.replace(/^\d+/, '').trim() : ''; };
+
+  /* --- o'qish progressi --- */
+  var prog = document.createElement('i');
+  prog.className = 'xy-prog';
+  document.querySelector('nav.tabs').appendChild(prog);
+  var onScroll = function () {
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    prog.style.width = (h > 40 ? Math.min(100, Math.max(0, window.scrollY / h * 100)) : 0) + '%';
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  /* --- pastdagi bo'lim navigatsiyasi --- */
+  var bar = document.createElement('nav');
+  bar.className = 'xy-secnav';
+  bar.innerHTML =
+    '<button type="button" class="xy-nb" data-d="-1" aria-label="Oldingi bo\'lim">' +
+      '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>' +
+    '</button>' +
+    '<button type="button" class="xy-mid"><b></b><span></span></button>' +
+    '<button type="button" class="xy-nb" data-d="1" aria-label="Keyingi bo\'lim">' +
+      '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>' +
+    '</button>';
+  document.body.appendChild(bar);
+  var mid = bar.querySelector('.xy-mid');
+  var midB = mid.querySelector('b'), midS = mid.querySelector('span');
+
+  var refresh = function () {
+    var t = tabs(), i = idx();
+    midB.textContent = label(t[i]);
+    midS.textContent = (i + 1) + ' / ' + t.length;
+    bar.querySelector('[data-d="-1"]').disabled = i <= 0;
+    bar.querySelector('[data-d="1"]').disabled = i >= t.length - 1;
+  };
+  var jump = function (d) {
+    var t = tabs(), n = idx() + d;
+    if (n < 0 || n >= t.length) return;
+    t[n].click();
+    refresh();
+  };
+  bar.addEventListener('click', function (e) {
+    var b = e.target.closest('.xy-nb');
+    if (b) { jump(+b.dataset.d); return; }
+    if (e.target.closest('.xy-mid')) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      var a = tabs()[idx()];
+      if (a) a.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  });
+  tabsWrap.addEventListener('click', function () { setTimeout(refresh, 0); });
+  refresh();
+
+  /* --- svayp: bo'limlar orasida, wizard ichida qadamlar orasida --- */
+  var sx = 0, sy = 0, sw = null;
+  document.addEventListener('touchstart', function (e) {
+    var t = e.touches[0];
+    sx = t.clientX; sy = t.clientY;
+    sw = e.target.closest('.tabs-scroll,.tblwrap,input,select,textarea') ? 'skip'
+       : e.target.closest('#wizcard,.wiz-nav') ? 'wiz' : 'sec';
+  }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (sw === 'skip' || !sw) return;
+    var t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+    if (Math.abs(dx) < 65 || Math.abs(dy) > 55) return;
+    var back = dx > 0;
+    if (sw === 'wiz') {
+      var b = document.getElementById(back ? 'wprev' : 'wnext');
+      if (b && !b.disabled) b.click();
+    } else jump(back ? -1 : 1);
+  }, { passive: true });
+
+  document.addEventListener('keydown', function (e) {
+    if (/^(INPUT|SELECT|TEXTAREA)$/.test((e.target.tagName || ''))) return;
+    if (e.key === 'ArrowRight') jump(1);
+    if (e.key === 'ArrowLeft') jump(-1);
+  });
+
+  /* --- checklist belgilarini saqlash --- */
+  var save = function () {
+    var done = Array.prototype.slice.call(document.querySelectorAll('.chk.done')).map(function (el) { return el.dataset.k; });
+    try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (err) {}
+  };
+  document.addEventListener('click', function (e) { if (e.target.closest('.chk')) setTimeout(save, 0); });
+
+  var restore = function () {
+    var saved;
+    try { saved = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (err) { saved = []; }
+    if (!saved.length || !document.querySelector('.chk')) return;
+    saved.forEach(function (k) {
+      var el = document.querySelector('.chk[data-k="' + k + '"]');
+      if (el && !el.classList.contains('done')) el.click();
+    });
+  };
+  restore();
+
+  /* Eski izohni to'g'rilash: belgilar endi saqlanadi */
+  Array.prototype.slice.call(document.querySelectorAll('.note')).forEach(function (n) {
+    if (/tozalanadi/.test(n.textContent)) {
+      var d = n.querySelector('div');
+      if (d) d.innerHTML = 'Belgilangan bandlar <b>shu qurilmada saqlanadi</b> — qo\'llanmani yopib, keyin davom ettirsangiz ham joyida qoladi.';
+    }
+  });
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Amazon → O'zbekiston · Interaktiv qo'llanma</title>
+<style>
+:root{
+  --indigo-50:#eef2ff; --indigo-100:#e0e7ff; --indigo-200:#c7d2fe; --indigo-300:#a5b4fc;
+  --indigo-500:#6366f1; --indigo-600:#4f46e5; --indigo-700:#4338ca; --indigo-900:#312e81;
+  --slate-50:#f8fafc; --slate-100:#f1f5f9; --slate-200:#e2e8f0; --slate-300:#cbd5e1;
+  --slate-400:#94a3b8; --slate-500:#64748b; --slate-600:#475569; --slate-700:#334155;
+  --slate-800:#1e293b; --slate-900:#0f172a;
+  --green:#059669; --green-bg:#ecfdf5; --amber:#d97706; --amber-bg:#fffbeb;
+  --red:#dc2626; --red-bg:#fef2f2; --sky:#0284c7; --sky-bg:#f0f9ff;
+  --brand:#FF9900;
+  --radius:16px; --radius-sm:10px;
+  --shadow-sm:0 1px 2px rgba(15,23,42,.06), 0 1px 3px rgba(15,23,42,.04);
+  --shadow:0 4px 6px -1px rgba(15,23,42,.06), 0 10px 24px -6px rgba(49,46,129,.10);
+  --shadow-lg:0 12px 32px -8px rgba(49,46,129,.22);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);background:var(--slate-50);color:var(--slate-800);
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+
+header.hero{background:linear-gradient(155deg,var(--indigo-700) 0%,var(--indigo-600) 45%,#6d5ce7 100%);
+  color:#fff;padding:36px 0 76px;position:relative;overflow:hidden}
+header.hero::after{content:"";position:absolute;right:-90px;top:-90px;width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.22),rgba(255,255,255,0) 70%)}
+header.hero::before{content:"";position:absolute;left:-60px;bottom:-120px;width:240px;height:240px;border-radius:50%;
+  background:radial-gradient(circle at 60% 40%,rgba(255,255,255,.14),rgba(255,255,255,0) 70%)}
+.hero-in{max-width:960px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
+.badge-top{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.25);padding:5px 13px 5px 9px;border-radius:999px;
+  font-size:12px;font-weight:600;letter-spacing:.02em;backdrop-filter:blur(6px)}
+.badge-top .bd{width:9px;height:9px;border-radius:50%;background:var(--brand);
+  box-shadow:0 0 0 3px rgba(255,255,255,.22)}
+h1{font-size:30px;line-height:1.2;margin:16px 0 8px;font-weight:800;letter-spacing:-.02em}
+.hero p{margin:0;opacity:.9;font-size:15px;max-width:660px}
+.hero-stats{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.hstat{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);
+  border-radius:12px;padding:9px 14px;backdrop-filter:blur(6px)}
+.hstat b{display:block;font-size:17px;line-height:1.2}
+.hstat span{font-size:11.5px;opacity:.82}
+
+nav.tabs{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--slate-200);
+  margin-top:-40px;border-radius:var(--radius) var(--radius) 0 0;box-shadow:var(--shadow)}
+.tabs-scroll{display:flex;gap:4px;overflow-x:auto;padding:8px;scrollbar-width:none}
+.tabs-scroll::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:0;background:transparent;color:var(--slate-600);
+  font:inherit;font-size:13.5px;font-weight:600;padding:9px 14px;border-radius:10px;
+  cursor:pointer;white-space:nowrap;transition:.16s;display:flex;align-items:center;gap:6px}
+.tab:hover{background:var(--slate-100);color:var(--slate-800)}
+.tab.active{background:var(--indigo-600);color:#fff;box-shadow:0 4px 12px -3px rgba(79,70,229,.5)}
+.tab .n{font-size:11px;opacity:.7;font-weight:700}
+
+section.panel{display:none;padding-top:24px;animation:fade .28s ease}
+section.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2{font-size:21px;font-weight:750;letter-spacing:-.01em;margin:0 0 4px;color:var(--slate-900);
+  position:relative;padding-left:13px}
+h2::before{content:"";position:absolute;left:0;top:5px;bottom:5px;width:4px;border-radius:99px;background:var(--brand)}
+.sub{color:var(--slate-500);font-size:14px;margin:0 0 20px;padding-left:13px}
+h3{font-size:16px;font-weight:700;margin:26px 0 10px;color:var(--slate-900)}
+h4{font-size:15px;font-weight:700;margin:16px 0 6px;color:var(--slate-900)}
+p{margin:10px 0}
+
+.card{background:#fff;border:1px solid var(--slate-200);border-radius:var(--radius);
+  padding:18px;box-shadow:var(--shadow-sm);margin-bottom:14px}
+.card.tight{padding:14px}
+.grid{display:grid;gap:12px}
+@media(min-width:680px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
+
+.note{border-radius:var(--radius-sm);padding:12px 14px;font-size:13.5px;margin:12px 0;
+  border-left:3px solid;display:flex;gap:9px;align-items:flex-start}
+.note b{font-weight:700}
+.note.info{background:var(--sky-bg);border-color:var(--sky);color:#075985}
+.note.warn{background:var(--amber-bg);border-color:var(--amber);color:#92400e}
+.note.dang{background:var(--red-bg);border-color:var(--red);color:#991b1b}
+.note.ok{background:var(--green-bg);border-color:var(--green);color:#065f46}
+.note .ic{flex:0 0 auto;font-size:15px;line-height:1.4}
+
+.method{border:1.5px solid var(--slate-200);border-radius:var(--radius);padding:16px;background:#fff;
+  transition:.18s;position:relative;overflow:hidden;margin-bottom:0}
+.method:hover{border-color:var(--indigo-300);box-shadow:var(--shadow);transform:translateY(-2px)}
+.method .tag{position:absolute;top:0;right:0;background:var(--brand);color:#fff;
+  font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:0 var(--radius) 0 10px;letter-spacing:.02em}
+.method h4{margin:0 0 6px;font-size:16px;font-weight:750}
+.method .who{font-size:12.5px;color:var(--indigo-700);background:var(--indigo-50);
+  display:inline-block;padding:3px 9px;border-radius:6px;font-weight:600;margin-bottom:10px}
+.method ul{margin:8px 0 0;padding-left:0;list-style:none;font-size:13.5px}
+.method li{padding:3px 0 3px 20px;position:relative;color:var(--slate-600)}
+.method li.p::before{content:"+";position:absolute;left:4px;color:var(--green);font-weight:800}
+.method li.m::before{content:"\2212";position:absolute;left:4px;color:var(--red);font-weight:800}
+
+.wiz-progress{display:flex;gap:4px;margin-bottom:16px}
+.wiz-progress i{flex:1;height:5px;border-radius:99px;background:var(--slate-200);transition:.3s}
+.wiz-progress i.done{background:var(--indigo-300)}
+.wiz-progress i.now{background:var(--indigo-600)}
+.step-head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.step-num{flex:0 0 auto;width:38px;height:38px;border-radius:12px;
+  background:linear-gradient(150deg,var(--indigo-600),var(--indigo-500));color:#fff;
+  display:grid;place-items:center;font-weight:800;font-size:16px;
+  box-shadow:0 6px 14px -5px rgba(79,70,229,.65)}
+.step-title{font-size:18px;font-weight:750;letter-spacing:-.01em;color:var(--slate-900)}
+.step-meta{font-size:12px;color:var(--slate-500);font-weight:600}
+.step-body{font-size:14.5px;color:var(--slate-700)}
+.step-body ol,.step-body ul{padding-left:20px;margin:10px 0}
+.step-body li{margin:6px 0}
+.step-body strong{color:var(--slate-900)}
+.wiz-nav{display:flex;gap:8px;margin-top:18px}
+.btn{border:0;font:inherit;font-weight:650;font-size:14px;padding:11px 18px;border-radius:11px;
+  cursor:pointer;transition:.16s;display:inline-flex;align-items:center;gap:7px;justify-content:center}
+.btn.primary{background:var(--indigo-600);color:#fff;box-shadow:0 6px 16px -6px rgba(79,70,229,.7)}
+.btn.primary:hover{background:var(--indigo-700);transform:translateY(-1px)}
+.btn.ghost{background:var(--slate-100);color:var(--slate-700)}
+.btn.ghost:hover{background:var(--slate-200)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn.wide{flex:1}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.dot{width:30px;height:30px;border-radius:9px;border:1.5px solid var(--slate-200);background:#fff;
+  color:var(--slate-500);font-size:12.5px;font-weight:700;cursor:pointer;transition:.15s;font-family:inherit}
+.dot:hover{border-color:var(--indigo-300)}
+.dot.active{background:var(--indigo-600);border-color:var(--indigo-600);color:#fff}
+.dot.seen{border-color:var(--indigo-200);background:var(--indigo-50);color:var(--indigo-700)}
+
+label.f{display:block;font-size:12.5px;font-weight:650;color:var(--slate-600);margin-bottom:5px}
+input[type=text],input[type=number],select{width:100%;padding:10px 12px;border:1.5px solid var(--slate-200);
+  border-radius:10px;font:inherit;font-size:14.5px;background:#fff;color:var(--slate-800);transition:.15s}
+input:focus,select:focus{outline:0;border-color:var(--indigo-500);box-shadow:0 0 0 3px var(--indigo-100)}
+.field{margin-bottom:12px}
+.seg{display:flex;gap:4px;background:var(--slate-100);padding:4px;border-radius:11px}
+.seg button{flex:1;border:0;background:transparent;font:inherit;font-size:13px;font-weight:650;
+  padding:8px;border-radius:8px;cursor:pointer;color:var(--slate-600);transition:.15s}
+.seg button.on{background:#fff;color:var(--indigo-700);box-shadow:var(--shadow-sm)}
+.dim3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+
+.res{background:linear-gradient(155deg,var(--indigo-700),var(--indigo-600));color:#fff;
+  border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-lg)}
+.res .total{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.res .total small{font-size:14px;font-weight:600;opacity:.75}
+.res .sum{opacity:.85;font-size:13.5px;margin-top:2px}
+.rrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;font-size:13.5px;
+  border-bottom:1px solid rgba(255,255,255,.14)}
+.rrow:last-child{border:0}
+.rrow span:first-child{opacity:.8}
+.rrow span:last-child{font-weight:700;font-variant-numeric:tabular-nums}
+.bar{display:flex;height:9px;border-radius:99px;overflow:hidden;margin:14px 0 8px;background:rgba(255,255,255,.18)}
+.bar i{display:block;transition:.4s}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;opacity:.9}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend i{width:9px;height:9px;border-radius:3px;display:block}
+
+.tblwrap{overflow-x:auto;border:1px solid var(--slate-200);border-radius:var(--radius);background:#fff;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px}
+table.narrow{min-width:0}
+th{background:var(--slate-50);text-align:left;padding:11px 12px;font-weight:700;font-size:12px;
+  color:var(--slate-600);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--slate-200)}
+td{padding:11px 12px;border-bottom:1px solid var(--slate-100);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--indigo-50)}
+.pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.pill.g{background:var(--green-bg);color:var(--green)}
+.pill.a{background:var(--amber-bg);color:var(--amber)}
+.pill.r{background:var(--red-bg);color:var(--red)}
+.pill.b{background:var(--indigo-50);color:var(--indigo-700)}
+.pill.s{background:var(--sky-bg);color:var(--sky)}
+
+.search-box{position:relative;margin-bottom:12px}
+.search-box input{padding-left:38px}
+.search-box .ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--slate-400);font-size:15px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1.5px solid var(--slate-200);background:#fff;font:inherit;font-size:12.5px;font-weight:650;
+  padding:6px 12px;border-radius:99px;cursor:pointer;color:var(--slate-600);transition:.15s}
+.chip:hover{border-color:var(--indigo-300)}
+.chip.on{background:var(--indigo-600);border-color:var(--indigo-600);color:#fff}
+.item{border:1px solid var(--slate-200);border-radius:12px;padding:12px 14px;margin-bottom:8px;background:#fff;
+  display:flex;gap:12px;align-items:flex-start}
+.item .body{flex:1;min-width:0}
+.item .nm{font-weight:700;font-size:14.5px;color:var(--slate-900)}
+.item .ds{font-size:13px;color:var(--slate-600);margin-top:3px}
+.item.r{border-left:4px solid var(--red)}
+.item.a{border-left:4px solid var(--amber)}
+.item.g{border-left:4px solid var(--green)}
+.empty{text-align:center;padding:28px;color:var(--slate-400);font-size:14px}
+
+.acc{border:1px solid var(--slate-200);border-radius:12px;margin-bottom:8px;background:#fff;overflow:hidden}
+.acc button{width:100%;text-align:left;border:0;background:transparent;font:inherit;font-size:14.5px;
+  font-weight:650;padding:14px 44px 14px 16px;cursor:pointer;position:relative;color:var(--slate-800)}
+.acc button::after{content:"+";position:absolute;right:16px;top:50%;transform:translateY(-50%);
+  font-size:20px;font-weight:400;color:var(--indigo-500);transition:.2s}
+.acc.open button::after{content:"\2212"}
+.acc .ans{display:none;padding:0 16px 15px;font-size:14px;color:var(--slate-600)}
+.acc.open .ans{display:block}
+.acc.open{border-color:var(--indigo-200);box-shadow:var(--shadow-sm)}
+
+.chk{display:flex;gap:11px;align-items:flex-start;padding:11px 13px;border:1px solid var(--slate-200);
+  border-radius:11px;margin-bottom:7px;background:#fff;cursor:pointer;transition:.15s}
+.chk:hover{border-color:var(--indigo-300)}
+.chk.done{background:var(--green-bg);border-color:#a7f3d0}
+.chk.done .t{text-decoration:line-through;color:var(--slate-400)}
+.box{flex:0 0 auto;width:21px;height:21px;border-radius:7px;border:2px solid var(--slate-300);
+  display:grid;place-items:center;font-size:12px;color:#fff;transition:.15s;margin-top:1px}
+.chk.done .box{background:var(--green);border-color:var(--green)}
+.chk .t{font-size:14px;font-weight:600}
+.chk .d{font-size:12.5px;color:var(--slate-500);margin-top:2px}
+.chk-head{display:flex;justify-content:space-between;align-items:center;margin:22px 0 10px;gap:10px}
+.chk-head h3{margin:0}
+.prog-txt{font-size:12.5px;font-weight:700;color:var(--indigo-700);background:var(--indigo-50);
+  padding:4px 11px;border-radius:99px;white-space:nowrap}
+
+.gl{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--slate-200);
+  border-radius:11px;margin-bottom:6px;background:#fff}
+.gl .zh{font-size:16px;font-weight:700;color:var(--indigo-700);flex:0 0 auto;min-width:88px;line-height:1.35}
+.gl .uz{flex:1;font-size:13.5px;color:var(--slate-700)}
+.gl .cp{border:1px solid var(--slate-200);background:var(--slate-50);border-radius:8px;
+  font:inherit;font-size:11.5px;font-weight:650;padding:5px 10px;cursor:pointer;color:var(--slate-600);flex:0 0 auto}
+.gl .cp:hover{background:var(--indigo-50);border-color:var(--indigo-200);color:var(--indigo-700)}
+.gl .cp.ok{background:var(--green-bg);border-color:#a7f3d0;color:var(--green)}
+
+.foot{text-align:center;color:var(--slate-400);font-size:12px;padding:32px 16px 0;line-height:1.7}
+.kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--slate-100);
+  border:1px solid var(--slate-200);border-radius:6px;padding:1px 6px;font-size:12.5px;color:var(--slate-700)}
+.mini{font-size:12.5px;color:var(--slate-500)}
+ul.tick{list-style:none;padding-left:0;margin:10px 0}
+ul.tick li{position:relative;padding-left:24px;margin:7px 0;font-size:14.5px}
+ul.tick li::before{content:"\2713";position:absolute;left:4px;color:var(--green);font-weight:800}
+</style>
+<style>
+/* XaridYordamchisi ilovasi ichida ochilganda qo'llanmani ilova dizayniga moslash */
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Onest:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --indigo-50:#EDEBFD; --indigo-100:#E4E1FB; --indigo-200:#D5D0F8; --indigo-300:#B6AEF3;
+  --indigo-500:#5A46EC; --indigo-600:#3B2CC9; --indigo-700:#3423B3; --indigo-900:#1E1670;
+  --slate-50:#F8F8FC; --slate-100:#F1F1F8; --slate-200:#E4E3EE; --slate-300:#CFCEDD;
+  --slate-400:#9A99AE; --slate-500:#6C6C88; --slate-600:#6E6D8A; --slate-700:#333350;
+  --slate-800:#22213B; --slate-900:#151329;
+  --green:#0F7B3E; --green-bg:#E9F8EF; --amber:#B45309; --amber-bg:#FDF3E3;
+  --red:#C8102E; --red-bg:#FDECEE; --sky:#2456C8; --sky-bg:#E8EEFE;
+  --radius:22px; --radius-sm:14px;
+  --shadow-sm:0 1px 2px rgba(20,19,43,.045),0 6px 16px -10px rgba(20,19,43,.24);
+  --shadow:0 1px 2px rgba(20,19,43,.05),0 10px 26px -14px rgba(20,19,43,.30);
+  --shadow-lg:0 18px 38px -18px rgba(45,30,150,.65);
+  --font:'Onest','Noto Color Emoji',system-ui,-apple-system,sans-serif;
+}
+
+body{background:#F2F1F8;color:#22213B;font-size:14.5px;letter-spacing:-.012em}
+.wrap{max-width:100%;padding:0 14px 40px}
+::-webkit-scrollbar{width:0;height:0}
+*{scrollbar-width:none}
+
+/* Hero — gradient sarlavha o'rniga ilovadagi yengil karta */
+header.hero{background:#FFFFFF;color:#151329;padding:16px 0 20px;border-bottom:1px solid #E8E8F1}
+header.hero::before,header.hero::after{display:none}
+.hero-in{padding:0 16px}
+.badge-top{background:#F1F1F8;border:none;color:#6C6C88;font-size:10.5px;font-weight:800;letter-spacing:.4px;padding:5px 11px 5px 8px;backdrop-filter:none}
+h1{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:23px;font-weight:800;letter-spacing:-.7px;margin:12px 0 6px;color:#151329}
+.hero p{color:#6E6D8A;font-size:13.5px;opacity:1;line-height:1.55;text-wrap:pretty}
+.hero-stats{gap:7px;margin-top:14px}
+.hstat{background:#F1F1F8;border:none;border-radius:14px;padding:9px 12px;backdrop-filter:none}
+.hstat b{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:15px;font-weight:800;color:#3B2CC9;letter-spacing:-.3px}
+.hstat span{font-size:10.5px;color:#6C6C88;font-weight:600}
+
+/* Tab qatori — ilovadagi chip uslubi */
+nav.tabs{margin-top:0;border-radius:0;box-shadow:none;background:#F2F1F8;border-bottom:1px solid #E8E8F1;backdrop-filter:none}
+.tabs-scroll{padding:9px 12px;gap:6px}
+.tab{background:#FFFFFF;border-radius:999px;font-size:12.5px;font-weight:700;color:#151329;padding:8px 14px;box-shadow:var(--shadow-sm)}
+.tab:hover{background:#F0EFFC;color:#151329}
+.tab.active{background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;box-shadow:0 12px 26px -14px rgba(45,30,150,.7)}
+.tab .n{display:none}
+
+/* Sarlavhalar */
+section.panel{padding-top:20px}
+h2{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:21px;font-weight:800;letter-spacing:-.6px;padding-left:0;color:#151329}
+h2::before{display:none}
+.sub{padding-left:0;font-size:13.5px;color:#6E6D8A;line-height:1.55;margin-bottom:18px}
+h3{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:16px;font-weight:800;letter-spacing:-.3px;margin:24px 0 10px}
+h4{font-weight:800;letter-spacing:-.2px}
+
+/* Kartalar */
+.card,.method{border:none;border-radius:var(--radius);box-shadow:var(--shadow);background:#FFFFFF}
+.method:hover{border:none;box-shadow:0 2px 4px rgba(59,44,201,.10),0 14px 30px -14px rgba(59,44,201,.42);transform:none}
+.method .tag{border-radius:0 var(--radius) 0 14px;background:#3B2CC9;font-size:10px;letter-spacing:.4px}
+.method .who{background:#EDEBFD;color:#3B2CC9;border-radius:8px;font-size:11.5px;font-weight:700}
+
+/* Eslatma bloklari */
+.note{border-left:none;border-radius:18px;padding:13px 15px;font-size:13px;line-height:1.55}
+.note.info{background:#E8EEFE;color:#1E3F91}
+.note.warn{background:#FDF3E3;color:#8A4308}
+.note.dang{background:#FDECEE;color:#A50C24}
+.note.ok{background:#E9F8EF;color:#0B5B2E}
+
+/* Bosqichlar */
+.wiz-progress i{height:6px;background:#E4E3EE}
+.wiz-progress i.done{background:#B6AEF3}
+.wiz-progress i.now{background:#3B2CC9}
+.step-num{border-radius:14px;background:linear-gradient(155deg,#5A46EC,#3423B3);box-shadow:0 12px 24px -14px rgba(45,30,150,.8)}
+.step-title{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:17px;font-weight:800;letter-spacing:-.4px}
+.step-meta{font-size:11.5px;color:#6C6C88;font-weight:700}
+.step-body{font-size:14px;color:#333350}
+.dot{border:none;border-radius:12px;background:#FFFFFF;color:#6C6C88;box-shadow:var(--shadow-sm);width:32px;height:32px}
+.dot.active{background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff}
+.dot.seen{background:#EDEBFD;color:#3B2CC9}
+
+/* Tugmalar */
+.btn{border-radius:18px;padding:14px 20px;font-weight:700;font-size:14.5px}
+.btn.primary{background:linear-gradient(155deg,#5A46EC,#3423B3);box-shadow:0 18px 38px -18px rgba(45,30,150,.65)}
+.btn.primary:hover{background:linear-gradient(155deg,#4E3BE4,#2C1D9C);transform:none}
+.btn.ghost{background:#FFFFFF;color:#151329;box-shadow:var(--shadow-sm)}
+.btn.ghost:hover{background:#F0EFFC}
+
+/* Maydonlar */
+label.f{font-size:11.5px;font-weight:700;color:#6C6C88;letter-spacing:.1px}
+input[type=text],input[type=number],select{border:1.5px solid #E4E3EE;border-radius:14px;padding:12px 14px;font-size:15px;color:#151329}
+input:focus,select:focus{border-color:#3B2CC9;box-shadow:0 0 0 3px #EDEBFD}
+.seg{background:#F1F1F8;border-radius:16px;padding:5px}
+.seg button{border-radius:12px;font-size:12.5px;font-weight:700;color:#6C6C88}
+.seg button.on{background:#FFFFFF;color:#3B2CC9;box-shadow:var(--shadow-sm)}
+
+/* Natija kartasi */
+.res{background:linear-gradient(155deg,#5A46EC,#3423B3);border-radius:26px;padding:20px;box-shadow:var(--shadow-lg)}
+.res .total{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:31px;font-weight:800;letter-spacing:-1px}
+
+/* Jadvallar */
+.tblwrap{border:none;border-radius:var(--radius);box-shadow:var(--shadow)}
+table{font-size:13px;min-width:0}
+th{background:#F8F8FC;color:#6C6C88;font-size:10.5px;letter-spacing:.5px;border-bottom:1px solid #E8E8F1;padding:11px 12px}
+td{border-bottom:1px solid #F1F1F8;padding:11px 12px}
+tbody tr:hover{background:#F8F8FC}
+.pill{border-radius:9px;font-size:10.5px;font-weight:800;letter-spacing:.3px;padding:3px 8px}
+.pill.g{background:#E9F8EF;color:#0F7B3E}
+.pill.a{background:#FDF3E3;color:#B45309}
+.pill.r{background:#FDECEE;color:#C8102E}
+.pill.b{background:#EDEBFD;color:#3B2CC9}
+.pill.s{background:#E8EEFE;color:#2456C8}
+
+/* Qidiruv, chiplar, ro'yxatlar */
+.search-box input{padding-left:40px;background:#FFFFFF;box-shadow:var(--shadow-sm);border-color:transparent}
+.chip{border:none;background:#FFFFFF;border-radius:999px;font-size:12px;font-weight:700;color:#151329;box-shadow:var(--shadow-sm);padding:7px 13px}
+.chip:hover{background:#F0EFFC}
+.chip.on{background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff}
+.item{border:none;border-radius:18px;box-shadow:var(--shadow);padding:13px 15px}
+.item.r{border-left:4px solid #C8102E}
+.item.a{border-left:4px solid #B45309}
+.item.g{border-left:4px solid #0F7B3E}
+.item .nm{font-size:14px;font-weight:700;color:#151329}
+.item .ds{font-size:12.5px;color:#6E6D8A}
+.empty{color:#9A99AE;font-size:13px}
+
+/* Akkordeon, checklist, lug'at */
+.acc{border:none;border-radius:18px;box-shadow:var(--shadow)}
+.acc button{font-size:14px;font-weight:700;color:#151329;padding:15px 44px 15px 16px}
+.acc button::after{color:#3B2CC9}
+.acc.open{border:none;box-shadow:0 2px 4px rgba(59,44,201,.10),0 14px 30px -14px rgba(59,44,201,.42)}
+.acc .ans{font-size:13.5px;color:#6E6D8A;line-height:1.6}
+.chk{border:none;border-radius:18px;box-shadow:var(--shadow-sm);padding:13px 15px}
+.chk:hover{background:#FBFBFE}
+.chk.done{background:#E9F8EF;box-shadow:none}
+.box{border-radius:8px;border:2px solid #CFCEDD}
+.chk .t{font-size:13.5px;font-weight:700;color:#151329}
+.chk .d{font-size:12px;color:#6C6C88}
+.prog-txt{background:#EDEBFD;color:#3B2CC9;font-size:11.5px;font-weight:800;border-radius:999px}
+.gl{border:none;border-radius:16px;box-shadow:var(--shadow-sm);padding:11px 13px}
+.gl .zh{color:#3B2CC9;font-weight:800;font-size:15px}
+.gl .uz{font-size:13px;color:#333350}
+.gl .cp{border:none;background:#F1F1F8;border-radius:10px;color:#6C6C88;font-weight:700}
+.gl .cp:hover{background:#EDEBFD;color:#3B2CC9}
+.gl .cp.ok{background:#E9F8EF;color:#0F7B3E}
+
+.kbd{background:#F1F1F8;border:none;border-radius:8px;color:#333350;font-weight:600}
+.mini{font-size:12.5px;color:#6C6C88;line-height:1.55}
+ul.tick li{font-size:14px}
+.foot{color:#9A99AE;font-size:11.5px;padding-top:28px}
+
+/* ============ Interaktivlik qatlami ============ */
+body{padding-bottom:0}
+.wrap{padding-bottom:96px}
+
+/* O'qish progressi */
+nav.tabs{position:sticky;top:0}
+.xy-prog{position:absolute;left:0;bottom:-1px;height:2.5px;width:0;background:linear-gradient(90deg,#5A46EC,#3423B3);border-radius:0 3px 3px 0;transition:width .12s linear;display:block}
+
+/* Pastdagi bo'lim navigatsiyasi */
+.xy-secnav{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;align-items:center;gap:8px;
+  padding:9px 12px calc(9px + env(safe-area-inset-bottom));background:rgba(255,255,255,.94);
+  backdrop-filter:blur(14px);border-top:1px solid #E8E8F1}
+.xy-nb{flex:none;width:44px;height:44px;border:none;border-radius:16px;background:#F1F1F8;color:#3B2CC9;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,transform .12s}
+.xy-nb:hover{background:#EDEBFD}
+.xy-nb:active{transform:scale(.94)}
+.xy-nb:disabled{opacity:.32;cursor:not-allowed}
+.xy-mid{flex:1;min-width:0;border:none;background:#FFFFFF;border-radius:16px;height:44px;cursor:pointer;
+  font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  box-shadow:0 1px 2px rgba(20,19,43,.045),0 6px 16px -10px rgba(20,19,43,.24)}
+.xy-mid:active{transform:scale(.99)}
+.xy-mid b{font-size:13px;font-weight:800;color:#151329;letter-spacing:-.2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.xy-mid span{font-size:10px;font-weight:700;color:#6C6C88;letter-spacing:.4px;font-variant-numeric:tabular-nums}
+
+/* Kalkulyator natijasi ko'z oldida qoladi */
+#p-calc .res{position:sticky;bottom:86px;z-index:5}
+
+/* Tegish maydonlari va aks-sado */
+.tab{min-height:36px}
+.tab:active{transform:scale(.96)}
+.chip{min-height:34px}
+.chip:active{transform:scale(.96)}
+.btn{min-height:50px}
+.btn:active{transform:scale(.985)}
+.dot{width:36px;height:36px}
+.dot:active{transform:scale(.94)}
+.gl .cp{min-height:32px}
+.chk{min-height:52px;align-items:center}
+.acc button{min-height:52px}
+
+/* Akkordeon chevroni */
+.acc button::after,.acc.open button::after{content:"";width:8px;height:8px;border-right:2.4px solid #3B2CC9;
+  border-bottom:2.4px solid #3B2CC9;border-radius:1px;transform:translateY(-70%) rotate(45deg);transition:transform .22s ease}
+.acc.open button::after{transform:translateY(-20%) rotate(225deg)}
+
+/* Raqamlar tekis ustunda */
+table,.res,.hstat b,.step-meta,.prog-txt{font-variant-numeric:tabular-nums}
+
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-in">
+    <div class="badge-top"><span class="bd"></span>Amazon.com · Yangilangan: 2026-yil avgust</div>
+    <h1>Amazon'dan O'zbekistonga<br>buyurtma berish</h1>
+    <p>AQSh manzilini olishdan tortib bojxona rasmiylashtiruvigacha — bosqichma-bosqich interaktiv qo'llanma, narx kalkulyatori, sotuvchi tekshiruvi va o'lchamlar jadvali.</p>
+    <div class="hero-stats"><div class="hstat"><b>0%</b><span>soliqsiz shtat manzili</span></div><div class="hstat"><b>$200</b><span>oylik bojsiz norma</span></div><div class="hstat"><b>7–16 kun</b><span>AQShdan yetkazish</span></div></div>
+  </div>
+</header>
+<div class="wrap">
+  <nav class="tabs"><div class="tabs-scroll" id="tabs"></div></nav>
+  <section class="panel active" id="p-start"><h2>Amazon nima uchun boshqacha?</h2><p class="sub">Amazon — dunyodagi eng katta onlayn do'kon, lekin O'zbekistonga to'g'ridan-to'g'ri yetkazish deyarli ishlamaydi. Sabab va yechimlar quyida.</p>
+<div class="grid g3">
+  <div class="method">
+    <div class="tag">ENG OMMABOP</div>
+    <h4>1. AQSh manzili (forwarder)</h4>
+    <div class="who">O'zingiz buyurtma berasiz</div>
+    <p class="mini">Yetkazish xizmati sizga <b>haqiqiy AQSh manzili</b> va shaxsiy suite raqamini beradi. Amazon uchun bu oddiy ichki manzil — u yerga bepul yoki arzon yetkazadi. Keyin xizmat qutini O'zbekistonga jo'natadi.</p>
+    <ul>
+      <li class="p">Amazon assortimentining 100% ochiq</li>
+      <li class="p">Ichki yetkazish ko'pincha bepul</li>
+      <li class="p">Soliqsiz shtat manzilida sales tax 0%</li>
+      <li class="p">Bir nechta buyurtmani birlashtirish</li>
+      <li class="m">Xalqaro Visa/Mastercard kerak</li>
+      <li class="m">Qaytarish murakkab</li>
+    </ul>
+  </div>
+  <div class="method">
+    <h4>2. AmazonGlobal</h4>
+    <div class="who">Amazon'ning o'zi yetkazadi</div>
+    <p class="mini">Ba'zi tovarlarda «Ships to Uzbekistan» varianti chiqadi. Checkout'da <b>Import Fees Deposit</b> — bojxona to'lovi oldindan undiriladi.</p>
+    <ul>
+      <li class="p">Bitta jarayon, bitta trek</li>
+      <li class="p">Boj oldindan hisoblanadi, qo'shimcha to'lov yo'q</li>
+      <li class="p">Ortiqcha undirilsa — 180 kun ichida qaytariladi</li>
+      <li class="m">Tovarlarning juda kichik qismi mos keladi</li>
+      <li class="m">Yetkazish qimmat</li>
+      <li class="m">Elektronika va batareya ko'pincha chiqmaydi</li>
+    </ul>
+  </div>
+  <div class="method">
+    <h4>3. To'liq xizmat vositachisi</h4>
+    <div class="who">Ular sotib olib beradi</div>
+    <p class="mini">Toshkentdagi xizmat havolani olib, o'z kartasi bilan sotib oladi va yetkazadi. Karta va ingliz tili kerak emas.</p>
+    <ul>
+      <li class="p">Xalqaro karta kerak emas</li>
+      <li class="p">So'mda to'laysiz</li>
+      <li class="p">Qaytarish/nizoni o'zi hal qiladi</li>
+      <li class="m">Komissiya 5–15%</li>
+      <li class="m">Kurs farqi qo'shiladi</li>
+    </ul>
+  </div>
+</div>
+
+<div class="note info">
+  <span class="ic">💡</span>
+  <div><b>Tavsiya:</b> $100 dan arzon birinchi buyurtmani <b>to'liq xizmat vositachisi</b> orqali sinab ko'ring. Jarayonni tushunib, xalqaro karta ochganingizdan keyin <b>AQSh manzili</b> usuliga o'ting — u 10–25% arzonroq tushadi.</div>
+</div>
+
+<h3>💰 Sales tax — eng ko'p unutiladigan tejash</h3>
+<div class="card">
+  <p style="margin-top:0;font-size:14.5px">AQShda savdo solig'i (sales tax) <b>shtatga qarab</b> olinadi va u <b>yetkazish manzili</b> bo'yicha aniqlanadi. Ya'ni sizning forwarder omboringiz qaysi shtatda bo'lsa — o'sha shtatning solig'i to'lanadi.</p>
+  <div class="tblwrap">
+    <table class="narrow"><thead><tr><th>Shtat</th><th>Sales tax</th><th>Izoh</th></tr></thead><tbody>
+      <tr><td><b>Delaware</b></td><td><span class="pill g">0%</span></td><td>Eng ko'p ishlatiladigan forwarder shtati</td></tr>
+      <tr><td><b>Oregon</b></td><td><span class="pill g">0%</span></td><td>G'arbiy sohil — Osiyoga yaqin</td></tr>
+      <tr><td><b>New Hampshire</b></td><td><span class="pill g">0%</span></td><td>Sharqiy sohil</td></tr>
+      <tr><td><b>Montana</b></td><td><span class="pill g">0%</span></td><td>Kam uchraydi</td></tr>
+      <tr><td>Alaska</td><td><span class="pill a">0% shtat</span></td><td>Ba'zi shaharlarda mahalliy soliq bor</td></tr>
+      <tr><td>Florida, New Jersey, Kaliforniya</td><td><span class="pill r">6–10%</span></td><td>Ko'p forwarderlar shu yerda — qimmatroq</td></tr>
+    </tbody></table>
+  </div>
+  <p class="mini" style="margin-bottom:0">$500 lik buyurtmada farq <b>$30–50</b> — bu ko'pincha yetkazish narxining yarmi. Xizmatga ro'yxatdan o'tishdan oldin <b>ombor qaysi shtatda</b> ekanini so'rang.</p>
+</div>
+
+<h3>🌍 Qaysi Amazon domenidan olish kerak?</h3>
+<div class="tblwrap">
+  <table><thead><tr><th>Domen</th><th>Nima uchun yaxshi</th><th>Soliq</th><th>Yetkazish</th></tr></thead><tbody>
+    <tr><td><b>amazon.com</b> (AQSh)</td><td>Eng katta assortiment, eng arzon elektronika, kitob</td><td>Sales tax 0–10% (shtatga qarab)</td><td>Forwarder yoki AmazonGlobal</td></tr>
+    <tr><td><b>amazon.de</b> (Germaniya)</td><td>Yevropa brendlari, asbob-uskuna, sifatli maishiy texnika</td><td>QQS (MwSt) 19% narxga kirgan</td><td>Yevropa forwarder; O'zbekistonga to'g'ridan jo'natsa QQS qaytariladi</td></tr>
+    <tr><td><b>amazon.co.uk</b></td><td>Kitob, kiyim, ba'zan arzonroq elektronika</td><td>VAT 20% narxga kirgan</td><td>Britaniya forwarder</td></tr>
+    <tr><td><b>amazon.ae</b> (Dubay)</td><td>O'zbekistonga yaqin, tez yetkazish</td><td>VAT 5%</td><td>BAA yo'nalishi ishlaydigan kargolar</td></tr>
+    <tr><td><b>amazon.com.tr</b></td><td>Turk brendlari; Trendyol bilan raqobatda</td><td>KDV narxga kirgan</td><td>Turkiya yo'nalishi — eng arzon</td></tr>
+  </tbody></table>
+</div>
+<div class="note warn">
+  <span class="ic">🧾</span>
+  <div><b>Yevropa uchun muhim nuqta:</b> amazon.de yoki amazon.co.uk'dan tovarni <b>Yevropa ichidagi</b> forwarder manziliga jo'natsangiz — QQS/VAT (19–20%) narxga kirgan holda qoladi va qaytarilmaydi. Agar Amazon <b>to'g'ridan-to'g'ri</b> O'zbekistonga jo'natsa (eksport), soliq ushlab qolinmaydi. Shuning uchun Yevropadan olishda avval «Deliver to Uzbekistan» variantini tekshiring.</div>
+</div>
+</section><section class="panel" id="p-steps">
+      <h2>Bosqichma-bosqich</h2>
+      <p class="sub">12 ta qadam — AQSh manzilini olishdan tovarni qo'lga olishgacha. Har bir qadamda amaliy maslahat va tipik xatolar.</p>
+      <div class="wiz-progress" id="wizbar"></div>
+      <div class="dots" id="wizdots"></div>
+      <div class="card" id="wizcard"></div>
+      <div class="wiz-nav">
+        <button class="btn ghost" id="wprev">← Orqaga</button>
+        <button class="btn primary wide" id="wnext">Keyingi qadam →</button>
+      </div></section><section class="panel" id="p-calc">
+      <h2>Narx va boj kalkulyatori</h2>
+      <p class="sub">Tovar narxi + sales tax + yetkazish + bojxona to'lovi — jami qancha turishini hisoblang.</p>
+      
+    <div class="grid g2">
+      <div>
+        <div class="card">
+          <h3 style="margin-top:0">Tovar</h3>
+          <div class="field">
+            <label class="f">Tovar narxi</label>
+            <div class="seg" style="margin-bottom:8px">
+              <button class="" data-cur="loc" onclick="setCur('loc')">€ Yevro (.de/.co.uk)</button>
+              <button class="on" data-cur="usd" onclick="setCur('usd')">$ Dollar</button>
+            </div>
+            <input type="number" id="price" value="120" min="0" step="1" oninput="calc()">
+          </div>
+          <div class="field">
+            <label class="f">Mahalliy yetkazish (€ yoki $) <span class="mini">— AQSh ichida yetkazish, agar bepul bo'lmasa</span></label>
+            <input type="number" id="inner" value="0" min="0" step="1" oninput="calc()">
+          </div>
+          
+          <div class="field">
+            <label class="f">Sales tax (%) <span class="mini">— Delaware/Oregon = 0%, Florida ≈ 7%</span></label>
+            <input type="number" id="taxpct" value="0" min="0" step="0.5" oninput="calc()">
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">Og'irlik va o'lcham</h3>
+          <div class="field">
+            <label class="f">Haqiqiy og'irlik (kg)</label>
+            <input type="number" id="wkg" value="1.5" min="0" step="0.1" oninput="calc()">
+          </div>
+          <div class="field">
+            <label class="f">Quti o'lchami, sm <span class="mini">(uzunlik × eni × balandlik)</span></label>
+            <div class="dim3">
+              <input type="number" id="dl" value="35" min="0" oninput="calc()">
+              <input type="number" id="dw" value="25" min="0" oninput="calc()">
+              <input type="number" id="dh" value="15" min="0" oninput="calc()">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <h3 style="margin-top:0">Xalqaro yetkazish</h3>
+          <div class="field">
+            <label class="f">Yetkazish turi</label>
+            <div class="seg">
+              <button class="on" data-m="air" onclick="setMode('air')">⚡ Ekspress (3–9 kun)</button>
+              <button data-m="road" onclick="setMode('road')">📦 Standart (7–16 kun)</button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="f">Tarif ($ / kg)</label>
+            <input type="number" id="rate" value="12" min="0" step="0.1" oninput="calc()">
+          </div>
+          <div class="field">
+            <label class="f">Hajmiy og'irlik bo'luvchisi</label>
+            <select id="divisor" onchange="calc()">
+              <option value="6000">6000 — standart</option>
+              <option value="5000">5000 — qattiqroq</option>
+              <option value="0">Hisobga olinmasin</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">Bojxona va kurs</h3>
+          <div class="field">
+            <label class="f">Shu oyda allaqachon foydalanilgan norma ($)</label>
+            <input type="number" id="used" value="0" min="0" step="1" oninput="calc()">
+          </div>
+          <div class="field">
+            <label class="f">Kanal</label>
+            <select id="channel" onchange="calc()">
+              <option value="200">Kuryerlik / kargo — $200 oyiga</option>
+              <option value="100">Pochta (UzPost, EMS) — $100</option>
+            </select>
+          </div>
+          <div class="grid g2" style="gap:8px">
+            <div class="field" style="margin:0">
+              <label class="f">1 USD = ... so'm</label>
+              <input type="number" id="usdrate" value="11857" min="1" oninput="calc()">
+            </div>
+            <div class="field" style="margin:0">
+              <label class="f">1 USD = ... €</label>
+              <input type="number" id="fxrate" value="0.86" min="0.0001" step="0.01" oninput="calc()">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="res" id="result"></div>
+    
+    <div class="note info" style="margin-top:14px">
+      <span class="ic">📐</span>
+      <div><b>Hajmiy og'irlik nima?</b> Yengil, lekin katta hajmli tovar uchun yetkazish <b>hajm</b> bo'yicha hisoblanadi: <span class="kbd">U × E × B ÷ 6000</span>. Haqiqiy va hajmiy og'irlikning <b>kattarog'i</b> to'lanadi.</div>
+    </div>
+    <div class="note warn">
+      <span class="ic">🧮</span>
+      <div><b>Boj qanday hisoblanadi:</b> bojxona qiymati = <b>tovar narxi + soliq + yetkazib berish qiymati</b>. Normadan oshgan qismdan <b>30%</b> olinadi, lekin har bir kilogramm uchun <b>$3</b> dan kam bo'lmaydi. Kalkulyator ikkalasini hisoblab, kattarog'ini ko'rsatadi.</div>
+    </div>
+
+    <div class="note ok">
+      <span class="ic">💡</span>
+      <div><b>Amazon uchun maslahat:</b> «Sales tax» maydonini <b>0</b> qilib qoldirsangiz — bu soliqsiz shtatdagi (Delaware/Oregon) ombor demakdir. Forwarderingiz Floridada bo'lsa, 7 kiriting va farqni ko'ring: ko'pincha bu butun yetkazish narxining yarmi.</div>
+    </div>
+    </section><section class="panel" id="p-customs">
+      <h2>Bojxona qoidalari</h2>
+      <p class="sub">O'zbekistonda jismoniy shaxslar uchun amaldagi normalar (2025-yil 1-maydan kuchga kirgan tartib).</p>
+      
+    <div class="grid g2">
+      <div class="card tight">
+        <div class="pill b">KURYERLIK / KARGO</div>
+        <div style="font-size:26px;font-weight:800;margin:8px 0 2px;color:var(--indigo-700)">$200</div>
+        <div class="mini">bir <b>kalendar oy</b> ichida, bojsiz. Barcha jo'natmalar jamlanib hisoblanadi.</div>
+      </div>
+      <div class="card tight">
+        <div class="pill s">POCHTA (UzPost / EMS)</div>
+        <div style="font-size:26px;font-weight:800;margin:8px 0 2px;color:var(--sky)">$100</div>
+        <div class="mini">bojsiz chegara. Kanal boshqacha — normalar alohida hisoblanadi.</div>
+      </div>
+      <div class="card tight">
+        <div class="pill a">NORMADAN OSHSA</div>
+        <div style="font-size:26px;font-weight:800;margin:8px 0 2px;color:var(--amber)">30%</div>
+        <div class="mini">faqat <b>ortiqcha summadan</b>, lekin 1 kg uchun $3 dan kam emas.</div>
+      </div>
+      <div class="card tight">
+        <div class="pill g">O'ZINGIZ OLIB KELSANGIZ</div>
+        <div style="font-size:26px;font-weight:800;margin:8px 0 2px;color:var(--green)">$1000</div>
+        <div class="mini">havo yo'li bilan. Temir yo'l/suv — $500, avtomobil va piyoda — $300.</div>
+      </div>
+    </div>
+
+    <h3>«Yashil», «sariq», «qizil» yo'laklar</h3>
+    <p style="font-size:14.5px;margin-top:0">2025-yil 6-noyabrdagi VM 700-son qarori bilan pochta va kuryerlik jo'natmalari <b>xavfni boshqarish tizimi</b> orqali uch yo'lakka ajratiladi:</p>
+    <div class="grid g3">
+      <div class="card tight" style="border-left:4px solid var(--green)">
+        <b style="color:var(--green)">🟢 Yashil</b>
+        <div class="mini" style="margin-top:5px">Hujjatlar to'g'ri, risk past. Jismoniy tekshiruvsiz o'tadi — eng tez.</div>
+      </div>
+      <div class="card tight" style="border-left:4px solid var(--amber)">
+        <b style="color:var(--amber)">🟡 Sariq</b>
+        <div class="mini" style="margin-top:5px">Hujjatlar tekshiriladi: invoys, chek, qiymat asoslanishi so'ralishi mumkin.</div>
+      </div>
+      <div class="card tight" style="border-left:4px solid var(--red)">
+        <b style="color:var(--red)">🔴 Qizil</b>
+        <div class="mini" style="margin-top:5px">Jo'natma ochib ko'riladi. Taqiq/cheklov, noaniq qiymat yoki tijorat belgisi bo'lsa.</div>
+      </div>
+    </div>
+
+    <h3>my.gov.uz orqali tasdiqlash</h3>
+    <p style="font-size:14.5px;margin-top:0">2026-yil may oyidan sizning nomingizga kelayotgan har bir xalqaro kuryerlik jo'natmasi <b>my.gov.uz</b> shaxsiy kabinetingizga push-xabar sifatida tushadi.</p>
+    <ol style="font-size:14.5px">
+      <li><b>my.gov.uz</b> → «Bojxona» bo'limi</li>
+      <li>«Xalqaro kuryerlik jo'natmasi to'g'risidagi xabarnomani tasdiqlash yoki rad etish» xizmati</li>
+      <li>Jo'natma nomi, qiymati, vazni ko'rsatiladi — tekshiring</li>
+      <li><b>Tasdiqlash</b> yoki <b>Rad etish</b></li>
+    </ol>
+    <div class="note dang">
+      <span class="ic">🚨</span>
+      <div><b>Faqat o'zingizniki bo'lgan jo'natmani tasdiqlang.</b> Notanish jo'natmani tasdiqlasangiz, u sizning oylik normangizni «yeydi» va kelajakda soliq/bojxona muammosiga aylanishi mumkin. Xizmat 24/7 ishlaydi.</div>
+    </div>
+
+      
+    <h3>📱 Telefon buyurtma qilsangiz — UzIMEI</h3>
+    <div class="card">
+      <p style="margin-top:0;font-size:14.5px">Chetdan kelgan telefon O'zbekiston tarmog'ida ishlashi uchun <b>UzIMEI</b> tizimida ro'yxatdan o'tishi shart. Aks holda telefon <b>30 kundan keyin tarmoqdan uziladi</b>.</p>
+      <div class="tblwrap">
+        <table class="narrow"><tbody>
+          <tr><td>Tarmoqqa ulangandan keyin <b>30 kun ichida</b></td><td><b>88 000 so'm</b> (BHMning 20%)</td></tr>
+          <tr><td>30 kundan <b>keyin</b></td><td><b>110 000 so'm</b> (BHMning 25%)</td></tr>
+          <tr><td>Xorij SIM-kartasi bilan (rezident emas)</td><td><b>Bepul</b></td></tr>
+        </tbody></table>
+      </div>
+      <p class="mini" style="margin-bottom:0">Ikki SIM-slotli telefonda <b>har bir IMEI alohida</b> kiritiladi — <span class="kbd">*#06#</span> terib ko'ring. Deklaratsiya va UzIMEI ro'yxati — <b>ikki alohida jarayon</b>.</p>
+    </div>
+
+    <div class="note info">
+      <span class="ic">🇺🇸</span>
+      <div><b>Amazon'ga xos nuqta:</b> AQShdan kelgan jo'natmalarda invoys ingliz tilida va narxlar dollarda bo'ladi — bu bojxona uchun qulay. Lekin Amazon qutisidagi <b>packing slip</b>da ba'zan narx ko'rsatilmaydi. Order Details sahifasidan <b>Invoice</b> ni PDF qilib saqlab qo'ying.</div>
+    </div>
+
+      <h3>Taqiq va cheklovlar tekshiruvi</h3>
+      <div class="search-box">
+        <span class="ic">🔍</span>
+        <input type="text" id="banq" placeholder="Tovar nomini yozing: dron, dori, batareya..." oninput="renderBan()">
+      </div>
+      <div class="chips" id="banchips"></div>
+      <div id="banlist"></div>
+      <div class="note warn">
+        <span class="ic">⚖️</span>
+        <div>Bu ro'yxat — <b>yo'naltiruvchi</b>. Yakuniy qaror bojxona organi tomonidan aniq tovar, uning tavsifi va hujjatlari asosida qabul qilinadi.</div>
+      </div></section><section class="panel" id="p-cargo">
+      <h2>AQSh va Yevropadan yetkazish xizmatlari</h2>
+      <p class="sub">Amazon buyurtmalarini O'zbekistonga olib keluvchi xizmatlar. Narxlar taxminiy — rasmiy saytda tekshiring.</p>
+      <div class="chips" id="cargochips"></div>
+      <div class="tblwrap">
+        <table>
+          <thead><tr><th>Kompaniya</th><th>Yo'nalish</th><th>Narx</th><th>Muddat</th><th>Xususiyati</th></tr></thead>
+          <tbody id="cargobody"></tbody>
+        </table>
+      </div>
+      
+<h3>Xizmat tanlashda nimaga qaraysiz?</h3>
+<div class="grid g2">
+  <div class="card tight"><b>1. Ombor shtati</b><div class="mini" style="margin-top:4px">Delaware yoki Oregon bo'lsa — sales tax 0%. Bu $500 lik buyurtmada $30–50 tejash.</div></div>
+  <div class="card tight"><b>2. Minimal og'irlik</b><div class="mini" style="margin-top:4px">Ko'p xizmat 0.5 yoki 1 kg dan hisoblaydi. Yengil tovarda bu narxni ikki barobar oshiradi.</div></div>
+  <div class="card tight"><b>3. Konsolidatsiya bepulmi</b><div class="mini" style="margin-top:4px">Amazon buyurtmani bir necha qutida yuboradi — birlashtirish deyarli har doim kerak bo'ladi.</div></div>
+  <div class="card tight"><b>4. Repacking imkoniyati</b><div class="mini" style="margin-top:4px">Amazon qutilari katta. Ortiqcha qadoqni olib tashlash hajmiy og'irlikni sezilarli kamaytiradi.</div></div>
+  <div class="card tight"><b>5. Amazon'ga qaytarish xizmati</b><div class="mini" style="margin-top:4px">Ombor tovarni Amazon'ga qaytara oladimi? Bu noto'g'ri tovar kelganda yagona yechim.</div></div>
+  <div class="card tight"><b>6. Bepul saqlash muddati</b><div class="mini" style="margin-top:4px">30–60 kun bo'lsa yaxshi — bir necha buyurtmani yig'ib, birga jo'natish imkonini beradi.</div></div>
+</div>
+</section><section class="panel" id="p-tools"><h2>Amazon vositalari va aksiyalar</h2><p class="sub">Narxni tushirish va sifatni tekshirish uchun amaliy vositalar.</p>
+<h3>🔎 Narx va sifatni tekshirish</h3>
+<div class="tblwrap"><table><thead><tr><th>Vosita</th><th>Nima qiladi</th><th>Qanday ishlatiladi</th></tr></thead><tbody>
+<tr><td><b>Keepa</b></td><td>Narx tarixi grafigi, narx tushganda xabar</td><td>Brauzer kengaytmasi yoki keepa.com'da ASIN qidirish</td></tr>
+<tr><td><b>camelcamelcamel</b></td><td>Narx tarixi, eng past narx, email ogohlantirish</td><td>Mahsulot havolasini saytga qo'yish</td></tr>
+<tr><td><b>ReviewMeta / Fakespot</b></td><td>Sun'iy sharhlarni aniqlash</td><td>Mahsulot havolasini tahlilga berish</td></tr>
+<tr><td><b>Amazon «Compare with similar items»</b></td><td>Rasmiy taqqoslash jadvali</td><td>Mahsulot sahifasining o'rtasida</td></tr>
+<tr><td><b>«Other Sellers on Amazon»</b></td><td>Bir xil tovarning boshqa narxlari</td><td>«Buy Box» ostidagi havola</td></tr>
+</tbody></table></div>
+
+<h3>📅 Yilning eng arzon kunlari</h3>
+<div class="tblwrap"><table><thead><tr><th>Voqea</th><th>Qachon</th><th>Nimaga arzon</th></tr></thead><tbody>
+<tr><td><b>Prime Day</b></td><td>Iyul (odatda 2 kun)</td><td>Amazon o'z brendlari, elektronika, maishiy texnika</td></tr>
+<tr><td><b>Black Friday</b></td><td>Noyabr oxiri</td><td>Yilning eng katta chegirmalari — televizor, noutbuk, quloqchin</td></tr>
+<tr><td><b>Cyber Monday</b></td><td>Black Friday'dan keyingi dushanba</td><td>Elektronika va raqamli tovarlar</td></tr>
+<tr><td><b>Back to School</b></td><td>Avgust</td><td>Noutbuk, planshet, kanselyariya</td></tr>
+<tr><td><b>Boxing Week</b></td><td>Dekabr oxiri</td><td>Bayramdan qolgan zaxiralar</td></tr>
+</tbody></table></div>
+<div class="note warn"><span class="ic">⏳</span><div>Bu kunlarda forwarder omborlari ham to'lib ketadi — qayta ishlash 3–7 kunga cho'ziladi. Shoshilinch kerak bo'lgan tovarni aksiya kunlarida buyurtma qilmang.</div></div>
+
+<h3>💸 Qo'shimcha tejash usullari</h3>
+<ul class="tick">
+<li><b>Coupon</b> — mahsulot sahifasidagi yashil «Apply $X coupon» katagi. Belgilamasangiz chegirma qo'llanmaydi.</li>
+<li><b>Subscribe &amp; Save</b> — takroriy tovarlarda 5–15%. Birinchi yetkazishdan keyin obunani bekor qilish mumkin.</li>
+<li><b>Amazon Warehouse</b> — «Used - Like New» holati ko'pincha yangisidan farq qilmaydi, narxi 15–40% past.</li>
+<li><b>Add-on / Cheaper alternatives</b> — «Buy it with» va «Products related to this item» bo'limlarida bir xil tovar arzonroq chiqadi.</li>
+<li><b>Prime bepul sinov</b> — 30 kunlik bepul davr bepul tez yetkazishni beradi; keyin bekor qiling.</li>
+</ul>
+</section><section class="panel" id="p-size"><h2>AQSh o'lchamlari jadvali</h2><p class="sub">Amazon'da o'lchamlar US tizimida. EU/RU ga solishtirish jadvali.</p>
+<div class="note dang"><span class="ic">📏</span><div><b>Asosiy qoida:</b> mahsulot sahifasidagi <b>«Size Chart»</b> havolasini oching — u yerda brendning o'z jadvali <b>duym yoki sm</b> bilan beriladi. Umumiy jadval faqat taxminiy mo'ljal.</div></div>
+
+<h3>👕 Erkaklar kiyimi</h3>
+<div class="tblwrap"><table><thead><tr><th>US</th><th>EU</th><th>RU</th><th>Ko'krak, sm</th><th>Bel, sm</th></tr></thead><tbody>
+<tr><td><b>XS</b></td><td>44</td><td>44</td><td>86–91</td><td>71–76</td></tr>
+<tr><td><b>S</b></td><td>46</td><td>46</td><td>91–96</td><td>76–81</td></tr>
+<tr><td><b>M</b></td><td>48</td><td>48</td><td>96–101</td><td>81–86</td></tr>
+<tr><td><b>L</b></td><td>50</td><td>50</td><td>101–106</td><td>86–94</td></tr>
+<tr><td><b>XL</b></td><td>52–54</td><td>52</td><td>106–114</td><td>94–101</td></tr>
+<tr><td><b>2XL</b></td><td>56</td><td>54</td><td>114–122</td><td>101–109</td></tr>
+</tbody></table></div>
+
+<h3>👖 Erkaklar shimi (W×L)</h3>
+<p class="mini" style="margin-top:0">Amazon'da shim <b>W34 L32</b> ko'rinishida: W — bel duymda, L — ich uzunlik duymda. 1 duym = 2.54 sm.</p>
+<div class="tblwrap"><table><thead><tr><th>W (duym)</th><th>Bel, sm</th><th>EU o'lcham</th></tr></thead><tbody>
+<tr><td>30</td><td>76</td><td>46</td></tr>
+<tr><td>32</td><td>81</td><td>48</td></tr>
+<tr><td>34</td><td>86</td><td>50</td></tr>
+<tr><td>36</td><td>91</td><td>52</td></tr>
+<tr><td>38</td><td>96</td><td>54</td></tr>
+<tr><td>40</td><td>101</td><td>56</td></tr>
+</tbody></table></div>
+
+<h3>👗 Ayollar kiyimi</h3>
+<div class="tblwrap"><table><thead><tr><th>US</th><th>EU</th><th>RU</th><th>Ko'krak, sm</th><th>Bel, sm</th></tr></thead><tbody>
+<tr><td><b>0–2 (XS)</b></td><td>32–34</td><td>40–42</td><td>78–82</td><td>60–64</td></tr>
+<tr><td><b>4–6 (S)</b></td><td>36</td><td>44</td><td>84–88</td><td>66–70</td></tr>
+<tr><td><b>8–10 (M)</b></td><td>38–40</td><td>46</td><td>90–94</td><td>72–76</td></tr>
+<tr><td><b>12–14 (L)</b></td><td>42–44</td><td>48–50</td><td>96–102</td><td>78–84</td></tr>
+<tr><td><b>16–18 (XL)</b></td><td>46–48</td><td>52–54</td><td>104–110</td><td>86–92</td></tr>
+</tbody></table></div>
+
+<h3>👟 Poyabzal</h3>
+<div class="tblwrap"><table><thead><tr><th>Oyoq uzunligi</th><th>US erkak</th><th>US ayol</th><th>EU</th><th>UK</th></tr></thead><tbody>
+<tr><td>23.5 sm</td><td>5.5</td><td>7</td><td>37</td><td>4.5</td></tr>
+<tr><td>24.0 sm</td><td>6</td><td>7.5</td><td>38</td><td>5</td></tr>
+<tr><td>24.5 sm</td><td>6.5</td><td>8</td><td>39</td><td>6</td></tr>
+<tr><td>25.0 sm</td><td>7</td><td>8.5</td><td>40</td><td>6.5</td></tr>
+<tr><td>25.5 sm</td><td>7.5</td><td>9</td><td>40.5</td><td>7</td></tr>
+<tr><td>26.0 sm</td><td>8</td><td>9.5</td><td>41</td><td>7.5</td></tr>
+<tr><td>26.5 sm</td><td>8.5</td><td>10</td><td>42</td><td>8</td></tr>
+<tr><td>27.0 sm</td><td>9</td><td>10.5</td><td>43</td><td>8.5</td></tr>
+<tr><td>27.5 sm</td><td>10</td><td>11.5</td><td>44</td><td>9.5</td></tr>
+<tr><td>28.0 sm</td><td>11</td><td>12.5</td><td>45</td><td>10</td></tr>
+<tr><td>29.0 sm</td><td>12</td><td>—</td><td>46</td><td>11</td></tr>
+</tbody></table></div>
+<div class="note info"><span class="ic">📐</span><div>Amazon'da poyabzalning <b>D / 2E / 4E</b> belgisi kenglikni bildiradi: D — standart, 2E — keng, 4E — juda keng. Oyog'i keng bo'lganlar uchun bu Yevropa o'lchamlarida yo'q imkoniyat.</div></div>
+</section><section class="panel" id="p-words">
+          <h2>Amazon atamalari lug'ati</h2>
+          <p class="sub">Interfeys va buyurtma jarayonida uchraydigan inglizcha atamalar. Nusxalab qidiruvga ham qo'yish mumkin.</p>
+          <div class="search-box">
+            <span class="ic">🔍</span>
+            <input type="text" id="wq" placeholder="O'zbekcha yoki asl tilda qidiring..." oninput="renderWords()">
+          </div>
+          <div class="chips" id="wchips"></div>
+          <div id="wlist"></div>
+          
+<div class="note info"><span class="ic">💬</span><div><b>Amazon qo'llab-quvvatlashi bilan yozishish:</b> <span class="kbd">Your Orders → Problem with order → Chat</span>. Ingliz tilida qisqa va aniq yozing: muammo, buyurtma raqami, nima kutayotganingiz. Amazon chatida operatorlar odatda mijoz foydasiga qaror qiladi.</div></div>
+</section><section class="panel" id="p-faq">
+      <h2>Ko'p beriladigan savollar</h2>
+      <p class="sub">Amaliyotda eng ko'p uchraydigan 18 ta savol.</p>
+      <div id="faqlist"></div></section><section class="panel" id="p-check">
+      <h2>Nazorat ro'yxati</h2>
+      <p class="sub">Buyurtma berishdan oldin va keyin — hech narsani unutmaslik uchun.</p>
+      <div id="chklist"></div>
+      <div class="note info" style="margin-top:16px">
+        <span class="ic">💾</span>
+        <div>Belgilar sahifa yangilanganda tozalanadi. Web appga joylashtirganda ularni foydalanuvchi profiliga saqlashni qo'shsangiz — qulayroq bo'ladi.</div>
+      </div></section>
+  <div class="foot">
+    Ma'lumotlar 2026-yil avgust holatiga. Bojxona normalari, tariflar va platforma qoidalari o'zgarishi mumkin —<br>
+    muhim qarorlardan oldin <b>customs.uz</b> va tanlagan xizmatning rasmiy manbasini tekshiring.
+  </div>
+</div>
+<script>
+const TABS=[{"id": "p-start", "t": "Boshlash"}, {"id": "p-steps", "t": "Bosqichlar"}, {"id": "p-calc", "t": "Kalkulyator"}, {"id": "p-customs", "t": "Bojxona"}, {"id": "p-cargo", "t": "Yetkazish"}, {"id": "p-tools", "t": "Vositalar"}, {"id": "p-size", "t": "O'lchamlar"}, {"id": "p-words", "t": "Lug'at"}, {"id": "p-faq", "t": "FAQ"}, {"id": "p-check", "t": "Checklist"}];
+const STEPS=[{"t": "Yetkazish xizmatini tanlang va AQSh manzilini oling", "m": "15 daqiqa", "b": "\n<p>Amazon'da xarid qilishdan <b>oldin</b> AQShda manzilingiz bo'lishi kerak.</p>\n<ol>\n<li>«Yetkazish» bo'limidan xizmatni tanlang. Solishtiring: <b>kg narxi</b>, <b>minimal og'irlik</b>, <b>ombor shtati</b>, <b>konsolidatsiya bepulmi</b>.</li>\n<li>Ro'yxatdan o'ting — pasport va JShShIR so'raladi (bojxona uchun majburiy).</li>\n<li>Sizga <b>to'liq AQSh manzili</b> beriladi. U taxminan shunday ko'rinadi:\n<div class=\"card tight\" style=\"margin:10px 0;font-family:ui-monospace,monospace;font-size:13px;line-height:1.8\">\nAziz Karimov<br>\n1234 Commerce Blvd, <b>STE UZ-48213</b><br>\nNew Castle, DE 19720<br>\nUnited States<br>\n+1 302 555 0142\n</div></li>\n<li><b>STE / Suite / Unit</b> raqami — bu sizning shaxsiy kodingiz. Usiz quti omborda egasiz qoladi.</li>\n</ol>\n<div class=\"note dang\"><span class=\"ic\">🚨</span><div><b>Eng ko'p uchraydigan xato:</b> Address Line 2 maydonini bo'sh qoldirish yoki suite raqamini tashlab ketish. Amazon manzilni «tuzatishga» urinadi (Address Verification) — <b>«Use as entered»</b> ni tanlang, Amazon taklif qilgan variantni emas.</div></div>\n"}, {"t": "Amazon akkaunti yarating", "m": "5 daqiqa", "b": "\n<ol>\n<li><b>amazon.com</b> → «Account & Lists» → «Start here».</li>\n<li>Ism, email, parol kiriting. Email — o'zingizniki, forwarder'niki emas.</li>\n<li>Emailga kelgan 6 xonali kodni tasdiqlang.</li>\n<li>Telefon raqami so'ralsa — <b>+998</b> raqamingizni kiriting; ba'zan AQSh raqami so'raladi, u holda forwarder bergan raqamdan foydalaning.</li>\n</ol>\n<div class=\"note info\"><span class=\"ic\">🌐</span><div><b>VPN kerakmi?</b> Yo'q. Amazon O'zbekiston IP'sidan ochiladi. Lekin agar sayt <span class=\"kbd\">amazon.com/uz</span> yoki boshqa mintaqaga yo'naltirsa, pastdagi <b>«Change country/region»</b> orqali <b>United States</b> ni tanlang — narxlar va assortiment to'g'ri ko'rinadi.</div></div>\n<div class=\"note warn\"><span class=\"ic\">🔐</span><div><b>Two-Step Verification</b> (2FA) ni yoqib qo'ying. Amazon xorij IP'sidan kirishni ba'zan shubhali deb hisoblaydi va akkauntni vaqtincha bloklaydi — 2FA bo'lsa tiklash oson.</div></div>\n"}, {"t": "AQSh manzilini Amazon'ga qo'shing", "m": "5 daqiqa", "b": "\n<ol>\n<li><span class=\"kbd\">Account &amp; Lists → Your Addresses → Add address</span></li>\n<li><b>Country:</b> United States</li>\n<li><b>Full name:</b> forwarder kabinetida ko'rsatilgan ism (odatda sizniki)</li>\n<li><b>Address line 1:</b> ko'cha va bino raqami</li>\n<li><b>Address line 2:</b> <b>STE / Suite + sizning kodingiz</b> — bu qatorni bo'sh qoldirmang</li>\n<li><b>City / State / ZIP:</b> forwarder bergani</li>\n<li><b>Phone:</b> forwarder bergan AQSh raqami</li>\n<li>Saqlang va <b>«Set as default»</b> qiling.</li>\n</ol>\n<div class=\"note dang\"><span class=\"ic\">⚠️</span><div>Amazon manzilni tekshirib «We couldn't verify this address» deyishi mumkin. Bunday holatda <b>«Use as entered» / «Ship to this address anyway»</b> tugmasini bosing. Amazon o'zi «to'g'irlagan» variantda suite raqami tushib qolishi mumkin.</div></div>\n<div class=\"note ok\"><span class=\"ic\">✅</span><div><b>Billing address</b> (karta manzili) boshqacha bo'lishi mumkin va bu normal. To'lov paytida karta egasining <b>haqiqiy</b> manzilini kiriting — banklar AVS tekshiruvidan o'tkazadi.</div></div>\n"}, {"t": "Tovarni to'g'ri toping", "m": "15–40 daqiqa", "b": "\n<p>Amazon'da bir xil tovar o'nlab sotuvchida bo'ladi — muhimi <b>qaysi listing</b>ni tanlash.</p>\n<ul>\n<li><b>ASIN</b> — har bir tovarning 10 belgili kodi (masalan <span class=\"kbd\">B0CHX3QBCH</span>). U «Product information» bo'limida yoki havolada <span class=\"kbd\">/dp/ASIN</span> ko'rinishida bo'ladi. Vositachiga havola o'rniga ASIN yuborsangiz, xato bo'lmaydi.</li>\n<li><b>«Ships from Amazon.com / Sold by Amazon.com»</b> — eng ishonchli. Uchinchi tomon sotuvchisida «Sold by XYZ, Fulfilled by Amazon» yozuvi bo'ladi.</li>\n<li><b>Filtrlar:</b> chap paneldan <b>Brand</b>, <b>Avg. Customer Review 4★ &amp; Up</b>, <b>Price</b>, <b>Prime</b>.</li>\n<li><b>«Frequently returned item»</b> ogohlantirishi ko'rinsa — bu tovar ko'p qaytariladi, chetlab o'ting.</li>\n<li><b>«Amazon's Choice»</b> va <b>«Best Seller»</b> — reklama emas, algoritmik belgi; foydali, lekin kafolat emas.</li>\n</ul>\n<div class=\"note info\"><span class=\"ic\">📦</span><div><b>Arzonroq variantlar:</b> <b>Amazon Warehouse</b> — qaytarilgan, deyarli yangi tovarlar 15–40% arzon. <b>Amazon Renewed</b> — professional tiklangan texnika, kafolat bilan. <b>Amazon Outlet</b> — ombor qoldiqlari. Bularni mahsulot sahifasidagi «Other sellers on Amazon» yoki «Used &amp; new» havolasidan toping.</div></div>\n"}, {"t": "Narx tarixi va sharhlarni tekshiring", "m": "5–10 daqiqa", "b": "\n<p>Amazon narxi kuniga bir necha marta o'zgaradi. «Chegirma» ko'pincha ko'tarilgan narxdan hisoblanadi.</p>\n<ul>\n<li><b>Keepa</b> yoki <b>camelcamelcamel</b> — brauzer kengaytmasi yoki sayt. ASIN'ni kiritsangiz, narxning butun tarixini grafik ko'rinishida ko'rsatadi. Hozirgi narx tarixiy minimumga yaqinmi — shuni ko'ring.</li>\n<li><b>Sharhlar:</b> <span class=\"kbd\">Verified Purchase</span> belgisi borlarini o'qing. Reyting taqsimotini ko'ring: 5★ va 1★ ko'p bo'lib, o'rtasi bo'sh bo'lsa — sun'iy sharh belgisi.</li>\n<li><b>1★ va 2★ sharhlarni albatta o'qing</b> — «Most recent» tartibida saralang. Eski sharhlar boshqa modelga tegishli bo'lishi mumkin.</li>\n<li><b>Savol-javoblar (Customer questions)</b> — o'lcham, moslik, komplektatsiya haqidagi eng aniq ma'lumot shu yerda.</li>\n</ul>\n<div class=\"note warn\"><span class=\"ic\">🎭</span><div><b>Sharh «ko'chirilishi»:</b> ba'zi sotuvchilar eski, ko'p sharhli listingni butunlay boshqa tovarga o'zgartiradi. Agar 2000 ta sharhli «telefon g'ilofi»da odamlar «kitob» haqida yozayotgan bo'lsa — bu o'sha holat.</div></div>\n"}, {"t": "Savatga qo'shing va checkout", "m": "10 daqiqa", "b": "\n<ol>\n<li>Tovarni savatga qo'shing → <b>Proceed to checkout</b>.</li>\n<li><b>Shipping address:</b> forwarder manzili tanlanganini tekshiring.</li>\n<li><b>Shipping speed:</b> Prime yo'q bo'lsa, $35+ buyurtmada odatda <b>FREE Shipping</b> chiqadi. Shoshilmasangiz — eng sekin va bepul variantni oling.</li>\n<li><b>Gift options:</b> «This is a gift» ni belgilamang — u qadoqni o'zgartiradi va invoysdan narxni olib tashlaydi, bojxonaga esa aynan invoys kerak.</li>\n<li>Yakuniy ekranda <b>Order Summary</b> ni tekshiring: <b>Estimated tax</b> qatori <b>$0.00</b> bo'lishi kerak (soliqsiz shtat manzilida).</li>\n</ol>\n<div class=\"note info\"><span class=\"ic\">🚚</span><div><b>Bir buyurtmani bo'lib jo'natish:</b> Amazon ba'zan tovarlarni alohida qutilarda yuboradi. Bu forwarder omborida bir necha posilka bo'lishini anglatadi — konsolidatsiya qilish kerak bo'ladi. Checkout'da «Ship my items as they become available» o'rniga «Group my items into as few shipments as possible» ni tanlang.</div></div>\n"}, {"t": "To'lovni amalga oshiring", "m": "10–20 daqiqa", "b": "\n<p>Amazon <b>xalqaro Visa / Mastercard / American Express</b> qabul qiladi. Uzcard va Humo ishlamaydi.</p>\n<h4>Karta variantlari</h4>\n<ul>\n<li><b>O'zbek banklarining xalqaro kartalari</b> — ko'p bank Visa/Mastercard chiqaradi (jismoniy va virtual). Virtual karta onlayn to'lov uchun yetarli va tezroq ochiladi.</li>\n<li><b>Konvertatsiya:</b> so'mdan dollarga o'tkazish bank kursida bo'ladi; ba'zi banklar 1–2% komissiya oladi.</li>\n<li><b>Amazon Gift Card</b> — kartangiz rad etilsa, ishonchli manbadan gift card kodi olib, balansga qo'shish mumkin. Faqat rasmiy manbadan oling.</li>\n</ul>\n<h4>Rad etilsa nima qilish kerak?</h4>\n<ul class=\"tick\">\n<li>Kartada <b>onlayn xorij to'lovlari</b> yoqilganini bank ilovasidan tekshiring</li>\n<li><b>Billing address</b> ni kartaga bog'langan haqiqiy manzil bilan bir xil kiriting</li>\n<li>3-D Secure SMS kelmasa — bankka bog'langan raqamni tekshiring</li>\n<li>Kichikroq summadan boshlang; birinchi tranzaksiya ko'pincha «test» sifatida bloklanadi</li>\n<li>Boshqa bankning kartasini sinab ko'ring</li>\n</ul>\n<div class=\"note dang\"><span class=\"ic\">🛑</span><div>Amazon xorij kartasi + AQSh manzili kombinatsiyasini ba'zan <b>firibgarlik riski</b> deb baholaydi va buyurtmani to'xtatib, hujjat so'raydi. Bunday holatda akkauntda haqiqiy ism va ishlaydigan email bo'lishi muhim — soxta ma'lumot bergan bo'lsangiz, akkaunt yopiladi.</div></div>\n"}, {"t": "Buyurtmani kuzating", "m": "2–7 kun", "b": "\n<ol>\n<li><span class=\"kbd\">Your Orders → Track package</span> — Amazon o'z tizimida holatni ko'rsatadi.</li>\n<li>Tashuvchi <b>Amazon Logistics (AMZL)</b>, <b>UPS</b>, <b>USPS</b> yoki <b>FedEx</b> bo'lishi mumkin.</li>\n<li>«Delivered» holati chiqqach — forwarder kabinetida posilka <b>1–2 kun</b> ichida paydo bo'ladi.</li>\n<li>Kabinetda posilkaga <b>tovar nomi, miqdori va real qiymati</b>ni kiriting; <b>invoys</b> (Order Details → Invoice → Print) PDF sifatida yuklang.</li>\n</ol>\n<div class=\"note warn\"><span class=\"ic\">🧾</span><div><b>Invoysni albatta saqlang.</b> Bojxona qiymatni aynan shu hujjat bo'yicha qabul qiladi. Invoyssiz qiymat bojxona metodikasi bilan aniqlanadi — bu odatda qimmatroq chiqadi.</div></div>\n<div class=\"note info\"><span class=\"ic\">🔍</span><div>Posilka «Delivered» bo'lgani bilan kabinetda ko'rinmasa — <b>trek raqami bilan</b> forwarder'ga yozing. Ombor xodimi suite raqamsiz qutini alohida joyga qo'yadi va qidirish kerak bo'ladi.</div></div>\n"}, {"t": "Konsolidatsiya va jo'natish", "m": "5 daqiqa", "b": "\n<ul>\n<li><b>Birlashtirish:</b> bir nechta posilkani bitta qutiga jamlash — minimal og'irlik uchun bir marta to'laysiz.</li>\n<li><b>Repacking:</b> Amazon qutilari juda katta bo'ladi. «Remove original box» xizmati hajmiy og'irlikni 30–50% kamaytiradi. Faqat quti kafolat uchun kerak bo'lmasa.</li>\n<li><b>Foto-hisobot:</b> $1–3 evaziga tovarni ochib suratga olib berishadi. Qimmat tovarda albatta oling — noto'g'ri tovar kelgan bo'lsa, Amazon'ga hali qaytarish mumkin.</li>\n<li><b>Tarif:</b> ekspress (3–9 kun) yoki standart (7–16 kun).</li>\n<li><b>Sug'urta:</b> tovar qiymatining 1–3%. $200+ uchun mantiqli.</li>\n</ul>\n<div class=\"note info\"><span class=\"ic\">🔋</span><div><b>Batareya va suyuqlik:</b> powerbank, noutbuk batareyasi, atir, lak, aerozol — avia bilan cheklanadi yoki umuman qabul qilinmaydi. Buyurtma <b>berishdan oldin</b> forwarder'dan so'rang; aks holda tovar AQSh omborida qolib ketadi.</div></div>\n"}, {"t": "Bojxona va to'lov", "m": "1–5 kun", "b": "\n<ol>\n<li>Jo'natma O'zbekistonga kirgach, <b>my.gov.uz</b>ga push-xabar keladi → «Bojxona» bo'limi.</li>\n<li>Tovar nomi, qiymati, vaznini tekshiring → <b>Tasdiqlang</b>.</li>\n<li>Oylik norma ($200) ichida bo'lsa — <b>boj yo'q</b>.</li>\n<li>Oshgan bo'lsa — ortiqcha summadan <b>30%</b> (min. $3/kg). To'lov kargo ilovasi, bank yoki bojxona to'lov tizimi orqali.</li>\n</ol>\n<div class=\"note warn\"><span class=\"ic\">💵</span><div><b>Bojxona qiymatiga nima kiradi:</b> tovar narxi + sales tax (to'lagan bo'lsangiz) + <b>xalqaro yetkazish narxi</b>. Ya'ni $180 lik tovar + $30 yetkazish = $210 — norma oshadi. Kalkulyator bo'limida oldindan hisoblab ko'ring.</div></div>\n"}, {"t": "Qabul qilish va tekshirish", "m": "15 daqiqa", "b": "\n<ol>\n<li>Filialga <b>pasport / ID karta</b> bilan boring.</li>\n<li>Qutini <b>joyida oching</b>, tarkibini va butligini tekshiring.</li>\n<li>Muammo bo'lsa — <b>ochish jarayonini videoga oling</b>. Bu yagona ishonchli dalil.</li>\n<li>Elektronika bo'lsa — darhol yoqib ko'ring; kafolat muddati Amazon'da tovar «yetkazilgan» kundan sanaladi.</li>\n</ol>\n<div class=\"note ok\"><span class=\"ic\">🎯</span><div>Hammasi joyida bo'lsa — Amazon'da hech narsa bosish shart emas; buyurtma avtomatik yopiladi. Faqat sharh qoldirsangiz, keyingi xaridorlarga yordam beradi.</div></div>\n"}, {"t": "Qaytarish va kafolat", "m": "kerak bo'lsa", "b": "\n<p>Amazon'ning qaytarish siyosati kuchli, lekin O'zbekistondan foydalanish qiyin.</p>\n<div class=\"tblwrap\"><table class=\"narrow\"><tbody>\n<tr><td><b>Odatdagi muddat</b></td><td>Yetkazilgandan keyin <b>30 kun</b>. Bayram davrida uzaytiriladi.</td></tr>\n<tr><td><b>Muammo</b></td><td>Qaytarish yorlig'i faqat AQSh ichida ishlaydi. Tovar allaqachon O'zbekistonda bo'lsa — orqaga jo'natish narxi tovar narxidan qimmat.</td></tr>\n<tr><td><b>Yechim 1</b></td><td>Tovar hali <b>forwarder omborida</b> bo'lsa — foto-hisobotdan muammoni ko'ring va omborga «Amazon'ga qaytar» topshirig'ini bering. Ko'p xizmat bu imkoniyatni beradi ($5–15).</td></tr>\n<tr><td><b>Yechim 2</b></td><td><b>Refund without return</b> — arzon tovarlarda Amazon ko'pincha qaytarishni talab qilmay pulni qaytaradi. Chat orqali muammoni fotosurat bilan tushuntiring.</td></tr>\n<tr><td><b>Yechim 3</b></td><td>Uchinchi tomon sotuvchisi bo'lsa — <b>A-to-z Guarantee</b> arizasi. Amazon o'rtaga tushadi.</td></tr>\n<tr><td><b>Kafolat</b></td><td>Ishlab chiqaruvchi kafolati ko'pincha <b>mintaqaviy</b>. Apple, Samsung, Dyson kabi brendlarda AQSh kafolati O'zbekistonda ishlamaydi.</td></tr>\n</tbody></table></div>\n<div class=\"note dang\"><span class=\"ic\">⏰</span><div>30 kunlik muddat <b>AQSh manziliga yetkazilgan</b> kundan boshlanadi, siz tovarni qo'lga olgan kundan emas. Yetkazish 2–3 hafta ketsa, sizda atigi 1–2 hafta qoladi. Shuning uchun <b>foto-hisobot</b> juda muhim.</div></div>\n"}];
+const CALC={"curDefault": "usd", "airRate": 12, "roadRate": 9.5, "taxLabel": "Sales tax"};
+const BAN=[{"n": "Narkotik moddalar, prekursorlar", "s": "r", "c": "taqiq", "d": "Mutlaq taqiq. Jinoiy javobgarlik."}, {"n": "Qurol, o'q-dorilar va ularning qismlari", "s": "r", "c": "taqiq", "d": "Pnevmatik va gaz qurollari, elektroshoker, kastet, butterfly-pichoq ham kiradi."}, {"n": "Maxsus texnik vositalar (yashirin kamera, GPS-mayoq, signal skaneri)", "s": "r", "c": "taqiq", "d": "Ko'zoynak/soat/tugma shaklidagi kamera, telefon eshituvchi qurilmalar — jinoiy javobgarlik."}, {"n": "Signal glushitel (jammer)", "s": "r", "c": "taqiq", "d": "GSM/GPS/Wi-Fi glushitellar olib kirish taqiqlangan."}, {"n": "Elektron sigaret, vape, snus, nasvay", "s": "r", "c": "taqiq", "d": "O'zbekistonda savdosi va olib kirilishi cheklangan. Jo'natma ushlab qolinadi."}, {"n": "Tamaki mahsulotlari va alkogol", "s": "r", "c": "taqiq", "d": "Pochta va kuryerlik jo'natmalari orqali olib kirish taqiqlangan."}, {"n": "Portlovchi, oson yonuvchi, radioaktiv moddalar", "s": "r", "c": "taqiq", "d": "Petarda, feyerverk, gaz ballonchalari ham."}, {"n": "Pornografik materiallar", "s": "r", "c": "taqiq", "d": "Har qanday ko'rinishda — bosma, raqamli, buyum."}, {"n": "Ekstremistik va diniy targ'ibot materiallari", "s": "r", "c": "taqiq", "d": "Ekspertizasiz diniy adabiyot ham ushlab qolinadi."}, {"n": "Kontrafakt / brend nusxalari (replika)", "s": "r", "c": "taqiq", "d": "Intellektual mulk huquqi buzilishi. Tovar ushlab qolinadi va yo'q qilinishi mumkin."}, {"n": "Yovvoyi hayvon va o'simliklar (CITES ro'yxati)", "s": "r", "c": "taqiq", "d": "Suyak, teri, tishlar, ekzotik o'simliklar."}, {"n": "Soxta pul, hujjat, davlat ramzlari", "s": "r", "c": "taqiq", "d": "Suvenir «pul» ham muammo tug'diradi."}, {"n": "Dori vositalari", "s": "a", "c": "ruxsat", "d": "Farmatsevtika agentligi ruxsati kerak. Retseptli dorilar — jiddiy cheklov."}, {"n": "Biologik faol qo'shimchalar (BFQ), sport ozuqasi, protein", "s": "a", "c": "ruxsat", "d": "Miqdor chegarasi: 10 quti yoki 0.5 kg gacha (2025-yil 20-iyuldan). Undan ortig'i uchun ruxsat kerak."}, {"n": "Atir-upa (parfyumeriya)", "s": "a", "c": "cheklov", "d": "300 ml gacha. Avia bilan yonuvchi suyuqlik sifatida cheklanadi — avto yo'nalishini tanlang."}, {"n": "Mobil telefon", "s": "a", "c": "ruxsat", "d": "Deklaratsiya + UzIMEI ro'yxatidan o'tkazish shart. Aks holda 30 kundan keyin tarmoqdan uziladi."}, {"n": "Dron, kvadrokopter", "s": "a", "c": "ruxsat", "d": "Vazniga qarab ro'yxatdan o'tkazish va uchirish ruxsati talab qilinadi."}, {"n": "Radiostansiya, ratsiya, signal kuchaytirgich (repeater)", "s": "a", "c": "ruxsat", "d": "Radiochastota agentligi ruxsati kerak."}, {"n": "Sun'iy yo'ldosh aloqasi qurilmalari (Starlink, sputnik telefon)", "s": "a", "c": "ruxsat", "d": "Alohida ruxsatsiz olib kirilmaydi."}, {"n": "O'simlik urug'lari, ko'chat, tuproq", "s": "a", "c": "ruxsat", "d": "Fitosanitar (karantin) sertifikati talab qilinadi."}, {"n": "Oziq-ovqat mahsulotlari, ozuqa qo'shimchalari", "s": "a", "c": "cheklov", "d": "Sanitariya-epidemiologik xulosa kerak bo'lishi mumkin. Kichik miqdor odatda o'tadi."}, {"n": "Hayvonlar uchun dori va vaksinalar", "s": "a", "c": "ruxsat", "d": "Veterinariya sertifikati."}, {"n": "Kuchli lazer ko'rsatkichlar", "s": "a", "c": "cheklov", "d": "Yuqori quvvatlilari xavfli buyum sifatida ushlab qolinadi."}, {"n": "Powerbank, litiy batareyalar", "s": "a", "c": "cheklov", "d": "Avia bilan taqiq yoki quvvat chegarasi (odatda 100 Wh gacha). Avto yo'nalishi bilan yuboring."}, {"n": "Aerozol, lak, bo'yoq, yonuvchi suyuqliklar", "s": "a", "c": "cheklov", "d": "Avia bilan qabul qilinmaydi. Ba'zi kargolar avto bilan ham olmaydi."}, {"n": "Kimyoviy reaktivlar, laboratoriya moddalari", "s": "a", "c": "ruxsat", "d": "Ro'yxatga kiritilgan moddalar uchun ruxsat kerak."}, {"n": "Antikvariat, madaniy boyliklar", "s": "a", "c": "ruxsat", "d": "Madaniyat vazirligi ekspertizasi."}, {"n": "Tibbiy asboblar (tonometr, glyukometr, ingalyator)", "s": "a", "c": "cheklov", "d": "Ba'zilari ro'yxatdan o'tkazishni talab qiladi. Uy sharoiti uchun 1 dona odatda muammosiz."}, {"n": "Kripto-mayning uskunalari (ASIC, ferma)", "s": "a", "c": "cheklov", "d": "Alohida hisobga olish va energiya talablari. Jismoniy shaxs nomiga muammoli."}, {"n": "Kiyim-kechak, poyabzal", "s": "g", "c": "erkin", "d": "Shaxsiy ehtiyoj miqdorida erkin. Bir xil tovar ko'p bo'lsa — tijorat deb baholanishi mumkin."}, {"n": "Maishiy elektronika (quloqchin, sichqoncha, klaviatura)", "s": "g", "c": "erkin", "d": "Erkin. Bluetooth qurilmalari sertifikatlangan chastotada ishlaydi."}, {"n": "Kompyuter komplektuvchilari", "s": "g", "c": "erkin", "d": "Videokarta, protsessor, xotira — erkin. Qiymati katta bo'lsa norma oshadi."}, {"n": "Bolalar o'yinchoqlari", "s": "g", "c": "erkin", "d": "Erkin. Kichik magnitli o'yinchoqlarga ba'zan e'tibor beriladi."}, {"n": "Kitob va bosma nashrlar", "s": "g", "c": "erkin", "d": "Diniy va siyosiy mazmundagilaridan tashqari."}, {"n": "Uy-ro'zg'or buyumlari, mebel furniturasi", "s": "g", "c": "erkin", "d": "Erkin. Hajmiy og'irlikka e'tibor bering."}, {"n": "Sport anjomlari", "s": "g", "c": "erkin", "d": "Erkin. Jangovar sport anjomlari qurol sifatida baholanishi mumkin."}, {"n": "Avtoehtiyot qismlar", "s": "g", "c": "erkin", "d": "Erkin, lekin ko'p miqdorda — tijorat partiyasi belgisi."}, {"n": "Kosmetika (dekorativ)", "s": "g", "c": "erkin", "d": "Shaxsiy miqdorda erkin. Suyuq/aerozol shakli — avia cheklovi."}, {"n": "Bijuteriya, aksessuar", "s": "g", "c": "erkin", "d": "Erkin. Qimmatbaho metall/tosh bo'lsa — alohida tartib."}, {"n": "Soat (mexanik, kvarts)", "s": "g", "c": "erkin", "d": "Erkin. Smart-soat — aloqa moduli bo'lsa ham odatda muammosiz."}];
+const CARGO=[{"n": "Boxette", "r": "AQSh, Turkiya", "p": "$11/kg dan", "t": "3–16 ish kuni", "f": "Ekspress tarif, virtual AQSh manzili, konsolidatsiya, kafolat xizmati", "tag": "us,tr"}, {"n": "Liteship", "r": "AQSh, Buyuk Britaniya, Italiya, Ispaniya, Turkiya", "p": "Economy $9.55 · FastBox $12.37", "t": "4–10 kun", "f": "FastBox tarifida konsolidatsiya; birinchi jo'natmaga $10 bonus", "tag": "us,eu,tr"}, {"n": "Globbing Uzbekistan", "r": "AQSh, Xitoy, Buyuk Britaniya, Germaniya, Italiya, Ispaniya", "p": "$12/kg dan", "t": "7–21 kun", "f": "Ko'p yo'nalish, kuchli ilova, sotib olish yordami", "tag": "us,eu"}, {"n": "Turon Express", "r": "AQSh", "p": "$10/kg", "t": "7–14 kun", "f": "2017-yildan ishlaydi, bepul konsolidatsiya", "tag": "us"}, {"n": "Meest Shopping", "r": "Yevropa, AQSh, Kanada", "p": "€7.7–9.5/kg", "t": "10–20 kun", "f": "Amazon.de uchun alohida yo'nalish sahifasi", "tag": "us,eu"}, {"n": "Yumecs", "r": "AQSh, Turkiya, BAA, Koreya, Xitoy, Rossiya, Malayziya", "p": "$4.4–20/kg (davlatga qarab)", "t": "5–30 kun", "f": "Eng ko'p yo'nalish", "tag": "us,tr"}, {"n": "AmazonGlobal", "r": "AQSh → O'zbekiston", "p": "Tovar va vaznga qarab", "t": "7–18 kun", "f": "Amazon'ning o'zi; Import Fees Deposit bilan boj oldindan to'lanadi", "tag": "us"}, {"n": "UzPost / EMS", "r": "Barcha davlatlar", "p": "Pochta tarifi", "t": "14–45 kun", "f": "Eng arzon, sekin. Bojsiz normasi $100", "tag": "us,eu,tr"}];
+const CARGOCATS=[{"k": "all", "t": "Hammasi"}, {"k": "us", "t": "🇺🇸 AQShdan"}, {"k": "eu", "t": "🇪🇺 Yevropadan"}, {"k": "tr", "t": "🇹🇷 Turkiyadan"}];
+const WORDS=[{"k": "ASIN", "u": "Tovarning 10 belgili noyob kodi — vositachiga aynan shuni yuboring", "c": "tovar"}, {"k": "Buy Box", "u": "«Add to Cart» tugmasi joylashgan asosiy sotuvchi bloki", "c": "tovar"}, {"k": "Ships from / Sold by", "u": "Kim jo'natadi / kim sotadi. Ikkalasi ham Amazon bo'lsa — eng ishonchli", "c": "tovar"}, {"k": "Fulfilled by Amazon (FBA)", "u": "Sotuvchi uchinchi tomon, lekin Amazon ombori jo'natadi", "c": "tovar"}, {"k": "Amazon's Choice", "u": "Algoritm tanlagan mos variant — reklama emas", "c": "tovar"}, {"k": "Best Seller", "u": "Kategoriyada eng ko'p sotilgan", "c": "tovar"}, {"k": "Frequently returned item", "u": "Ko'p qaytariladigan tovar — ogohlantirish belgisi", "c": "tovar"}, {"k": "Amazon Warehouse", "u": "Qaytarilgan/ochilgan tovarlar, 15–40% arzon", "c": "tovar"}, {"k": "Renewed", "u": "Professional tiklangan texnika, kafolat bilan", "c": "tovar"}, {"k": "Open Box", "u": "Qutisi ochilgan, ishlatilmagan", "c": "tovar"}, {"k": "Size Chart", "u": "Brendning o'z o'lchamlar jadvali", "c": "tovar"}, {"k": "Compare with similar items", "u": "O'xshash tovarlar bilan taqqoslash jadvali", "c": "tovar"}, {"k": "Verified Purchase", "u": "Sharh haqiqiy xaridordan", "c": "tovar"}, {"k": "Coupon", "u": "Belgilash kerak bo'lgan chegirma katagi", "c": "tovar"}, {"k": "Subscribe & Save", "u": "Takroriy yetkazish obunasi, 5–15% chegirma", "c": "tovar"}, {"k": "Add to Cart", "u": "Savatga qo'shish", "c": "buyurtma"}, {"k": "Buy Now", "u": "Darhol sotib olish", "c": "buyurtma"}, {"k": "Proceed to checkout", "u": "Buyurtmani rasmiylashtirishga o'tish", "c": "buyurtma"}, {"k": "Order Summary", "u": "Buyurtma yakuni — narx, soliq, yetkazish", "c": "buyurtma"}, {"k": "Estimated tax", "u": "Taxminiy sales tax. Soliqsiz shtatda $0.00 bo'lishi kerak", "c": "buyurtma"}, {"k": "Group my items into as few shipments as possible", "u": "Tovarlarni imkon qadar kam qutida yuborish", "c": "buyurtma"}, {"k": "Place your order", "u": "Buyurtmani tasdiqlash", "c": "buyurtma"}, {"k": "Your Orders", "u": "Mening buyurtmalarim", "c": "buyurtma"}, {"k": "Invoice", "u": "Rasmiy hisob-faktura — bojxona uchun kerak", "c": "buyurtma"}, {"k": "Address line 2 / Suite", "u": "Ikkinchi manzil qatori — bu yerga forwarder kodi yoziladi", "c": "manzil"}, {"k": "Use as entered", "u": "«Kiritilgani bo'yicha ishlat» — manzil tekshiruvida shuni tanlang", "c": "manzil"}, {"k": "Billing address", "u": "Karta ro'yxatdan o'tgan manzil", "c": "manzil"}, {"k": "Default address", "u": "Asosiy manzil — avtomatik tanlanadi", "c": "manzil"}, {"k": "Import Fees Deposit", "u": "AmazonGlobal'da oldindan olinadigan bojxona depoziti", "c": "manzil"}, {"k": "Gift card balance", "u": "Sovg'a kartasi balansi — to'lov usuli sifatida", "c": "manzil"}, {"k": "Ordered", "u": "Buyurtma qabul qilindi", "c": "status"}, {"k": "Shipped", "u": "Jo'natildi", "c": "status"}, {"k": "Out for delivery", "u": "Kuryerda, bugun yetkaziladi", "c": "status"}, {"k": "Delivered", "u": "Yetkazildi", "c": "status"}, {"k": "Arriving today", "u": "Bugun keladi", "c": "status"}, {"k": "Currently unavailable", "u": "Hozircha mavjud emas", "c": "status"}, {"k": "Temporarily out of stock", "u": "Vaqtincha tugagan", "c": "status"}, {"k": "Backordered", "u": "Zaxira kutilmoqda, kechikadi", "c": "status"}, {"k": "Preorder", "u": "Chiqishidan oldin buyurtma", "c": "status"}, {"k": "Return or replace items", "u": "Qaytarish yoki almashtirish", "c": "muammo"}, {"k": "Return window", "u": "Qaytarish muddati (odatda 30 kun)", "c": "muammo"}, {"k": "Refund without return", "u": "Tovarni qaytarmasdan pul qaytarish", "c": "muammo"}, {"k": "A-to-z Guarantee", "u": "Uchinchi tomon sotuvchisiga qarshi Amazon kafolati", "c": "muammo"}, {"k": "Problem with order", "u": "Buyurtma bo'yicha muammo — yordam bo'limi", "c": "muammo"}, {"k": "Contact seller", "u": "Sotuvchi bilan bog'lanish", "c": "muammo"}, {"k": "Item not as described", "u": "Tovar tavsifga mos emas", "c": "muammo"}, {"k": "Damaged or defective", "u": "Shikastlangan yoki nosoz", "c": "muammo"}, {"k": "Missing parts", "u": "Qismlar yetishmaydi", "c": "muammo"}];
+const WCATS=[{"k": "all", "t": "Hammasi"}, {"k": "tovar", "t": "Mahsulot sahifasi"}, {"k": "buyurtma", "t": "Buyurtma"}, {"k": "manzil", "t": "Manzil va to'lov"}, {"k": "status", "t": "Holatlar"}, {"k": "muammo", "t": "Muammo va qaytarish"}];
+const FAQ=[{"q": "Amazon O'zbekistonga to'g'ridan-to'g'ri yetkazadimi?", "a": "Qisman. Ba'zi tovarlarda checkout'da O'zbekiston manzilini tanlash mumkin va AmazonGlobal orqali yetkaziladi — bunda Import Fees Deposit (bojxona depoziti) oldindan olinadi. Lekin bu tovarlarning juda kichik qismiga tegishli: elektronika, batareyali qurilmalar va uchinchi tomon sotuvchilarining ko'p mahsuloti chiqmaydi. Amaliy yechim — AQSh manzili (forwarder)."}, {"q": "AQSh manzili qanchaga tushadi?", "a": "Manzilning o'zi odatda bepul — siz faqat jo'natilgan kilogramm uchun to'laysiz. Ba'zi xizmatlarda premium a'zolik bor (arzonroq tarif, uzoqroq bepul saqlash). Yashirin to'lovlarga e'tibor bering: qayta qadoqlash, foto-hisobot, uzaytirilgan saqlash, sug'urta."}, {"q": "Sales tax'ni umuman to'lamaslik mumkinmi?", "a": "Ha — agar forwarder ombori Delaware, Oregon, New Hampshire yoki Montana shtatida bo'lsa, savdo solig'i 0% bo'ladi. Bu qonuniy: soliq yetkazish manzili bo'yicha hisoblanadi. Ro'yxatdan o'tishdan oldin ombor shtatini so'rang."}, {"q": "Uzcard yoki Humo bilan to'lay olamanmi?", "a": "Yo'q. Amazon xalqaro Visa, Mastercard yoki American Express qabul qiladi. O'zbek banklari xalqaro Visa/Mastercard chiqaradi — virtual karta ham ishlaydi va tezroq ochiladi. Muqobil: Amazon Gift Card yoki to'liq xizmat vositachisi."}, {"q": "Kartam rad etilyapti, nima qilay?", "a": "Tekshiring: (1) kartada onlayn xorij to'lovlari yoqilganmi; (2) billing address kartaga bog'langan haqiqiy manzil bilan bir xilmi; (3) 3-D Secure SMS keladigan raqam to'g'rimi; (4) balansda yetarli mablag' bormi (Amazon avval $1 test tranzaksiyasi qiladi). Bularning barchasi joyida bo'lsa — boshqa bank kartasini yoki gift card'ni sinab ko'ring."}, {"q": "Amazon akkauntim bloklandi — nega?", "a": "Xorij IP + AQSh manzili + xorij kartasi kombinatsiyasi Amazon'ning firibgarlikka qarshi tizimini ishga tushiradi. Odatda hujjat (karta ko'chirmasi yoki shaxsni tasdiqlovchi hujjat) so'raladi. Haqiqiy ma'lumot bilan ro'yxatdan o'tgan bo'lsangiz, blok 1–3 kunda yechiladi. Soxta ism bilan ochilgan akkaunt qaytarilmaydi."}, {"q": "Nima uchun bir buyurtma bir necha qutida keladi?", "a": "Amazon tovarlarni turli omborlardan jo'natadi. Checkout'da «Group my items into as few shipments as possible» ni tanlasangiz kamayadi, lekin butunlay yo'qolmaydi. Shuning uchun forwarder'da konsolidatsiya xizmati muhim."}, {"q": "Prime obunasi menga foyda beradimi?", "a": "Qisman. Prime AQSh ichida bepul va tez yetkazishni beradi — bu forwarder omboriga tez yetib borish demakdir. Agar oyiga bir necha marta buyurtma qilsangiz, foydali. Bir martalik xarid uchun $35+ buyurtmadagi bepul standart yetkazish yetarli. 30 kunlik bepul sinovdan foydalanib, keyin bekor qilish mumkin."}, {"q": "Amazon Warehouse tovarlari xavfsizmi?", "a": "Odatda ha. «Used - Like New» va «Used - Very Good» holatlari ko'pincha yangisidan farq qilmaydi — bu shunchaki qaytarilgan tovarlar. Tavsifda aniq nima yetishmasligi yoziladi (masalan, «packaging damaged»). Amazon kafolati va qaytarish siyosati bunday tovarlarga ham tegishli. 15–40% tejash mumkin."}, {"q": "Tovar noto'g'ri kelsa nima qilaman?", "a": "Eng yaxshi holat — tovar hali AQSh omborida ekan bilib qolish. Shuning uchun qimmat buyurtmalarda foto-hisobot xizmatini oling. Muammo topilsa, forwarder'ga «Amazon'ga qaytar» topshirig'ini bering ($5–15). Tovar allaqachon O'zbekistonda bo'lsa — Amazon chatiga fotosurat bilan murojaat qiling; arzon tovarlarda ko'pincha «refund without return» beriladi."}, {"q": "Amazon kafolati O'zbekistonda ishlaydimi?", "a": "Amazon'ning o'z qaytarish siyosati 30 kun ishlaydi (lekin AQSh ichida). Ishlab chiqaruvchi kafolati esa ko'pincha mintaqaviy: Apple, Samsung, Dyson, Bose kabi brendlarda AQSh kafolati O'zbekistonda xizmat ko'rsatilmaydi. Xitoy va Yevropa brendlarida ba'zan xalqaro kafolat bo'ladi — mahsulot sahifasida «International Warranty» yozuvini qidiring."}, {"q": "Amazon.de'dan olsam QQS qaytariladimi?", "a": "Faqat Amazon tovarni to'g'ridan-to'g'ri O'zbekistonga (EI dan tashqariga) jo'natsa. Agar Germaniya ichidagi forwarder manziliga jo'natsangiz — bu ichki savdo hisoblanadi va 19% MwSt narxda qoladi. Shuning uchun Yevropadan olishda avval «Deliver to Uzbekistan» variantini tekshiring."}, {"q": "Batareyali tovar (noutbuk, powerbank) buyurtma qilsam bo'ladimi?", "a": "Noutbuk va telefon — odatda ha, chunki batareya qurilma ichida (UN3481). Alohida powerbank va zaxira batareya — ko'p xizmat avia bilan qabul qilmaydi. Buyurtma berishdan OLDIN forwarder'dan yozma tasdiq oling; aks holda tovar AQSh omborida qolib, saqlash haqi hisoblanadi."}, {"q": "$200 normani qanday taqsimlash kerak?", "a": "Norma kalendar oy bo'yicha va shaxsga bog'langan. Katta buyurtmani ikki oyga bo'lib jo'natsangiz (masalan, oyning oxirida bir qutini, boshida ikkinchisini), ikki marta $200 normadan foydalanasiz. Lekin bir jo'natmani sun'iy bo'lish — masalan bir xil to'plamni bo'lib yuborish — bojxona tomonidan aniqlanishi mumkin."}, {"q": "Kitob va raqamli tovarlar-chi?", "a": "Qog'oz kitob — oddiy tovar, bojxona qoidalari umumiy (diniy/siyosiy mazmun tekshiriladi). Kindle e-kitoblar, raqamli o'yin kodlari va obunalar esa yetkazishni talab qilmaydi — ularni to'g'ridan-to'g'ri sotib olib, akkauntga yuklab olasiz. Faqat mintaqaviy cheklovga e'tibor bering: akkaunt mamlakati AQSh bo'lishi kerak."}, {"q": "Amazon'da narx nega o'zgarib turadi?", "a": "Amazon dinamik narxlash qo'llaydi — narx kuniga bir necha marta o'zgarishi mumkin. Keepa yoki camelcamelcamel bilan tarixni ko'ring va kerakli narxga yetganda xabar keladigan qilib sozlang. Buyurtmadan keyin narx tushsa, Amazon farqni qaytarmaydi (ilgari bunday siyosat bor edi, hozir yo'q)."}, {"q": "AQShdan yetkazish qancha vaqt oladi?", "a": "Amazon → forwarder ombori: 1–5 kun. Omborda qayta ishlash: 1–3 kun. AQSh → Toshkent: ekspress 3–9 kun, standart 7–16 kun. Bojxona: 1–5 kun. Jami real muddat — odatda 2–4 hafta. Aksiya kunlarida (Black Friday) 1–2 hafta uzayadi."}, {"q": "Bir necha kishi bitta AQSh manzilidan foydalansa bo'ladimi?", "a": "Texnik jihatdan ha, lekin qilmang. Bojxonada jo'natma sizning JShShIR raqamingizga biriktiriladi va oylik normangizni «yeydi». Bundan tashqari, boshqa odamning tovari uchun siz javobgar bo'lasiz — taqiqlangan buyum chiqsa, javobgarlik sizda."}];
+const CHECK=[{"g": "Buyurtmadan oldin", "items": [{"t": "Yetkazish xizmati tanlandi, ombor shtati aniqlandi", "d": "Delaware/Oregon bo'lsa sales tax 0%"}, {"t": "AQSh manzili to'liq nusxalab olindi", "d": "Suite/STE raqami bilan birga"}, {"t": "Xalqaro Visa/Mastercard tayyor", "d": "Onlayn xorij to'lovlari yoqilgan, 3-D Secure ishlaydi"}, {"t": "Tovar taqiq/cheklov ro'yxatida emasligi tekshirildi", "d": "Batareya va suyuqlik uchun forwarder'dan tasdiq olindi"}, {"t": "Narx tarixi Keepa/camelcamelcamel'da ko'rildi", "d": "Hozirgi narx tarixiy minimumga yaqinmi?"}, {"t": "Sotuvchi «Ships from Amazon.com» ekani tekshirildi", "d": "Yoki kamida yuqori reytingli FBA sotuvchisi"}, {"t": "Sharhlar va 1★ izohlar o'qildi", "d": "«Frequently returned item» belgisi yo'q"}, {"t": "O'lcham Size Chart bo'yicha sm'da tekshirildi", "d": "US o'lchamlari EU'dan farq qiladi"}, {"t": "Kalkulyatorda jami narx hisoblandi", "d": "Tovar + soliq + yetkazish + boj"}]}, {"g": "Buyurtma paytida", "items": [{"t": "Shipping address — forwarder manzili", "d": "«Use as entered» tanlandi, suite raqami joyida"}, {"t": "Estimated tax = $0.00", "d": "Soliqsiz shtat manzilida shunday bo'lishi kerak"}, {"t": "«Group my items into as few shipments» tanlandi", "d": "Kamroq quti = arzonroq konsolidatsiya"}, {"t": "«This is a gift» belgilanmadi", "d": "Invoysda narx ko'rinishi kerak"}, {"t": "To'lov muvaffaqiyatli o'tdi", "d": "Buyurtma «Ordered» holatida"}, {"t": "Invoice PDF yuklab olindi", "d": "Order Details → Invoice"}]}, {"g": "Jo'natishdan keyin", "items": [{"t": "Trek raqami forwarder kabinetiga kiritildi", "d": "Tovar nomi, miqdori va real qiymati bilan"}, {"t": "Posilka omborga yetib kelgani tasdiqlandi", "d": "Kabinetda status «Received»"}, {"t": "Foto-hisobot buyurtma qilindi", "d": "Qimmat yoki muhim tovarlarda majburiy"}, {"t": "Konsolidatsiya va repacking tanlandi", "d": "Ortiqcha Amazon qutisi olib tashlandi"}, {"t": "Tarif tanlandi (ekspress/standart)", "d": "Batareya bo'lsa — cheklovlar tekshirildi"}, {"t": "Sug'urta rasmiylashtirildi", "d": "$200+ tovar uchun tavsiya etiladi"}]}, {"g": "Yetib kelgach", "items": [{"t": "my.gov.uz'da xabarnoma tasdiqlandi", "d": "Ma'lumotlar tekshirilgandan keyin"}, {"t": "Boj hisoblandi va to'landi (kerak bo'lsa)", "d": "Muddatni o'tkazib yubormang"}, {"t": "Filialda pasport bilan olindi", "d": "Ishonchnoma bilan boshqa odam ham olishi mumkin"}, {"t": "Quti joyida ochib tekshirildi", "d": "Muammo bo'lsa — ochish jarayoni videoga olindi"}, {"t": "Elektronika yoqib sinab ko'rildi", "d": "Qaytarish muddati tugamasdan"}, {"t": "Telefon bo'lsa — UzIMEI ro'yxatidan o'tkazildi", "d": "30 kun ichida, 88 000 so'm"}]}];
+
+
+/* ---------- TABS ---------- */
+const tabsEl=document.getElementById('tabs');
+TABS.forEach((t,i)=>{
+  const b=document.createElement('button');
+  b.className='tab'+(i===0?' active':'');
+  b.innerHTML='<span class="n">'+(i+1)+'</span>'+t.t;
+  b.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById(t.id).classList.add('active');
+    b.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+  tabsEl.appendChild(b);
+});
+
+/* ---------- WIZARD ---------- */
+let wi=0; const seen=new Set([0]);
+const bar=document.getElementById('wizbar');
+const dots=document.getElementById('wizdots');
+STEPS.forEach((_,i)=>{
+  bar.appendChild(document.createElement('i'));
+  const d=document.createElement('button');
+  d.className='dot'; d.textContent=i+1;
+  d.onclick=()=>{wi=i;seen.add(i);drawWiz()};
+  dots.appendChild(d);
+});
+function drawWiz(){
+  const s=STEPS[wi];
+  document.getElementById('wizcard').innerHTML=
+    '<div class="step-head"><div class="step-num">'+(wi+1)+'</div><div>'+
+    '<div class="step-title">'+s.t+'</div>'+
+    '<div class="step-meta">⏱ '+s.m+' · '+(wi+1)+' / '+STEPS.length+'</div></div></div>'+
+    '<div class="step-body">'+s.b+'</div>';
+  [...bar.children].forEach((el,i)=>{el.className = i<wi?'done' : i===wi?'now' : ''});
+  [...dots.children].forEach((el,i)=>{el.className='dot'+(i===wi?' active':(seen.has(i)?' seen':''))});
+  document.getElementById('wprev').disabled = wi===0;
+  const nx=document.getElementById('wnext');
+  nx.disabled = wi===STEPS.length-1;
+  nx.textContent = wi===STEPS.length-1 ? '✓ Qo’llanma tugadi' : 'Keyingi qadam →';
+}
+document.getElementById('wprev').onclick=()=>{if(wi>0){wi--;seen.add(wi);drawWiz();document.getElementById('wizcard').scrollIntoView({behavior:'smooth',block:'center'})}};
+document.getElementById('wnext').onclick=()=>{if(wi<STEPS.length-1){wi++;seen.add(wi);drawWiz();document.getElementById('wizcard').scrollIntoView({behavior:'smooth',block:'center'})}};
+drawWiz();
+
+/* ---------- CALCULATOR ---------- */
+let cur=CALC.curDefault, mode='air';
+function setCur(c){cur=c;document.querySelectorAll('[data-cur]').forEach(b=>b.classList.toggle('on',b.dataset.cur===c));calc()}
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  document.getElementById('rate').value = m==='air'?CALC.airRate:CALC.roadRate;
+  calc();
+}
+const num=id=>{const e=document.getElementById(id);if(!e)return 0;const v=parseFloat(e.value);return isNaN(v)?0:v};
+const fmt=n=>n.toLocaleString('ru-RU',{maximumFractionDigits:0});
+const fmt2=n=>n.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+function calc(){
+  const fx=Math.max(num('fxrate'),0.0001);
+  const usdUzs=num('usdrate');
+  const rawPrice=num('price');
+  const goodsUsd = cur==='loc' ? rawPrice/fx : rawPrice;
+  const innerUsd = cur==='loc' ? num('inner')/fx : num('inner');
+  const taxPct = num('taxpct');
+  const localTax = (goodsUsd+innerUsd)*taxPct/100;
+
+  const actual=num('wkg');
+  const div=num('divisor');
+  const vol = div>0 ? (num('dl')*num('dw')*num('dh'))/div : 0;
+  const billed=Math.max(actual,vol);
+
+  const shipUsd=billed*num('rate');
+  const customsValue=goodsUsd+innerUsd+localTax+shipUsd;
+
+  const limit=num('channel');
+  const remain=Math.max(0,limit-num('used'));
+  const excess=Math.max(0,customsValue-remain);
+
+  let duty=0, dutyNote='';
+  if(excess>0){
+    const pct=excess*0.30, perKg=billed*3;
+    duty=Math.max(pct,perKg);
+    dutyNote = perKg>pct ? 'min $3/kg qoidasi qo’llandi' : '30% stavka';
+  }
+  const totalUsd=goodsUsd+innerUsd+localTax+shipUsd+duty;
+  const totalUzs=totalUsd*usdUzs;
+
+  const parts=[
+    {l:'Tovar',v:goodsUsd+innerUsd,c:'#c7d2fe'},
+    {l:CALC.taxLabel,v:localTax,c:'#818cf8'},
+    {l:'Yetkazish',v:shipUsd,c:'#a5b4fc'},
+    {l:'Boj',v:duty,c:'#fbbf24'}
+  ].filter(p=>p.v>0);
+  const sum=parts.reduce((a,b)=>a+b.v,0)||1;
+
+  document.getElementById('result').innerHTML=
+   '<div class="total">'+fmt(totalUzs)+' <small>so’m</small></div>'+
+   '<div class="sum">≈ $'+fmt2(totalUsd)+' · hisob og’irligi '+fmt2(billed)+' kg</div>'+
+   '<div class="bar">'+parts.map(p=>'<i style="width:'+(p.v/sum*100)+'%;background:'+p.c+'"></i>').join('')+'</div>'+
+   '<div class="legend">'+parts.map(p=>'<span><i style="background:'+p.c+'"></i>'+p.l+' $'+fmt2(p.v)+'</span>').join('')+'</div>'+
+   '<div style="margin-top:14px">'+
+   '<div class="rrow"><span>Tovar qiymati</span><span>$'+fmt2(goodsUsd)+'</span></div>'+
+   (innerUsd>0?'<div class="rrow"><span>Mahalliy yetkazish</span><span>$'+fmt2(innerUsd)+'</span></div>':'')+
+   (localTax>0?'<div class="rrow"><span>'+CALC.taxLabel+' ('+taxPct+'%)</span><span>$'+fmt2(localTax)+'</span></div>':'')+
+   '<div class="rrow"><span>Haqiqiy / hajmiy og’irlik</span><span>'+fmt2(actual)+' / '+fmt2(vol)+' kg</span></div>'+
+   '<div class="rrow"><span>Xalqaro yetkazish ($'+num('rate')+'/kg)</span><span>$'+fmt2(shipUsd)+'</span></div>'+
+   '<div class="rrow"><span>Bojxona qiymati</span><span>$'+fmt2(customsValue)+'</span></div>'+
+   '<div class="rrow"><span>Bojsiz qolgan norma</span><span>$'+fmt2(remain)+'</span></div>'+
+   (excess>0
+     ? '<div class="rrow"><span>Normadan oshgan qism</span><span>$'+fmt2(excess)+'</span></div>'+
+       '<div class="rrow"><span>Bojxona to’lovi <span style="opacity:.7;font-weight:400">('+dutyNote+')</span></span><span>$'+fmt2(duty)+'</span></div>'
+     : '<div class="rrow"><span>Bojxona to’lovi</span><span>Yo’q ✓</span></div>')+
+   '</div>';
+}
+calc();
+
+/* ---------- BAN CHECKER ---------- */
+let banFilter='all';
+const BANCATS=[{k:'all',t:'Hammasi'},{k:'r',t:'🔴 Taqiqlangan'},{k:'a',t:'🟡 Ruxsat/cheklov'},{k:'g',t:'🟢 Erkin'}];
+const bc=document.getElementById('banchips');
+BANCATS.forEach(c=>{
+  const b=document.createElement('button');
+  b.className='chip'+(c.k==='all'?' on':''); b.textContent=c.t;
+  b.onclick=()=>{banFilter=c.k;[...bc.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderBan()};
+  bc.appendChild(b);
+});
+function renderBan(){
+  const q=document.getElementById('banq').value.trim().toLowerCase();
+  const list=BAN.filter(x=>(banFilter==='all'||x.s===banFilter)&&(!q||x.n.toLowerCase().includes(q)||x.d.toLowerCase().includes(q)));
+  const el=document.getElementById('banlist');
+  if(!list.length){el.innerHTML='<div class="empty">Hech narsa topilmadi. Boshqa so’z bilan qidirib ko’ring — ro’yxat to’liq emas.</div>';return}
+  const txtmap={taqiq:'TAQIQ',ruxsat:'RUXSAT KERAK',cheklov:'CHEKLOV',erkin:'ERKIN'};
+  el.innerHTML=list.map(x=>
+    '<div class="item '+x.s+'"><div class="body"><div class="nm">'+x.n+'</div>'+
+    '<div class="ds">'+x.d+'</div></div>'+
+    '<span class="pill '+x.s+'">'+txtmap[x.c]+'</span></div>').join('');
+}
+renderBan();
+
+/* ---------- CARGO ---------- */
+let cargoF='all';
+const cch=document.getElementById('cargochips');
+if(cch){
+  CARGOCATS.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='chip'+(c.k==='all'?' on':''); b.textContent=c.t;
+    b.onclick=()=>{cargoF=c.k;[...cch.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderCargo()};
+    cch.appendChild(b);
+  });
+}
+function renderCargo(){
+  const list=CARGO.filter(x=>cargoF==='all'||x.tag.includes(cargoF));
+  document.getElementById('cargobody').innerHTML=list.map(x=>
+    '<tr><td><b>'+x.n+'</b></td><td>'+x.r+'</td><td>'+x.p+'</td><td>'+x.t+'</td><td class="mini">'+x.f+'</td></tr>').join('');
+}
+renderCargo();
+
+/* ---------- GLOSSARY ---------- */
+function fallbackCopy(txt,cb){
+  const ta=document.createElement('textarea');
+  ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try{document.execCommand('copy');cb()}catch(e){}
+  document.body.removeChild(ta);
+}
+let wcat='all';
+const wch=document.getElementById('wchips');
+if(wch){
+  WCATS.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='chip'+(c.k==='all'?' on':''); b.textContent=c.t;
+    b.onclick=()=>{wcat=c.k;[...wch.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderWords()};
+    wch.appendChild(b);
+  });
+}
+function renderWords(){
+  if(!document.getElementById('wlist'))return;
+  const q=document.getElementById('wq').value.trim().toLowerCase();
+  const list=WORDS.filter(x=>(wcat==='all'||x.c===wcat)&&(!q||x.u.toLowerCase().includes(q)||x.k.toLowerCase().includes(q)));
+  const el=document.getElementById('wlist');
+  if(!list.length){el.innerHTML='<div class="empty">Topilmadi.</div>';return}
+  el.innerHTML=list.map(x=>
+    '<div class="gl"><div class="zh">'+x.k+'</div><div class="uz">'+x.u+'</div>'+
+    '<button class="cp" data-k="'+x.k.replace(/"/g,'&quot;')+'">Nusxa</button></div>').join('');
+  el.querySelectorAll('.cp').forEach(b=>{
+    b.onclick=()=>{
+      const txt=b.dataset.k;
+      const done=()=>{b.textContent='✓ Ok';b.classList.add('ok');setTimeout(()=>{b.textContent='Nusxa';b.classList.remove('ok')},1400)};
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));
+      } else fallbackCopy(txt,done);
+    };
+  });
+}
+renderWords();
+
+/* ---------- FAQ ---------- */
+document.getElementById('faqlist').innerHTML=FAQ.map((f,i)=>
+  '<div class="acc" id="acc'+i+'"><button type="button" onclick="document.getElementById(\'acc'+i+'\').classList.toggle(\'open\')">'+f.q+'</button>'+
+  '<div class="ans">'+f.a+'</div></div>').join('');
+
+/* ---------- CHECKLIST ---------- */
+const state={};
+function renderChk(){
+  let total=0,done=0;
+  CHECK.forEach((g,gi)=>g.items.forEach((_,ii)=>{total++;if(state[gi+'-'+ii])done++}));
+  document.getElementById('chklist').innerHTML=CHECK.map((g,gi)=>{
+    const gd=g.items.filter((_,ii)=>state[gi+'-'+ii]).length;
+    return '<div class="chk-head"><h3>'+g.g+'</h3><span class="prog-txt">'+gd+' / '+g.items.length+'</span></div>'+
+    g.items.map((it,ii)=>{
+      const k=gi+'-'+ii, on=!!state[k];
+      return '<div class="chk'+(on?' done':'')+'" data-k="'+k+'"><div class="box">'+(on?'✓':'')+'</div>'+
+      '<div><div class="t">'+it.t+'</div><div class="d">'+it.d+'</div></div></div>';
+    }).join('');
+  }).join('')+
+  '<div style="text-align:center;margin-top:18px"><span class="prog-txt" style="font-size:14px;padding:8px 18px">Umumiy: '+done+' / '+total+'</span></div>';
+  document.querySelectorAll('.chk').forEach(el=>{
+    el.onclick=()=>{state[el.dataset.k]=!state[el.dataset.k];renderChk()};
+  });
+}
+renderChk();
+
+</script>
+<script>
+/* Qo'llanmalarni ilova ichida yanada qulay qilish: bo'lim navigatsiyasi,
+   svayp, checklist saqlash, o'qish progressi. Barcha 7 qo'llanma uchun umumiy. */
+(function () {
+  var KEY = 'xy-chk:' + location.pathname.split('/').pop();
+  var tabsWrap = document.getElementById('tabs');
+  if (!tabsWrap) return;
+  var tabs = function () { return Array.prototype.slice.call(document.querySelectorAll('.tab')); };
+  var idx = function () { var t = tabs(); for (var i = 0; i < t.length; i++) if (t[i].classList.contains('active')) return i; return 0; };
+  var label = function (el) { return el ? el.textContent.replace(/^\d+/, '').trim() : ''; };
+
+  /* --- o'qish progressi --- */
+  var prog = document.createElement('i');
+  prog.className = 'xy-prog';
+  document.querySelector('nav.tabs').appendChild(prog);
+  var onScroll = function () {
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    prog.style.width = (h > 40 ? Math.min(100, Math.max(0, window.scrollY / h * 100)) : 0) + '%';
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  /* --- pastdagi bo'lim navigatsiyasi --- */
+  var bar = document.createElement('nav');
+  bar.className = 'xy-secnav';
+  bar.innerHTML =
+    '<button type="button" class="xy-nb" data-d="-1" aria-label="Oldingi bo\'lim">' +
+      '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>' +
+    '</button>' +
+    '<button type="button" class="xy-mid"><b></b><span></span></button>' +
+    '<button type="button" class="xy-nb" data-d="1" aria-label="Keyingi bo\'lim">' +
+      '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>' +
+    '</button>';
+  document.body.appendChild(bar);
+  var mid = bar.querySelector('.xy-mid');
+  var midB = mid.querySelector('b'), midS = mid.querySelector('span');
+
+  var refresh = function () {
+    var t = tabs(), i = idx();
+    midB.textContent = label(t[i]);
+    midS.textContent = (i + 1) + ' / ' + t.length;
+    bar.querySelector('[data-d="-1"]').disabled = i <= 0;
+    bar.querySelector('[data-d="1"]').disabled = i >= t.length - 1;
+  };
+  var jump = function (d) {
+    var t = tabs(), n = idx() + d;
+    if (n < 0 || n >= t.length) return;
+    t[n].click();
+    refresh();
+  };
+  bar.addEventListener('click', function (e) {
+    var b = e.target.closest('.xy-nb');
+    if (b) { jump(+b.dataset.d); return; }
+    if (e.target.closest('.xy-mid')) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      var a = tabs()[idx()];
+      if (a) a.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  });
+  tabsWrap.addEventListener('click', function () { setTimeout(refresh, 0); });
+  refresh();
+
+  /* --- svayp: bo'limlar orasida, wizard ichida qadamlar orasida --- */
+  var sx = 0, sy = 0, sw = null;
+  document.addEventListener('touchstart', function (e) {
+    var t = e.touches[0];
+    sx = t.clientX; sy = t.clientY;
+    sw = e.target.closest('.tabs-scroll,.tblwrap,input,select,textarea') ? 'skip'
+       : e.target.closest('#wizcard,.wiz-nav') ? 'wiz' : 'sec';
+  }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (sw === 'skip' || !sw) return;
+    var t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+    if (Math.abs(dx) < 65 || Math.abs(dy) > 55) return;
+    var back = dx > 0;
+    if (sw === 'wiz') {
+      var b = document.getElementById(back ? 'wprev' : 'wnext');
+      if (b && !b.disabled) b.click();
+    } else jump(back ? -1 : 1);
+  }, { passive: true });
+
+  document.addEventListener('keydown', function (e) {
+    if (/^(INPUT|SELECT|TEXTAREA)$/.test((e.target.tagName || ''))) return;
+    if (e.key === 'ArrowRight') jump(1);
+    if (e.key === 'ArrowLeft') jump(-1);
+  });
+
+  /* --- checklist belgilarini saqlash --- */
+  var save = function () {
+    var done = Array.prototype.slice.call(document.querySelectorAll('.chk.done')).map(function (el) { return el.dataset.k; });
+    try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (err) {}
+  };
+  document.addEventListener('click', function (e) { if (e.target.closest('.chk')) setTimeout(save, 0); });
+
+  var restore = function () {
+    var saved;
+    try { saved = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (err) { saved = []; }
+    if (!saved.length || !document.querySelector('.chk')) return;
+    saved.forEach(function (k) {
+      var el = document.querySelector('.chk[data-k="' + k + '"]');
+      if (el && !el.classList.contains('done')) el.click();
+    });
+  };
+  restore();
+
+  /* Eski izohni to'g'rilash: belgilar endi saqlanadi */
+  Array.prototype.slice.call(document.querySelectorAll('.note')).forEach(function (n) {
+    if (/tozalanadi/.test(n.textContent)) {
+      var d = n.querySelector('div');
+      if (d) d.innerHTML = 'Belgilangan bandlar <b>shu qurilmada saqlanadi</b> — qo\'llanmani yopib, keyin davom ettirsangiz ham joyida qoladi.';
+    }
+  });
+})();
+
+</script>
+</body>
+</html>
