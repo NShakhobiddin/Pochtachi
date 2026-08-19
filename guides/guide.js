@@ -110,3 +110,10 @@
     }
   });
 })();
+
+/* Sayt paneli: qo'llanma ilova ichida (iframe) ochilsa yashirin qoladi,
+   mustaqil ochilganda esa ilovaga va qo'llanmalar ro'yxatiga havola beradi. */
+(function () {
+  var bar = document.getElementById('site-bar');
+  if (bar && window.top === window.self) bar.hidden = false;
+})();
