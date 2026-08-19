@@ -101,13 +101,27 @@
       transition-duration:.01ms !important; scroll-behavior:auto !important;
     }
   }
+  /* Katta ekranda ilova cho'zilib ketmasin: markazda telefon formatidagi
+     ramka bo'lib turadi, atrofi brend fonida. */
+  @media (min-width: 900px) {
+    .app-bg {
+      background: radial-gradient(120% 90% at 50% 0%, #EFEDFB 0%, #E4E2F4 55%, #DEDCF0 100%) !important;
+      padding: 26px 0 !important;
+      align-items: center !important;
+    }
+    .app-shell {
+      height: min(940px, calc(100dvh - 52px)) !important;
+      border-radius: 36px !important;
+      box-shadow: 0 2px 6px rgba(20,19,43,.06), 0 34px 80px -32px rgba(20,19,43,.5) !important;
+    }
+  }
   ::-webkit-scrollbar { width:0; height:0; }
   * { scrollbar-width:none; }
 </style>
 </helmet>
 
-<div style="height:100vh;height:100dvh;display:flex;align-items:stretch;justify-content:center;background:#F2F1F8;overflow:hidden">
-<div ref="{{ rootRef }}" style="width:100%;max-width:430px;height:100vh;height:100dvh;background:#F2F1F8;overflow:hidden;display:flex;flex-direction:column;position:relative">
+<div class="app-bg" style="height:100vh;height:100dvh;display:flex;align-items:stretch;justify-content:center;background:#F2F1F8;overflow:hidden">
+<div class="app-shell" ref="{{ rootRef }}" style="width:100%;max-width:430px;height:100vh;height:100dvh;background:#F2F1F8;overflow:hidden;display:flex;flex-direction:column;position:relative">
 
   <header style="display:flex;align-items:center;gap:10px;padding:calc(22px + env(safe-area-inset-top)) 18px 12px;flex:none;min-height:44px">
     <sc-if value="{{ showBack }}" hint-placeholder-val="{{ false }}">
@@ -155,6 +169,7 @@
           </sc-for>
         </div>
         <div style="font-size:13px;color:#7A7A96;line-height:1.5;font-weight:500;text-wrap:pretty">Do'kon tavsiflari va qo'llanmalar hozircha faqat o'zbek tilida.</div>
+        <button sc-camel-on-click="{{ skipOnb }}" style="align-self:center;background:none;border:none;font-family:inherit;font-size:15px;font-weight:600;color:#5F5E7C;cursor:pointer;padding:8px;min-height:44px" style-hover="color:#3B2CC9">O'tkazib yuborish</button>
       </sc-if>
       <sc-if value="{{ onbExp }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;flex-direction:column;gap:10px">
@@ -1769,7 +1784,11 @@ const monthKey = (d = new Date()) => { const p2 = n => (n < 10 ? '0' : '') + n; 
 const todayIso = () => { const d = new Date(); const p2 = n => (n < 10 ? '0' : '') + n; return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); };
 
 const LS_KEY = 'xy_state_v1';
-const PERSIST = ['lang', 'novice', 'notif', 'onboarded', 'plans', 'monthly', 'trackNo'];
+const TABS = ['home', 'guides', 'customs', 'settings', 'wizard'];
+const PERSIST = ['lang', 'novice', 'notif', 'onboarded', 'plans', 'monthly', 'trackNo',
+  /* filtrlar va oxirgi ochilgan bo'lim ham eslab qolinadi */
+  'storeCountries', 'storeCats', 'storeDirect', 'storeGroup',
+  'courierCountries', 'courierMode', 'sort', 'lastTab'];
 const loadState = () => {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -2217,6 +2236,8 @@ let BHM = normsAt().bhm, FREE_USD = normsAt().freeUsd;
 const NORMS_META = { checked: '', live: false };
 const RATE_META = { date:'', diff:0, live:false, loading:false, at:0 };
 const CBU_URL = 'https://cbu.uz/uz/arkhiv-kursov-valyut/json/USD/';
+/* Eskirgan yoki noto'g'ri ma'lumot haqida xabar beriladigan manzil. */
+const REPORT_URL = 'https://github.com/NShakhobiddin/Pochtachi/issues/new';
 
 const BANNED = [
   { name:'Giyohvandlik vositalari, psixotrop moddalar va prekursorlar', level:'red', src:'VMQ 330-son, 1-band, 5–7-ilovalar', note:'Bu moddalar muomalasi cheklangan, to\'liq ro\'yxatlar 5–7-ilovalarda keltirilgan. Shaxsiy tibbiy foydalanish istisnolari 191-son Nizomga muvofiq qo\'llanadi.' },
@@ -2464,8 +2485,13 @@ const STORE_ROUTE = {
 
 class Component extends DCLogic {
   state = {
+    /* Qayta ochilganda oxirgi ochilgan bo'lim tiklanadi. startScreen — dizayn
+       muhitidagi ko'rish rejimi uchun, shuning uchun saqlangan holat ustunroq. */
     stack: [this.props.startScreen === 'onboarding' ? 'onboard'
-      : (SAVED.onboarded ? (this.props.startScreen || 'home') : 'onboard')],
+      : (SAVED.onboarded
+          ? (TABS.indexOf(SAVED.lastTab) >= 0 ? SAVED.lastTab : (this.props.startScreen || 'home'))
+          : 'onboard')],
+    lastTab: TABS.indexOf(SAVED.lastTab) >= 0 ? SAVED.lastTab : 'home',
     onbStep: 0,
     lang: SAVED.lang || 'uz',
     onboarded: !!SAVED.onboarded,
@@ -2474,8 +2500,10 @@ class Component extends DCLogic {
     tip: 0,
     storeQuery: '',
     homeQuery: '',
-    storeCountries: [], storeCats: [], storeDirect: false, storeGroup: 'cat',
-    courierCountries: [], courierMode: null, sort: 'price',
+    storeCountries: SAVED.storeCountries || [], storeCats: SAVED.storeCats || [],
+    storeDirect: !!SAVED.storeDirect, storeGroup: SAVED.storeGroup || 'cat',
+    courierCountries: SAVED.courierCountries || [], courierMode: SAVED.courierMode || null,
+    sort: SAVED.sort || 'price',
     compareMode: false, selected: [],
     storeId: 'trendyol', courierId: 'fastcargo',
     customsSec: 0, calcPrice: '320', calcWeight: '2.5', calcShip: '9', banQuery: '', banFilter: 0, banOpen: null,
@@ -2488,7 +2516,7 @@ class Component extends DCLogic {
 
   cur() { return this.state.stack[this.state.stack.length - 1]; }
   push(s) { this.setState(st => ({ stack: [...st.stack, s], toast: '' })); }
-  go(s) { this.setState({ stack: [s], toast: '' }); }
+  go(s) { this.setState(TABS.indexOf(s) >= 0 ? { stack: [s], toast: '', lastTab: s } : { stack: [s], toast: '' }); }
   back() { this.setState(st => st.stack.length > 1 ? { stack: st.stack.slice(0, -1) } : {}); }
   toast(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 2600); }
 
@@ -3022,7 +3050,14 @@ class Component extends DCLogic {
           this.setState({ courierCountries: regions.length && STORE_ROUTE[store.country] ? regions.filter(r => STORE_ROUTE[store.country].test(r)) : [], courierMode: null, sort: 'price' });
           this.push('couriers');
         } },
-      reportInfo: () => this.toast('Xabaringiz yuborildi. 2 kun ichida tekshiramiz.'),
+      /* Ilgari bu tugma hech narsa yubormasa ham "Xabaringiz yuborildi" deb
+         yozardi. Endi haqiqiy kanal ochiladi — manzilni REPORT_URL da
+         o'zgartirish mumkin (masalan Telegram havolasiga). */
+      reportInfo: () => {
+        let opened = null;
+        try { opened = window.open(REPORT_URL, '_blank', 'noopener,noreferrer'); } catch (e) {}
+        this.toast(opened ? 'Xabar berish sahifasi ochildi' : 'Xabar berish: ' + REPORT_URL);
+      },
 
       courierChips: [
         ...[['Xitoy','🇨🇳'],['Turkiya','🇹🇷'],['AQSH','🇺🇸'],['Yevropa','🇪🇺'],['Rossiya','🇷🇺'],['Koreya','🇰🇷'],['MDH','🇰🇿'],['BAA','🇦🇪']].map(([k, fl]) => ({ ...this.chip(fl + ' ' + k, st.courierCountries.includes(k), () => this.toggleIn('courierCountries', k)) })),

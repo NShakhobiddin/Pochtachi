@@ -7,7 +7,7 @@
  *   - Google Fonts: keshdan, birinchi marta tarmoqdan.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
  */
-const VERSION = 'e76ecc8ca8f0';
+const VERSION = '17a873e8ed81';
 const CACHE = 'xarid-' + VERSION;
 const PRECACHE = [
   "./",
