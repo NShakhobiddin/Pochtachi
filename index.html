@@ -42,21 +42,30 @@
   </div>
 </noscript>
 <div id="boot-error" hidden style="max-width:430px;margin:0 auto;padding:28px 20px;font:15px/1.6 system-ui,sans-serif;color:#151329">
-  <h1 style="font-size:20px;margin:0 0 10px">Ilova yuklanmadi</h1>
+  <p style="font-size:20px;font-weight:700;margin:0 0 10px">Ilova yuklanmadi</p>
   <p style="margin:0 0 14px">Internet aloqasini tekshirib, sahifani yangilang.</p>
   <p style="margin:0 0 14px"><button type="button" onclick="location.reload()" style="min-height:44px;padding:0 18px;border:none;border-radius:14px;background:#3B2CC9;color:#fff;font:600 15px system-ui,sans-serif;cursor:pointer">Qayta urinish</button></p>
   <p style="margin:0"><a href="guides/" style="color:#3B2CC9;font-weight:600">Qo'llanmalar bu yerda ochiladi &rarr;</a></p>
 </div>
 <script>
-  /* Ilova 8 soniyada ko'tarilmasa (React yuklanmadi, skript xatosi va h.k.),
-     bo'sh oq sahifa o'rniga tushunarli xabar ko'rsatiladi. */
-  setTimeout(function () {
-    var root = document.getElementById('dc-root');
-    if (!root || !root.firstChild) {
-      var el = document.getElementById('boot-error');
-      if (el) el.hidden = false;
+  /* Ilova ko'tarilmasa (React yuklanmadi, skript xatosi va h.k.), bo'sh oq sahifa
+     o'rniga tushunarli xabar ko'rsatiladi. Sekin tarmoqda kech ko'tarilsa,
+     xabar avtomatik yopiladi. */
+  (function () {
+    var shownAt = 10000, giveUp = 40000, started = Date.now();
+    function booted() {
+      var root = document.getElementById('dc-root');
+      return !!(root && root.firstChild);
     }
-  }, 8000);
+    var timer = setInterval(function () {
+      var el = document.getElementById('boot-error');
+      if (!el) return clearInterval(timer);
+      var waited = Date.now() - started;
+      if (booted()) { el.hidden = true; clearInterval(timer); return; }
+      if (waited > shownAt) el.hidden = false;
+      if (waited > giveUp) clearInterval(timer);
+    }, 500);
+  })();
 </script>
 <x-dc>
 <helmet>
@@ -82,6 +91,16 @@
   a { color:#3B2CC9; text-decoration:none; }
   a:hover { color:#4132CC; }
   button, input, select, textarea { font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif; letter-spacing:-.012em; }
+  /* Klaviatura bilan yurganda fokus qayerdaligi doim ko'rinsin.
+     :focus-visible sichqoncha bosishida chiqmaydi, faqat klaviatura/AT uchun. */
+  :focus-visible { outline:3px solid #3B2CC9; outline-offset:2px; border-radius:12px; }
+  input:focus-visible, textarea:focus-visible { outline-offset:0; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration:.01ms !important; animation-iteration-count:1 !important;
+      transition-duration:.01ms !important; scroll-behavior:auto !important;
+    }
+  }
   ::-webkit-scrollbar { width:0; height:0; }
   * { scrollbar-width:none; }
 </style>
@@ -251,7 +270,7 @@
         <button sc-camel-on-click="{{ goStores }}" style="background:#FFFFFF;border:none;border-radius:20px;padding:18px;cursor:pointer;text-align:left;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:150px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
           <div style="display:flex;align-items:flex-start;gap:6px;width:100%">
             <div style="flex:1;display:flex;flex-direction:column;gap:5px;min-width:0">
-              <h3 style="margin:0;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.25;text-wrap:pretty">Do'konlar</h3>
+              <h2 style="margin:0;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.25;text-wrap:pretty">Do'konlar</h2>
               <div style="font-size:13px;color:#6C6C88;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.4">43 ta do'kon</div>
             </div>
             <img src="icons/stores-3d.webp" alt="" style="width:50px;height:50px;object-fit:contain;flex:none;margin-top:-4px">
@@ -263,7 +282,7 @@
         <button sc-camel-on-click="{{ goCouriers }}" style="background:#FFFFFF;border:none;border-radius:20px;padding:18px;cursor:pointer;text-align:left;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:150px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
           <div style="display:flex;align-items:flex-start;gap:6px;width:100%">
             <div style="flex:1;display:flex;flex-direction:column;gap:5px;min-width:0">
-              <h3 style="margin:0;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.25;text-wrap:pretty">Kuryerlar</h3>
+              <h2 style="margin:0;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.25;text-wrap:pretty">Kuryerlar</h2>
               <div style="font-size:13px;color:#6C6C88;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.4">{{ courierCount }} ta kuryer</div>
             </div>
             <img src="icons/courier-3d.webp" alt="" style="width:50px;height:50px;object-fit:contain;flex:none;margin-top:-4px">
@@ -275,7 +294,7 @@
         <button sc-camel-on-click="{{ goCustoms }}" style="background:#FFFFFF;border:none;border-radius:20px;padding:18px;cursor:pointer;text-align:left;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:150px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
           <div style="display:flex;align-items:flex-start;gap:6px;width:100%">
             <div style="flex:1;display:flex;flex-direction:column;gap:5px;min-width:0">
-              <h3 style="margin:0;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.25;text-wrap:pretty">Bojxona</h3>
+              <h2 style="margin:0;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.25;text-wrap:pretty">Bojxona</h2>
               <div style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.4">kalkulyator · taqiqlar · tartib</div>
             </div>
             <img src="icons/customs-3d.webp" alt="" style="width:50px;height:50px;object-fit:contain;flex:none;margin-top:-4px">
@@ -287,7 +306,7 @@
         <button sc-camel-on-click="{{ goGuides }}" style="background:#FFFFFF;border:none;border-radius:20px;padding:18px;cursor:pointer;text-align:left;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:150px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
           <div style="display:flex;align-items:flex-start;gap:6px;width:100%">
             <div style="flex:1;display:flex;flex-direction:column;gap:5px;min-width:0">
-              <h3 style="margin:0;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.25;text-wrap:pretty">Qo'llanmalar</h3>
+              <h2 style="margin:0;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.25;text-wrap:pretty">Qo'llanmalar</h2>
               <div style="font-size:13px;color:#6C6C88;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.4">{{ fullGuideCount }} ta platforma</div>
             </div>
             <img src="icons/guides-3d.webp" alt="" style="width:50px;height:50px;object-fit:contain;flex:none;margin-top:-4px">
@@ -872,7 +891,7 @@
             <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path></svg>
           </div>
           <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
-            <h3 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Bojsiz olib kirish me'yori</h3>
+            <h2 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Bojsiz olib kirish me'yori</h2>
             <span style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.45">$200 chegara · notijorat maqsad · miqdoriy normalar</span>
           </div>
           <div style="width:30px;height:30px;border-radius:15px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;flex:none">
@@ -884,7 +903,7 @@
             <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M7 12h10M10 18h4"></path><circle cx="12" cy="12" r="9"></circle></svg>
           </div>
           <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
-            <h3 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Yagona bojxona to'lovi</h3>
+            <h2 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Yagona bojxona to'lovi</h2>
             <span style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.45">me'yordan ortiq qismga 30% yoki $3/kg</span>
           </div>
           <div style="width:30px;height:30px;border-radius:15px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;flex:none">
@@ -896,7 +915,7 @@
             <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M5.6 5.6l12.8 12.8"></path></svg>
           </div>
           <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
-            <h3 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Taqiqlangan va cheklangan tovarlar</h3>
+            <h2 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Taqiqlangan va cheklangan tovarlar</h2>
             <span style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.45">23 pozitsiya · huquqiy manba bilan</span>
           </div>
           <div style="width:30px;height:30px;border-radius:15px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;flex:none">
@@ -908,7 +927,7 @@
             <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6a2 2 0 012 2v0H7v0a2 2 0 012-2z"></path><path d="M7 5H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path><path d="M8 12l2.5 2.5L16 9"></path></svg>
           </div>
           <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
-            <h3 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Rasmiylashtirish tartibi</h3>
+            <h2 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Rasmiylashtirish tartibi</h2>
             <span style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.45">xabarnoma · tasdiqlash · saqlov holatlari</span>
           </div>
           <div style="width:30px;height:30px;border-radius:15px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;flex:none">
@@ -920,7 +939,7 @@
             <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 011.1 4.2 2 2 0 013.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.7a2 2 0 01-.5 2.1L7.1 9.7a16 16 0 006 6l1.2-1.2a2 2 0 012.1-.5c.9.3 1.8.5 2.7.6a2 2 0 011.7 2z"></path></svg>
           </div>
           <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
-            <h3 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Bojxona organlari bilan bog'lanish</h3>
+            <h2 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Bojxona organlari bilan bog'lanish</h2>
             <span style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.45">manzil · telefon · xarita</span>
           </div>
           <div style="width:30px;height:30px;border-radius:15px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;flex:none">
@@ -1636,7 +1655,7 @@
 
   <sc-if value="{{ showTabs }}" hint-placeholder-val="{{ true }}">
     <nav aria-label="Asosiy menyu" style="flex:none;display:flex;align-items:flex-start;justify-content:space-around;padding:9px 6px calc(16px + env(safe-area-inset-bottom));background:#FFFFFF;border-top:1px solid #E8E8F1;box-shadow:none;position:relative;z-index:5">
-      <button sc-camel-on-click="{{ tHome }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
+      <button sc-camel-on-click="{{ tHome }}" aria-current="{{ tb.home.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
         <sc-if value="{{ tb.home.isOn }}" hint-placeholder-val="{{ true }}">
           <div style="width:50px;height:34px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:#EEEBFC">
             <img src="icons/tab-home.webp" alt="" style="width:23px;height:23px;object-fit:contain">
@@ -1649,7 +1668,7 @@
         </sc-if>
         <span style="font-size:11px;letter-spacing:-.1px;font-weight:{{ tb.home.w }};color:{{ tb.home.lbl }}">Bosh sahifa</span>
       </button>
-      <button sc-camel-on-click="{{ tGuides }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
+      <button sc-camel-on-click="{{ tGuides }}" aria-current="{{ tb.guides.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
         <sc-if value="{{ tb.guides.isOn }}" hint-placeholder-val="{{ false }}">
           <div style="width:50px;height:34px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:#EEEBFC">
             <img src="icons/tab-guides.webp" alt="" style="width:23px;height:23px;object-fit:contain">
@@ -1662,7 +1681,7 @@
         </sc-if>
         <span style="font-size:11px;letter-spacing:-.1px;font-weight:{{ tb.guides.w }};color:{{ tb.guides.lbl }}">Qo'llanmalar</span>
       </button>
-      <button sc-camel-on-click="{{ tWizard }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:14px;padding:0;font-family:inherit">
+      <button sc-camel-on-click="{{ tWizard }}" aria-current="{{ tb.wizard.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:14px;padding:0;font-family:inherit">
         <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(155deg,#5A46EC,#3423B3);display:flex;align-items:center;justify-content:center;margin-top:-28px;transition:box-shadow .24s ease,transform .3s cubic-bezier(.34,1.5,.5,1);box-shadow:{{ tb.wizard.fabSh }};transform:{{ tb.wizard.fabTf }}">
           <svg width="27" height="27" sc-camel-view-box="0 0 24 24" fill="none" style="flex:none">
             <path d="M6.2 19.4c0-4.1 2.6-5.9 6.1-6.4 3.1-.45 4.6-2.1 4.6-5" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-dasharray="0.1 2.7" opacity=".78"></path>
@@ -1675,7 +1694,7 @@
         </div>
         <span style="font-size:11px;letter-spacing:-.1px;font-weight:{{ tb.wizard.w }};color:{{ tb.wizard.lbl }}">Yo'l</span>
       </button>
-      <button sc-camel-on-click="{{ tCustoms }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
+      <button sc-camel-on-click="{{ tCustoms }}" aria-current="{{ tb.customs.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
         <sc-if value="{{ tb.customs.isOn }}" hint-placeholder-val="{{ false }}">
           <div style="width:50px;height:34px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:#EEEBFC">
             <img src="icons/tab-customs.webp" alt="" style="width:23px;height:23px;object-fit:contain">
@@ -1688,7 +1707,7 @@
         </sc-if>
         <span style="font-size:11px;letter-spacing:-.1px;font-weight:{{ tb.customs.w }};color:{{ tb.customs.lbl }}">Bojxona</span>
       </button>
-      <button sc-camel-on-click="{{ tSettings }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
+      <button sc-camel-on-click="{{ tSettings }}" aria-current="{{ tb.settings.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
         <sc-if value="{{ tb.settings.isOn }}" hint-placeholder-val="{{ false }}">
           <div style="width:50px;height:34px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:#EEEBFC">
             <img src="icons/tab-profile.webp" alt="" style="width:23px;height:23px;object-fit:contain">
@@ -2726,14 +2745,14 @@ class Component extends DCLogic {
         const on = k => ({
           chip: '#EEEBFC', sh: 'none',
           tf: 'translateY(0)',
-          isOn: true, isOff: false,
+          isOn: true, isOff: false, cur: 'page',
           lbl: '#3B2CC9', w: '800',
           fabSh: '0 8px 20px rgba(59,44,201,.34),0 0 0 6px rgba(59,44,201,.08)',
           fabTf: 'translateY(-3px) scale(1.06)'
         });
         const off = k => ({
           chip: 'transparent', sh: 'none', tf: 'translateY(0)',
-          isOn: false, isOff: true,
+          isOn: false, isOff: true, cur: '',
           lbl: '#6E6E8C', w: '700',
           fabSh: '0 6px 16px rgba(59,44,201,.26)',
           fabTf: 'translateY(0) scale(1)'
@@ -3168,5 +3187,14 @@ class Component extends DCLogic {
     };
   }
 }
+</script>
+<script>
+  /* Service worker: qobiq keshlanadi, shuning uchun ilova internetsiz ham ochiladi
+     va bojxona me'yorlari, qo'llanmalar oflayn o'qiladi. */
+  if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+    addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
 </script>
 </body></html>

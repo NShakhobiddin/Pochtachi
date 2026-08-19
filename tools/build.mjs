@@ -7,7 +7,8 @@
 // Ishlatish: node tools/build.mjs [--check]
 //   --check  index.html manbaga mos ekanini tekshiradi (CI uchun), yozmaydi.
 
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -25,6 +26,36 @@ function build(src) {
   return BANNER + src;
 }
 
+
+// ---- service worker ------------------------------------------------------
+// Offline uchun keshlanadigan qobiq ro'yxati va uning versiyasi manbadan
+// hisoblanadi, shuning uchun har o'zgarishda kesh o'zi yangilanadi.
+function precacheList() {
+  const files = ['./', 'support.js', 'manifest.webmanifest',
+    'vendor/react.production.min.js', 'vendor/react-dom.production.min.js',
+    'fonts/flags.woff2', 'guides/guide-base.css', 'guides/guide-common.css', 'guides/guide.js'];
+  for (const dir of ['icons', 'logos']) {
+    for (const f of readdirSync(join(ROOT, dir)).sort()) {
+      if (/\.(webp|png)$/.test(f) && f !== 'og-cover.png') files.push(`${dir}/${f}`);
+    }
+  }
+  return files;
+}
+
+function buildServiceWorker(indexHtml) {
+  const files = precacheList();
+  const hash = createHash('sha256');
+  hash.update(indexHtml);
+  for (const f of files) {
+    if (f === './') continue;
+    hash.update(readFileSync(join(ROOT, f)));
+  }
+  const version = hash.digest('hex').slice(0, 12);
+  return readFileSync(join(ROOT, 'tools', 'sw.template.js'), 'utf8')
+    .replace('__VERSION__', version)
+    .replace('__PRECACHE__', JSON.stringify(files, null, 2));
+}
+
 const srcPath = join(ROOT, SOURCE);
 const outPath = join(ROOT, OUTPUT);
 if (!existsSync(srcPath)) {
@@ -32,15 +63,18 @@ if (!existsSync(srcPath)) {
   process.exit(1);
 }
 const built = build(readFileSync(srcPath, 'utf8'));
+const sw = buildServiceWorker(built);
 
 if (process.argv.includes('--check')) {
+  const currentSw = existsSync(join(ROOT, 'sw.js')) ? readFileSync(join(ROOT, 'sw.js'), 'utf8') : '';
   const current = existsSync(outPath) ? readFileSync(outPath, 'utf8') : '';
-  if (current !== built) {
+  if (current !== built || currentSw !== sw) {
     console.error(`${OUTPUT} manbaga mos emas. \`node tools/build.mjs\` ni ishlating.`);
     process.exit(1);
   }
   console.log(`${OUTPUT} manbaga mos.`);
 } else {
   writeFileSync(outPath, built);
-  console.log(`${OUTPUT} yozildi (${(built.length / 1024).toFixed(0)} KB).`);
+  writeFileSync(join(ROOT, 'sw.js'), sw);
+  console.log(`${OUTPUT} yozildi (${(built.length / 1024).toFixed(0)} KB), sw.js yangilandi.`);
 }
