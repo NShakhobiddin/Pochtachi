@@ -174,7 +174,49 @@ try {
   const logoHosts = ['unavatar.io', 'icons.duckduckgo.com'].filter(h => src.includes(h));
   check('ortiqcha logotip xizmatlari olib tashlandi', logoHosts.length === 0, logoHosts.join(', '));
 
-  // 12. Xato va yo'qolgan fayllar
+  // 12. Kichik ekranda gorizontal siljish bo'lmasin (ilgari har bir ekranda
+  //     ~14 px chiqib turardi: box-sizing yo'q edi)
+  await page.setViewportSize({ width: 360, height: 780 });
+  await page.waitForTimeout(400);
+  for (const tab of ['Bosh sahifa', "Qo'llanmalar", 'Bojxona']) {
+    await page.locator('nav button', { hasText: tab }).first().click().catch(() => {});
+    await page.waitForTimeout(400);
+    const over = await page.evaluate(() => {
+      const m = document.querySelector('main');
+      return m ? m.scrollWidth - m.clientWidth : 0;
+    });
+    check(`360 px da gorizontal siljish yo'q: ${tab}`, over <= 0, over > 0 ? `+${over}px` : '');
+  }
+  await page.setViewportSize({ width: 430, height: 880 });
+  await page.waitForTimeout(300);
+
+  // 13. Telegram ichida ochilganda kerakli chaqiruvlar bajariladi
+  const tgPage = await context.newPage();
+  await tgPage.addInitScript(() => {
+    window.__tgCalls = [];
+    const push = n => window.__tgCalls.push(n);
+    window.Telegram = { WebApp: {
+      version: '8.0', safeAreaInset: { top: 20, bottom: 12 }, contentSafeAreaInset: { top: 40, bottom: 0 },
+      ready: () => push('ready'), expand: () => push('expand'),
+      requestFullscreen: () => push('requestFullscreen'), disableVerticalSwipes: () => push('disableVerticalSwipes'),
+      setHeaderColor: () => push('header'), setBackgroundColor: () => push('bg'), setBottomBarColor: () => push('bottom'),
+      onEvent: () => {}, offEvent: () => {},
+      HapticFeedback: { selectionChanged() {}, impactOccurred() {} },
+      BackButton: { show() { window.__tgBack = true; }, hide() { window.__tgBack = false; }, onClick() {}, offClick() {} }
+    } };
+  });
+  await tgPage.goto(base + '/', { waitUntil: 'load' });
+  await tgPage.waitForTimeout(1500);
+  const tgCalls = await tgPage.evaluate(() => window.__tgCalls || []);
+  check('Telegram: to\'liq ekran va sozlamalar', ['ready', 'expand', 'requestFullscreen', 'disableVerticalSwipes'].every(c => tgCalls.includes(c)), tgCalls.join(','));
+  const insets = await tgPage.evaluate(() => ({
+    top: getComputedStyle(document.documentElement).getPropertyValue('--xy-safe-top').trim(),
+    bottom: getComputedStyle(document.documentElement).getPropertyValue('--xy-safe-bottom').trim()
+  }));
+  check('Telegram: xavfsiz sohalar hisobga olinadi', insets.top === '60px' && insets.bottom === '12px', JSON.stringify(insets));
+  await tgPage.close();
+
+  // 14. Xato va yo'qolgan fayllar
   check('konsolda xato yo\'q', errors.length === 0, errors.slice(0, 2).join(' / '));
   check('404 yo\'q', missing.length === 0, missing.slice(0, 2).join(' / '));
 } finally {
