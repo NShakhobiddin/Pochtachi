@@ -92,6 +92,9 @@ page.on('pageerror', e => errors.push(e.message));
 const BENIGN = /Expected moveto path command|font|CORS|net::ERR/i;
 page.on('console', m => { if (m.type() === 'error' && !BENIGN.test(m.text())) errors.push(m.text()); });
 page.on('response', r => { if (r.status() >= 400 && r.url().startsWith(base)) missing.push(r.status() + ' ' + r.url()); });
+// Oddiy brauzerda Telegram SDK'si umuman so'ralmasligi kerak.
+const tgRequests = [];
+page.on('request', r => { if (r.url().includes('telegram.org')) tgRequests.push(r.url()); });
 
 try {
   // 1. Ilova ko'tariladi
@@ -224,6 +227,26 @@ try {
   }));
   check('Telegram: xavfsiz sohalar hisobga olinadi', insets.top === '60px' && insets.bottom === '12px', JSON.stringify(insets));
   await tgPage.close();
+
+  /* Telegram SDK bloklovchi skript emas: oddiy brauzerda umuman so'ralmaydi,
+     Telegram manzili bilan ochilganda esa yuklanadi. */
+  check('oddiy brauzerda telegram.org ga so\'rov yo\'q',
+    !tgRequests.length, tgRequests.join(', '));
+
+  const tgUrlPage = await context.newPage();
+  const tgUrlHits = [];
+  tgUrlPage.on('request', r => { if (r.url().includes('telegram.org')) tgUrlHits.push(r.url()); });
+  await tgUrlPage.route('**telegram.org/js/telegram-web-app.js', r => r.fulfill({
+    status: 200, contentType: 'text/javascript',
+    body: 'window.Telegram={WebApp:{version:"8.0",safeAreaInset:{top:0,bottom:0},contentSafeAreaInset:{top:0,bottom:0},ready(){window.__ready=1},expand(){},requestFullscreen(){},disableVerticalSwipes(){},setHeaderColor(){},setBackgroundColor(){},setBottomBarColor(){},onEvent(){},offEvent(){},HapticFeedback:{selectionChanged(){},impactOccurred(){}},BackButton:{show(){},hide(){},onClick(){},offClick(){}}}};'
+  }));
+  await tgUrlPage.goto(base + '/#tgWebAppPlatform=android&tgWebAppVersion=8.0', { waitUntil: 'load' });
+  await tgUrlPage.waitForTimeout(1200);
+  const tgUrlOk = await tgUrlPage.evaluate(() =>
+    window.__ready === 1 && document.documentElement.classList.contains('in-telegram'));
+  check('Telegram manzili bilan ochilganda SDK yuklanadi', tgUrlOk && tgUrlHits.length === 1,
+    `so'rovlar: ${tgUrlHits.length}`);
+  await tgUrlPage.close();
 
   // 14. Qo'llanma tez ochiladi va ichida siljish bo'lmaydi
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
