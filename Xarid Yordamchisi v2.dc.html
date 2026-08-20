@@ -3058,6 +3058,10 @@ class Component extends DCLogic {
       let changed = 0;
       STORES.forEach(s => {
         if (have.has(s.id)) { s.logoCss = "url('stores/" + s.id + ".webp')"; changed++; }
+        /* Logotiplar loyihaga saqlangan ekan, ro'yxatda yo'q do'kon uchun
+           tashqi favicon xizmatiga chiqmaymiz — rangli monogramma ko'rinadi.
+           Shunday qilib ilova umuman uchinchi tomon serveriga bog'lanmaydi. */
+        else if (s.logoCss !== 'none') { s.logoCss = 'none'; changed++; }
       });
       if (changed) this.forceUpdate();
     } catch (e) {}

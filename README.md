@@ -29,7 +29,7 @@ icons/                         3D bo'lim ikonkalari, tab-bar ikonkalari, PWA iko
 icons/src/                     ikonkalarning asl (katta) nusxalari (saytga chiqmaydi)
 logos/                         kuryer logotiplari (128 px WebP)
 logos/src/                     logotiplarning asl PNG nusxalari (saytga chiqmaydi)
-stores/                        do'kon logotiplari (npm run store-logos bilan yuklanadi)
+stores/                        do'kon logotiplari (128 px WebP) va index.json
 guides/index.html              GENERATSIYA: qo'llanmalarning indekslanadigan ro'yxati
 guides/inline/*.html           7 ta platforma qo'llanmasi (mustaqil sahifa ham)
 guides/guide-base.css          qo'llanmalarning umumiy uslublari
@@ -50,7 +50,7 @@ npm test                 # smoke test + 7 ta qo'llanmaning tekshiruvi
 npm run links            # tashqi havolalarni tekshirish (haftalik CI ham qiladi)
 npm run logos            # logos/src/*.png -> logos/*.webp qayta yasash
 npm run icons            # icons/src/*.webp -> icons/*.webp (ekran o'lchamiga moslash)
-npm run store-logos      # do'kon logotiplarini bir marta yuklab, stores/ ga saqlash
+npm run store-logos      # do'kon logotiplari (--from DIR bilan tayyor rasmlardan)
 npm run cover            # icons/og-cover.png ni qayta yasash
 npm run fonts            # matn shriftlarini Google Fonts'dan qayta yuklab olish
 npm run serve            # lokal server: http://localhost:8000
@@ -92,22 +92,25 @@ Oddiy brauzerda bu kodning ta'siri yo'q — sayt avvalgidek ishlayveradi.
 
 ## Do'kon logotiplari
 
-43 ta do'kon logotipi favicon xizmatidan olinadi. Ular service worker'ning alohida keshida saqlanadi — ya'ni har ochilishda emas, qurilmada bir marta yuklanadi va keyin oflayn ham ko'rinadi.
+Logotiplar loyihada saqlanadi (`stores/*.webp`, 128 px), shuning uchun ilova ularni faqat o'z domenidan oladi va oflaynda ham ko'rsatadi. 43 ta do'kondan 38 tasining logotipi bor; qolganlari rangli monogramma bilan ko'rinadi (ro'yxat `stores/README.md` da).
 
-Tashqi so'rovni butunlay yo'q qilish uchun logotiplarni loyihaga saqlang:
+Yangilash yoki qo'shish:
 
 ```bash
-npm run store-logos      # stores/*.webp va stores/index.json yasaladi
-npm run build            # service worker ro'yxati yangilanadi
+npm run store-logos                 # favicon xizmatlaridan yuklab oladi (internet kerak)
+npm run store-logos -- --from DIR   # tayyor rasmlar solingan papkadan oladi
+npm run build                       # service worker ro'yxati yangilanadi
 ```
 
-Buni GitHub'da ham qilish mumkin: **Actions → "Do'kon logotiplarini yuklash" → Run workflow**. Shundan keyin ilova `stores/index.json` ro'yxatiga qarab rasmni faqat o'z domenidan oladi. Logotipi topilmagan do'kon uchun rangli monogramma ko'rinadi.
+Tarmoqdan yuklashni GitHub'da ham qilish mumkin: **Actions → "Do'kon logotiplarini yuklash" → Run workflow**.
 
 ## Tashqi bog'liqliklar
 
-Sayt ishga tushganda tashqariga faqat bitta so'rov yuboradi — valyuta kursi uchun `cbu.uz` ga. Shriftlar, React va qolgan hamma narsa o'z domenimizda. Birinchi ochilishdan keyin service worker qobiqni keshlaydi va ilova internetsiz ham ishlaydi.
+Sayt tashqariga faqat bitta so'rov yuboradi — valyuta kursi uchun `cbu.uz` ga. Shriftlar, React, do'kon logotiplari va qolgan hamma narsa o'z domenimizda; smoke test buni har ishga tushishda tekshiradi. Birinchi ochilishdan keyin service worker qobiqni keshlaydi va ilova internetsiz ham ishlaydi.
 
-**Shriftlar.** `Bricolage Grotesque` va `Onest` — o'zgaruvchan (variable) shriftlar, `fonts/` ichida. Brauzer sahifadagi belgilarga qarab faqat keraklisini oladi: lotin (72 KB), kirillcha matn ko'rinsa yana 16 KB, bayroq ko'rinsa `flags.woff2` (44 KB). Ilgari ular `fonts.googleapis.com` -> `fonts.gstatic.com` zanjiri orqali kelardi va 238 KB chiqardi. Yangilash: `npm run fonts`.
+**Shriftlar.** Butun ilova bitta oiladan foydalanadi — `Onest` (o'zgaruvchan shrift), `fonts/` ichida. Brauzer sahifadagi belgilarga qarab faqat keraklisini oladi: lotin (32 KB), kirillcha matn ko'rinsa yana 14 KB, bayroq ko'rinsa `flags.woff2` (44 KB). Ilgari ular `fonts.googleapis.com` -> `fonts.gstatic.com` zanjiri orqali kelardi va 238 KB chiqardi. Yangilash: `npm run fonts`.
+
+**Bayroqlar.** `fonts/flags.woff2` — ilovada ishlatiladigan 23 ta bayroq: 🇺🇿 🇨🇳 🇺🇸 🇹🇷 🇬🇧 🇦🇪 🇰🇷 🇷🇺 🇰🇿 🇰🇬 🇹🇯 🇲🇾 🇪🇺 🇩🇪 🇫🇷 🇮🇹 🇪🇸 🇬🇷 🇨🇦 🇵🇱 🇵🇹 🇺🇦 🇨🇿. Yangi bayroq qo'shilsa, subsetni qayta yasash kerak (`python3 tools/subset_flags.py <manba.woff2>`), aks holda u tizim shriftidan chiqadi.
 
 ## Tezlik
 
@@ -140,10 +143,9 @@ Nima qilindi:
 - Uzun ro'yxatlarda `content-visibility`; renderVals() ichidagi og'ir
   ro'yxatlar faqat o'z ekrani ochiqligida quriladi.
 
-Yagona qolgan tashqi bog'liqlik — do'kon logotiplari. `npm run store-logos`
-(yoki GitHub Action) ularni loyihaga saqlaydi va u ham yo'qoladi; smoke test
-shundan keyin qat'iyroq tekshiradi.
+Do'kon logotiplari ham loyihaga ko'chirildi, shuning uchun ilovada uchinchi
+tomon serveriga birorta ham so'rov qolmadi.
 
 ## O'lcham byudjeti
 
-`npm run check` quyidagilarni tekshiradi: logotiplar ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 200 KB, qo'llanmalar ≤ 470 KB, `index.html` ≤ 420 KB. Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.
+`npm run check` quyidagilarni tekshiradi: kuryer logotiplari ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 120 KB, do'kon logotiplari ≤ 260 KB, qo'llanmalar ≤ 470 KB, `index.html` ≤ 420 KB. Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.

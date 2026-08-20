@@ -8,7 +8,7 @@
  *     qat'i nazar saqlanadigan keshda qoladi.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
  */
-const VERSION = '71b092e080b3';
+const VERSION = 'd566a31abf59';
 const CACHE = 'xarid-' + VERSION;
 /* Logotiplar keshi ilova versiyasiga bog'lanmaydi: yangilanish chiqqanda
    ular qaytadan yuklanmaydi. */
@@ -56,7 +56,45 @@ const PRECACHE = [
   "logos/teztezdelivery.webp",
   "logos/wikishopus.webp",
   "logos/yellowpochta.webp",
-  "logos/yumecs.webp"
+  "logos/yumecs.webp",
+  "stores/adidas.webp",
+  "stores/aliexpress.webp",
+  "stores/amazon.webp",
+  "stores/apple.webp",
+  "stores/asos.webp",
+  "stores/beautybay.webp",
+  "stores/bestbuy.webp",
+  "stores/bhphoto.webp",
+  "stores/carters.webp",
+  "stores/ebay.webp",
+  "stores/farfetch.webp",
+  "stores/footlocker.webp",
+  "stores/hamleys.webp",
+  "stores/hm.webp",
+  "stores/jdsports.webp",
+  "stores/jomashop.webp",
+  "stores/lego.webp",
+  "stores/lenovo.webp",
+  "stores/microcenter.webp",
+  "stores/mytheresa.webp",
+  "stores/newbalance.webp",
+  "stores/newegg.webp",
+  "stores/nike.webp",
+  "stores/noon.webp",
+  "stores/pinduoduo.webp",
+  "stores/poizon.webp",
+  "stores/puma.webp",
+  "stores/samsung.webp",
+  "stores/sephora.webp",
+  "stores/shein.webp",
+  "stores/taobao.webp",
+  "stores/tmall.webp",
+  "stores/trendyol.webp",
+  "stores/ulta.webp",
+  "stores/uniqlo.webp",
+  "stores/walmart.webp",
+  "stores/xiaomi.webp",
+  "stores/zara.webp"
 ];
 
 self.addEventListener('install', event => {

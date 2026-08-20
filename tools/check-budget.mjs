@@ -19,6 +19,9 @@ const BUDGETS = [
      sahifadagi belgilarga qarab faqat keraklisini oladi: odatda lotin
      (32 KB), kirillcha matn bo'lsa yana 14 KB, bayroq ko'rinsa 44 KB. */
   { name: 'shriftlar (fonts/)', dir: 'fonts', ext: ['.woff2'], maxTotalKb: 120, maxFileKb: 50 },
+  /* Do'kon logotiplari: 43 ta do'kon, har biri 128 px WebP. Do'konlar
+     ekrani ochilgandagina yuklanadi. */
+  { name: 'do\'kon logotiplari (stores/*.webp)', dir: 'stores', ext: ['.webp'], maxTotalKb: 260, maxFileKb: 20 },
   { name: 'qo\'llanmalar (guides/inline/)', dir: 'guides/inline', ext: ['.html'], maxTotalKb: 470, maxFileKb: 90 }
 ];
 
