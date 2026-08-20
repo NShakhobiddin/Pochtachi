@@ -483,7 +483,11 @@
             </div>
             <div style="display:flex;flex-direction:column;gap:11px">
               <sc-for list="{{ g.items }}" as="s" hint-placeholder-count="3">
-          <button sc-camel-on-click="{{ s.open }}" style="display:flex;align-items:center;gap:14px;background:#FFFFFF;border:none;border-radius:18px;padding:14px;cursor:pointer;text-align:left;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+          <!-- content-visibility: ekrandan tashqaridagi kartaning uslubi va
+               tartibi hisoblanmaydi. 43 ta do'kon bir yo'la chizilganda bu
+               sezilarli farq beradi; contain-intrinsic-size joyini band qilib
+               turadi, shuning uchun aylantirish "sakramaydi". -->
+          <button sc-camel-on-click="{{ s.open }}" style="display:flex;align-items:center;gap:14px;background:#FFFFFF;border:none;border-radius:18px;padding:14px;cursor:pointer;text-align:left;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);content-visibility:auto;contain-intrinsic-size:auto 82px" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
             <div style="width:54px;height:54px;border-radius:16px;flex:none;position:relative;display:flex;align-items:center;justify-content:center;background:#F4F3FA">
               <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;letter-spacing:-.4px;color:{{ s.color }}">{{ s.mono }}</span>
               <div style="position:absolute;inset:9px;border-radius:11px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ s.logoCss }}"></div>
@@ -672,7 +676,9 @@
 
       <div style="display:flex;flex-direction:column;gap:12px">
         <sc-for list="{{ filteredCouriers }}" as="c" hint-placeholder-count="6">
-          <div style="display:flex;align-items:center;gap:11px">
+          <!-- Ekrandan tashqaridagi kuryer kartasi hisoblanmaydi (do'konlar
+               ro'yxatidagi kabi). -->
+          <div style="display:flex;align-items:center;gap:11px;content-visibility:auto;contain-intrinsic-size:auto 150px">
             <sc-if value="{{ compareMode }}" hint-placeholder-val="{{ false }}">
               <button sc-camel-on-click="{{ c.toggleSel }}" style="width:26px;height:26px;border-radius:9px;flex:none;cursor:pointer;background:{{ c.selBg }};border:2px solid {{ c.selBd }};display:flex;align-items:center;justify-content:center">
                 <svg width="13" height="13" sc-camel-view-box="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
@@ -1127,7 +1133,7 @@
         </div>
         <div style="display:flex;flex-direction:column;gap:10px">
           <sc-for list="{{ banList }}" as="b" hint-placeholder-count="6">
-            <div style="background:#FFFFFF;border-radius:20px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+            <div style="background:#FFFFFF;border-radius:20px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);content-visibility:auto;contain-intrinsic-size:auto 62px">
               <button sc-camel-on-click="{{ b.toggle }}" style="display:flex;align-items:center;gap:12px;background:transparent;border:none;width:100%;text-align:left;padding:14px 15px;cursor:pointer;font-family:inherit">
                 <div style="width:34px;height:34px;border-radius:18px;flex:none;display:flex;align-items:center;justify-content:center;background:{{ b.bg }}">
                   <div style="width:10px;height:10px;border-radius:50%;background:{{ b.dot }}"></div>
@@ -2008,6 +2014,18 @@ const matches = (hay, q) => {
   return new RegExp('(^|[ ,.·/-])' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).test(hay);
 };
 
+/* Do'konning qidiruvga tegishli barcha matni bir satrda, normallashtirilgan
+   holda. Bir marta hisoblanadi va keyin keshdan olinadi. */
+const STORE_HAY = new Map();
+const storeHay = s => {
+  let h = STORE_HAY.get(s.id);
+  if (h === undefined) {
+    h = norm([s.name, s.cat, s.subcats, s.type, s.country, s.segment, s.forWhom, (s.tags || []).join(' ')].join(' '));
+    STORE_HAY.set(s.id, h);
+  }
+  return h;
+};
+
 /* Natijalarni moslik darajasi bo'yicha tartiblash: nomi so'rov bilan boshlansa
    yuqorida, nomida uchrasa o'rtada, faqat tavsifda uchrasa quyida. */
 const rank = (name, q) => {
@@ -2669,15 +2687,25 @@ class Component extends DCLogic {
     });
   }
 
+  /* Natija bir renderda bir necha joyda kerak bo'ladi (ro'yxat, guruhlar,
+     "hech narsa topilmadi"), shuning uchun bir marta hisoblanib saqlanadi.
+     Qidiruv matni normallashtirilgan holda do'konga bog'lab keshlanadi —
+     har bosishda 43 ta uzun satrni qaytadan tozalash shart emas. */
   storesFiltered() {
-    const q = norm(this.state.storeQuery);
-    return STORES.filter(s => {
-      if (q && !matches(norm([s.name, s.cat, s.subcats, s.type, s.country, s.segment, s.forWhom, (s.tags || []).join(' ')].join(' ')), q)) return false;
-      if (this.state.storeCountries.length && !this.state.storeCountries.includes(s.country)) return false;
-      if (this.state.storeCats.length && !this.state.storeCats.includes(s.cat)) return false;
-      if (this.state.storeDirect && !s.direct) return false;
+    const st = this.state;
+    const key = st.storeQuery + '|' + st.storeCountries.join() + '|' + st.storeCats.join() + '|' + st.storeDirect;
+    if (this._storeKey === key) return this._storeList;
+    const q = norm(st.storeQuery);
+    const list = STORES.filter(s => {
+      if (q && !matches(storeHay(s), q)) return false;
+      if (st.storeCountries.length && !st.storeCountries.includes(s.country)) return false;
+      if (st.storeCats.length && !st.storeCats.includes(s.cat)) return false;
+      if (st.storeDirect && !s.direct) return false;
       return true;
     });
+    this._storeKey = key;
+    this._storeList = list;
+    return list;
   }
   couriersFiltered() {
     let list = COURIERS.filter(c => {
@@ -2974,7 +3002,11 @@ class Component extends DCLogic {
     const mTot = monthList.reduce((a, x) => ({ usd: a.usd + num(x.usd), kg: a.kg + num(x.kg) }), { usd: 0, kg: 0 });
     const mPct = NC.freeUsd > 0 ? mTot.usd / NC.freeUsd * 100 : 0;
     const bq = st.banQuery.trim().toLowerCase();
-    const banRows = BANNED
+    /* Har bir setState'da butun shablon qayta hisoblanadi. Shuning uchun
+       og'ir ro'yxatlar faqat o'z ekrani ochiq bo'lgandagina quriladi —
+       masalan bosh sahifada qidiruv yozayotganda taqiqlar jadvali yoki
+       do'konlar ro'yxati qayta yasalmaydi. */
+    const banRows = cur !== 'csec' ? [] : BANNED
       .filter(b => st.banFilter === 0 || (st.banFilter === 1 ? b.level === 'red' : b.level === 'amber'))
       .filter(b => !bq || b.name.toLowerCase().includes(bq) || b.note.toLowerCase().includes(bq))
       .map((b, i) => ({
@@ -2985,7 +3017,7 @@ class Component extends DCLogic {
         toggle: () => this.setState({ banOpen: st.banOpen === b.name ? null : b.name })
       }));
 
-    const storeCouriers = this.couriersForStore(store);
+    const storeCouriers = cur === 'store' ? this.couriersForStore(store) : [];
     const pl = st.plans.find(p => p.id === st.planId) || st.plans[0] || null;
     const titles = { plan:'Xarid rejasi', stores:'Do\'konlar', store:store.name, couriers:'Kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', wizard:'5 qadamli yo\'l', settings:'Sozlamalar', compare:'Taqqoslash' };
     const showSortBtn = cur === 'couriers';
@@ -3002,15 +3034,17 @@ class Component extends DCLogic {
 
     const catKey = (WIZ_CATS.find(c => c.label === st.wizCat) || {}).key || null;
     const cKey = (WIZ_COUNTRIES.find(c => c.label === st.wizCountry) || {}).key || 'Global';
-    const wizStores = STORES.filter(s =>
+    const onWizard = cur === 'wizard';
+    const wizStores = !onWizard ? [] : STORES.filter(s =>
       (!catKey ? true : (s.cat === catKey || (catKey !== 'universal' && s.cat === 'universal'))) &&
       (cKey === 'Global' ? true : (s.country === cKey || s.country === 'Global'))
     );
-    const wizCouriers = [...COURIERS].filter(k =>
+    const wizCouriers = !onWizard ? [] : [...COURIERS].filter(k =>
       cKey === 'Global' ? true : (CUR_MATCH[cKey].test(k.countries || '') || (k.from || []).some(x => CUR_MATCH[cKey].test(x)))
     ).sort((a, b) => a.price - b.price);
 
     const wizOpts = () => {
+      if (!onWizard) return [];
       const plain = { hasMono:false, hasPrice:false, plain:true, color:'', mono:'', price:'', logoCss:'none', logoFit:'cover', logoBg:'transparent' };
       if (st.wizStep === 0) return WIZ_CATS.map(o => ({
         label:o.emoji + '  ' + o.label,
@@ -3198,7 +3232,7 @@ class Component extends DCLogic {
         const hay = (...p) => norm(p.filter(Boolean).join(' '));
         const byRank = (list, key) => [...list].sort((a, b) => rank(a[key], q) - rank(b[key], q));
         const stores = byRank(STORES
-          .filter(s => matches(hay(s.name, s.cat, s.subcats, s.type, s.country, s.segment, s.forWhom, (s.tags || []).join(' ')), q)), 'name')
+          .filter(s => matches(storeHay(s), q)), 'name')
           .slice(0, 5)
           .map(s => ({
             kind: 'Do\'kon', name: s.name, sub: s.country + ' · ' + s.cat,
@@ -3230,7 +3264,6 @@ class Component extends DCLogic {
         ...[['Xitoy','🇨🇳'],['AQSh','🇺🇸'],['Global','🌍'],['Turkiya','🇹🇷'],['Buyuk Britaniya','🇬🇧'],['BAA','🇦🇪']].map(([k, fl]) => this.chip(fl + ' ' + k, st.storeCountries.includes(k), () => this.toggleIn('storeCountries', k))),
         ...['universal','kiyim va moda','poyabzal','elektronika','kosmetika','bolalar'].map(k => this.chip(k, st.storeCats.includes(k), () => this.toggleIn('storeCats', k)))
       ],
-      filteredStores: this.storesFiltered().map(s => ({ ...s, open:() => { this.warmGuide(s.id); this.setState({ storeId:s.id }); this.push('store'); } })),
       groupByCat: st.storeGroup === 'cat', groupByPrice: st.storeGroup === 'price',
       grpCatBg: st.storeGroup === 'cat' ? '#FFFFFF' : 'transparent',
       grpCatFg: st.storeGroup === 'cat' ? '#3B2CC9' : '#7A7996',
@@ -3240,6 +3273,7 @@ class Component extends DCLogic {
       grpPriceSh: st.storeGroup === 'price' ? '0 1px 2px rgba(20,19,43,.10),0 4px 10px -6px rgba(20,19,43,.28)' : 'none',
       setGroupCat: () => this.setState({ storeGroup:'cat' }), setGroupPrice: () => this.setState({ storeGroup:'price' }),
       storeGroups: (() => {
+        if (cur !== 'stores') return [];
         const list = this.storesFiltered().map(s => ({ ...s, open:() => { this.warmGuide(s.id); this.setState({ storeId:s.id }); this.push('store'); } }));
         const CATS = [
           ['universal', 'Universal', 'Hamma turdagi tovarlar'],
