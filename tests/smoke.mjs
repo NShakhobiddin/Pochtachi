@@ -43,6 +43,7 @@ const server = createServer((req, res) => {
   });
 });
 
+const src = readFileSync(join(ROOT, 'Xarid Yordamchisi v2.dc.html'), 'utf8');
 const failures = [];
 const check = (name, ok, detail = '') => {
   console.log(`${ok ? '  ok  ' : ' XATO '} ${name}${detail ? ' — ' + detail : ''}`);
@@ -134,13 +135,46 @@ try {
 
   // 7. Me'yorlar fayli koddagi zaxira bilan mos
   const norms = JSON.parse(readFileSync(join(ROOT, 'data', 'norms.json'), 'utf8'));
-  const src = readFileSync(join(ROOT, 'Xarid Yordamchisi v2.dc.html'), 'utf8');
   const inCode = (src.match(/\{ from:'[\d-]+', bhm:\d+/g) || []).length;
   check('data/norms.json to\'g\'ri', Array.isArray(norms.norms) && norms.norms.length > 0
     && norms.norms.every(n => n.bhm > 0 && n.freeUsd > 0 && n.src));
   check('koddagi zaxira me\'yorlar mavjud', inCode === norms.norms.length, `kod: ${inCode}, json: ${norms.norms.length}`);
 
-  // 8. Xato va yo'qolgan fayllar
+  // 8. Pastki menyu har bir bo'limda ko'rinib turadi (ilgari iOS'da brauzer
+  //    paneli uni ekrandan chiqarib yuborardi)
+  for (const tab of ['Bosh sahifa', 'Bojxona', 'Sozlamalar']) {
+    await page.locator('nav button', { hasText: tab }).first().click();
+    await page.waitForTimeout(400);
+    const fits = await page.evaluate(() => {
+      const nav = document.querySelector('nav');
+      if (!nav) return false;
+      const r = nav.getBoundingClientRect();
+      return r.height > 0 && r.bottom <= window.innerHeight + 2 && r.top < window.innerHeight;
+    });
+    check(`pastki menyu ko'rinadi: ${tab}`, fits);
+  }
+
+  // 9. "Orqaga" ilovadan chiqarib yubormaydi
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
+  await page.waitForTimeout(400);
+  await page.getByText("Do'konlar", { exact: true }).first().click();
+  await page.waitForTimeout(600);
+  await page.goBack();
+  await page.waitForTimeout(600);
+  check('orqaga tugmasi ilova ichida qoladi',
+    await page.evaluate(() => !!document.querySelector('#dc-root')?.firstChild));
+
+  // 10. Manbada qotib qolgan sana yo'q (reja kartasi va versiya ilgari
+  //     har doim 31.07.2026 ni ko'rsatardi)
+  const template = src.slice(0, src.indexOf('<script type="text/x-dc"'));
+  const frozen = template.match(/\d{2}\.\d{2}\.20\d{2}/g) || [];
+  check('shablonda qotib qolgan sana yo\'q', frozen.length === 0, frozen.slice(0, 3).join(', '));
+
+  // 11. Do'kon logotiplari uchun bitta manba qoldi
+  const logoHosts = ['unavatar.io', 'icons.duckduckgo.com'].filter(h => src.includes(h));
+  check('ortiqcha logotip xizmatlari olib tashlandi', logoHosts.length === 0, logoHosts.join(', '));
+
+  // 12. Xato va yo'qolgan fayllar
   check('konsolda xato yo\'q', errors.length === 0, errors.slice(0, 2).join(' / '));
   check('404 yo\'q', missing.length === 0, missing.slice(0, 2).join(' / '));
 } finally {

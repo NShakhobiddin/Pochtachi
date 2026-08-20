@@ -28,6 +28,7 @@ fonts/flags.woff2              23 ta bayroq emojisi (Noto subseti, 44 KB)
 icons/                         3D bo'lim ikonkalari, tab-bar ikonkalari, PWA ikonkalari
 logos/                         kuryer logotiplari (128 px WebP)
 logos/src/                     logotiplarning asl PNG nusxalari (saytga chiqmaydi)
+stores/                        do'kon logotiplari (npm run store-logos bilan yuklanadi)
 guides/index.html              GENERATSIYA: qo'llanmalarning indekslanadigan ro'yxati
 guides/inline/*.html           7 ta platforma qo'llanmasi (mustaqil sahifa ham)
 guides/guide-base.css          qo'llanmalarning umumiy uslublari
@@ -46,6 +47,7 @@ npm run check            # generatsiya fayllari mos va o'lcham byudjeti joyidami
 npm test                 # smoke test (ilova, bo'limlar, kalkulyator, qo'llanma)
 npm run links            # tashqi havolalarni tekshirish (haftalik CI ham qiladi)
 npm run logos            # logos/src/*.png -> logos/*.webp qayta yasash
+npm run store-logos      # do'kon logotiplarini bir marta yuklab, stores/ ga saqlash
 npm run cover            # icons/og-cover.png ni qayta yasash
 npm run serve            # lokal server: http://localhost:8000
 ```
@@ -63,6 +65,19 @@ python3 tools/subset_flags.py <noto-color-emoji-flags.woff2>
 - **Do'kon va kuryerlar** — hozircha `Xarid Yordamchisi v2.dc.html` ichidagi `STORES` va `COURIERS` massivlarida.
 - **Valyuta kursi** — Markaziy bankdan (cbu.uz) avtomatik olinadi, 6 soatda bir marta; olinmasa oxirgi saqlangan qiymat "oflayn zaxira" deb belgilanadi.
 - **Xato haqida xabar** — ilovadagi tugma `REPORT_URL` manziliga olib boradi (hozir GitHub Issues; Telegram havolasiga almashtirish mumkin).
+
+## Do'kon logotiplari
+
+43 ta do'kon logotipi favicon xizmatidan olinadi. Ular service worker'ning alohida keshida saqlanadi — ya'ni har ochilishda emas, qurilmada bir marta yuklanadi va keyin oflayn ham ko'rinadi.
+
+Tashqi so'rovni butunlay yo'q qilish uchun logotiplarni loyihaga saqlang:
+
+```bash
+npm run store-logos      # stores/*.webp va stores/index.json yasaladi
+npm run build            # service worker ro'yxati yangilanadi
+```
+
+Buni GitHub'da ham qilish mumkin: **Actions → "Do'kon logotiplarini yuklash" → Run workflow**. Shundan keyin ilova `stores/index.json` ro'yxatiga qarab rasmni faqat o'z domenidan oladi. Logotipi topilmagan do'kon uchun rangli monogramma ko'rinadi.
 
 ## Tashqi bog'liqliklar
 
