@@ -758,8 +758,54 @@
     </div>
   </sc-if>
 
-  <sc-if value="{{ sCouriers }}" hint-placeholder-val="{{ false }}">
+  <sc-if value="{{ sCouriersArea }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:16px">
+
+      <!-- Papka ichida: qaysi yo'nalish va nechta kuryer bor -->
+      <sc-if value="{{ sInCourierFolder }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:13px 15px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+          <div style="width:44px;height:44px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#F1F1F8;font-size:22px;line-height:1">{{ courierFolderFlag }}</div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
+            <span style="font-size:16px;font-weight:800;color:#151329;letter-spacing:-.2px">{{ courierFolderName }}</span>
+            <span style="font-size:13px;color:#8E8DA8;font-weight:600">{{ courierFolderSub }}</span>
+          </div>
+          <span style="flex:none;font-size:11px;font-weight:800;color:#6C6C88;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ courierListCount }} ta</span>
+        </div>
+      </sc-if>
+
+      <!-- Yo'nalish papkalari -->
+      <sc-if value="{{ sCourierFolders }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="font-size:13px;font-weight:700;color:#6C6C88">Yo'nalishni tanlang</div>
+
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+            <sc-for list="{{ courierFolders }}" as="f" hint-placeholder-count="8">
+              <button sc-camel-on-click="{{ f.open }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:9px;background:#FFFFFF;border:none;border-radius:20px;padding:16px 15px;cursor:pointer;text-align:left;width:100%;min-width:0;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%">
+                  <div style="width:44px;height:44px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#F4F3FA;font-size:22px;line-height:1">{{ f.flag }}</div>
+                  <span style="flex:none;font-size:11px;font-weight:800;color:#6C6C88;background:#F1F1F8;padding:5px 9px;border-radius:999px;font-variant-numeric:tabular-nums">{{ f.count }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:3px;width:100%;min-width:0">
+                  <span style="font-size:15.5px;font-weight:800;color:#151329;letter-spacing:-.2px;overflow-wrap:anywhere">{{ f.title }}</span>
+                  <span style="font-size:12.5px;color:#8E8DA8;font-weight:600;line-height:1.4;overflow-wrap:anywhere">{{ f.sub }}</span>
+                </div>
+              </button>
+            </sc-for>
+          </div>
+
+          <button sc-camel-on-click="{{ openAllCouriers }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:14px 15px;cursor:pointer;text-align:left;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+            <div style="width:40px;height:40px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#EBE8FE">
+              <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </div>
+            <span style="flex:1;font-size:15.5px;font-weight:800;color:#151329">Barcha kuryerlar</span>
+            <span style="flex:none;font-size:11px;font-weight:800;color:#6C6C88;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ allCouriersCount }}</span>
+            <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+          </button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sCourierList }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:16px">
       <div style="display:flex;gap:9px;overflow-x:auto;margin:0 -18px;padding:2px 18px 4px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 30px),transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 30px),transparent 100%)">
         <sc-for list="{{ courierChips }}" as="c" hint-placeholder-count="5">
           <button sc-camel-on-click="{{ c.toggle }}" style="flex:none;height:38px;padding:0 16px;border-radius:999px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;background:{{ c.bg }};color:{{ c.fg }};border:1.5px solid {{ c.bd }};box-shadow:{{ c.sh }}">{{ c.label }}</button>
@@ -830,6 +876,8 @@
 
       <sc-if value="{{ canCompare }}" hint-placeholder-val="{{ false }}">
         <button sc-camel-on-click="{{ goCompare }}" style="position:sticky;bottom:6px;height:52px;border-radius:20px;background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;border:none;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer;box-shadow:0 14px 32px -16px rgba(45,30,150,.52);font-variant-numeric:tabular-nums">{{ selCount }} tasini taqqoslash</button>
+      </sc-if>
+      </div>
       </sc-if>
     </div>
   </sc-if>
@@ -2409,6 +2457,21 @@ const STORE_COUNTRIES = [
   ['Global',           'Global',           'Ko\'p davlatga yuboradi',      '🌍']
 ];
 
+/* Kuryerlar bo'limi ham papkalarga bo'lingan — yo'nalish (qaysi davlatdan
+   olib keladi) bo'yicha. Bitta kuryer bir nechta yo'nalishda ishlashi mumkin,
+   shuning uchun u bir nechta papkada ko'rinadi. Soni COURIERS dan hisoblanadi. */
+const COURIER_ORIGINS = [
+  ['Xitoy',      'Xitoy',      'Kargo va konsolidatsiya',      '🇨🇳'],
+  ['AQSH',       'AQSh',       'AQSh omborlari orqali',        '🇺🇸'],
+  ['Turkiya',    'Turkiya',    'Yaqin ombor, tez yetkazish',   '🇹🇷'],
+  ['Yevropa',    'Yevropa',    'Yevropa omborlari',            '🇪🇺'],
+  ['Koreya',     'Koreya',     'Koreya yo\'nalishi',           '🇰🇷'],
+  ['Rossiya',    'Rossiya',    'Rossiya orqali',               '🇷🇺'],
+  ['BAA',        'BAA',        'Dubay omborlari',              '🇦🇪'],
+  ['MDH',        'MDH',        'Qo\'shni davlatlar',           '🇰🇿'],
+  ['Malayziya',  'Malayziya',  'Janubi-sharqiy Osiyo',         '🇲🇾']
+];
+
 const LOGO_DOMAIN = {
   'poizon.com':'dewu.com', 'pinduoduo.com':'yangkeduo.com', 'noon.com':'noon.com',
   'hm.com':'hm.com', 'jdsports.com':'jdsports.co.uk', 'mytheresa.com':'mytheresa.com'
@@ -2738,6 +2801,8 @@ class Component extends DCLogic {
        ('cat:elektronika' kabi, ochilmagan bo'lsa null). */
     storeFolderBy: SAVED.storeFolderBy === 'country' ? 'country' : 'cat',
     storeFolder: null,
+    /* Kuryerlar papkasi: 'from:Xitoy' kabi, ochilmagan bo'lsa null. */
+    courierFolder: null,
     homeQuery: '',
     storeCountries: SAVED.storeCountries || [], storeCats: SAVED.storeCats || [],
     storeDirect: !!SAVED.storeDirect, storeGroup: SAVED.storeGroup || 'cat',
@@ -2825,8 +2890,12 @@ class Component extends DCLogic {
     return list;
   }
   couriersFiltered() {
+    /* Papka ichida turgan bo'lsak, ro'yxat o'sha yo'nalish bilan cheklanadi. */
+    const f = this.cur() === 'courierfolder' ? (this.state.courierFolder || '') : '';
+    const fVal = f.indexOf('from:') === 0 ? f.slice(5) : '';
     let list = COURIERS.filter(c => {
-      if (this.state.courierCountries.length && !c.from.some(f => this.state.courierCountries.includes(f))) return false;
+      if (fVal && !(c.from || []).includes(fVal)) return false;
+      if (this.state.courierCountries.length && !c.from.some(f2 => this.state.courierCountries.includes(f2))) return false;
       if (this.state.courierMode && !c.mode.includes(this.state.courierMode)) return false;
       return true;
     });
@@ -3149,8 +3218,17 @@ class Component extends DCLogic {
       const key = f.slice(f.indexOf(':') + 1);
       return (f.indexOf('country:') === 0 ? STORE_COUNTRIES : STORE_CATS).find(d => d[0] === key) || null;
     })();
-    const titles = { plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', wizard:'5 qadamli yo\'l', settings:'Sozlamalar', compare:'Taqqoslash' };
-    const showSortBtn = cur === 'couriers';
+    /* Ochilgan kuryer papkasining ta'rifi ('from:Xitoy' -> COURIER_ORIGINS). */
+    const courierFolderDef = (() => {
+      const f = st.courierFolder || '';
+      return f.indexOf('from:') === 0
+        ? (COURIER_ORIGINS.find(d => d[0] === f.slice(5)) || null) : null;
+    })();
+    const titles = { plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? courierFolderDef[1] + ' yo\'nalishi' : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', wizard:'5 qadamli yo\'l', settings:'Sozlamalar', compare:'Taqqoslash' };
+    /* Saralash tugmasi faqat ro'yxat ko'rinib turganda kerak: papkalar
+       ekranida saralanadigan narsa yo'q. */
+    const showSortBtn = cur === 'courierfolder' ||
+      (cur === 'couriers' && (st.courierCountries.length > 0 || !!st.courierMode));
 
     const list = this.couriersFiltered();
     const cheapest = list.length ? list.reduce((a, b) => a.price <= b.price ? a : b).id : null;
@@ -3290,6 +3368,7 @@ class Component extends DCLogic {
       sStoresArea: cur === 'stores' || cur === 'storefolder',
       storeSearchHint: cur === 'storefolder' ? 'Shu bo\'lim ichida qidirish' : 'Do\'kon nomi yoki kategoriya',
       sCouriers: cur === 'couriers', sCourier: cur === 'courier', sCompare: cur === 'compare',
+      sCouriersArea: cur === 'couriers' || cur === 'courierfolder',
       sCustoms: cur === 'customs', sCsec: cur === 'csec', sGuides: cur === 'guides', sGuide: cur === 'guide',
       sShip: cur === 'shipments', sWizard: cur === 'wizard', sSettings: cur === 'settings',
       sPlan: cur === 'plan' && !!pl,
@@ -3531,8 +3610,38 @@ class Component extends DCLogic {
         this.toast(opened ? 'Xabar berish sahifasi ochildi' : 'Xabar berish: ' + REPORT_URL);
       },
 
+      /* --- Kuryer papkalari (yo'nalish bo'yicha) --- */
+      ...(() => {
+        const filtersOn = st.courierCountries.length > 0 || !!st.courierMode;
+        const openFolder = key => {
+          this.setState({ courierFolder: 'from:' + key });
+          this.push('courierfolder');
+        };
+        const folders = COURIER_ORIGINS.map(([key, title, sub, flag]) => {
+          const n = COURIERS.filter(c => (c.from || []).includes(key)).length;
+          return { key, title, sub, flag, count: n + ' ta', n, open: () => openFolder(key) };
+        }).filter(f => f.n > 0);
+        return {
+          courierFolders: folders,
+          openAllCouriers: () => { this.setState({ courierFolder: 'all:' }); this.push('courierfolder'); },
+          allCouriersCount: COURIERS.length + ' ta',
+          courierFolderFlag: courierFolderDef ? courierFolderDef[3] : '🌍',
+          courierFolderName: courierFolderDef ? courierFolderDef[1] : 'Barcha kuryerlar',
+          courierFolderSub: courierFolderDef ? courierFolderDef[2] : 'Ro\'yxatdagi hamma kuryer',
+          sCourierFolders: cur === 'couriers' && !filtersOn,
+          sCourierList: cur === 'courierfolder' || (cur === 'couriers' && filtersOn),
+          sInCourierFolder: cur === 'courierfolder',
+          /* Papka sarlavhasida shu papkadagi soni turadi (courierCount esa
+             bosh sahifadagi umumiy son). */
+          courierListCount: this.couriersFiltered().length
+        };
+      })(),
+
+      /* Papka ichida yo'nalish chiplari ko'rsatilmaydi: papka o'zi yo'nalishni
+         belgilab bo'lgan, ikkinchi marta so'rash chalkashtiradi. */
       courierChips: [
-        ...[['Xitoy','🇨🇳'],['Turkiya','🇹🇷'],['AQSH','🇺🇸'],['Yevropa','🇪🇺'],['Rossiya','🇷🇺'],['Koreya','🇰🇷'],['MDH','🇰🇿'],['BAA','🇦🇪']].map(([k, fl]) => ({ ...this.chip(fl + ' ' + k, st.courierCountries.includes(k), () => this.toggleIn('courierCountries', k)) })),
+        ...(cur === 'courierfolder' && String(st.courierFolder || '').indexOf('from:') === 0 ? [] :
+          COURIER_ORIGINS.map(([k, , , fl]) => ({ ...this.chip(fl + ' ' + k, st.courierCountries.includes(k), () => this.toggleIn('courierCountries', k)) }))),
         this.chip('Avia', st.courierMode !== null && String(st.courierMode).includes('avia'), () => this.setState(x => ({ courierMode: x.courierMode === 'avia' ? null : 'avia' }))),
         this.chip('Avto', st.courierMode === 'avto', () => this.setState(x => ({ courierMode: x.courierMode === 'avto' ? null : 'avto' })))
       ],

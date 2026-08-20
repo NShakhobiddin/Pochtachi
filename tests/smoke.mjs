@@ -232,6 +232,44 @@ try {
   await page.locator('input[type=search]').first().fill('');
   await page.waitForTimeout(400);
 
+  // 10c. Kuryerlar bo'limi ham papka ko'rinishida
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
+  await page.waitForTimeout(400);
+  await page.getByText('Kuryerlar', { exact: false }).first().click();
+  await page.waitForTimeout(600);
+  const cFolders = await page.evaluate(() => ({
+    chooser: /Yo'nalishni tanlang/.test(document.body.innerText),
+    cards: [...document.querySelectorAll('button')].filter(b => /\d+ ta/.test(b.innerText)).length,
+    list: document.querySelectorAll('div[style*="content-visibility"]').length
+  }));
+  check('Kuryerlar papka ko\'rinishida ochiladi',
+    cFolders.chooser && cFolders.cards >= 8 && cFolders.list === 0,
+    `papkalar ${cFolders.cards}, ro'yxat ${cFolders.list}`);
+
+  await page.getByText('Turkiya', { exact: false }).first().click();
+  await page.waitForTimeout(600);
+  const cInside = await page.evaluate(() => ({
+    list: document.querySelectorAll('div[style*="content-visibility"]').length,
+    all: document.querySelectorAll('div[style*="content-visibility"]').length,
+    noCountryChips: !/🇨🇳 Xitoy/.test(document.body.innerText),
+    title: /Turkiya yo'nalishi/.test(document.body.innerText)
+  }));
+  check('kuryer papkasi ichida faqat o\'sha yo\'nalish',
+    cInside.list > 0 && cInside.list < 20 && cInside.noCountryChips && cInside.title,
+    `${cInside.list} ta`);
+
+  await page.goBack();
+  await page.waitForTimeout(500);
+  check('kuryer papkasidan orqaga qaytiladi',
+    await page.evaluate(() => /Yo'nalishni tanlang/.test(document.body.innerText)));
+
+  await page.getByText('Barcha kuryerlar', { exact: false }).first().click();
+  await page.waitForTimeout(600);
+  check('barcha kuryerlar papkasi to\'liq ro\'yxat beradi',
+    await page.evaluate(() => document.querySelectorAll('div[style*="content-visibility"]').length) === 20);
+  await page.goBack();
+  await page.waitForTimeout(400);
+
   // 11. Do'kon logotiplari uchun bitta manba qoldi
   const logoHosts = ['unavatar.io', 'icons.duckduckgo.com'].filter(h => src.includes(h));
   check('ortiqcha logotip xizmatlari olib tashlandi', logoHosts.length === 0, logoHosts.join(', '));
