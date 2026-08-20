@@ -1512,7 +1512,7 @@
           <div style="padding:20px;border-bottom:2px dashed #DEDAFD;display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
             <div style="display:flex;flex-direction:column;gap:5px">
               <span style="font-family:'Bricolage Grotesque','Onest','Noto Color Emoji',sans-serif;font-size:22px;font-weight:800;color:#151329;letter-spacing:-.6px">Sizning rejangiz</span>
-              <span style="font-size:13px;font-weight:700;color:#6C6C88;font-variant-numeric:tabular-nums;letter-spacing:.3px">XY-2026-0731 · 31.07.2026</span>
+              <span style="font-size:13px;font-weight:700;color:#6C6C88;font-variant-numeric:tabular-nums;letter-spacing:.3px">{{ planNum }} · {{ planDate }}</span>
             </div>
             <div style="width:54px;height:54px;border:2px solid #3B2CC9;border-radius:50%;display:flex;align-items:center;justify-content:center;transform:rotate(-10deg);flex:none;background:#EBE8FE">
               <span style="font-size:11px;font-weight:800;color:#4132CC;text-align:center;line-height:1.15;letter-spacing:.3px">REJA<br>TAYYOR</span>
@@ -1664,7 +1664,7 @@
       <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:9px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
         <div style="font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px">Ilova haqida</div>
         <div style="font-size:13px;color:#63637E;line-height:1.6;text-wrap:pretty">Xarid Yordamchisi — mustaqil ma'lumot xizmati. Bu rasmiy davlat portali emas va bojxona organlari bilan bog'liq emas. Barcha hisob-kitoblar taxminiy.</div>
-        <div style="font-size:11px;font-weight:700;color:#B4B4C8;padding-top:4px;font-variant-numeric:tabular-nums">v0.9.2 · 31.07.2026</div>
+        <div style="font-size:11px;font-weight:700;color:#B4B4C8;padding-top:4px;font-variant-numeric:tabular-nums">{{ appVersion }}</div>
       </div>
     </div>
   </sc-if>
@@ -1790,6 +1790,20 @@ const num = v => {
   return isFinite(n) ? n : 0;
 };
 const fmtDate = iso => { const p = String(iso).split('-'); return p.length === 3 ? p[2] + '.' + p[1] + '.' + p[0] : String(iso); };
+/* Reja raqami va sanasi. Bitta joyda hisoblanadi, shuning uchun ekranda
+   ko'ringan raqam saqlanganidan farq qilmaydi (ilgari ekranda qattiq yozilgan
+   "XY-2026-0731 · 31.07.2026" turardi — sana hech qachon o'zgarmasdi). */
+const planStamp = (plans, d = new Date()) => {
+  const p2 = n => (n < 10 ? '0' : '') + n;
+  const date = p2(d.getDate()) + '.' + p2(d.getMonth() + 1) + '.' + d.getFullYear();
+  const sameDay = (plans || []).filter(x => x.date === date).length + 1;
+  return {
+    date,
+    num: 'XY-' + d.getFullYear() + '-' + p2(d.getMonth() + 1) + p2(d.getDate()) +
+      (sameDay > 1 ? '-' + sameDay : '')
+  };
+};
+
 const monthKey = (d = new Date()) => { const p2 = n => (n < 10 ? '0' : '') + n; return d.getFullYear() + '-' + p2(d.getMonth() + 1); };
 const todayIso = () => { const d = new Date(); const p2 = n => (n < 10 ? '0' : '') + n; return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); };
 
@@ -2250,6 +2264,8 @@ const normsAt = (d = new Date()) => {
 let BHM = normsAt().bhm, FREE_USD = normsAt().freeUsd;
 const NORMS_META = { checked: '', live: false };
 const RATE_META = { date:'', diff:0, live:false, loading:false, at:0 };
+/* Ilova versiyasi — sozlamalar ekranida ko'rsatiladi. */
+const APP_VERSION = 'v1.0.0 · 19.08.2026';
 const CBU_URL = 'https://cbu.uz/uz/arkhiv-kursov-valyut/json/USD/';
 /* Eskirgan yoki noto'g'ri ma'lumot haqida xabar beriladigan manzil. */
 const REPORT_URL = 'https://github.com/NShakhobiddin/Pochtachi/issues/new';
@@ -2520,7 +2536,7 @@ class Component extends DCLogic {
     courierCountries: SAVED.courierCountries || [], courierMode: SAVED.courierMode || null,
     sort: SAVED.sort || 'price',
     compareMode: false, selected: [],
-    storeId: 'trendyol', courierId: 'fastcargo',
+    storeId: 'trendyol', courierId: COURIERS[0].id,
     customsSec: 0, calcPrice: '320', calcWeight: '2.5', calcShip: '9', banQuery: '', banFilter: 0, banOpen: null,
     guideId: 'taobao', guideStep: 0, fullId: 'taobao',
     shipId: null, trackNo: SAVED.trackNo || '',
@@ -2538,10 +2554,9 @@ class Component extends DCLogic {
     this.setState(st => ({ stack: [...st.stack, s], toast: '' }));
   }
   go(s) {
-    // Ichki ekranlardan bo'limga qaytilganda tarix ham shunga moslanadi,
-    // aks holda "orqaga" bir-ikki marta hech narsa qilmay bosilardi.
-    const depth = this.state.stack.length - 1;
-    if (this._histOn && depth > 0) { try { history.go(-depth); } catch (e) {} }
+    // Bo'lim almashtirish ham tarixga yoziladi: "orqaga" bosilganda ilova
+    // avval bosh sahifaga qaytadi, keyingina chiqadi.
+    if (this._histOn && this.cur() !== s) { try { history.pushState({ xy: Date.now() }, ''); } catch (e) {} }
     this.setState(TABS.indexOf(s) >= 0 ? { stack: [s], toast: '', lastTab: s } : { stack: [s], toast: '' });
   }
   back() {
@@ -2628,7 +2643,15 @@ class Component extends DCLogic {
     this.loadStoreLogos();
     this._histOn = typeof history !== 'undefined' && typeof history.pushState === 'function';
     if (this._histOn) {
-      this._onPop = () => this.popScreen();
+      /* "Orqaga" bosilganda: avval ichki ekranlar yopiladi, keyin bosh
+         sahifaga qaytiladi va faqat shundan keyin ilovadan chiqiladi —
+         telefon ilovalaridagi odatiy tartib. */
+      this._onPop = () => {
+        if (this.state.stack.length > 1) { this.popScreen(); return; }
+        if (this.state.onboarded && this.cur() !== 'home') {
+          this.setState({ stack: ['home'], lastTab: 'home', toast: '' });
+        }
+      };
       window.addEventListener('popstate', this._onPop);
     }
     try {
@@ -2735,12 +2758,12 @@ class Component extends DCLogic {
     const sObj = STORES.find(x => x.name === st.wizStore) || null;
     const kObj = COURIERS.find(x => x.name === (st.wizCourier || wz.courierName)) || null;
     const d = new Date();
-    const p2 = n => (n < 10 ? '0' : '') + n;
+    const stamp = planStamp(st.plans, d);
     const id = 'p' + d.getTime();
     const plan = {
       id, step: 0,
-      date: p2(d.getDate()) + '.' + p2(d.getMonth() + 1) + '.' + d.getFullYear(),
-      num: 'XY-' + d.getFullYear() + '-' + p2(d.getMonth() + 1) + p2(d.getDate()) + '-' + String(d.getTime()).slice(-3),
+      date: stamp.date,
+      num: stamp.num,
       cat: (st.wizCat || 'Xarid').replace(/^[^\p{L}]+/u, ''),
       country: (st.wizCountry || '').replace(/^[^\p{L}]+/u, ''),
       storeId: sObj ? sObj.id : null, storeName: st.wizStore || '—',
@@ -3246,6 +3269,8 @@ class Component extends DCLogic {
       ],
       dutyPctLabel: Math.round(normsAt().dutyPct * 100) + '%', minPerKgLabel: String(normsAt().minPerKg),
       freeUsdLabel: String(normsAt().freeUsd),
+      appVersion: APP_VERSION,
+      ...(() => { const ps = planStamp(st.plans); return { planNum: ps.num, planDate: ps.date }; })(),
       normsSrc: normsAt().src,
       normsChecked: NORMS_META.checked ? fmtDate(NORMS_META.checked) : 'ma\'lumot yo\'q',
       banQuery: st.banQuery,
