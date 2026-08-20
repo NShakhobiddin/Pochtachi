@@ -92,9 +92,16 @@ page.on('pageerror', e => errors.push(e.message));
 const BENIGN = /Expected moveto path command|font|CORS|net::ERR/i;
 page.on('console', m => { if (m.type() === 'error' && !BENIGN.test(m.text())) errors.push(m.text()); });
 page.on('response', r => { if (r.status() >= 400 && r.url().startsWith(base)) missing.push(r.status() + ' ' + r.url()); });
-// Oddiy brauzerda Telegram SDK'si umuman so'ralmasligi kerak.
+/* Oddiy brauzerda ilova tashqariga faqat valyuta kursi uchun chiqadi.
+   Shrift, SDK va boshqa hamma narsa o'z domenimizda — birinchi bo'yoq
+   uchinchi tomon serveriga bog'liq bo'lmasligi kerak. */
 const tgRequests = [];
-page.on('request', r => { if (r.url().includes('telegram.org')) tgRequests.push(r.url()); });
+const thirdParty = [];
+page.on('request', r => {
+  const u = r.url();
+  if (u.includes('telegram.org')) tgRequests.push(u);
+  if (!u.startsWith(base) && !u.startsWith('data:') && !u.includes('cbu.uz')) thirdParty.push(new URL(u).host);
+});
 
 try {
   // 1. Ilova ko'tariladi
@@ -232,6 +239,19 @@ try {
      Telegram manzili bilan ochilganda esa yuklanadi. */
   check('oddiy brauzerda telegram.org ga so\'rov yo\'q',
     !tgRequests.length, tgRequests.join(', '));
+  /* Do'kon logotiplari loyihaga saqlanmagan bo'lsa, ular favicon xizmatidan
+     olinadi — bu yagona ruxsat etilgan istisno. `npm run store-logos` dan
+     keyin u ham yo'qoladi va tekshiruv qat'iyroq bo'ladi. */
+  const logosVendored = (() => {
+    try { return JSON.parse(readFileSync(join(ROOT, 'stores', 'index.json'), 'utf8')).length > 0; }
+    catch { return false; }
+  })();
+  const allowed = logosVendored ? [] : ['www.google.com'];
+  const unexpected = [...new Set(thirdParty)].filter(h => !allowed.includes(h));
+  check(logosVendored
+      ? 'uchinchi tomon serveri yo\'q'
+      : 'uchinchi tomon serveri yo\'q (do\'kon logotiplaridan tashqari)',
+    unexpected.length === 0, unexpected.join(', ') || (logosVendored ? '' : 'logotiplar: npm run store-logos'));
 
   const tgUrlPage = await context.newPage();
   const tgUrlHits = [];

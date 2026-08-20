@@ -109,6 +109,41 @@ Sayt ishga tushganda tashqariga faqat bitta so'rov yuboradi — valyuta kursi uc
 
 **Shriftlar.** `Bricolage Grotesque` va `Onest` — o'zgaruvchan (variable) shriftlar, `fonts/` ichida. Brauzer sahifadagi belgilarga qarab faqat keraklisini oladi: lotin (72 KB), kirillcha matn ko'rinsa yana 16 KB, bayroq ko'rinsa `flags.woff2` (44 KB). Ilgari ular `fonts.googleapis.com` -> `fonts.gstatic.com` zanjiri orqali kelardi va 238 KB chiqardi. Yangilash: `npm run fonts`.
 
+## Tezlik
+
+Sayt birinchi bo'yog'ini uchinchi tomon serverlariga bog'lamaydi: shrift ham,
+Telegram SDK'si ham o'z domenimizdan yoki umuman yuklanmaydi. Shuning uchun
+tashqi xizmat sekinlashsa ham ilova bir xil tezlikda ochiladi.
+
+Bir xil sharoitda o'lchov (mobil ekran, 4x sekin protsessor, tashqi hostlar
+turli kechikish bilan):
+
+| Tashqi host kechikishi | Ilgari (FCP) | Hozir (FCP) |
+|---|---|---|
+| 0 ms (ideal) | 548 ms | 596 ms |
+| 150 ms | 708 ms | 560 ms |
+| 300 ms | 888 ms | 556 ms |
+| ochilmaydi | 10 892 ms | 592 ms |
+
+Birinchi yuklash trafigi: **1345 KB -> 770 KB**, so'rovlar 34 -> 27,
+tashqi hostlar 3 -> 1 (faqat valyuta kursi uchun `cbu.uz`).
+
+Nima qilindi:
+
+- Telegram SDK'si `<head>` dagi bloklovchi skript emas — faqat Telegram ichida
+  va asinxron yuklanadi.
+- Shriftlar `fonts/` da, service worker keshida.
+- Qo'llanmalar ilova ochilishida emas, "Qo'llanmalar" bo'limi ochilganda
+  oldindan yuklanadi (birinchi yuklashdan ~490 KB olib tashlandi).
+- Qo'llanmalarning bir xil render kodi bitta `guide-engine.js` da.
+- Ikonkalar ekrandagi o'lchamiga moslangan.
+- Uzun ro'yxatlarda `content-visibility`; renderVals() ichidagi og'ir
+  ro'yxatlar faqat o'z ekrani ochiqligida quriladi.
+
+Yagona qolgan tashqi bog'liqlik — do'kon logotiplari. `npm run store-logos`
+(yoki GitHub Action) ularni loyihaga saqlaydi va u ham yo'qoladi; smoke test
+shundan keyin qat'iyroq tekshiradi.
+
 ## O'lcham byudjeti
 
 `npm run check` quyidagilarni tekshiradi: logotiplar ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 200 KB, qo'llanmalar ≤ 470 KB, `index.html` ≤ 420 KB. Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.
