@@ -26,6 +26,7 @@ data/norms.json                bojxona me'yorlari (kodga tegmasdan yangilanadi)
 vendor/                        React va ReactDOM (unpkg'dagi asl fayllar)
 fonts/                         matn shriftlari (o'z domenimizda) va bayroq subseti
 icons/                         3D bo'lim ikonkalari, tab-bar ikonkalari, PWA ikonkalari
+icons/src/                     ikonkalarning asl (katta) nusxalari (saytga chiqmaydi)
 logos/                         kuryer logotiplari (128 px WebP)
 logos/src/                     logotiplarning asl PNG nusxalari (saytga chiqmaydi)
 stores/                        do'kon logotiplari (npm run store-logos bilan yuklanadi)
@@ -48,6 +49,7 @@ npm run check            # generatsiya fayllari mos va o'lcham byudjeti joyidami
 npm test                 # smoke test + 7 ta qo'llanmaning tekshiruvi
 npm run links            # tashqi havolalarni tekshirish (haftalik CI ham qiladi)
 npm run logos            # logos/src/*.png -> logos/*.webp qayta yasash
+npm run icons            # icons/src/*.webp -> icons/*.webp (ekran o'lchamiga moslash)
 npm run store-logos      # do'kon logotiplarini bir marta yuklab, stores/ ga saqlash
 npm run cover            # icons/og-cover.png ni qayta yasash
 npm run fonts            # matn shriftlarini Google Fonts'dan qayta yuklab olish
