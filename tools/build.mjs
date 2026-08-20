@@ -31,10 +31,12 @@ function build(src) {
 // Offline uchun keshlanadigan qobiq ro'yxati va uning versiyasi manbadan
 // hisoblanadi, shuning uchun har o'zgarishda kesh o'zi yangilanadi.
 function precacheList() {
-  const files = ['./', 'support.js', 'manifest.webmanifest',
+  const files = ['./', 'support.js', 'manifest.webmanifest', 'data/norms.json',
     'vendor/react.production.min.js', 'vendor/react-dom.production.min.js',
     'fonts/flags.woff2', 'guides/guide-base.css', 'guides/guide-common.css', 'guides/guide.js'];
-  for (const dir of ['icons', 'logos']) {
+  // Do'kon logotiplari saqlangan bo'lsa, ular ham qobiq bilan birga keshlanadi.
+  if (existsSync(join(ROOT, 'stores', 'index.json'))) files.push('stores/index.json');
+  for (const dir of ['icons', 'logos', 'stores']) {
     for (const f of readdirSync(join(ROOT, dir)).sort()) {
       if (/\.(webp|png)$/.test(f) && f !== 'og-cover.png') files.push(`${dir}/${f}`);
     }

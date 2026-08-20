@@ -1,0 +1,43 @@
+name: Do'kon logotiplarini yuklash
+
+# Logotiplarni bir marta yuklab, loyihaga saqlaydi. Shundan keyin ilova ularni
+# tashqi favicon xizmatidan emas, o'z domenidan oladi. Qo'lda ishga tushiriladi.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  logos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+
+      - name: Logotiplarni yuklash
+        run: node tools/store-logos.mjs
+
+      - name: Service worker ro'yxatini yangilash
+        run: node tools/build.mjs
+
+      - name: O'zgarishlarni saqlash
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "O'zgarish yo'q."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add stores index.html sw.js
+          git commit -m "Do'kon logotiplarini loyihaga saqlash"
+          git push

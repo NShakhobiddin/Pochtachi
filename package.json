@@ -11,7 +11,8 @@
     "links": "node tools/check-links.mjs",
     "logos": "node tools/optimize-logos.mjs",
     "cover": "node tools/og-cover.mjs",
-    "serve": "python3 -m http.server 8000"
+    "serve": "python3 -m http.server 8000",
+    "store-logos": "node tools/store-logos.mjs"
   },
   "devDependencies": {
     "playwright": "^1.56.1"
