@@ -1320,7 +1320,13 @@
         <div style="font-family:'Bricolage Grotesque','Onest','Noto Color Emoji',sans-serif;width:26px;height:26px;border-radius:9px;flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;background:{{ fullColor }}">{{ fullMono }}</div>
         <span style="flex:1;font-size:13px;font-weight:700;color:#6C6C88">{{ fullSections }} bo'lim</span>
       </div>
-      <iframe src="{{ fullSrc }}" title="{{ fullTitle }}" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox" style="flex:1;width:100%;border:none;background:#F8FAFC"></iframe>
+      <div style="flex:1;position:relative;min-height:0">
+        <!-- Qo'llanma yuklanguncha ortida shu matn turadi; yuklangach ustini yopadi.
+             (iframe loading="lazy" bo'lishi shart: aks holda brauzer shablondagi
+             bog'lanmagan {{ }} manzilini yuklashga urinadi.) -->
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9A9AB4;font-size:14px;font-weight:600">Qo'llanma yuklanmoqda…</div>
+        <iframe src="{{ fullSrc }}" title="{{ fullTitle }}" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox" style="position:absolute;inset:0;width:100%;height:100%;border:none;background:#F8FAFC"></iframe>
+      </div>
     </div>
   </sc-if>
 
@@ -1920,6 +1926,7 @@ const toCyr = s => {
 };
 
 const RU = {
+  'Qo\'llanma yuklanmoqda…':'Инструкция загружается…',
   'Ilovani telefonga o\'rnatish':'Установить приложение',
   'Interfeys tili':'Язык интерфейса',
   'Interfeys tili — keyinchalik sozlamalarda o\'zgartirishingiz mumkin.':'Язык интерфейса — позже можно изменить в настройках.',
@@ -2739,6 +2746,7 @@ class Component extends DCLogic {
       try { tg.BackButton.onClick(this._tgBack); } catch (e) {}
     }
     this.syncTelegram();
+    this.prefetchGuides();
     this._histOn = typeof history !== 'undefined' && typeof history.pushState === 'function';
     if (this._histOn) {
       /* "Orqaga" bosilganda: avval ichki ekranlar yopiladi, keyin bosh
@@ -2770,6 +2778,29 @@ class Component extends DCLogic {
      do'konlar ekrani ochilgandagina yuklanadi, ro'yxat esa ilova ochilishi
      bilan kelib ulguradi, shuning uchun saqlangan holatda tashqi xizmatga
      umuman so'rov ketmaydi. */
+  /* Qo'llanmalar alohida sahifa bo'lgani uchun birinchi ochilishda kutish
+     seziladi. Ilova bo'sh turganda ularni oldindan yuklab qo'yamiz: shundan
+     keyin qo'llanma keshdan darhol ochiladi va oflaynda ham o'qiladi. */
+  prefetchGuides() {
+    if (this._guidesPrefetched) return;
+    this._guidesPrefetched = true;
+    const files = FULL_GUIDES.map(g => g.file).filter(Boolean);
+    const run = () => {
+      let i = 0;
+      const next = () => {
+        if (i >= files.length) return;
+        const url = files[i++];
+        fetch(url, { credentials: 'same-origin' })
+          .then(r => r.text())
+          .catch(() => {})
+          .then(() => setTimeout(next, 120));
+      };
+      next();
+    };
+    if (typeof requestIdleCallback === 'function') requestIdleCallback(run, { timeout: 3000 });
+    else setTimeout(run, 1200);
+  }
+
   async loadStoreLogos() {
     try {
       const r = await fetch('stores/index.json', { cache: 'no-cache' });

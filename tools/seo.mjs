@@ -27,7 +27,10 @@ const GUIDES = [
   { id: 'ebay', title: 'eBay', flag: '🇺🇸', sections: 9, desc: "Auksion strategiyasi, eIS orqali to'g'ridan yetkazish" }
 ];
 
-const FONT_URL = 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Onest:wght@400;500;600;700;800&display=swap';
+/* Ilovadagi bilan AYNAN bir xil manzil: shunda qo'llanma ochilganda shriftlar
+   allaqachon keshda bo'ladi va matn "sakramaydi" (ilgari qo'llanma boshqa
+   variantni yuklab, kelgach hamma narsa siljib qolardi). */
+const FONT_URL = 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Onest:wght@400;500;600;700;800&display=swap';
 /* Shriftlar sahifani bloklamasin: ilgari bu manzil guide-common.css ichida
    @import bo'lib turardi va Google javob bermaguncha qo'llanma umuman
    ochilmasdi (sekin tarmoqda ham, oflayn ham). Endi media hiylasi bilan
@@ -61,6 +64,10 @@ function guideMeta(g) {
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta name="theme-color" content="#3B2CC9">`,
     ...FONT_LINKS,
+    /* Ilova ichida ochilganini birinchi chizishdan OLDIN belgilaymiz: aks holda
+       avval to'liq sarlavha chizilib, keyin ixchamlashadi va butun matn
+       sakrab tushadi (o'lchangan siljish 0,24 edi). */
+    `<script>try{if(window.top!==window.self)document.documentElement.className+=' in-app';}catch(e){document.documentElement.className+=' in-app';}</script>`,
     MARK_END
   ].join('\n');
 }

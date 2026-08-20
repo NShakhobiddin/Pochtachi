@@ -70,7 +70,9 @@
   document.addEventListener('touchend', function (e) {
     if (sw === 'skip' || !sw) return;
     var t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
-    if (Math.abs(dx) < 65 || Math.abs(dy) > 55) return;
+    /* Tik aylantirishda tasodifan bo'lim almashib ketmasligi uchun talab
+       qattiqroq: harakat aniq gorizontal bo'lishi kerak. */
+    if (Math.abs(dx) < 90 || Math.abs(dy) > 40 || Math.abs(dx) < Math.abs(dy) * 2) return;
     var back = dx > 0;
     if (sw === 'wiz') {
       var b = document.getElementById(back ? 'wprev' : 'wnext');

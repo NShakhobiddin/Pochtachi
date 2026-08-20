@@ -72,6 +72,15 @@ await new Promise(r => server.listen(PORT, r));
 const base = `http://localhost:${PORT}`;
 const browser = await chromium.launch();
 const context = await browser.newContext({ viewport: { width: 430, height: 880 } });
+// Har bir hujjatda tartib siljishini (CLS) o'lchab boramiz
+await context.addInitScript(() => {
+  window.__cls = 0;
+  try {
+    new PerformanceObserver(list => {
+      for (const e of list.getEntries()) if (!e.hadRecentInput) window.__cls += e.value;
+    }).observe({ type: 'layout-shift', buffered: true });
+  } catch (e) {}
+});
 const page = await context.newPage();
 
 const errors = [];
@@ -216,7 +225,38 @@ try {
   check('Telegram: xavfsiz sohalar hisobga olinadi', insets.top === '60px' && insets.bottom === '12px', JSON.stringify(insets));
   await tgPage.close();
 
-  // 14. Xato va yo'qolgan fayllar
+  // 14. Qo'llanma tez ochiladi va ichida siljish bo'lmaydi
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
+  await page.waitForTimeout(400);
+  await page.waitForTimeout(2500); // bo'sh vaqtdagi oldindan yuklash tugasin
+  await page.locator('nav button', { hasText: "Qo'llanmalar" }).first().click();
+  await page.waitForTimeout(500);
+  const openedAt = Date.now();
+  await page.getByText('Poizon', { exact: false }).first().click();
+  await page.waitForFunction(() => {
+    const f = document.querySelector('iframe');
+    return f && f.contentDocument && f.contentDocument.querySelector('.tab');
+  }, { timeout: 20000 }).catch(() => {});
+  const openMs = Date.now() - openedAt;
+  check('qo\'llanma tez ochiladi', openMs < 3000, openMs + ' ms');
+
+  const guideFrame = page.frames().find(f => f.url().includes('guides/'));
+  if (guideFrame) {
+    await guideFrame.evaluate(() => window.scrollTo(0, 500));
+    await page.waitForTimeout(400);
+    const cls = await guideFrame.evaluate(() => +(window.__cls || 0).toFixed(3));
+    check('qo\'llanma ichida siljish yo\'q', cls < 0.05, 'CLS ' + cls);
+    const fontLinks = await guideFrame.evaluate(() =>
+      [...document.querySelectorAll('link[rel=stylesheet]')].map(l => l.href).filter(h => h.includes('fonts.googleapis')));
+    const appFont = src.match(/https:\/\/fonts\.googleapis\.com\/css2\?family=Bricolage[^"']+/);
+    check('shrift manzili ilova bilan bir xil',
+      !!appFont && fontLinks.some(h => h.replace(/&amp;/g, '&') === appFont[0].replace(/&amp;/g, '&')),
+      fontLinks[0] || 'topilmadi');
+  } else {
+    check('qo\'llanma ochiladi (2)', false, 'iframe topilmadi');
+  }
+
+  // 15. Xato va yo'qolgan fayllar
   check('konsolda xato yo\'q', errors.length === 0, errors.slice(0, 2).join(' / '));
   check('404 yo\'q', missing.length === 0, missing.slice(0, 2).join(' / '));
 } finally {
