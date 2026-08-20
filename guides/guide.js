@@ -114,8 +114,11 @@
 /* Sayt paneli: qo'llanma ilova ichida (iframe) ochilsa yashirin qoladi,
    mustaqil ochilganda esa ilovaga va qo'llanmalar ro'yxatiga havola beradi. */
 (function () {
+  var standalone = window.top === window.self;
   var bar = document.getElementById('site-bar');
-  if (bar && window.top === window.self) bar.hidden = false;
+  if (bar && standalone) bar.hidden = false;
+  // Ilova ichida ochilganini CSS ham bilsin (sarlavha ixchamlashadi)
+  if (!standalone) document.documentElement.classList.add('in-app');
 })();
 
 /* Kalkulyator uchun umumiy ma'lumot: bojxona me'yorlari va dollar kursi.

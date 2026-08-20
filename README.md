@@ -66,6 +66,26 @@ python3 tools/subset_flags.py <noto-color-emoji-flags.woff2>
 - **Valyuta kursi** — Markaziy bankdan (cbu.uz) avtomatik olinadi, 6 soatda bir marta; olinmasa oxirgi saqlangan qiymat "oflayn zaxira" deb belgilanadi.
 - **Xato haqida xabar** — ilovadagi tugma `REPORT_URL` manziliga olib boradi (hozir GitHub Issues; Telegram havolasiga almashtirish mumkin).
 
+## Telegram bot ichida ochish
+
+Ilova Telegram Mini App sifatida to'liq ekranda ochiladi. Botga ulash:
+
+1. [@BotFather](https://t.me/BotFather) da botni tanlang.
+2. **Bot Settings → Menu Button → Configure menu button** ni bosing va manzil sifatida
+   `https://nshakhobiddin.github.io/Pochtachi/` ni kiriting (tugma nomi, masalan, "Xarid Yordamchisi").
+3. Yoki `/newapp` orqali alohida Mini App yarating va shu manzilni bering.
+
+Telegram ichida ilova o'zi:
+
+- `ready` + `expand` va (Bot API 8.0 dan boshlab) `requestFullscreen` bilan butun ekranni egallaydi;
+- pastga tortganda yopilib ketmasligi uchun vertikal svaypni o'chiradi;
+- Telegramning tepadagi tugmalari ostiga tushmaslik uchun `safeAreaInset` va
+  `contentSafeAreaInset` qiymatlarini hisobga oladi;
+- Telegramning "orqaga" tugmasini ilova navigatsiyasiga bog'laydi;
+- tugmalarga yengil tebranish (haptic) bilan javob beradi.
+
+Oddiy brauzerda bu kodning ta'siri yo'q — sayt avvalgidek ishlayveradi.
+
 ## Do'kon logotiplari
 
 43 ta do'kon logotipi favicon xizmatidan olinadi. Ular service worker'ning alohida keshida saqlanadi — ya'ni har ochilishda emas, qurilmada bir marta yuklanadi va keyin oflayn ham ko'rinadi.

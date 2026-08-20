@@ -202,3 +202,39 @@ table,.res,.hstat b,.step-meta,.prog-txt{font-variant-numeric:tabular-nums}
 #site-bar a:hover{border-bottom-color:#fff}
 #site-bar a:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:3px}
 #site-bar span{opacity:.75}
+
+/* ---------- Mobil qulaylik ----------
+   Qo'llanma ilova ichida ochilganda sarlavha va tavsif ilovaning o'z
+   sarlavhasini takrorlaydi: telefonda ular ekranning yarmidan ko'pini
+   egallab, matn ko'rinmay qolardi. Ilova ichida ular yig'ilib, faqat
+   asosiy raqamlar qoladi. Bo'limlar tasmasi esa yopishib turadi. */
+html.in-app header.hero { padding: 12px 0 16px; }
+html.in-app header.hero .badge-top,
+html.in-app header.hero .hero-in > p { display: none; }
+html.in-app header.hero h1 { font-size: 17px; line-height: 1.25; margin: 0 0 10px; }
+html.in-app .hero-stats { gap: 8px; margin: 0; }
+html.in-app .hstat { padding: 8px 10px; }
+html.in-app .hstat b { font-size: 14px; }
+html.in-app .hstat span { font-size: 11px; }
+html.in-app .wrap { padding-bottom: 24px; }
+/* Ilova ichida pastda allaqachon o'z menyusi bor — qo'llanmaning bo'lim
+   paneli ikkinchi qavat bo'lib qolmasin. Bo'limlar tepadagi yopishqoq
+   tasmadan tanlanadi, o'qish progressi esa joyida qoladi. */
+html.in-app .xy-secnav { display: none; }
+
+/* Bo'lim tasmasi doim qo'l ostida turadi */
+nav.tabs {
+  position: sticky; top: 0; z-index: 30;
+  background: var(--slate-50); padding-top: 6px;
+  margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px;
+}
+.tabs-scroll { scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+.tabs-scroll .tab { scroll-snap-align: start; min-height: 44px; }
+
+/* Kichik ekranlarda bo'shliqlar ixchamroq */
+@media (max-width: 400px) {
+  .wrap { padding-left: 14px; padding-right: 14px; }
+  nav.tabs { margin-left: -14px; margin-right: -14px; padding-left: 14px; padding-right: 14px; }
+  .card { padding: 14px; }
+  h2 { font-size: 19px; }
+}
