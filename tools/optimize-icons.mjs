@@ -2,9 +2,8 @@
 // Bo'lim va tab ikonkalarini ekrandagi o'lchamiga moslaydi: icons/src/*.webp -> icons/*.webp
 //
 // Nima uchun: ikonkalar dizayn faylidan kelgan holicha edi — tab ikonkasi
-// 96 px, ekranda esa 23 px; bo'lim ikonkasi 180 px, ekranda 50 px. Ya'ni
-// piksellarning to'rtdan uch qismi behuda yuklanardi. Endi ular 3x retina
-// uchun yetarli o'lchamda saqlanadi.
+// 96 px saqlanib, ekranda 23 px chizilardi. Endi har bir ikonka ekrandagi
+// o'lchamiga qarab, 3x zichlikdagi ekran uchun yetarli darajada saqlanadi.
 //
 // Asl nusxalar icons/src/ da qoladi, shuning uchun skriptni qayta ishga
 // tushirish sifatni pasaytirmaydi.
@@ -21,8 +20,10 @@ const SRC = join(ROOT, 'icons', 'src');
 const OUT = join(ROOT, 'icons');
 const QUALITY = 0.88;
 
-// Ekrandagi o'lcham x3 (eng zich ekranlar uchun ham yetarli).
-const target = name => name.startsWith('tab-') ? 72 : 150;
+/* Ekrandagi o'lcham x3 (eng zich ekranlar uchun ham yetarli).
+   Bo'lim ikonkalari 64 px chiziladi, ya'ni 192 px kerak bo'lardi — asl
+   nusxalar 180 px, shuning uchun ular kichraytirilmaydi. */
+const target = name => name.startsWith('tab-') ? 72 : 180;
 
 const sources = readdirSync(SRC).filter(f => f.endsWith('.webp')).sort();
 
