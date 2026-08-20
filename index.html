@@ -2627,13 +2627,22 @@ class Component extends DCLogic {
   /* Telefonning "orqaga" tugmasi ilovadan chiqib ketmasligi uchun har bir
      ichki ekran brauzer tarixiga ham qo'shiladi: orqaga bosilganda ilova
      bir qadam ortga qaytadi, xuddi haqiqiy ilovadagidek. */
+  /* Qo'llanmalar alohida sahifa; ularni oldindan yuklab qo'yish qulay, ammo
+     buni ilova ochilishida qilish birinchi yuklashga ~500 KB qo'shib
+     yuboradi. Shuning uchun faqat "Qo'llanmalar" bo'limi ochilganda
+     boshlaymiz — foydalanuvchi ro'yxatni ko'rib turgan bir-ikki soniya
+     kifoya qiladi. */
+  onScreenChange(s) { if (s === 'guides') this.prefetchGuides(); }
+
   push(s) {
     haptic('light');
+    this.onScreenChange(s);
     if (this._histOn) { try { history.pushState({ xy: Date.now() }, ''); } catch (e) {} }
     this.setState(st => ({ stack: [...st.stack, s], toast: '' }));
   }
   go(s) {
     if (this.cur() !== s) haptic('select');
+    this.onScreenChange(s);
     // Bo'lim almashtirish ham tarixga yoziladi: "orqaga" bosilganda ilova
     // avval bosh sahifaga qaytadi, keyingina chiqadi.
     if (this._histOn && this.cur() !== s) { try { history.pushState({ xy: Date.now() }, ''); } catch (e) {} }
@@ -2747,7 +2756,6 @@ class Component extends DCLogic {
       try { tg.BackButton.onClick(this._tgBack); } catch (e) {}
     }
     this.syncTelegram();
-    this.prefetchGuides();
     this._histOn = typeof history !== 'undefined' && typeof history.pushState === 'function';
     if (this._histOn) {
       /* "Orqaga" bosilganda: avval ichki ekranlar yopiladi, keyin bosh
@@ -2780,26 +2788,42 @@ class Component extends DCLogic {
      bilan kelib ulguradi, shuning uchun saqlangan holatda tashqi xizmatga
      umuman so'rov ketmaydi. */
   /* Qo'llanmalar alohida sahifa bo'lgani uchun birinchi ochilishda kutish
-     seziladi. Ilova bo'sh turganda ularni oldindan yuklab qo'yamiz: shundan
-     keyin qo'llanma keshdan darhol ochiladi va oflaynda ham o'qiladi. */
+     seziladi. Ularni oldindan yuklab qo'yamiz — ammo ilova ochilishida emas
+     (bu birinchi yuklashga ~500 KB qo'shardi), balki foydalanuvchi
+     qo'llanmalar tomonga qadam tashlaganda. Yuklangani service worker
+     keshida qoladi, shuning uchun oflaynda ham ochiladi. */
+  warmGuide(id) {
+    const g = FULL_GUIDES.find(x => x.id === id);
+    if (!g || !g.file) return;
+    this._warmed = this._warmed || new Set();
+    if (this._warmed.has(g.file)) return;
+    this._warmed.add(g.file);
+    fetch(g.file, { credentials: 'same-origin' }).then(r => r.text()).catch(() => {});
+  }
+
   prefetchGuides() {
     if (this._guidesPrefetched) return;
     this._guidesPrefetched = true;
+    this._warmed = this._warmed || new Set();
     const files = FULL_GUIDES.map(g => g.file).filter(Boolean);
     const run = () => {
       let i = 0;
       const next = () => {
         if (i >= files.length) return;
         const url = files[i++];
+        if (this._warmed.has(url)) return next();
+        this._warmed.add(url);
         fetch(url, { credentials: 'same-origin' })
           .then(r => r.text())
           .catch(() => {})
+          /* Birin-ketin, orasi bilan: foydalanuvchi shu payt qo'llanma
+             ochsa, uning so'rovi navbatda turib qolmasin. */
           .then(() => setTimeout(next, 120));
       };
       next();
     };
-    if (typeof requestIdleCallback === 'function') requestIdleCallback(run, { timeout: 3000 });
-    else setTimeout(run, 1200);
+    if (typeof requestIdleCallback === 'function') requestIdleCallback(run, { timeout: 800 });
+    else setTimeout(run, 300);
   }
 
   async loadStoreLogos() {
@@ -3139,7 +3163,7 @@ class Component extends DCLogic {
       planNextLabel: pl && pl.step < 4 ? PLAN_STEPS[pl.step + 1].t + ' — belgilash' : '',
       planAdvance: () => { if (!pl) return; this.setState(x => ({ plans: x.plans.map(p => p.id === pl.id ? { ...p, step: Math.min(p.step + 1, 4) } : p) })); this.toast('Bosqich yangilandi'); },
       planDelete: () => { if (!pl) return; this.setState(x => ({ plans: x.plans.filter(p => p.id !== pl.id), stack: ['home'] })); this.toast('Reja o\'chirildi'); },
-      planOpenStore: () => { if (pl && pl.storeId) { this.setState({ storeId: pl.storeId }); this.push('store'); } else this.toast('Do\'kon topilmadi'); },
+      planOpenStore: () => { if (pl && pl.storeId) { this.warmGuide(pl.storeId); this.setState({ storeId: pl.storeId }); this.push('store'); } else this.toast('Do\'kon topilmadi'); },
       planOpenCourier: () => { if (pl && pl.courierId) this.openCourierId(pl.courierId); else this.toast('Kuryer topilmadi'); },
 
       onbLang: st.onbStep === 0, onbExp: st.onbStep === 1,
@@ -3178,7 +3202,7 @@ class Component extends DCLogic {
           .map(s => ({
             kind: 'Do\'kon', name: s.name, sub: s.country + ' · ' + s.cat,
             mono: s.mono, color: s.color, bg: '#F4F3FA', fit: '66%', logoCss: s.logoCss,
-            open: () => { this.setState({ storeId: s.id, homeQuery: '' }); this.push('store'); }
+            open: () => { this.warmGuide(s.id); this.setState({ storeId: s.id, homeQuery: '' }); this.push('store'); }
           }));
         const couriers = byRank(COURIERS
           .filter(c => matches(hay(c.name, c.mode, c.route, c.countries, c.note, (c.from || []).join(' ')), q)), 'name')
@@ -3205,7 +3229,7 @@ class Component extends DCLogic {
         ...[['Xitoy','🇨🇳'],['AQSh','🇺🇸'],['Global','🌍'],['Turkiya','🇹🇷'],['Buyuk Britaniya','🇬🇧'],['BAA','🇦🇪']].map(([k, fl]) => this.chip(fl + ' ' + k, st.storeCountries.includes(k), () => this.toggleIn('storeCountries', k))),
         ...['universal','kiyim va moda','poyabzal','elektronika','kosmetika','bolalar'].map(k => this.chip(k, st.storeCats.includes(k), () => this.toggleIn('storeCats', k)))
       ],
-      filteredStores: this.storesFiltered().map(s => ({ ...s, open:() => { this.setState({ storeId:s.id }); this.push('store'); } })),
+      filteredStores: this.storesFiltered().map(s => ({ ...s, open:() => { this.warmGuide(s.id); this.setState({ storeId:s.id }); this.push('store'); } })),
       groupByCat: st.storeGroup === 'cat', groupByPrice: st.storeGroup === 'price',
       grpCatBg: st.storeGroup === 'cat' ? '#FFFFFF' : 'transparent',
       grpCatFg: st.storeGroup === 'cat' ? '#3B2CC9' : '#7A7996',
@@ -3215,7 +3239,7 @@ class Component extends DCLogic {
       grpPriceSh: st.storeGroup === 'price' ? '0 1px 2px rgba(20,19,43,.10),0 4px 10px -6px rgba(20,19,43,.28)' : 'none',
       setGroupCat: () => this.setState({ storeGroup:'cat' }), setGroupPrice: () => this.setState({ storeGroup:'price' }),
       storeGroups: (() => {
-        const list = this.storesFiltered().map(s => ({ ...s, open:() => { this.setState({ storeId:s.id }); this.push('store'); } }));
+        const list = this.storesFiltered().map(s => ({ ...s, open:() => { this.warmGuide(s.id); this.setState({ storeId:s.id }); this.push('store'); } }));
         const CATS = [
           ['universal', 'Universal', 'Hamma turdagi tovarlar'],
           ['kiyim va moda', 'Kiyim va moda', 'Kiyim, sumka, aksessuar'],
