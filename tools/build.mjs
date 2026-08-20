@@ -33,7 +33,12 @@ function build(src) {
 function precacheList() {
   const files = ['./', 'support.js', 'manifest.webmanifest', 'data/norms.json',
     'vendor/react.production.min.js', 'vendor/react-dom.production.min.js',
-    'fonts/flags.woff2', 'guides/guide-base.css', 'guides/guide-common.css', 'guides/guide-engine.js', 'guides/guide.js'];
+    'guides/guide-base.css', 'guides/guide-common.css', 'guides/guide-engine.js', 'guides/guide.js'];
+  /* Shriftlar o'z domenimizda turadi, shuning uchun ular ham qobiq bilan
+     birga keshlanadi — ikkinchi ochilishda umuman tarmoq kerak emas. */
+  for (const f of readdirSync(join(ROOT, 'fonts')).sort()) {
+    if (/\.(woff2|css)$/.test(f)) files.push(`fonts/${f}`);
+  }
   // Do'kon logotiplari saqlangan bo'lsa, ular ham qobiq bilan birga keshlanadi.
   if (existsSync(join(ROOT, 'stores', 'index.json'))) files.push('stores/index.json');
   for (const dir of ['icons', 'logos', 'stores']) {

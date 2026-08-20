@@ -15,7 +15,11 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BUDGETS = [
   { name: 'logotiplar (logos/*.webp)', dir: 'logos', ext: ['.webp'], maxTotalKb: 150, maxFileKb: 20 },
   { name: 'ikonkalar (icons/*.webp)', dir: 'icons', ext: ['.webp'], maxTotalKb: 120, maxFileKb: 25 },
-  { name: 'shriftlar (fonts/)', dir: 'fonts', ext: ['.woff2'], maxTotalKb: 80, maxFileKb: 80 },
+  /* Shriftlar o'z domenimizda: 7 ta fayl, ammo brauzer sahifadagi belgilarga
+     qarab faqat keraklisini oladi — odatda lotin (72 KB), kirillcha matn
+     bo'lsa yana 16 KB, bayroq ko'rinsa 44 KB. Ilgari bular Google'dan
+     olinardi va 273 KB chiqardi. */
+  { name: 'shriftlar (fonts/)', dir: 'fonts', ext: ['.woff2'], maxTotalKb: 200, maxFileKb: 60 },
   { name: 'qo\'llanmalar (guides/inline/)', dir: 'guides/inline', ext: ['.html'], maxTotalKb: 470, maxFileKb: 90 }
 ];
 

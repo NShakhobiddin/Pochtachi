@@ -246,12 +246,18 @@ try {
     await page.waitForTimeout(400);
     const cls = await guideFrame.evaluate(() => +(window.__cls || 0).toFixed(3));
     check('qo\'llanma ichida siljish yo\'q', cls < 0.05, 'CLS ' + cls);
-    const fontLinks = await guideFrame.evaluate(() =>
-      [...document.querySelectorAll('link[rel=stylesheet]')].map(l => l.href).filter(h => h.includes('fonts.googleapis')));
-    const appFont = src.match(/https:\/\/fonts\.googleapis\.com\/css2\?family=Bricolage[^"']+/);
-    check('shrift manzili ilova bilan bir xil',
-      !!appFont && fontLinks.some(h => h.replace(/&amp;/g, '&') === appFont[0].replace(/&amp;/g, '&')),
-      fontLinks[0] || 'topilmadi');
+    /* Qo'llanma ilovaning aynan o'sha shrift fayllarini ishlatishi kerak —
+       aks holda ochilganda matn boshqa shriftda chizilib, keyin sakraydi. */
+    const guideFont = await guideFrame.evaluate(() =>
+      [...document.querySelectorAll('link[rel=stylesheet]')].map(l => l.href)
+        .find(h => h.includes('fonts/text.css')) || '');
+    check('shrift ilova bilan bir xil faylardan',
+      src.includes('fonts/text.css') && guideFont.endsWith('/fonts/text.css'),
+      guideFont || 'topilmadi');
+    const external = await guideFrame.evaluate(() =>
+      [...document.querySelectorAll('link[rel=stylesheet]')].map(l => l.href)
+        .filter(h => !h.startsWith(location.origin)));
+    check('qo\'llanmada tashqi shrift so\'rovi yo\'q', external.length === 0, external.join(', '));
   } else {
     check('qo\'llanma ochiladi (2)', false, 'iframe topilmadi');
   }

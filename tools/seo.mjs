@@ -27,19 +27,13 @@ const GUIDES = [
   { id: 'ebay', title: 'eBay', flag: '🇺🇸', sections: 9, desc: "Auksion strategiyasi, eIS orqali to'g'ridan yetkazish" }
 ];
 
-/* Ilovadagi bilan AYNAN bir xil manzil: shunda qo'llanma ochilganda shriftlar
-   allaqachon keshda bo'ladi va matn "sakramaydi" (ilgari qo'llanma boshqa
-   variantni yuklab, kelgach hamma narsa siljib qolardi). */
-const FONT_URL = 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Onest:wght@400;500;600;700;800&display=swap';
-/* Shriftlar sahifani bloklamasin: ilgari bu manzil guide-common.css ichida
-   @import bo'lib turardi va Google javob bermaguncha qo'llanma umuman
-   ochilmasdi (sekin tarmoqda ham, oflayn ham). Endi media hiylasi bilan
-   yuklanadi: matn darhol tizim shriftida chiqadi, keyin almashadi. */
-const FONT_LINKS = [
-  '<link rel="preconnect" href="https://fonts.googleapis.com">',
-  '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
-  `<link rel="stylesheet" href="${FONT_URL}" media="print" onload="this.media='all'">`,
-  `<noscript><link rel="stylesheet" href="${FONT_URL}"></noscript>`
+/* Ilova bilan AYNAN bir xil shrift fayllari: qo'llanma ochilganda ular
+   allaqachon keshda bo'ladi va matn "sakramaydi". Manzil o'z domenimizda
+   bo'lgani uchun tashqi hostga ulanish, DNS va TLS kutish yo'q — ilgari
+   shrift Google'dan kelmaguncha qo'llanma ochilmay turardi. */
+const fontLinks = prefix => [
+  `<link rel="preload" href="${prefix}fonts/onest-latin.woff2" as="font" type="font/woff2" crossorigin>`,
+  `<link rel="stylesheet" href="${prefix}fonts/text.css">`
 ];
 
 const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -63,7 +57,7 @@ function guideMeta(g) {
     `<meta property="og:image" content="${OG_IMAGE}">`,
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta name="theme-color" content="#3B2CC9">`,
-    ...FONT_LINKS,
+    ...fontLinks('../../'),
     /* Ilova ichida ochilganini birinchi chizishdan OLDIN belgilaymiz: aks holda
        avval to'liq sarlavha chizilib, keyin ixchamlashadi va butun matn
        sakrab tushadi (o'lchangan siljish 0,24 edi). */
@@ -130,7 +124,7 @@ const hub = `<!DOCTYPE html>
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#3B2CC9">
 <link rel="icon" href="../icons/icon-192.png" sizes="192x192">
-${FONT_LINKS.join('\n')}
+${fontLinks('../').join('\n')}
 <link rel="stylesheet" href="guide-base.css">
 <link rel="stylesheet" href="guide-common.css">
 <style>

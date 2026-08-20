@@ -4,12 +4,11 @@
  *   - Qobiq (HTML, skript, ikonka, logotip, shrift): o'rnatishda keshlanadi.
  *   - Sahifalar: keshdan darhol, yangi nusxa orqa fonda yuklanadi.
  *   - Qo'llanmalar va boshqa statik fayllar: keshdan beriladi, orqa fonda yangilanadi.
- *   - Google Fonts: keshdan, birinchi marta tarmoqdan.
  *   - Do'kon logotiplari: bir marta yuklanadi va alohida, versiyadan
  *     qat'i nazar saqlanadigan keshda qoladi.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
  */
-const VERSION = '035f5598ec76';
+const VERSION = '3f1e710b18a9';
 const CACHE = 'xarid-' + VERSION;
 /* Logotiplar keshi ilova versiyasiga bog'lanmaydi: yangilanish chiqqanda
    ular qaytadan yuklanmaydi. */
@@ -21,11 +20,18 @@ const PRECACHE = [
   "data/norms.json",
   "vendor/react.production.min.js",
   "vendor/react-dom.production.min.js",
-  "fonts/flags.woff2",
   "guides/guide-base.css",
   "guides/guide-common.css",
   "guides/guide-engine.js",
   "guides/guide.js",
+  "fonts/bricolage-latin-ext.woff2",
+  "fonts/bricolage-latin.woff2",
+  "fonts/flags.woff2",
+  "fonts/onest-cyrillic-ext.woff2",
+  "fonts/onest-cyrillic.woff2",
+  "fonts/onest-latin-ext.woff2",
+  "fonts/onest-latin.woff2",
+  "fonts/text.css",
   "stores/index.json",
   "icons/apple-touch-icon.png",
   "icons/courier-3d.webp",
@@ -79,7 +85,6 @@ self.addEventListener('activate', event => {
   );
 });
 
-const isFont = url => url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
 // Do'kon logotiplari (loyihada saqlanmagan holat uchun favicon xizmati).
 const isStoreLogo = url =>
   (url.hostname === 'www.google.com' && url.pathname.startsWith('/s2/favicons')) ||
@@ -108,7 +113,8 @@ self.addEventListener('fetch', event => {
   }
 
   // Kurs kabi tashqi API so'rovlari — har doim tarmoqdan, keshsiz.
-  if (!sameOrigin && !isFont(url)) return;
+  // (Shriftlar ham o'z domenimizda, shuning uchun tashqi istisno kerak emas.)
+  if (!sameOrigin) return;
 
   // Sahifalar: keshdagi qobiq darhol beriladi, yangi nusxa orqa fonda olinadi.
   // Sekin yoki uzuq tarmoqda ham ilova bir zumda ochiladi; yangilanish keyingi

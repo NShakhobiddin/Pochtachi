@@ -24,7 +24,7 @@ support.js                     dc-runtime (shablonni React bilan render qiladi)
 manifest.webmanifest           PWA manifesti
 data/norms.json                bojxona me'yorlari (kodga tegmasdan yangilanadi)
 vendor/                        React va ReactDOM (unpkg'dagi asl fayllar)
-fonts/flags.woff2              23 ta bayroq emojisi (Noto subseti, 44 KB)
+fonts/                         matn shriftlari (o'z domenimizda) va bayroq subseti
 icons/                         3D bo'lim ikonkalari, tab-bar ikonkalari, PWA ikonkalari
 logos/                         kuryer logotiplari (128 px WebP)
 logos/src/                     logotiplarning asl PNG nusxalari (saytga chiqmaydi)
@@ -33,6 +33,7 @@ guides/index.html              GENERATSIYA: qo'llanmalarning indekslanadigan ro'
 guides/inline/*.html           7 ta platforma qo'llanmasi (mustaqil sahifa ham)
 guides/guide-base.css          qo'llanmalarning umumiy uslublari
 guides/guide-common.css        umumiy yordamchi uslublar
+guides/guide-engine.js         qo'llanmalarning umumiy render kodi (7 tasi uchun bitta)
 guides/guide.js                qo'llanmalarning umumiy skripti
 tools/                         build, SEO, rasm/shrift va tekshiruv skriptlari
 tests/smoke.mjs                asosiy yo'llarni tekshiruvchi smoke test
@@ -44,11 +45,12 @@ tests/smoke.mjs                asosiy yo'llarni tekshiruvchi smoke test
 npm install              # playwright (skriptlar va testlar uchun)
 npm run build            # index.html, sw.js, SEO meta, qo'llanmalar ro'yxati
 npm run check            # generatsiya fayllari mos va o'lcham byudjeti joyidami
-npm test                 # smoke test (ilova, bo'limlar, kalkulyator, qo'llanma)
+npm test                 # smoke test + 7 ta qo'llanmaning tekshiruvi
 npm run links            # tashqi havolalarni tekshirish (haftalik CI ham qiladi)
 npm run logos            # logos/src/*.png -> logos/*.webp qayta yasash
 npm run store-logos      # do'kon logotiplarini bir marta yuklab, stores/ ga saqlash
 npm run cover            # icons/og-cover.png ni qayta yasash
+npm run fonts            # matn shriftlarini Google Fonts'dan qayta yuklab olish
 npm run serve            # lokal server: http://localhost:8000
 ```
 
@@ -101,8 +103,10 @@ Buni GitHub'da ham qilish mumkin: **Actions → "Do'kon logotiplarini yuklash" �
 
 ## Tashqi bog'liqliklar
 
-Sayt ishga tushganda faqat Google Fonts'ga murojaat qiladi (`Bricolage Grotesque`, `Onest`, `Noto Color Emoji`) va valyuta kursi uchun `cbu.uz` ga. React o'z domenimizdan yuklanadi, qolgan hamma narsa repozitoriy ichida. Birinchi ochilishdan keyin service worker qobiqni keshlaydi va ilova internetsiz ham ishlaydi.
+Sayt ishga tushganda tashqariga faqat bitta so'rov yuboradi — valyuta kursi uchun `cbu.uz` ga. Shriftlar, React va qolgan hamma narsa o'z domenimizda. Birinchi ochilishdan keyin service worker qobiqni keshlaydi va ilova internetsiz ham ishlaydi.
+
+**Shriftlar.** `Bricolage Grotesque` va `Onest` — o'zgaruvchan (variable) shriftlar, `fonts/` ichida. Brauzer sahifadagi belgilarga qarab faqat keraklisini oladi: lotin (72 KB), kirillcha matn ko'rinsa yana 16 KB, bayroq ko'rinsa `flags.woff2` (44 KB). Ilgari ular `fonts.googleapis.com` -> `fonts.gstatic.com` zanjiri orqali kelardi va 238 KB chiqardi. Yangilash: `npm run fonts`.
 
 ## O'lcham byudjeti
 
-`npm run check` quyidagilarni tekshiradi: logotiplar ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 80 KB, qo'llanmalar ≤ 620 KB, `index.html` ≤ 420 KB. Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.
+`npm run check` quyidagilarni tekshiradi: logotiplar ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 200 KB, qo'llanmalar ≤ 470 KB, `index.html` ≤ 420 KB. Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.

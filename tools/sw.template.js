@@ -4,7 +4,6 @@
  *   - Qobiq (HTML, skript, ikonka, logotip, shrift): o'rnatishda keshlanadi.
  *   - Sahifalar: keshdan darhol, yangi nusxa orqa fonda yuklanadi.
  *   - Qo'llanmalar va boshqa statik fayllar: keshdan beriladi, orqa fonda yangilanadi.
- *   - Google Fonts: keshdan, birinchi marta tarmoqdan.
  *   - Do'kon logotiplari: bir marta yuklanadi va alohida, versiyadan
  *     qat'i nazar saqlanadigan keshda qoladi.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
@@ -32,7 +31,6 @@ self.addEventListener('activate', event => {
   );
 });
 
-const isFont = url => url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
 // Do'kon logotiplari (loyihada saqlanmagan holat uchun favicon xizmati).
 const isStoreLogo = url =>
   (url.hostname === 'www.google.com' && url.pathname.startsWith('/s2/favicons')) ||
@@ -61,7 +59,8 @@ self.addEventListener('fetch', event => {
   }
 
   // Kurs kabi tashqi API so'rovlari — har doim tarmoqdan, keshsiz.
-  if (!sameOrigin && !isFont(url)) return;
+  // (Shriftlar ham o'z domenimizda, shuning uchun tashqi istisno kerak emas.)
+  if (!sameOrigin) return;
 
   // Sahifalar: keshdagi qobiq darhol beriladi, yangi nusxa orqa fonda olinadi.
   // Sekin yoki uzuq tarmoqda ham ilova bir zumda ochiladi; yangilanish keyingi
