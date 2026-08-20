@@ -35,11 +35,11 @@ header.hero{background:#FFFFFF;color:#151329;padding:16px 0 20px;border-bottom:1
 header.hero::before,header.hero::after{display:none}
 .hero-in{padding:0 16px}
 .badge-top{background:#F1F1F8;border:none;color:#6C6C88;font-size:10.5px;font-weight:800;letter-spacing:.4px;padding:5px 11px 5px 8px;backdrop-filter:none}
-h1{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:23px;font-weight:800;letter-spacing:-.7px;margin:12px 0 6px;color:#151329}
+h1{font-family:'Onest',system-ui,sans-serif;font-size:23px;font-weight:800;letter-spacing:-.7px;margin:12px 0 6px;color:#151329}
 .hero p{color:#6E6D8A;font-size:13.5px;opacity:1;line-height:1.55;text-wrap:pretty}
 .hero-stats{gap:7px;margin-top:14px}
 .hstat{background:#F1F1F8;border:none;border-radius:14px;padding:9px 12px;backdrop-filter:none}
-.hstat b{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:15px;font-weight:800;color:#3B2CC9;letter-spacing:-.3px}
+.hstat b{font-family:'Onest',system-ui,sans-serif;font-size:15px;font-weight:800;color:#3B2CC9;letter-spacing:-.3px}
 .hstat span{font-size:10.5px;color:#6C6C88;font-weight:600}
 
 /* Tab qatori — ilovadagi chip uslubi */
@@ -52,10 +52,10 @@ nav.tabs{margin-top:0;border-radius:0;box-shadow:none;background:#F2F1F8;border-
 
 /* Sarlavhalar */
 section.panel{padding-top:20px}
-h2{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:21px;font-weight:800;letter-spacing:-.6px;padding-left:0;color:#151329}
+h2{font-family:'Onest',system-ui,sans-serif;font-size:21px;font-weight:800;letter-spacing:-.6px;padding-left:0;color:#151329}
 h2::before{display:none}
 .sub{padding-left:0;font-size:13.5px;color:#6E6D8A;line-height:1.55;margin-bottom:18px}
-h3{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:16px;font-weight:800;letter-spacing:-.3px;margin:24px 0 10px}
+h3{font-family:'Onest',system-ui,sans-serif;font-size:16px;font-weight:800;letter-spacing:-.3px;margin:24px 0 10px}
 h4{font-weight:800;letter-spacing:-.2px}
 
 /* Kartalar */
@@ -76,7 +76,7 @@ h4{font-weight:800;letter-spacing:-.2px}
 .wiz-progress i.done{background:#B6AEF3}
 .wiz-progress i.now{background:#3B2CC9}
 .step-num{border-radius:14px;background:linear-gradient(155deg,#5A46EC,#3423B3);box-shadow:0 12px 24px -14px rgba(45,30,150,.8)}
-.step-title{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:17px;font-weight:800;letter-spacing:-.4px}
+.step-title{font-family:'Onest',system-ui,sans-serif;font-size:17px;font-weight:800;letter-spacing:-.4px}
 .step-meta{font-size:11.5px;color:#6C6C88;font-weight:700}
 .step-body{font-size:14px;color:#333350}
 .dot{border:none;border-radius:12px;background:#FFFFFF;color:#6C6C88;box-shadow:var(--shadow-sm);width:32px;height:32px}
@@ -100,7 +100,7 @@ input:focus,select:focus{border-color:#3B2CC9;box-shadow:0 0 0 3px #EDEBFD}
 
 /* Natija kartasi */
 .res{background:linear-gradient(155deg,#5A46EC,#3423B3);border-radius:26px;padding:20px;box-shadow:var(--shadow-lg)}
-.res .total{font-family:'Bricolage Grotesque','Onest',sans-serif;font-size:31px;font-weight:800;letter-spacing:-1px}
+.res .total{font-family:'Onest',system-ui,sans-serif;font-size:31px;font-weight:800;letter-spacing:-1px}
 
 /* Jadvallar */
 .tblwrap{border:none;border-radius:var(--radius);box-shadow:var(--shadow)}

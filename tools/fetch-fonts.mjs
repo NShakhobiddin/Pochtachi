@@ -24,8 +24,9 @@ const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
    boshqa yozuvlar bu ilovada uchramaydi. */
 const KEEP = ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'];
 
+/* Bitta oila — sarlavha ham, matn ham. Ilgari sarlavhalarda alohida
+   Bricolage Grotesque turardi: ikki xil harf shakli va 60 KB ortiqcha. */
 const FAMILIES = [
-  { name: 'Bricolage Grotesque', slug: 'bricolage', query: 'Bricolage+Grotesque:wght@600;700;800' },
   { name: 'Onest', slug: 'onest', query: 'Onest:wght@400;500;600;700;800' }
 ];
 
@@ -49,7 +50,7 @@ for (const fam of FAMILIES) {
     range: (m[2].match(/unicode-range: ([^;]+);/) || [])[1] || ''
   })).filter(f => KEEP.includes(f.subset) && f.url);
 
-  // Bricolage va Onest — o'zgaruvchan (variable) shriftlar: bir fayl butun
+  // Onest — o'zgaruvchan (variable) shrift: bir fayl butun
   // og'irliklar oralig'iga xizmat qiladi, shuning uchun bir marta yuklaymiz.
   const bySubset = new Map();
   for (const f of faces) {

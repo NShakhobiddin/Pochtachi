@@ -8,7 +8,7 @@
  *     qat'i nazar saqlanadigan keshda qoladi.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
  */
-const VERSION = '39cad9609712';
+const VERSION = 'd750af4000c9';
 const CACHE = 'xarid-' + VERSION;
 /* Logotiplar keshi ilova versiyasiga bog'lanmaydi: yangilanish chiqqanda
    ular qaytadan yuklanmaydi. */
@@ -24,8 +24,6 @@ const PRECACHE = [
   "guides/guide-common.css",
   "guides/guide-engine.js",
   "guides/guide.js",
-  "fonts/bricolage-latin-ext.woff2",
-  "fonts/bricolage-latin.woff2",
   "fonts/flags.woff2",
   "fonts/onest-cyrillic-ext.woff2",
   "fonts/onest-cyrillic.woff2",
@@ -39,14 +37,6 @@ const PRECACHE = [
   "icons/guides-3d.webp",
   "icons/icon-192.png",
   "icons/stores-3d.webp",
-  "icons/tab-customs-off.webp",
-  "icons/tab-customs.webp",
-  "icons/tab-guides-off.webp",
-  "icons/tab-guides.webp",
-  "icons/tab-home-off.webp",
-  "icons/tab-home.webp",
-  "icons/tab-profile-off.webp",
-  "icons/tab-profile.webp",
   "logos/abuexpress.webp",
   "logos/ase.webp",
   "logos/boxette.webp",
