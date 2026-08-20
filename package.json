@@ -7,7 +7,7 @@
   "scripts": {
     "build": "node tools/build.mjs && node tools/seo.mjs",
     "check": "node tools/build.mjs --check && node tools/optimize-logos.mjs --check && node tools/check-budget.mjs",
-    "test": "node tests/smoke.mjs",
+    "test": "node tests/smoke.mjs && node tests/guides.mjs",
     "links": "node tools/check-links.mjs",
     "logos": "node tools/optimize-logos.mjs",
     "cover": "node tools/og-cover.mjs",
@@ -15,6 +15,6 @@
     "store-logos": "node tools/store-logos.mjs"
   },
   "devDependencies": {
-    "playwright": "^1.56.1"
+    "playwright": "1.56.0"
   }
 }

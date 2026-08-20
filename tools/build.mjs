@@ -33,7 +33,7 @@ function build(src) {
 function precacheList() {
   const files = ['./', 'support.js', 'manifest.webmanifest', 'data/norms.json',
     'vendor/react.production.min.js', 'vendor/react-dom.production.min.js',
-    'fonts/flags.woff2', 'guides/guide-base.css', 'guides/guide-common.css', 'guides/guide.js'];
+    'fonts/flags.woff2', 'guides/guide-base.css', 'guides/guide-common.css', 'guides/guide-engine.js', 'guides/guide.js'];
   // Do'kon logotiplari saqlangan bo'lsa, ular ham qobiq bilan birga keshlanadi.
   if (existsSync(join(ROOT, 'stores', 'index.json'))) files.push('stores/index.json');
   for (const dir of ['icons', 'logos', 'stores']) {

@@ -9,7 +9,7 @@
  *     qat'i nazar saqlanadigan keshda qoladi.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
  */
-const VERSION = '328c000d2b9d';
+const VERSION = '1794df1039d3';
 const CACHE = 'xarid-' + VERSION;
 /* Logotiplar keshi ilova versiyasiga bog'lanmaydi: yangilanish chiqqanda
    ular qaytadan yuklanmaydi. */
@@ -24,6 +24,7 @@ const PRECACHE = [
   "fonts/flags.woff2",
   "guides/guide-base.css",
   "guides/guide-common.css",
+  "guides/guide-engine.js",
   "guides/guide.js",
   "stores/index.json",
   "icons/apple-touch-icon.png",
