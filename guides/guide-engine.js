@@ -9,6 +9,31 @@
  * ishlatiladi — klassik skriptlarda top-level const global leksik
  * doirada bo'lgani uchun bu ishlaydi.
  */
+/* ---------- PANELLARNI TALAB BO'YICHA CHIZISH ----------
+   Qo'llanma ochilganda ilgari hamma bo'lim birdaniga qurilardi: lug'at
+   (50-80 yozuv), taqiqlar jadvali (40 qator), FAQ, checklist, kargo — jami
+   bir necha ming element, ularning to'qqiztasi esa o'sha zahoti yashirin
+   panelda turardi. Endi ochilishda faqat faol panel chiziladi, qolganlari
+   tab birinchi marta bosilganda. */
+const PANEL_DRAW = new Map();
+function drawPanel(panel){
+  if(!panel) return;
+  const fn = PANEL_DRAW.get(panel);
+  if(!fn) return;
+  PANEL_DRAW.delete(panel);
+  fn();
+  // Sahifa balandligi o'zgardi — guide.js progress chizig'ini qayta o'lchaydi.
+  document.dispatchEvent(new CustomEvent('xy:panel',{detail:panel.id}));
+}
+/* elId — panel ichidagi biror element; shu orqali qaysi panelga tegishli
+   ekanini topamiz (qo'llanmalarda panel nomlari har xil). */
+function whenPanelOpens(elId, fn){
+  const el = document.getElementById(elId);
+  const panel = el && el.closest('.panel');
+  if(!panel || panel.classList.contains('active')){ fn(); return; }
+  PANEL_DRAW.set(panel, fn);
+}
+
 /* ---------- TABS ---------- */
 const tabsEl=document.getElementById('tabs');
 TABS.forEach((t,i)=>{
@@ -19,7 +44,9 @@ TABS.forEach((t,i)=>{
     document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
     document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
     b.classList.add('active');
-    document.getElementById(t.id).classList.add('active');
+    const panel=document.getElementById(t.id);
+    drawPanel(panel);            // kerak bo'lsa mazmunini shu yerda quramiz
+    panel.classList.add('active');
     b.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
     window.scrollTo({top:0,behavior:'smooth'});
   };
@@ -30,13 +57,6 @@ TABS.forEach((t,i)=>{
 let wi=0; const seen=new Set([0]);
 const bar=document.getElementById('wizbar');
 const dots=document.getElementById('wizdots');
-STEPS.forEach((_,i)=>{
-  bar.appendChild(document.createElement('i'));
-  const d=document.createElement('button');
-  d.className='dot'; d.textContent=i+1;
-  d.onclick=()=>{wi=i;seen.add(i);drawWiz()};
-  dots.appendChild(d);
-});
 function drawWiz(){
   const s=STEPS[wi];
   document.getElementById('wizcard').innerHTML=
@@ -51,9 +71,18 @@ function drawWiz(){
   nx.disabled = wi===STEPS.length-1;
   nx.textContent = wi===STEPS.length-1 ? '✓ Qo’llanma tugadi' : 'Keyingi qadam →';
 }
-document.getElementById('wprev').onclick=()=>{if(wi>0){wi--;seen.add(wi);drawWiz();document.getElementById('wizcard').scrollIntoView({behavior:'smooth',block:'center'})}};
-document.getElementById('wnext').onclick=()=>{if(wi<STEPS.length-1){wi++;seen.add(wi);drawWiz();document.getElementById('wizcard').scrollIntoView({behavior:'smooth',block:'center'})}};
-drawWiz();
+whenPanelOpens('wizcard',()=>{
+  STEPS.forEach((_,i)=>{
+    bar.appendChild(document.createElement('i'));
+    const d=document.createElement('button');
+    d.className='dot'; d.textContent=i+1;
+    d.onclick=()=>{wi=i;seen.add(i);drawWiz()};
+    dots.appendChild(d);
+  });
+  document.getElementById('wprev').onclick=()=>{if(wi>0){wi--;seen.add(wi);drawWiz();document.getElementById('wizcard').scrollIntoView({behavior:'smooth',block:'center'})}};
+  document.getElementById('wnext').onclick=()=>{if(wi<STEPS.length-1){wi++;seen.add(wi);drawWiz();document.getElementById('wizcard').scrollIntoView({behavior:'smooth',block:'center'})}};
+  drawWiz();
+});
 
 /* ---------- CALCULATOR ---------- */
 let cur=CALC.curDefault, mode='air';
@@ -158,12 +187,6 @@ calc();
 let banFilter='all';
 const BANCATS=[{k:'all',t:'Hammasi'},{k:'r',t:'🔴 Taqiqlangan'},{k:'a',t:'🟡 Ruxsat/cheklov'},{k:'g',t:'🟢 Erkin'}];
 const bc=document.getElementById('banchips');
-BANCATS.forEach(c=>{
-  const b=document.createElement('button');
-  b.className='chip'+(c.k==='all'?' on':''); b.textContent=c.t;
-  b.onclick=()=>{banFilter=c.k;[...bc.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderBan()};
-  bc.appendChild(b);
-});
 function renderBan(){
   const q=document.getElementById('banq').value.trim().toLowerCase();
   const list=BAN.filter(x=>(banFilter==='all'||x.s===banFilter)&&(!q||x.n.toLowerCase().includes(q)||x.d.toLowerCase().includes(q)));
@@ -175,25 +198,35 @@ function renderBan(){
     '<div class="ds">'+x.d+'</div></div>'+
     '<span class="pill '+x.s+'">'+txtmap[x.c]+'</span></div>').join('');
 }
-renderBan();
+whenPanelOpens('banlist',()=>{
+  BANCATS.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='chip'+(c.k==='all'?' on':''); b.textContent=c.t;
+    b.onclick=()=>{banFilter=c.k;[...bc.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderBan()};
+    bc.appendChild(b);
+  });
+  renderBan();
+});
 
 /* ---------- CARGO ---------- */
 let cargoF='all';
 const cch=document.getElementById('cargochips');
-if(cch){
-  CARGOCATS.forEach(c=>{
-    const b=document.createElement('button');
-    b.className='chip'+(c.k==='all'?' on':''); b.textContent=c.t;
-    b.onclick=()=>{cargoF=c.k;[...cch.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderCargo()};
-    cch.appendChild(b);
-  });
-}
 function renderCargo(){
   const list=CARGO.filter(x=>cargoF==='all'||x.tag.includes(cargoF));
   document.getElementById('cargobody').innerHTML=list.map(x=>
     '<tr><td><b>'+x.n+'</b></td><td>'+x.r+'</td><td>'+x.p+'</td><td>'+x.t+'</td><td class="mini">'+x.f+'</td></tr>').join('');
 }
-renderCargo();
+whenPanelOpens('cargobody',()=>{
+  if(cch){
+    CARGOCATS.forEach(c=>{
+      const b=document.createElement('button');
+      b.className='chip'+(c.k==='all'?' on':''); b.textContent=c.t;
+      b.onclick=()=>{cargoF=c.k;[...cch.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderCargo()};
+      cch.appendChild(b);
+    });
+  }
+  renderCargo();
+});
 
 /* ---------- GLOSSARY ---------- */
 function fallbackCopy(txt,cb){
@@ -205,14 +238,6 @@ function fallbackCopy(txt,cb){
 }
 let wcat='all';
 const wch=document.getElementById('wchips');
-if(wch){
-  WCATS.forEach(c=>{
-    const b=document.createElement('button');
-    b.className='chip'+(c.k==='all'?' on':''); b.textContent=c.t;
-    b.onclick=()=>{wcat=c.k;[...wch.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderWords()};
-    wch.appendChild(b);
-  });
-}
 function renderWords(){
   if(!document.getElementById('wlist'))return;
   const q=document.getElementById('wq').value.trim().toLowerCase();
@@ -232,15 +257,41 @@ function renderWords(){
     };
   });
 }
-renderWords();
+whenPanelOpens('wlist',()=>{
+  if(wch){
+    WCATS.forEach(c=>{
+      const b=document.createElement('button');
+      b.className='chip'+(c.k==='all'?' on':''); b.textContent=c.t;
+      b.onclick=()=>{wcat=c.k;[...wch.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderWords()};
+      wch.appendChild(b);
+    });
+  }
+  renderWords();
+});
 
 /* ---------- FAQ ---------- */
-document.getElementById('faqlist').innerHTML=FAQ.map((f,i)=>
-  '<div class="acc" id="acc'+i+'"><button type="button" onclick="document.getElementById(\'acc'+i+'\').classList.toggle(\'open\')">'+f.q+'</button>'+
-  '<div class="ans">'+f.a+'</div></div>').join('');
+whenPanelOpens('faqlist',()=>{
+  document.getElementById('faqlist').innerHTML=FAQ.map((f,i)=>
+    '<div class="acc" id="acc'+i+'"><button type="button" onclick="document.getElementById(\'acc'+i+'\').classList.toggle(\'open\')">'+f.q+'</button>'+
+    '<div class="ans">'+f.a+'</div></div>').join('');
+});
 
-/* ---------- CHECKLIST ---------- */
+/* ---------- CHECKLIST ----------
+   Belgilangan bandlar shu qurilmada saqlanadi. Ilgari saqlangan holat
+   guide.js tomonidan har bir bandni "bosib" tiklanardi — 25 ta band uchun
+   ro'yxat 25 marta qaytadan chizilardi. Endi holat to'g'ridan-to'g'ri
+   o'qiladi va ro'yxat bir marta chiziladi. */
+const CHK_KEY = 'xy-chk:' + location.pathname.split('/').pop();
 const state={};
+try {
+  const saved = JSON.parse(localStorage.getItem(CHK_KEY) || '[]');
+  if (Array.isArray(saved)) saved.forEach(k => { state[k] = true; });
+} catch (e) {}
+function saveChk(){
+  try {
+    localStorage.setItem(CHK_KEY, JSON.stringify(Object.keys(state).filter(k => state[k])));
+  } catch (e) {}
+}
 function renderChk(){
   let total=0,done=0;
   CHECK.forEach((g,gi)=>g.items.forEach((_,ii)=>{total++;if(state[gi+'-'+ii])done++}));
@@ -255,7 +306,7 @@ function renderChk(){
   }).join('')+
   '<div style="text-align:center;margin-top:18px"><span class="prog-txt" style="font-size:14px;padding:8px 18px">Umumiy: '+done+' / '+total+'</span></div>';
   document.querySelectorAll('.chk').forEach(el=>{
-    el.onclick=()=>{state[el.dataset.k]=!state[el.dataset.k];renderChk()};
+    el.onclick=()=>{state[el.dataset.k]=!state[el.dataset.k];saveChk();renderChk()};
   });
 }
-renderChk();
+whenPanelOpens('chklist',renderChk);

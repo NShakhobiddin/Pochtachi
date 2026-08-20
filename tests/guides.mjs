@@ -69,22 +69,60 @@ for (const file of guides) {
 
   await page.goto(`http://localhost:${PORT}/guides/inline/${file}`, { waitUntil: 'load' });
 
-  const info = await page.evaluate(() => ({
-    tabs: document.querySelectorAll('.tab').length,
-    wizard: (document.getElementById('wizcard') || {}).innerHTML?.length || 0,
-    words: document.querySelectorAll('#wlist > *').length,
-    faq: document.querySelectorAll('.acc').length,
-    checklist: document.querySelectorAll('.chk').length,
-    cargo: document.querySelectorAll('#cargobody > *').length,
-    ban: document.querySelectorAll('#banlist > *').length,
-    shared: !!document.querySelector('script[src$="guide-engine.js"]')
-  }));
+  /* Panellar talab bo'yicha chiziladi, shuning uchun har bir tabni ochib
+     ko'ramiz: bosilgandan keyin mazmuni paydo bo'lishi kerak. */
+  const info = await page.evaluate(async () => {
+    const wait = () => new Promise(r => setTimeout(r, 30));
+    const tabs = [...document.querySelectorAll('.tab')];
+    for (const t of tabs) { t.click(); await wait(); }
+    tabs[0] && tabs[0].click();
+    await wait();
+    return {
+      tabs: tabs.length,
+      wizard: (document.getElementById('wizcard') || {}).innerHTML?.length || 0,
+      words: document.querySelectorAll('#wlist > *').length,
+      faq: document.querySelectorAll('.acc').length,
+      checklist: document.querySelectorAll('.chk').length,
+      cargo: document.querySelectorAll('#cargobody > *').length,
+      ban: document.querySelectorAll('#banlist > *').length,
+      shared: !!document.querySelector('script[src$="guide-engine.js"]')
+    };
+  });
 
   check(`${name}: umumiy dvigatel`, info.shared);
   check(`${name}: bo'limlar to'ldi`,
     info.tabs >= 8 && info.wizard > 100 && info.words > 0 && info.faq > 0 &&
     info.checklist > 0 && info.cargo > 0 && info.ban > 0,
     `tab ${info.tabs}, lug'at ${info.words}, FAQ ${info.faq}, checklist ${info.checklist}, kargo ${info.cargo}, taqiq ${info.ban}`);
+
+  /* Ochilishda ortiqcha ish qilinmasin: faol bo'lmagan panellar bo'sh
+     turishi kerak (talab bo'yicha chizish). */
+  const lazyPage = await context.newPage();
+  await lazyPage.goto(`http://localhost:${PORT}/guides/inline/${file}`, { waitUntil: 'load' });
+  const atLoad = await lazyPage.evaluate(() => ({
+    words: document.querySelectorAll('#wlist > *').length,
+    ban: document.querySelectorAll('#banlist > *').length,
+    chk: document.querySelectorAll('.chk').length,
+    active: document.querySelectorAll('.panel.active').length
+  }));
+  check(`${name}: ochilishda faqat faol panel chiziladi`,
+    atLoad.active === 1 && atLoad.words === 0 && atLoad.ban === 0 && atLoad.chk === 0,
+    `lug'at ${atLoad.words}, taqiq ${atLoad.ban}, checklist ${atLoad.chk}`);
+  await lazyPage.close();
+
+  /* Sahifa yon tomonga siljimasin. */
+  const over = await page.evaluate(async () => {
+    const wait = () => new Promise(r => setTimeout(r, 30));
+    const de = document.documentElement;
+    let worst = 0, where = '';
+    for (const t of document.querySelectorAll('.tab')) {
+      t.click(); await wait();
+      const d = de.scrollWidth - de.clientWidth;
+      if (d > worst) { worst = d; where = t.textContent.trim(); }
+    }
+    return { worst, where };
+  });
+  check(`${name}: yon tomonga siljish yo'q`, over.worst <= 0, `+${over.worst}px ${over.where}`);
 
   // Kalkulyator: qiymat kiritilganda natija qayta hisoblanadi.
   await page.getByRole('button', { name: /Kalkulyator/ }).first().click();

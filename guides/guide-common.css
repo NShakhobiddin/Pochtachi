@@ -14,11 +14,19 @@
   --shadow-sm:0 1px 2px rgba(20,19,43,.045),0 6px 16px -10px rgba(20,19,43,.24);
   --shadow:0 1px 2px rgba(20,19,43,.05),0 10px 26px -14px rgba(20,19,43,.30);
   --shadow-lg:0 18px 38px -18px rgba(45,30,150,.65);
-  --font:'Onest','Noto Color Emoji',system-ui,-apple-system,sans-serif;
+  --font:'Onest','XY Flags','Noto Color Emoji',system-ui,-apple-system,sans-serif;
+  /* Sahifaning yon bo'shlig'i. Chetgacha cho'ziladigan bloklar (bo'lim
+     tasmasi) shu qiymatdan foydalanadi — ikki joyda ikki xil son yozilib
+     qolmasin. */
+  --xy-pad:14px;
 }
 
+/* Xavfsizlik chorasi: qandaydir blok bir-ikki piksel chetga chiqib qolsa ham
+   sahifa yon tomonga surilmaydi (clip — hidden'dan farqli, sticky'ni buzmaydi). */
+html{overflow-x:clip}
+
 body{background:#F2F1F8;color:#22213B;font-size:14.5px;letter-spacing:-.012em}
-.wrap{max-width:100%;padding:0 14px 40px}
+.wrap{max-width:100%;padding:0 var(--xy-pad) 40px}
 ::-webkit-scrollbar{width:0;height:0}
 *{scrollbar-width:none}
 
@@ -151,7 +159,9 @@ body{padding-bottom:0}
 
 /* O'qish progressi */
 nav.tabs{position:sticky;top:0}
-.xy-prog{position:absolute;left:0;bottom:-1px;height:2.5px;width:0;background:linear-gradient(90deg,#5A46EC,#3423B3);border-radius:0 3px 3px 0;transition:width .12s linear;display:block}
+/* O'qish progressi. Kenglik emas, transform o'zgaradi: aylantirishda brauzer
+   sahifani qaytadan o'lchashi shart emas, shuning uchun silliq ketadi. */
+.xy-prog{position:absolute;left:0;bottom:-1px;height:2.5px;width:100%;background:linear-gradient(90deg,#5A46EC,#3423B3);border-radius:0 3px 3px 0;display:block;transform:scaleX(0);transform-origin:left center;will-change:transform}
 
 /* Pastdagi bo'lim navigatsiyasi */
 .xy-secnav{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;align-items:center;gap:8px;
@@ -222,19 +232,22 @@ html.in-app .wrap { padding-bottom: 24px; }
    tasmadan tanlanadi, o'qish progressi esa joyida qoladi. */
 html.in-app .xy-secnav { display: none; }
 
-/* Bo'lim tasmasi doim qo'l ostida turadi */
+/* Bo'lim tasmasi doim qo'l ostida turadi. Chetgacha cho'zilishi uchun
+   .wrap ning yon bo'shlig'i qancha bo'lsa, shuncha manfiy margin oladi —
+   ilgari bu qiymat qo'lda 16px yozilgan, .wrap esa 14px edi va sahifa
+   har doim 2px ga yon tomonga siljib turardi. */
 nav.tabs {
   position: sticky; top: 0; z-index: 30;
   background: var(--slate-50); padding-top: 6px;
-  margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px;
+  margin-left: calc(-1 * var(--xy-pad)); margin-right: calc(-1 * var(--xy-pad));
+  padding-left: var(--xy-pad); padding-right: var(--xy-pad);
 }
 .tabs-scroll { scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
 .tabs-scroll .tab { scroll-snap-align: start; min-height: 44px; }
 
 /* Kichik ekranlarda bo'shliqlar ixchamroq */
 @media (max-width: 400px) {
-  .wrap { padding-left: 14px; padding-right: 14px; }
-  nav.tabs { margin-left: -14px; margin-right: -14px; padding-left: 14px; padding-right: 14px; }
+  :root { --xy-pad: 13px; }
   .card { padding: 14px; }
   h2 { font-size: 19px; }
 }

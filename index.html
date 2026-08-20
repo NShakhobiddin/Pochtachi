@@ -1356,7 +1356,7 @@
              (iframe loading="lazy" bo'lishi shart: aks holda brauzer shablondagi
              bog'lanmagan {{ }} manzilini yuklashga urinadi.) -->
         <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9A9AB4;font-size:14px;font-weight:600">Qo'llanma yuklanmoqda…</div>
-        <iframe src="{{ fullSrc }}" title="{{ fullTitle }}" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox" style="position:absolute;inset:0;width:100%;height:100%;border:none;background:#F8FAFC"></iframe>
+        <iframe src="{{ fullSrc }}" title="{{ fullTitle }}" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox" style="position:absolute;inset:0;width:100%;height:100%;border:none;background:transparent"></iframe>
       </div>
     </div>
   </sc-if>
@@ -1368,7 +1368,9 @@
         <span style="flex:1;font-size:13px;font-weight:600;color:#6C6C88;line-height:1.5;font-variant-numeric:tabular-nums">{{ fullGuideCount }} ta platforma uchun to'liq qo'llanma — bosqichlar, kalkulyator, lug'at va FAQ bilan.</span>
       </div>
       <sc-for list="{{ fullGuides }}" as="f" hint-placeholder-count="7">
-        <button sc-camel-on-click="{{ f.open }}" style="display:flex;align-items:center;gap:14px;background:#FFFFFF;border:none;border-radius:18px;padding:14px;cursor:pointer;text-align:left;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+        <!-- Barmoq tekkan zahoti yuklay boshlaymiz: bosish hodisasi kelguncha
+             va ekran chizilguncha o'tadigan vaqt behuda ketmasin. -->
+        <button sc-camel-on-pointer-down="{{ f.warm }}" sc-camel-on-click="{{ f.open }}" style="display:flex;align-items:center;gap:14px;background:#FFFFFF;border:none;border-radius:18px;padding:14px;cursor:pointer;text-align:left;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
           <div style="font-family:'Bricolage Grotesque','Onest','XY Flags','Noto Color Emoji',sans-serif;width:52px;height:52px;border-radius:20px;flex:none;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;background:{{ f.color }}">{{ f.mono }}</div>
           <div style="flex:1;display:flex;flex-direction:column;gap:5px;min-width:0">
             <div style="display:flex;align-items:center;gap:7px">
@@ -2847,6 +2849,10 @@ class Component extends DCLogic {
   warmGuide(id) {
     const g = FULL_GUIDES.find(x => x.id === id);
     if (!g || !g.file) return;
+    /* Foydalanuvchi aynan shu qo'llanmaga qo'l cho'zdi: to'plamli yuklashni
+       bir necha soniyaga to'xtatib turamiz, aks holda qolgan olti qo'llanma
+       kanalni band qilib, kerakligi kechikadi. */
+    this._holdUntil = Date.now() + 5000;
     this._warmed = this._warmed || new Set();
     if (this._warmed.has(g.file)) return;
     this._warmed.add(g.file);
@@ -2862,6 +2868,9 @@ class Component extends DCLogic {
       let i = 0;
       const next = () => {
         if (i >= files.length) return;
+        // Foydalanuvchi qo'llanma ochayotgan bo'lsa — navbat kutib turadi.
+        const hold = (this._holdUntil || 0) - Date.now();
+        if (hold > 0) { setTimeout(next, hold); return; }
         const url = files[i++];
         if (this._warmed.has(url)) return next();
         this._warmed.add(url);
@@ -3510,7 +3519,9 @@ class Component extends DCLogic {
       procSteps: PROC_STEPS, holdReasons: HOLD_REASONS, offices: OFFICES,
 
       guides: GUIDES.map(g => ({ ...g, count: g.steps.length, open:() => { this.setState({ guideId:g.id, guideStep:0 }); this.push('guide'); } })),
-      fullGuides: FULL_GUIDES.map(f => ({ ...f, open:() => { this.setState({ fullId:f.id }); this.push('fullguide'); } })),
+      fullGuides: FULL_GUIDES.map(f => ({ ...f,
+        warm: () => this.warmGuide(f.id),
+        open: () => { this.setState({ fullId: f.id }); this.push('fullguide'); } })),
       fullGuideCount: FULL_GUIDES.length,
 
       sFull: cur === 'fullguide',
