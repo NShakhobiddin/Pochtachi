@@ -189,6 +189,49 @@ try {
   const frozen = template.match(/\d{2}\.\d{2}\.20\d{2}/g) || [];
   check('shablonda qotib qolgan sana yo\'q', frozen.length === 0, frozen.slice(0, 3).join(', '));
 
+  // 10b. Do'konlar bo'limi papka ko'rinishida ochiladi
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
+  await page.waitForTimeout(400);
+  await page.getByText("Do'konlar", { exact: false }).first().click();
+  await page.waitForTimeout(600);
+  const folders = await page.evaluate(() => ({
+    chooser: /Bo'lim tanlang/.test(document.body.innerText),
+    cards: [...document.querySelectorAll('button')].filter(b => /\d+ ta/.test(b.innerText)).length,
+    list: document.querySelectorAll('button[style*="content-visibility"]').length
+  }));
+  check("Do'konlar papka ko'rinishida ochiladi",
+    folders.chooser && folders.cards >= 6 && folders.list === 0,
+    `papkalar ${folders.cards}, ro'yxat ${folders.list}`);
+
+  await page.getByText('Elektronika', { exact: false }).first().click();
+  await page.waitForTimeout(600);
+  const inFolder = await page.evaluate(() => ({
+    cards: document.querySelectorAll('button[style*="content-visibility"]').length,
+    onlyCat: [...document.querySelectorAll('button[style*="content-visibility"]')]
+      .every(b => /elektronika/i.test(b.innerText)),
+    hint: /Shu bo'lim ichida qidirish/.test(document.body.innerHTML)
+  }));
+  check('papka ichida faqat o\'sha turdagi do\'konlar',
+    inFolder.cards > 0 && inFolder.onlyCat && inFolder.hint,
+    `${inFolder.cards} ta`);
+
+  await page.goBack();
+  await page.waitForTimeout(500);
+  check('papkadan orqaga qaytiladi',
+    await page.evaluate(() => /Bo'lim tanlang/.test(document.body.innerText)));
+
+  // Qidiruv papkalarni chetlab o'tadi
+  await page.locator('input[type=search]').first().fill('amazon');
+  await page.waitForTimeout(500);
+  const searched = await page.evaluate(() => ({
+    chooser: /Bo'lim tanlang/.test(document.body.innerText),
+    cards: document.querySelectorAll('button[style*="content-visibility"]').length
+  }));
+  check('qidiruv papkalarni chetlab natija beradi',
+    !searched.chooser && searched.cards >= 1, `${searched.cards} ta`);
+  await page.locator('input[type=search]').first().fill('');
+  await page.waitForTimeout(400);
+
   // 11. Do'kon logotiplari uchun bitta manba qoldi
   const logoHosts = ['unavatar.io', 'icons.duckduckgo.com'].filter(h => src.includes(h));
   check('ortiqcha logotip xizmatlari olib tashlandi', logoHosts.length === 0, logoHosts.join(', '));
@@ -206,6 +249,25 @@ try {
     });
     check(`360 px da gorizontal siljish yo'q: ${tab}`, over <= 0, over > 0 ? `+${over}px` : '');
   }
+  // Papkalar va papka ichi ham 360 px da siljimasin
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click().catch(() => {});
+  await page.waitForTimeout(400);
+  await page.getByText("Do'konlar", { exact: false }).first().click().catch(() => {});
+  await page.waitForTimeout(500);
+  for (const label of ['papkalar', 'papka ichi']) {
+    if (label === 'papka ichi') {
+      await page.getByText('Elektronika', { exact: false }).first().click().catch(() => {});
+      await page.waitForTimeout(500);
+    }
+    const over = await page.evaluate(() => {
+      const m = document.querySelector('main');
+      return m ? m.scrollWidth - m.clientWidth : 0;
+    });
+    check(`360 px da gorizontal siljish yo'q: ${label}`, over <= 0, over > 0 ? `+${over}px` : '');
+  }
+  await page.goBack().catch(() => {});
+  await page.waitForTimeout(300);
+
   await page.setViewportSize({ width: 430, height: 880 });
   await page.waitForTimeout(300);
 
