@@ -117,3 +117,47 @@
   var bar = document.getElementById('site-bar');
   if (bar && window.top === window.self) bar.hidden = false;
 })();
+
+/* Kalkulyator uchun umumiy ma'lumot: bojxona me'yorlari va dollar kursi.
+   Me'yorlar ilova bilan bitta manbadan (data/norms.json) olinadi, kurs esa
+   ilova saqlab qo'ygan Markaziy bank kursidan — shunda qo'llanmadagi va
+   ilovadagi hisob bir xil chiqadi. Ikkalasi ham topilmasa, maydondagi
+   qiymatlar o'z holicha qoladi va foydalanuvchi ularni qo'lda o'zgartira oladi. */
+(function () {
+  if (!document.getElementById('usdrate')) return;
+
+  var recalc = function () { if (typeof window.calc === 'function') window.calc(); };
+
+  // 1. Ilova saqlagan kurs (bir xil domen, shuning uchun tarmoq kerak emas)
+  try {
+    var cached = JSON.parse(localStorage.getItem('xy_usd_rate') || 'null');
+    if (cached && cached.v > 0) {
+      var input = document.getElementById('usdrate');
+      if (input && Math.round(cached.v) !== Math.round(+input.value)) {
+        input.value = Math.round(cached.v);
+        recalc();
+      }
+    }
+  } catch (e) {}
+
+  // 2. Amaldagi bojxona me'yorlari
+  fetch('../../data/norms.json', { cache: 'no-cache' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) {
+      var rows = d && Array.isArray(d.norms) ? d.norms : null;
+      if (!rows || !rows.length) return;
+      var today = new Date().toISOString().slice(0, 10);
+      var active = rows.filter(function (n) { return n.from <= today; }).pop() || rows[0];
+      if (!active || !(active.bhm > 0)) return;
+      window.XY_NORMS = active;
+      var channel = document.getElementById('channel');
+      if (channel && active.freeUsd > 0) {
+        // Kuryerlik kanalidagi me'yor qiymatini amaldagi normaga moslaymiz
+        Array.prototype.forEach.call(channel.options || [], function (opt) {
+          if (/kuryer|kargo/i.test(opt.textContent)) opt.value = String(active.freeUsd);
+        });
+      }
+      recalc();
+    })
+    .catch(function () {});
+})();

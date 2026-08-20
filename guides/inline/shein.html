@@ -224,7 +224,7 @@
           <div class="grid g2" style="gap:8px">
             <div class="field" style="margin:0">
               <label class="f">1 USD = ... so'm</label>
-              <input type="number" id="usdrate" value="11857" min="1" oninput="calc()">
+              <input type="number" id="usdrate" value="12650" min="1" oninput="calc()">
             </div>
             <div class="field" style="margin:0">
               <label class="f">1 USD = ... €</label>
@@ -543,16 +543,36 @@ function calc(){
 
   const limit=num('channel');
   const remain=Math.max(0,limit-num('used'));
-  const excess=Math.max(0,customsValue-remain);
+  /* Me'yor tovar qiymatiga qo'llanadi; yetkazishning ortiqcha qismga to'g'ri
+     keladigan ulushi nisbat bo'yicha qo'shiladi — ilovadagi hisob bilan bir xil.
+     Ilgari yetkazish ham me'yordan chegirilib, boj oshib ketardi. */
+  const goodsTotal=Math.max(0,customsValue-shipUsd);
+  const excessGoods=Math.max(0,goodsTotal-remain);
+  const ratio=goodsTotal>0 ? excessGoods/goodsTotal : 0;
+  const excess=excessGoods+shipUsd*ratio;
 
-  let duty=0, dutyNote='';
+  /* Me'yorlar ilovadagi bilan bir xil manbadan keladi (guide.js ularni
+     data/norms.json dan oladi), topilmasa amaldagi qiymatlar ishlatiladi. */
+  const N = (typeof window !== 'undefined' && window.XY_NORMS) || {};
+  const DUTY_PCT = N.dutyPct > 0 ? N.dutyPct : 0.30;
+  const MIN_PER_KG = N.minPerKg >= 0 ? N.minPerKg : 3;
+  const FEE_SHARE = N.feeShare >= 0 ? N.feeShare : 0.25;
+  const FEE_UZS = (N.bhm > 0 ? N.bhm : 412000) * FEE_SHARE;
+
+  let duty=0, dutyNote='', fee=0;
   if(excess>0){
-    const pct=excess*0.30, perKg=billed*3;
-    duty=Math.max(pct,perKg);
-    dutyNote = perKg>pct ? 'min $3/kg qoidasi qo’llandi' : '30% stavka';
+    // Ortiqcha qiymatga to'g'ri keladigan vazn ulushi (ilovadagi kabi)
+    const excessKg = billed*ratio;
+    const pct = excess*DUTY_PCT;
+    const perKg = excessKg*MIN_PER_KG;
+    duty = Math.max(pct,perKg);
+    dutyNote = perKg>pct ? ('min $'+MIN_PER_KG+'/kg qoidasi qo’llandi') : (Math.round(DUTY_PCT*100)+'% stavka');
+    fee = FEE_UZS;
   }
   const totalUsd=goodsUsd+innerUsd+localTax+shipUsd+duty;
-  const totalUzs=totalUsd*usdUzs;
+  // Bojxona yig'imi so'mda undiriladi, shuning uchun yakuniy summaga qo'shiladi.
+  const totalUzs=totalUsd*usdUzs+fee;
+  const totalUsdAll=usdUzs>0 ? totalUzs/usdUzs : totalUsd;
 
   const parts=[
     {l:'Tovar',v:goodsUsd+innerUsd,c:'#c7d2fe'},
@@ -564,7 +584,7 @@ function calc(){
 
   document.getElementById('result').innerHTML=
    '<div class="total">'+fmt(totalUzs)+' <small>so’m</small></div>'+
-   '<div class="sum">≈ $'+fmt2(totalUsd)+' · hisob og’irligi '+fmt2(billed)+' kg</div>'+
+   '<div class="sum">≈ $'+fmt2(totalUsdAll)+' · hisob og’irligi '+fmt2(billed)+' kg</div>'+
    '<div class="bar">'+parts.map(p=>'<i style="width:'+(p.v/sum*100)+'%;background:'+p.c+'"></i>').join('')+'</div>'+
    '<div class="legend">'+parts.map(p=>'<span><i style="background:'+p.c+'"></i>'+p.l+' $'+fmt2(p.v)+'</span>').join('')+'</div>'+
    '<div style="margin-top:14px">'+
@@ -577,7 +597,8 @@ function calc(){
    '<div class="rrow"><span>Bojsiz qolgan norma</span><span>$'+fmt2(remain)+'</span></div>'+
    (excess>0
      ? '<div class="rrow"><span>Normadan oshgan qism</span><span>$'+fmt2(excess)+'</span></div>'+
-       '<div class="rrow"><span>Bojxona to’lovi <span style="opacity:.7;font-weight:400">('+dutyNote+')</span></span><span>$'+fmt2(duty)+'</span></div>'
+       '<div class="rrow"><span>Bojxona to’lovi <span style="opacity:.7;font-weight:400">('+dutyNote+')</span></span><span>$'+fmt2(duty)+'</span></div>'+
+       '<div class="rrow"><span>Bojxona yig’imi (BHM '+Math.round(FEE_SHARE*100)+'%)</span><span>'+fmt(fee)+' so’m</span></div>'
      : '<div class="rrow"><span>Bojxona to’lovi</span><span>Yo’q ✓</span></div>')+
    '</div>';
 }
