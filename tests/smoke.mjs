@@ -128,6 +128,17 @@ try {
   });
   check('kalkulyator alohida qator bo\'lib turadi', calcRow.bor, calcRow.matn.slice(0, 60));
 
+  // Har bir bojxona qatorida o'z ikonkasi bor va u yuklangan
+  const bojIcons = await page.evaluate(() => {
+    const imgs = [...document.querySelectorAll('img[src*="icons/boj-"]')];
+    return { soni: imgs.length,
+             yuklandi: imgs.filter(i => i.complete && i.naturalWidth > 0).length,
+             nomlar: imgs.map(i => i.src.split('/').pop()).join(', ') };
+  });
+  check('bojxona qatorlarida ikonkalar bor',
+    bojIcons.soni === 6 && bojIcons.yuklandi === 6,
+    `${bojIcons.yuklandi}/${bojIcons.soni} yuklandi`);
+
   await page.getByText('Bojxona kalkulyatori', { exact: false }).first().click();
   await page.waitForTimeout(700);
   const calc = await page.evaluate(() => {

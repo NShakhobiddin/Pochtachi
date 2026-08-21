@@ -25,7 +25,7 @@ manifest.webmanifest           PWA manifesti
 data/norms.json                bojxona me'yorlari (kodga tegmasdan yangilanadi)
 vendor/                        React va ReactDOM (unpkg'dagi asl fayllar)
 fonts/                         matn shriftlari (o'z domenimizda) va bayroq subseti
-icons/                         3D bo'lim ikonkalari, tab-bar ikonkalari, PWA ikonkalari
+icons/                         3D bo'lim ikonkalari (`boj-*` — bojxona qatorlari), tab-bar va PWA ikonkalari
 icons/src/                     ikonkalarning asl (katta) nusxalari (saytga chiqmaydi)
 logos/                         kuryer logotiplari (128 px WebP)
 logos/src/                     logotiplarning asl PNG nusxalari (saytga chiqmaydi)

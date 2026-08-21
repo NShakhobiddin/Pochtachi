@@ -8,7 +8,7 @@
  *     qat'i nazar saqlanadigan keshda qoladi.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
  */
-const VERSION = '4af182ea19e4';
+const VERSION = 'ab562cfb0596';
 const CACHE = 'xarid-' + VERSION;
 /* Logotiplar keshi ilova versiyasiga bog'lanmaydi: yangilanish chiqqanda
    ular qaytadan yuklanmaydi. */
@@ -32,6 +32,12 @@ const PRECACHE = [
   "fonts/text.css",
   "stores/index.json",
   "icons/apple-touch-icon.png",
+  "icons/boj-aloqa.webp",
+  "icons/boj-kalkulyator.webp",
+  "icons/boj-meyor.webp",
+  "icons/boj-taqiq.webp",
+  "icons/boj-tartib.webp",
+  "icons/boj-tolov.webp",
   "icons/courier-3d.webp",
   "icons/customs-3d.webp",
   "icons/guides-3d.webp",

@@ -22,8 +22,11 @@ const QUALITY = 0.88;
 
 /* Ekrandagi o'lcham x3 (eng zich ekranlar uchun ham yetarli).
    Bo'lim ikonkalari 64 px chiziladi, ya'ni 192 px kerak bo'lardi — asl
-   nusxalar 180 px, shuning uchun ular kichraytirilmaydi. */
-const target = name => name.startsWith('tab-') ? 72 : 180;
+   nusxalar 180 px, shuning uchun ular kichraytirilmaydi.
+   `boj-` ikonkalari bojxona qatorlarida 46 px chiziladi. */
+const target = name =>
+  name.startsWith('tab-') ? 72 :
+  name.startsWith('boj-') ? 144 : 180;
 
 const sources = readdirSync(SRC).filter(f => f.endsWith('.webp')).sort();
 
