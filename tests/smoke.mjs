@@ -119,15 +119,28 @@ try {
     check(`bo'lim ochiladi: ${tab}`, current.trim() === tab);
   }
 
-  // 3. Bojxona kalkulyatori: $320, 2.5 kg, $9/kg -> ma'lum natija
+  // 3. Bojxona kalkulyatori alohida qatorda va bosilganda ochiladi
   await page.locator('nav button', { hasText: 'Bojxona' }).first().click();
   await page.waitForTimeout(600);
+  const calcRow = await page.evaluate(() => {
+    const b = [...document.querySelectorAll('button')].find(x => /Bojxona kalkulyatori/.test(x.innerText));
+    return { bor: !!b, matn: b ? b.innerText.replace(/\n/g, ' · ') : '' };
+  });
+  check('kalkulyator alohida qator bo\'lib turadi', calcRow.bor, calcRow.matn.slice(0, 60));
+
+  await page.getByText('Bojxona kalkulyatori', { exact: false }).first().click();
+  await page.waitForTimeout(700);
   const calc = await page.evaluate(() => {
     const text = document.body.innerText;
     const m = text.match(/([\d\s]+)\s*so'm/g);
-    return m ? m.slice(0, 4).join(' | ') : '';
+    return { natija: m ? m.map(x => x.replace(/\s+/g, ' ').trim()).slice(0, 3).join(' | ') : '',
+             maydonlar: document.querySelectorAll('input').length };
   });
-  check('kalkulyator natija chiqaradi', /\d/.test(calc), calc.slice(0, 60));
+  check('bosilganda kalkulyator ochiladi va hisoblaydi',
+    /\d/.test(calc.natija) && calc.maydonlar >= 3,
+    `${calc.maydonlar} ta maydon · ${calc.natija.slice(0, 40)}`);
+  await page.goBack();
+  await page.waitForTimeout(400);
 
   // 4. Qidiruv kirillcha so'rovni tushunadi
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
