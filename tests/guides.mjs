@@ -124,6 +124,33 @@ for (const file of guides) {
   });
   check(`${name}: yon tomonga siljish yo'q`, over.worst <= 0, `+${over.worst}px ${over.where}`);
 
+  /* Qadamlar ichidagi ekran maketlari: har biri chizilgan bo'lsin va
+     360 px kenglikda ham kartochkadan chiqib ketmasin. */
+  const shots = await page.evaluate(async () => {
+    const wait = () => new Promise(r => setTimeout(r, 40));
+    const tab = [...document.querySelectorAll('.tab')].find(t => /Bosqich/i.test(t.textContent));
+    if (!tab) return { bor: 0, bo1sh: 0, chiqqan: 0 };
+    tab.click(); await wait();
+    const next = document.getElementById('wnext');
+    let bor = 0, bosh = 0, chiqqan = 0;
+    const lim = document.documentElement.clientWidth + 0.5;
+    for (let i = 0; i < 20; i++) {
+      for (const f of document.querySelectorAll('#wizcard figure.shot')) {
+        bor++;
+        const r = f.getBoundingClientRect();
+        if (r.width < 40 || r.height < 40) bosh++;
+        for (const el of f.querySelectorAll('*'))
+          if (el.getBoundingClientRect().right > lim) { chiqqan++; break; }
+      }
+      if (!next || next.disabled) break;
+      next.click(); await wait();
+    }
+    return { bor, bosh, chiqqan };
+  });
+  check(`${name}: qadam maketlari joyida`,
+    shots.bosh === 0 && shots.chiqqan === 0,
+    `${shots.bor} ta maket, bo'sh ${shots.bosh}, chiqqan ${shots.chiqqan}`);
+
   // Kalkulyator: qiymat kiritilganda natija qayta hisoblanadi.
   await page.getByRole('button', { name: /Kalkulyator/ }).first().click();
   const before = (await page.textContent('#result')).trim();

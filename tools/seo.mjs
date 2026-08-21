@@ -18,7 +18,7 @@ const SITE = 'https://nshakhobiddin.github.io/Pochtachi/';
 const OG_IMAGE = SITE + 'icons/og-cover.png';
 
 const GUIDES = [
-  { id: 'taobao', title: 'Taobao', flag: '🇨🇳', sections: 10, desc: "Rasm orqali qidiruv, Alipay to'lovi, kargo ombori va bojxona" },
+  { id: 'taobao', title: 'Taobao', flag: '🇨🇳', sections: 10, desc: "Ekran maketlari bilan: rasm orqali qidiruv, Alipay to'lovi, kargo manzili va bojxona" },
   { id: 'pinduoduo', title: 'Pinduoduo', flag: '🇨🇳', sections: 10, desc: "Guruh xaridi mexanikasi, xitoycha lug'at, eng arzon yo'nalish" },
   { id: 'poizon', title: 'Poizon (Dewu)', flag: '🇨🇳', sections: 10, desc: "Autentifikatsiya yorlig'i, krossovka o'lchami, vositachi tanlash" },
   { id: 'shein', title: 'SHEIN', flag: '🇨🇳', sections: 9, desc: "Qaysi mamlakat manzili arzon, o'lcham xatolari, qaytarish" },

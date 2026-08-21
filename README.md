@@ -34,6 +34,7 @@ stores/src/                    logotiplarning asl PNG nusxalari (saytga chiqmayd
 guides/index.html              GENERATSIYA: qo'llanmalarning indekslanadigan ro'yxati
 guides/inline/*.html           7 ta platforma qo'llanmasi (mustaqil sahifa ham)
 guides/guide-base.css          qo'llanmalarning umumiy uslublari
+                               (shu jumladan `figure.shot` — qadamlardagi ekran maketlari)
 guides/guide-common.css        umumiy yordamchi uslublar
 guides/guide-engine.js         qo'llanmalarning umumiy render kodi (7 tasi uchun bitta)
 guides/guide.js                qo'llanmalarning umumiy skripti
