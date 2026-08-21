@@ -164,7 +164,19 @@ try {
 
   // 5. Qo'llanma iframe'da ochiladi
   await page.locator('nav button', { hasText: "Qo'llanmalar" }).first().click();
-  await page.waitForTimeout(600);
+  await page.waitForTimeout(900);
+
+  /* Qo'llanma kartochkalari do'kon logotipini ko'rsatadi — Do'konlar
+     bo'limidagi bilan bir xil. Ilgari bu yerda rangli monogramma turardi. */
+  const guideLogos = await page.evaluate(() => {
+    const wanted = ['taobao', 'pinduoduo', 'poizon', 'shein', 'trendyol', 'amazon', 'ebay'];
+    const found = [...document.querySelectorAll('div')]
+      .map(d => (d.style.backgroundImage || '').match(/stores\/([a-z0-9-]+)\.webp/))
+      .filter(Boolean).map(m => m[1]);
+    return wanted.filter(w => found.includes(w));
+  });
+  check('qo\'llanma kartochkalarida do\'kon logotipi', guideLogos.length === 7, guideLogos.join(', '));
+
   await page.getByText('Taobao', { exact: true }).first().click();
   await page.waitForTimeout(1800);
   const frame = page.frames().find(f => f.url().includes('guides/'));

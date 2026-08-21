@@ -162,6 +162,29 @@ for (const file of guides) {
   check(`${name}: kalkulyator qayta hisoblaydi`, after !== before && /so’m|so'm/.test(after),
     after.split('\n')[0].slice(0, 28));
 
+  /* Qisqa yakun tasmasi: maydonlar to'ldirilayotganda ko'rinadi va hech
+     narsani to'smaydi, to'liq natijaga yetganda o'chadi. */
+  const miniState = await page.evaluate(async () => {
+    const wait = () => new Promise(r => setTimeout(r, 350));
+    const m = document.querySelector('.res-mini');
+    if (!m) return { bor: false };
+    window.scrollTo(0, 0); await wait();
+    const yuqorida = !m.classList.contains('off');
+    const matn = m.textContent.replace(/\s+/g, ' ').trim();
+    /* Tasma formadagi maydonni to'smasin: eng pastdagi ko'rinib turgan
+       maydon tasmaning tepasidan yuqorida bo'lishi shart emas, lekin
+       tasmaning o'zi ekranning yarmidan ko'pini egallamasligi kerak. */
+    const ulush = m.getBoundingClientRect().height / innerHeight;
+    document.getElementById('result').scrollIntoView({ block: 'center' });
+    /* Kuzatuvchi (IntersectionObserver) keyingi kadrda ishlaydi — belgini
+       kutamiz, qat'iy uxlash bilan test tasodifan yiqilmasin. */
+    for (let i = 0; i < 20 && !m.classList.contains('off'); i++) await wait();
+    return { bor: true, yuqorida, ochdi: m.classList.contains('off'), matn, ulush };
+  });
+  check(`${name}: yakun tasmasi ishlaydi`,
+    miniState.bor && miniState.yuqorida && miniState.ochdi && miniState.ulush < 0.2,
+    miniState.bor ? `${miniState.matn.slice(0, 34)} · ekranning ${Math.round(miniState.ulush * 100)}%` : 'tasma yo\'q');
+
   check(`${name}: konsol toza`, errors.length === 0, errors.slice(0, 2).join(' | '));
   check(`${name}: 404 yo'q`, missing.length === 0, missing.join(', '));
   await page.close();

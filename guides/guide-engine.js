@@ -103,6 +103,32 @@ const SHIP_LABEL  = CALC.shipLabel  || 'Xalqaro yetkazish';
 const SHIP_SHORT  = CALC.shipShort  || 'Yetkazish';
 const INNER_LABEL = CALC.innerLabel || 'Mahalliy yetkazish';
 
+/* Yakuniy summa qisqa tasma bo'lib pastda turadi. Ilgari to'liq natija
+   kartochkasi yopishqoq edi — u telefon ekranining yarmini egallab, og'irlik
+   va tarif maydonlarini to'sib qo'yardi. Endi maydonlar to'ldirilayotganda
+   faqat summa ko'rinadi, to'liq hisob esa o'z joyida qoladi va tasma
+   ko'ringanda o'chadi. */
+let miniEl = null;
+function mini(){
+  if (miniEl) return miniEl;
+  const panel = document.getElementById('p-calc');
+  const res = document.getElementById('result');
+  if (!panel || !res) return null;
+  miniEl = document.createElement('button');
+  miniEl.type = 'button';
+  miniEl.className = 'res-mini';
+  miniEl.setAttribute('aria-label', 'To\'liq hisobga o\'tish');
+  miniEl.addEventListener('click', () => res.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+  panel.appendChild(miniEl);
+  if (typeof IntersectionObserver === 'function') {
+    new IntersectionObserver(
+      e => miniEl.classList.toggle('off', e[0].isIntersecting),
+      { threshold: .12 }
+    ).observe(res);
+  }
+  return miniEl;
+}
+
 function calc(){
   const fx=Math.max(num('fxrate'),0.0001);
   const usdUzs=num('usdrate');
@@ -180,6 +206,12 @@ function calc(){
        '<div class="rrow"><span>Bojxona yig’imi (BHM '+Math.round(FEE_SHARE*100)+'%)</span><span>'+fmt(fee)+' so’m</span></div>'
      : '<div class="rrow"><span>Bojxona to’lovi</span><span>Yo’q ✓</span></div>')+
    '</div>';
+
+  const m = mini();
+  if (m) m.innerHTML =
+    '<span class="rm-l">Jami</span>' +
+    '<span class="rm-v">' + fmt(totalUzs) + ' <small>so’m</small></span>' +
+    '<span class="rm-s">≈ $' + fmt2(totalUsdAll) + '</span>';
 }
 calc();
 

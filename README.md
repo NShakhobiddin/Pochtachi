@@ -147,6 +147,8 @@ Nima qilindi:
 - Ikonkalar ekrandagi o'lchamiga moslangan.
 - Uzun ro'yxatlarda `content-visibility`; renderVals() ichidagi og'ir
   ro'yxatlar faqat o'z ekrani ochiqligida quriladi.
+- Ilova ichidan ochilmaydigan eski qadam-ekrani (`GUIDES` massivi va uning
+  skrinshot o'rni) olib tashlandi — `index.html` 11 KB ga qisqardi.
 
 Do'kon logotiplari ham loyihaga ko'chirildi, shuning uchun ilovada uchinchi
 tomon serveriga birorta ham so'rov qolmadi.
