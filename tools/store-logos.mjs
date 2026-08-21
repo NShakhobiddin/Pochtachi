@@ -4,8 +4,7 @@
 // Nima uchun: ilova 43 ta do'kon logotipini har ochilishda tashqi favicon
 // xizmatlaridan olardi — bu sekin, oflaynda ishlamaydi va har bir do'kon
 // domeni uchinchi tomon xizmatiga ko'rinib qoladi. Bu skript ularni bir marta
-// yuklab, 128 px WebP ga o'giradi; shundan keyin ilova faqat o'z domenidan
-// oladi.
+// yuklab, WebP ga o'giradi; shundan keyin ilova faqat o'z domenidan oladi.
 //
 // Ishlatish:
 //   node tools/store-logos.mjs [--force]           tarmoqdan yuklab oladi
@@ -27,7 +26,9 @@ import { dirname, join } from 'node:path';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'stores');
-const SIZE = 128;
+/* Logotiplar so'z-belgi (wordmark) ko'rinishida — kvadrat emas, cho'ziq.
+   Shuning uchun uzun tomoni shu qiymatga keltiriladi, nisbat saqlanadi. */
+const SIZE = 224;
 const QUALITY = 0.85;
 const FORCE = process.argv.includes('--force');
 const fromIdx = process.argv.indexOf('--from');

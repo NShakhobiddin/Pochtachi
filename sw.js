@@ -8,7 +8,7 @@
  *     qat'i nazar saqlanadigan keshda qoladi.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
  */
-const VERSION = 'b83598044409';
+const VERSION = '4af182ea19e4';
 const CACHE = 'xarid-' + VERSION;
 /* Logotiplar keshi ilova versiyasiga bog'lanmaydi: yangilanish chiqqanda
    ular qaytadan yuklanmaydi. */
@@ -67,6 +67,7 @@ const PRECACHE = [
   "stores/bhphoto.webp",
   "stores/carters.webp",
   "stores/ebay.webp",
+  "stores/faoschwarz.webp",
   "stores/farfetch.webp",
   "stores/footlocker.webp",
   "stores/hamleys.webp",
@@ -75,6 +76,7 @@ const PRECACHE = [
   "stores/jomashop.webp",
   "stores/lego.webp",
   "stores/lenovo.webp",
+  "stores/mattel.webp",
   "stores/microcenter.webp",
   "stores/mytheresa.webp",
   "stores/newbalance.webp",
@@ -87,11 +89,14 @@ const PRECACHE = [
   "stores/samsung.webp",
   "stores/sephora.webp",
   "stores/shein.webp",
+  "stores/smythstoys.webp",
   "stores/taobao.webp",
   "stores/tmall.webp",
+  "stores/toysrus.webp",
   "stores/trendyol.webp",
   "stores/ulta.webp",
   "stores/uniqlo.webp",
+  "stores/victoriassecret.webp",
   "stores/walmart.webp",
   "stores/xiaomi.webp",
   "stores/zara.webp"

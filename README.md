@@ -29,7 +29,8 @@ icons/                         3D bo'lim ikonkalari, tab-bar ikonkalari, PWA iko
 icons/src/                     ikonkalarning asl (katta) nusxalari (saytga chiqmaydi)
 logos/                         kuryer logotiplari (128 px WebP)
 logos/src/                     logotiplarning asl PNG nusxalari (saytga chiqmaydi)
-stores/                        do'kon logotiplari (128 px WebP) va index.json
+stores/                        do'kon logotiplari (224x112 WebP) va index.json
+stores/src/                    logotiplarning asl PNG nusxalari (saytga chiqmaydi)
 guides/index.html              GENERATSIYA: qo'llanmalarning indekslanadigan ro'yxati
 guides/inline/*.html           7 ta platforma qo'llanmasi (mustaqil sahifa ham)
 guides/guide-base.css          qo'llanmalarning umumiy uslublari
@@ -92,17 +93,16 @@ Oddiy brauzerda bu kodning ta'siri yo'q — sayt avvalgidek ishlayveradi.
 
 ## Do'kon logotiplari
 
-Logotiplar loyihada saqlanadi (`stores/*.webp`, 128 px), shuning uchun ilova ularni faqat o'z domenidan oladi va oflaynda ham ko'rsatadi. 43 ta do'kondan 38 tasining logotipi bor; qolganlari rangli monogramma bilan ko'rinadi (ro'yxat `stores/README.md` da).
+43 ta do'konning hammasida logotip bor: `stores/*.webp`, 224x112 px, jami ~178 KB. Ular so'z-belgi (wordmark) ko'rinishida, shuning uchun ilovada cho'ziq qutida ko'rsatiladi. Asl PNG nusxalar `stores/src/` da (saytga chiqmaydi).
 
-Yangilash yoki qo'shish:
+Qayta yasash:
 
 ```bash
-npm run store-logos                 # favicon xizmatlaridan yuklab oladi (internet kerak)
-npm run store-logos -- --from DIR   # tayyor rasmlar solingan papkadan oladi
+npm run store-logos -- --from stores/src --force
 npm run build                       # service worker ro'yxati yangilanadi
 ```
 
-Tarmoqdan yuklashni GitHub'da ham qilish mumkin: **Actions → "Do'kon logotiplarini yuklash" → Run workflow**.
+Tafsilotlar `stores/README.md` da.
 
 ## Tashqi bog'liqliklar
 
