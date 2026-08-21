@@ -14,7 +14,8 @@
     "serve": "python3 -m http.server 8000",
     "store-logos": "node tools/store-logos.mjs",
     "fonts": "node tools/fetch-fonts.mjs",
-    "icons": "node tools/optimize-icons.mjs"
+    "icons": "node tools/optimize-icons.mjs",
+    "flags": "python3 tools/build_flags_font.py"
   },
   "devDependencies": {
     "playwright": "^1.56.0"

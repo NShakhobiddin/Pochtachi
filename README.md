@@ -56,11 +56,11 @@ npm run fonts            # matn shriftlarini Google Fonts'dan qayta yuklab olish
 npm run serve            # lokal server: http://localhost:8000
 ```
 
-Bayroq shriftini qayta yasash uchun (kamdan-kam kerak):
+Bayroq shriftini qayta yasash uchun (yangi davlat qo'shilganda):
 
 ```bash
-pip install fonttools brotli
-python3 tools/subset_flags.py <noto-color-emoji-flags.woff2>
+pip install fonttools brotli picosvg
+npm run flags        # fonts/flags-src/*.svg -> fonts/flags.woff2
 ```
 
 ## Ma'lumotni yangilash
@@ -110,7 +110,11 @@ Sayt tashqariga faqat bitta so'rov yuboradi — valyuta kursi uchun `cbu.uz` ga.
 
 **Shriftlar.** Butun ilova bitta oiladan foydalanadi — `Onest` (o'zgaruvchan shrift), `fonts/` ichida. Brauzer sahifadagi belgilarga qarab faqat keraklisini oladi: lotin (32 KB), kirillcha matn ko'rinsa yana 14 KB, bayroq ko'rinsa `flags.woff2` (44 KB). Ilgari ular `fonts.googleapis.com` -> `fonts.gstatic.com` zanjiri orqali kelardi va 238 KB chiqardi. Yangilash: `npm run fonts`.
 
-**Bayroqlar.** `fonts/flags.woff2` — ilovada ishlatiladigan 23 ta bayroq: 🇺🇿 🇨🇳 🇺🇸 🇹🇷 🇬🇧 🇦🇪 🇰🇷 🇷🇺 🇰🇿 🇰🇬 🇹🇯 🇲🇾 🇪🇺 🇩🇪 🇫🇷 🇮🇹 🇪🇸 🇬🇷 🇨🇦 🇵🇱 🇵🇹 🇺🇦 🇨🇿. Yangi bayroq qo'shilsa, subsetni qayta yasash kerak (`python3 tools/subset_flags.py <manba.woff2>`), aks holda u tizim shriftidan chiqadi.
+**Bayroqlar.** `fonts/flags.woff2` (25 KB) — ilovada ishlatiladigan 23 ta bayroq: 🇺🇿 🇨🇳 🇺🇸 🇹🇷 🇬🇧 🇦🇪 🇰🇷 🇷🇺 🇰🇿 🇰🇬 🇹🇯 🇲🇾 🇪🇺 🇩🇪 🇫🇷 🇮🇹 🇪🇸 🇬🇷 🇨🇦 🇵🇱 🇵🇹 🇺🇦 🇨🇿.
+
+Bayroqlar matn ichida turadi ("🇹🇷 Turkiya", kuryer tariflari, do'kon kartalari), shuning uchun ular rasm emas, rangli shrift (COLR/CPAL) sifatida beriladi — bitta fayl hammasini qoplaydi va Windows'da ham ko'rinadi (u yerda tizim shriftida bayroq yo'q).
+
+Manba — `fonts/flags-src/*.svg`, [flag-icons](https://github.com/lipis/flag-icons) (MIT) ning tekis bayroqlari. Yangi davlat qo'shish: SVG ni `fonts/flags-src/<iso>.svg` sifatida qo'ying va `npm run flags` ni ishlating.
 
 ## Tezlik
 
