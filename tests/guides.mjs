@@ -124,15 +124,16 @@ for (const file of guides) {
   });
   check(`${name}: yon tomonga siljish yo'q`, over.worst <= 0, `+${over.worst}px ${over.where}`);
 
-  /* Qadamlar ichidagi ekran maketlari: har biri chizilgan bo'lsin va
-     360 px kenglikda ham kartochkadan chiqib ketmasin. */
+  /* Qadamlar ichidagi ekran maketlari: har biri chizilgan bo'lsin,
+     360 px kenglikda kartochkadan chiqib ketmasin va raqamli belgilar
+     yuqoridan pastga qarab o'sib borsin. */
   const shots = await page.evaluate(async () => {
     const wait = () => new Promise(r => setTimeout(r, 40));
     const tab = [...document.querySelectorAll('.tab')].find(t => /Bosqich/i.test(t.textContent));
-    if (!tab) return { bor: 0, bo1sh: 0, chiqqan: 0 };
+    if (!tab) return { bor: 0, bosh: 0, chiqqan: 0, teskari: [] };
     tab.click(); await wait();
     const next = document.getElementById('wnext');
-    let bor = 0, bosh = 0, chiqqan = 0;
+    let bor = 0, bosh = 0, chiqqan = 0; const teskari = [];
     const lim = document.documentElement.clientWidth + 0.5;
     for (let i = 0; i < 20; i++) {
       for (const f of document.querySelectorAll('#wizcard figure.shot')) {
@@ -141,15 +142,23 @@ for (const file of guides) {
         if (r.width < 40 || r.height < 40) bosh++;
         for (const el of f.querySelectorAll('*'))
           if (el.getBoundingClientRect().right > lim) { chiqqan++; break; }
+        /* Belgilar — maket ichidagi bir xonali oq raqamlar. */
+        const nums = [...f.querySelectorAll('svg text')]
+          .filter(t => /^\d$/.test(t.textContent.trim()) && t.getAttribute('font-weight') === '800')
+          .map(t => ({ n: +t.textContent, y: t.getBoundingClientRect().top }))
+          .sort((a, b) => a.y - b.y);
+        for (let k = 1; k < nums.length; k++)
+          if (nums[k].n < nums[k - 1].n) { teskari.push(nums.map(x => x.n).join('')); break; }
       }
       if (!next || next.disabled) break;
       next.click(); await wait();
     }
-    return { bor, bosh, chiqqan };
+    return { bor, bosh, chiqqan, teskari: [...new Set(teskari)] };
   });
   check(`${name}: qadam maketlari joyida`,
-    shots.bosh === 0 && shots.chiqqan === 0,
-    `${shots.bor} ta maket, bo'sh ${shots.bosh}, chiqqan ${shots.chiqqan}`);
+    shots.bosh === 0 && shots.chiqqan === 0 && shots.teskari.length === 0,
+    `${shots.bor} ta maket, bo'sh ${shots.bosh}, chiqqan ${shots.chiqqan}`
+      + (shots.teskari.length ? ', teskari belgilar: ' + shots.teskari.join(' ') : ''));
 
   // Kalkulyator: qiymat kiritilganda natija qayta hisoblanadi.
   await page.getByRole('button', { name: /Kalkulyator/ }).first().click();
