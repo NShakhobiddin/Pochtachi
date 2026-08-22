@@ -241,7 +241,11 @@ ul.tick li::before{content:"\2713";position:absolute;left:4px;color:var(--green)
   background:linear-gradient(90deg,transparent,var(--indigo-200))}
 .shot figcaption::after{background:linear-gradient(270deg,transparent,var(--indigo-200))}
 .shot-body{display:grid;gap:16px;justify-items:center}
-.shot-svg{max-width:100%;overflow-x:auto}
+/* Bu yerda `overflow-x:auto` turardi: u SVG ni surish uchun emas edi
+   (maket `max-width:100%` bilan allaqachon sig'adi), ammo surish qatlami
+   yaratib, telefonning soyasini qutining chetida keskin kesib tashlardi —
+   maket ostidan to'rtburchak kulrang chiziq chiqib turardi. */
+.shot-svg{max-width:100%}
 .shot-svg svg{display:block;max-width:100%;height:auto;filter:drop-shadow(0 8px 20px rgba(49,46,129,.13))}
 .shot-svg svg text{font-family:var(--font)}
 .shot .legend-list{list-style:none;padding:0;margin:0;display:grid;gap:8px;width:100%;justify-self:stretch}
