@@ -210,6 +210,29 @@ try {
   check('qo\'llanmalar ro\'yxati', (await hub.locator('.guide-card').count()) === 7);
   await hub.close();
 
+  /* Qo'llanmalardagi yetkazish jadvali ilovaning Kuryerlar bo'limi bilan
+     mos bo'lsin: foydalanuvchi u yerda ko'rgan kompaniyani ilovadan ham
+     topa olishi kerak. Platformaning o'z yetkazishi bundan mustasno. */
+  {
+    const nomlar = [...src.matchAll(/"id":"[a-z0-9]+","name":"([^"]+)"/g)].map(m => m[1]);
+    const kalit = t => t.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const ilovada = new Set(nomlar.map(kalit));
+    const ozi = /amazonglobal|ebayinternationalshipping|sotuvchining/;
+    const begona = [];
+    let jami = 0;
+    for (const g of ['amazon', 'ebay', 'pinduoduo', 'poizon', 'shein', 'taobao', 'trendyol']) {
+      const html = readFileSync(join(ROOT, 'guides', 'inline', `${g}.html`), 'utf8');
+      const m = html.match(/^const CARGO=(\[[\s\S]*?\]);$/m);
+      if (!m) { begona.push(`${g}: ro'yxat yo'q`); continue; }
+      const rows = [...m[1].matchAll(/"n":"([^"]+)"/g)].map(x => x[1]);
+      if (!rows.length) begona.push(`${g}: bo'sh`);
+      jami += rows.length;
+      for (const n of rows) if (!ilovada.has(kalit(n)) && !ozi.test(kalit(n))) begona.push(`${g}: ${n}`);
+    }
+    check('qo\'llanmalardagi kuryerlar ilovada ham bor',
+      begona.length === 0, begona.length ? begona.join(', ') : `${jami} ta qator, ${nomlar.length} ta kuryer`);
+  }
+
   // 7. Me'yorlar fayli koddagi zaxira bilan mos
   const norms = JSON.parse(readFileSync(join(ROOT, 'data', 'norms.json'), 'utf8'));
   const inCode = (src.match(/\{ from:'[\d-]+', bhm:\d+/g) || []).length;
