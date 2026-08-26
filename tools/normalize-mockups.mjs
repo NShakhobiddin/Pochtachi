@@ -15,6 +15,10 @@
 //      shuning uchun belgi hech qachon matnni to'smaydi.)
 //   3. Belgilar yuqoridan pastga qarab 1, 2, 3... bo'lib o'sadi; izohlar
 //      ro'yxati ham shu tartibga keltiriladi.
+//   5. Har bir belgi aynan qaysi elementni ko'rsatayotgani chiziladi:
+//      izohdagi qalin/tirnoqli/iyeroglif atama maketda topilsa — o'sha
+//      matn, topilmasa belgi turgan qator ramkaga olinadi va belgiga
+//      punktir bilan ulanadi.
 //   4. Ekran foni — tepasi to'g'ri (rangli sarlavha tasmasi ham to'g'ri
 //      turishi uchun), pasti dumaloq shakl. U oq ichki to'rtburchakdan har
 //      tomondan 3 px ichkarida turadi va burchak radiusi u bilan bir
@@ -91,6 +95,78 @@ function tartibla(figura) {
   return out;
 }
 
+/* 5. Belgi aynan qaysi elementni ko'rsatayotgani. */
+const MARK_RE = /<g class="xy-mark">.*?<\/g>/g;
+async function belgila(page, fig) {
+  if (!/<svg viewBox/.test(fig)) return fig;
+  await page.setContent('<!doctype html><meta charset="utf-8"><body style="margin:0">' + fig);
+  const marks = await page.evaluate(() => {
+    const norm = s => s.toLowerCase().replace(/[«»"'’‘.,:;()]/g, '').replace(/\s+/g, ' ').trim();
+    const g = document.querySelector('svg g[transform]');
+    const kids = [...g.children];
+    const badges = [], belgiEl = new Set();
+    kids.forEach((el, i) => {
+      if (el.tagName === 'circle' && el.getAttribute('r') === '11.5') {
+        badges.push({ n: +kids[i + 2].textContent, cx: +el.getAttribute('cx'), cy: +el.getAttribute('cy') });
+        [el, kids[i + 1], kids[i + 2]].forEach(x => x && belgiEl.add(x));
+      }
+    });
+    const lis = [...document.querySelectorAll('.legend-list li')];
+    const bb = el => { try { const b = el.getBBox(); return b.width || b.height ? b : null; } catch { return null; } };
+    const texts = [...g.querySelectorAll('text')].filter(t => !belgiEl.has(t))
+      .map(t => ({ b: bb(t), s: t.textContent })).filter(x => x.b);
+    const shapes = [...g.querySelectorAll('rect,path,circle,image')].filter(el => !belgiEl.has(el))
+      .map(el => ({ b: bb(el) })).filter(x => x.b && x.b.width < 292 && x.b.width > 24);
+
+    return badges.map(bd => {
+      const li = lis.find(l => +l.querySelector('b').textContent === bd.n);
+      if (li) {
+        const nomzod = [];
+        li.querySelectorAll('b').forEach(x => { if (!/^\d$/.test(x.textContent)) nomzod.push(x.textContent); });
+        (li.textContent.match(/[\u3400-\u9fff\uf900-\ufaff]+/g) || []).forEach(x => nomzod.push(x));
+        (li.textContent.match(/«([^»]{2,40})»/g) || []).forEach(x => nomzod.push(x.slice(1, -1)));
+        const uniq = [...new Set(nomzod.map(x => x.trim()).filter(x => x.length >= 2))]
+          .sort((a, b) => b.length - a.length);
+        /* Atama bir necha joyda uchrashi mumkin — belgiga eng yaqinini
+           olamiz; juda uzoqdagisi qabul qilinmaydi, aks holda ko'rsatkich
+           butun ekran bo'ylab cho'ziladi. */
+        for (const c of uniq) {
+          const mos = texts.filter(t => norm(t.s).includes(norm(c)))
+            .map(t => ({ t, d: Math.abs(t.b.y + t.b.height / 2 - bd.cy) }))
+            .sort((a, b) => a.d - b.d)[0];
+          if (mos && mos.d <= 60)
+            return { cx: bd.cx, cy: bd.cy, x: mos.t.b.x, y: mos.t.b.y, w: mos.t.b.width, h: mos.t.b.height };
+        }
+      }
+      const qator = texts.filter(t => t.b.y - 9 <= bd.cy && bd.cy <= t.b.y + t.b.height + 9);
+      if (qator.length) {
+        const x1 = Math.min(...qator.map(t => t.b.x)), x2 = Math.max(...qator.map(t => t.b.x + t.b.width));
+        const y1 = Math.min(...qator.map(t => t.b.y)), y2 = Math.max(...qator.map(t => t.b.y + t.b.height));
+        return { cx: bd.cx, cy: bd.cy, x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
+      }
+      const ich = shapes.filter(s => s.b.y - 4 <= bd.cy && bd.cy <= s.b.y + s.b.height + 4)
+                        .sort((a, b) => a.b.width * a.b.height - b.b.width * b.b.height)[0];
+      return ich ? { cx: bd.cx, cy: bd.cy, x: ich.b.x, y: ich.b.y, w: ich.b.width, h: ich.b.height } : null;
+    }).filter(Boolean);
+  });
+
+  const P = 3;
+  const chiz = marks.map(m => {
+    const x = Math.max(1, m.x - P), y = m.y - P;
+    const w = Math.min(298 - x, m.w + P * 2), h = m.h + P * 2;
+    const bx = m.cx > 150 ? x + w : x;
+    const by = Math.min(Math.max(m.cy, y + 2), y + h - 2);
+    const dx = m.cx - bx, dy = m.cy - by, uz = Math.hypot(dx, dy);
+    const chiziq = uz > 15
+      ? `<path d="M${bx.toFixed(1)} ${by.toFixed(1)}L${(m.cx - dx / uz * 12).toFixed(1)} ${(m.cy - dy / uz * 12).toFixed(1)}" stroke="#4f46e5" stroke-width="1.2" stroke-dasharray="2.5 2.5" fill="none"/>` : '';
+    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="5" fill="#4f46e5" fill-opacity=".09" stroke="#4f46e5" stroke-width="1.4"/>${chiziq}`;
+  }).join('');
+  if (!chiz) return fig;
+  // Belgilardan oldin chizamiz — raqamlar tepada qolsin.
+  const i = fig.search(/<circle cx="(?:288|12)" cy="[\d.]+" r="11\.5"/);
+  return i < 0 ? fig : fig.slice(0, i) + `<g class="xy-mark">${chiz}</g>` + fig.slice(i);
+}
+
 /* 4. Ramka geometriyasi — SVG ni brauzerda o'lchab hisoblanadi. */
 async function ramka(page, svg) {
   const vb = svg.match(/viewBox="0 0 318 (\d+)"/);
@@ -138,8 +214,11 @@ for (const file of readdirSync(DIR).filter(f => f.endsWith('.html')).sort()) {
   const path = join(DIR, file);
   const asl = readFileSync(path, 'utf8');
 
-  // Avval har bir figurani tartibga solamiz, keyin ichidagi SVG ni.
-  let s = asl.replace(/<figure class="shot[^"]*">[\s\S]*?<\/figure>/g, tartibla);
+  /* Avval eski belgilashni olib tashlaymiz (ular yangidan hisoblanadi va
+     ramka balandligiga qo'shilib ketmasligi kerak), keyin figurani
+     tartibga solamiz, SVG ni me'yorlaymiz va oxirida qaytadan belgilaymiz. */
+  let s = asl.replace(MARK_RE, '')
+             .replace(/<figure class="shot[^"]*">[\s\S]*?<\/figure>/g, tartibla);
   const svgs = [];
   s = s.replace(/<svg viewBox="0 0 318 \d+"[\s\S]*?<\/svg>/g, m => {
     svgs.push(m); return `@@MAKET${svgs.length - 1}@@`;
@@ -147,6 +226,14 @@ for (const file of readdirSync(DIR).filter(f => f.endsWith('.html')).sort()) {
   const tayyor = [];
   for (const svg of svgs) tayyor.push(await ramka(page, chetga(tozala(svg))));
   s = s.replace(/@@MAKET(\d+)@@/g, (_, k) => tayyor[+k]);
+
+  const figs = [];
+  s = s.replace(/<figure class="shot[^"]*">[\s\S]*?<\/figure>/g, m => {
+    figs.push(m); return `@@FIGURA${figs.length - 1}@@`;
+  });
+  const belgili = [];
+  for (const f of figs) belgili.push(await belgila(page, f));
+  s = s.replace(/@@FIGURA(\d+)@@/g, (_, k) => belgili[+k]);
 
   maket += svgs.length;
   if (s !== asl) {

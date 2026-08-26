@@ -35,7 +35,8 @@ guides/index.html              GENERATSIYA: qo'llanmalarning indekslanadigan ro'
 guides/inline/*.html           7 ta platforma qo'llanmasi (mustaqil sahifa ham)
 guides/guide-base.css          qo'llanmalarning umumiy uslublari
                                (shu jumladan `figure.shot` — qadamlardagi ekran maketlari)
-tools/normalize-mockups.mjs    maketlarning ramkasi, belgilari va tartibini tekshiradi
+tools/normalize-mockups.mjs    maketlarning ramkasi, belgilari, tartibi va
+                               ko'rsatkichlarini bir me'yorga soladi
 guides/guide-common.css        umumiy yordamchi uslublar
 guides/guide-engine.js         qo'llanmalarning umumiy render kodi (7 tasi uchun bitta)
 guides/guide.js                qo'llanmalarning umumiy skripti
