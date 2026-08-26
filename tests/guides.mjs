@@ -160,6 +160,30 @@ for (const file of guides) {
     }
     return { bor, bosh, chiqqan, teskari: [...new Set(teskari)] };
   });
+  /* Ilovani yuklash tugmalari: har bir qo'llanmada bo'lsin va havolalari
+     haqiqiy do'kon manzillariga olib borsin. */
+  const apps = await page.evaluate(async () => {
+    /* Tugmalar «Bosqichlar» ning ikkinchi qadamida — akkaunt/ilova qadamida. */
+    const wait = () => new Promise(r => setTimeout(r, 60));
+    const tab = [...document.querySelectorAll('.tab')].find(t => /Bosqich/i.test(t.textContent));
+    if (tab) tab.click();
+    await wait();
+    /* Sehrgar oldingi tekshiruvdan keyin oxirgi qadamda turgan bo'lishi mumkin,
+       shuning uchun to'g'ridan-to'g'ri ikkinchi qadamga o'tamiz. */
+    const dot = document.querySelectorAll('#wizdots .dot')[1];
+    if (dot) dot.click();
+    await wait();
+    const blok = document.querySelector('#wizcard .applinks');
+    if (!blok) return { bor: false };
+    const a = [...blok.querySelectorAll('a.al')];
+    return { bor: true, soni: a.length,
+             nomlar: a.map(x => x.querySelector('b').textContent).join(' + '),
+             yaroqli: a.every(x => /^https:\/\/(apps\.apple\.com|play\.google\.com)\//.test(x.href)) };
+  });
+  check(`${name}: ilova yuklash tugmalari`,
+    apps.bor && apps.soni >= 1 && apps.yaroqli,
+    apps.bor ? apps.nomlar : 'tugma yo\'q');
+
   check(`${name}: qadam maketlari joyida`,
     shots.bosh === 0 && shots.chiqqan === 0 && shots.teskari.length === 0,
     `${shots.bor} ta maket, bo'sh ${shots.bosh}, chiqqan ${shots.chiqqan}`

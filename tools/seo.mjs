@@ -19,7 +19,7 @@ const OG_IMAGE = SITE + 'icons/og-cover.png';
 
 const GUIDES = [
   { id: 'taobao', title: 'Taobao', flag: '🇨🇳', sections: 10, desc: "Rasm orqali qidiruv, Alipay to'lovi, kargo ombori va bojxona" },
-  { id: 'pinduoduo', title: 'Pinduoduo', flag: '🇨🇳', sections: 10, desc: "Guruh xaridi mexanikasi, xitoycha lug'at, eng arzon yo'nalish" },
+  { id: 'pinduoduo', title: 'Pinduoduo', flag: '🇨🇳', sections: 9, desc: "Guruh xaridi mexanikasi, xitoycha lug'at, eng arzon yo'nalish" },
   { id: 'poizon', title: 'Poizon (Dewu)', flag: '🇨🇳', sections: 10, desc: "Autentifikatsiya yorlig'i, krossovka o'lchami, vositachi tanlash" },
   { id: 'shein', title: 'SHEIN', flag: '🇨🇳', sections: 9, desc: "Qaysi mamlakat manzili arzon, o'lcham xatolari, qaytarish" },
   { id: 'trendyol', title: 'Trendyol', flag: '🇹🇷', sections: 9, desc: "Turk manzili, KDV qaytarilishi, beden tablosu va lug'at" },

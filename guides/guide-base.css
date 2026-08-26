@@ -288,3 +288,22 @@ ul.tick li::before{content:"\2713";position:absolute;left:4px;color:var(--green)
     border-top:5px solid transparent;border-bottom:5px solid transparent;
     border-left:8px solid var(--indigo-200)}
 }
+
+/* ---------- Ilovani yuklash tugmalari ----------
+   Qadamda «ilovani o'rnating» deyilgan joyda havolani matn ichida qidirish
+   shart emas — App Store va Google Play ga to'g'ridan-to'g'ri tugma bor.
+   Manzillar ilovadagi do'kon ma'lumotlaridan olingan. */
+.applinks{margin:14px 0 0}
+.applinks .al-t{display:block;font-size:11px;font-weight:800;letter-spacing:.5px;
+  text-transform:uppercase;color:var(--slate-500);margin-bottom:8px}
+.al-row{display:flex;flex-wrap:wrap;gap:9px}
+.al{flex:1 1 150px;display:flex;align-items:center;gap:11px;min-height:52px;padding:9px 15px;
+  border-radius:14px;background:var(--slate-900);color:#fff;text-decoration:none;
+  box-shadow:var(--shadow-sm);transition:background .16s,transform .12s,box-shadow .16s}
+.al:hover{background:#000;box-shadow:var(--shadow)}
+.al:active{transform:scale(.985)}
+.al svg{flex:0 0 auto}
+.al span{min-width:0}
+.al b{display:block;font-size:14px;font-weight:750;line-height:1.2;letter-spacing:-.1px}
+.al i{display:block;font-size:11px;font-style:normal;opacity:.72;line-height:1.35}
+.applinks .note{margin:9px 0 0}
