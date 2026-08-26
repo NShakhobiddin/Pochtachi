@@ -153,6 +153,28 @@ try {
   await page.goBack();
   await page.waitForTimeout(400);
 
+  /* 5 qadamli yo'lda do'kon logotipi cho'zilib ketmasin: so'z-belgi (2:1)
+     kvadrat qutida 30x30 ga siqilib turardi. */
+  await page.locator('nav button', { hasText: "Yo'l" }).first().click();
+  await page.waitForTimeout(600);
+  for (const re of [/Elektronika|Kiyim|Poyabzal/, /Xitoy|AQSh|Turkiya/]) {
+    await page.locator('button:visible').filter({ hasText: re }).first().click();
+    await page.waitForTimeout(500);
+  }
+  const wizLogo = await page.evaluate(() => {
+    const btn = [...document.querySelectorAll('button')]
+      .find(b => /Marketplace|Premium/.test(b.innerText) && b.querySelector('div[style*="background-image"]'));
+    if (!btn) return { bor: false };
+    const img = btn.querySelector('div[style*="background-image"]');
+    const box = img.parentElement;
+    const r = box.getBoundingClientRect();
+    return { bor: true, w: Math.round(r.width), h: Math.round(r.height),
+             fit: getComputedStyle(img).backgroundSize };
+  });
+  check('yo\'ldagi do\'kon logotipi cho\'zilmaydi',
+    wizLogo.bor && wizLogo.w > wizLogo.h && wizLogo.fit === 'contain',
+    wizLogo.bor ? `${wizLogo.w}x${wizLogo.h}, ${wizLogo.fit}` : 'topilmadi');
+
   // 4. Qidiruv kirillcha so'rovni tushunadi
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(500);

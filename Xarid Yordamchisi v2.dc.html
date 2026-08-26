@@ -1555,9 +1555,16 @@
           <sc-for list="{{ wizOptions }}" as="o" hint-placeholder-count="4">
             <button sc-camel-on-click="{{ o.pick }}" style="display:flex;align-items:center;gap:14px;padding:17px;border-radius:20px;cursor:pointer;text-align:left;width:100%;background:#FFFFFF;border:none;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
               <sc-if value="{{ o.hasMono }}" hint-placeholder-val="{{ false }}">
-                <div style="width:48px;height:48px;border-radius:14px;flex:none;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#F4F3FA">
-                  <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;text-align:center;line-height:1.1;letter-spacing:-.2px;color:{{ o.color }}">{{ o.mono }}</span>
-                  <div style="position:absolute;inset:0;background-size:{{ o.logoFit }};background-repeat:no-repeat;background-position:center;background-color:{{ o.logoBg }};background-image:{{ o.logoCss }}"></div>
+                <!-- Do'kon logotiplari so'z-belgi (2:1), kuryerlarniki esa
+                     kvadrat va butun qutini to'ldiradi — shuning uchun quti
+                     kengligi va logotip chekkasi ro'yxatdan keladi. Ilgari
+                     ikkalasi ham 48x48 kvadratda, do'konniki esa 30x30 ga
+                     cho'zib qo'yilardi va so'z-belgi qiyshayib ketardi. -->
+                <div style="width:{{ o.boxW }};height:48px;border-radius:14px;flex:none;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#F4F3FA">
+                  <sc-if value="{{ o.logoOff }}" hint-placeholder-val="{{ true }}">
+                    <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;text-align:center;line-height:1.1;letter-spacing:-.2px;color:{{ o.color }}">{{ o.mono }}</span>
+                  </sc-if>
+                  <div style="position:absolute;inset:{{ o.logoInset }};background-size:{{ o.logoFit }};background-repeat:no-repeat;background-position:center;background-color:{{ o.logoBg }};background-image:{{ o.logoCss }}"></div>
                 </div>
               </sc-if>
               <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
@@ -3126,7 +3133,7 @@ class Component extends DCLogic {
 
     const wizOpts = () => {
       if (!onWizard) return [];
-      const plain = { hasMono:false, hasPrice:false, plain:true, color:'', mono:'', price:'', logoCss:'none', logoFit:'cover', logoBg:'transparent' };
+      const plain = { hasMono:false, hasPrice:false, plain:true, color:'', mono:'', price:'', logoCss:'none', logoFit:'cover', logoBg:'transparent', boxW:'48px', logoInset:'0', logoOff:true };
       if (st.wizStep === 0) return WIZ_CATS.map(o => ({
         label:o.emoji + '  ' + o.label,
         note: STORES.filter(s => o.key === 'universal' ? s.cat === 'universal' : (s.cat === o.key || s.cat === 'universal')).length + ' ta do\'kon mavjud',
@@ -3138,12 +3145,14 @@ class Component extends DCLogic {
         label:s.name, note:s.type + ' · ' + s.country + (s.direct ? ' · to\'g\'ridan-to\'g\'ri' : ' · vositachi kerak'),
         pick:() => this.setState({ wizStore:s.name, wizStep:3 }),
         hasMono:true, hasPrice:true, plain:false, color:s.color, mono:s.mono,
-        logoCss:s.logoCss, logoFit:'30px 30px', logoBg:'transparent', price:s.price }));
+        logoCss:s.logoCss, logoFit:'contain', logoBg:'transparent', boxW:'68px', logoInset:'7px',
+        logoOff:s.logoOn === false, price:s.price }));
       if (st.wizStep === 3) return (wizCouriers.length ? wizCouriers : COURIERS).map(k => ({
         label:k.name, note:k.days + ' · ' + k.mode + ' · ' + k.nRoutes + ' ta yo\'nalish',
         pick:() => this.setState({ wizCourier:k.name, wizStep:4 }),
         hasMono:true, hasPrice:true, plain:false, color:k.color, mono:k.mono,
-        logoCss:k.logoCss, logoFit:k.logoFit, logoBg:k.logoBg, price:k.priceLabel }));
+        logoCss:k.logoCss, logoFit:k.logoFit, logoBg:k.logoBg, boxW:'48px', logoInset:'0',
+        logoOff:!k.logoCss || k.logoCss === 'none', price:k.priceLabel }));
       return [];
     };
     const wizTitles = ['Nimani olmoqchisiz?','Qaysi davlatdan?','Sizga mos do\'konlar','Sizga mos kuryerlar','Mahsulot narxi va og\'irligi'];
