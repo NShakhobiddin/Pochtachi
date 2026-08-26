@@ -513,9 +513,9 @@
       <!-- Papka ichida turganda: qaysi papka ekani va nechta do'kon borligi -->
       <sc-if value="{{ sInFolder }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:13px 15px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
-          <div style="width:44px;height:44px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#F1F1F8">
-            <sc-if value="{{ folderIsSvg }}" hint-placeholder-val="{{ true }}">
-              <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ folderD }}"></path></svg>
+          <div style="width:46px;height:46px;flex:none;display:flex;align-items:center;justify-content:center">
+            <sc-if value="{{ folderIsPic }}" hint-placeholder-val="{{ true }}">
+              <div style="width:46px;height:46px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ folderPic }}"></div>
             </sc-if>
             <sc-if value="{{ folderIsFlag }}" hint-placeholder-val="{{ false }}">
               <span style="font-size:22px;line-height:1">{{ folderFlag }}</span>
@@ -544,9 +544,9 @@
             <sc-for list="{{ storeFolders }}" as="f" hint-placeholder-count="6">
               <button sc-camel-on-click="{{ f.open }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:9px;background:#FFFFFF;border:none;border-radius:20px;padding:16px 15px;cursor:pointer;text-align:left;width:100%;min-width:0;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%">
-                  <div style="width:44px;height:44px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#F4F3FA">
-                    <sc-if value="{{ f.isSvg }}" hint-placeholder-val="{{ true }}">
-                      <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ f.d }}"></path></svg>
+                  <div style="width:50px;height:50px;flex:none;display:flex;align-items:center;justify-content:center">
+                    <sc-if value="{{ f.isPic }}" hint-placeholder-val="{{ true }}">
+                      <div style="width:50px;height:50px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ f.pic }}"></div>
                     </sc-if>
                     <sc-if value="{{ f.isFlag }}" hint-placeholder-val="{{ false }}">
                       <span style="font-size:22px;line-height:1">{{ f.flag }}</span>
@@ -2410,19 +2410,16 @@ const STORES = [
 /* Toifa belgilari — chiziqli ikonkalar (bitta yo'l bilan chiziladi).
    Emoji ishlatilmaydi: u har bir tizimda boshqacha ko'rinadi va ilovaning
    qolgan ikonkalaridan ajralib turadi. */
+/* Toifa papkalari 3D ikonka bilan — ilgari bu yerda bir xil ingichka
+   chiziqli belgilar turardi va olti papka bir-biridan deyarli farq
+   qilmasdi. Davlat papkalarida bayroq qoladi (u eng tushunarli belgi). */
 const STORE_CATS = [
-  ['universal',     'Universal',      'Hamma turdagi tovarlar',
-   'M6.2 8.6h11.6l.9 11a1.7 1.7 0 0 1-1.7 1.8H7a1.7 1.7 0 0 1-1.7-1.8zM9 8.6V6.7a3 3 0 0 1 6 0v1.9'],
-  ['kiyim va moda', 'Kiyim va moda',  'Kiyim, sumka, aksessuar',
-   'M9 4.2 5.2 6l1.4 4 2-.8v10a.9.9 0 0 0 .9.9h5a.9.9 0 0 0 .9-.9v-10l2 .8L18.8 6 15 4.2a3 3 0 0 1-6 0z'],
-  ['poyabzal',      'Poyabzal',       'Krossovka, sneaker, sport',
-   'M3.6 18.9h16.8a1 1 0 0 0 1-1v-.7c0-2-1.7-3.6-3.8-3.6h-3.4l-3.1-2.7a1.1 1.1 0 0 0-1.4 0l-1.7 1.5H5.4a1.8 1.8 0 0 0-1.8 1.8zM9.9 13.5l1.7 1.5'],
-  ['elektronika',   'Elektronika',    'Gadjet, texnika, komponent',
-   'M8.4 3.4h7.2a1.8 1.8 0 0 1 1.8 1.8v13.6a1.8 1.8 0 0 1-1.8 1.8H8.4a1.8 1.8 0 0 1-1.8-1.8V5.2a1.8 1.8 0 0 1 1.8-1.8zM10.7 17.6h2.6'],
-  ['kosmetika',     'Kosmetika',      'Parvarish va bo\'yoq',
-   'M9.4 9.7h5.2v10.1a1.4 1.4 0 0 1-1.4 1.4h-2.4a1.4 1.4 0 0 1-1.4-1.4zM10.7 9.7V5a1.5 1.5 0 0 1 1.5-1.5h.3A1.5 1.5 0 0 1 14 5v4.7M9.4 13.5h5.2'],
-  ['bolalar',       'Bolalar',        'Bolalar va chaqaloqlar uchun',
-   'M5.8 14.6a6.2 6.2 0 1 0 12.4 0 6.2 6.2 0 1 0-12.4 0zM5 6.4a2.4 2.4 0 1 0 4.8 0 2.4 2.4 0 1 0-4.8 0zM14.2 6.4a2.4 2.4 0 1 0 4.8 0 2.4 2.4 0 1 0-4.8 0z']
+  ['universal',     'Universal',      'Hamma turdagi tovarlar',      'icons/dok-universal.webp'],
+  ['kiyim va moda', 'Kiyim va moda',  'Kiyim, sumka, aksessuar',     'icons/dok-moda.webp'],
+  ['poyabzal',      'Poyabzal',       'Krossovka, sneaker, sport',   'icons/dok-poyabzal.webp'],
+  ['elektronika',   'Elektronika',    'Gadjet, texnika, komponent',  'icons/dok-elektronika.webp'],
+  ['kosmetika',     'Kosmetika',      'Parvarish va bo\'yoq',         'icons/dok-kosmetika.webp'],
+  ['bolalar',       'Bolalar',        'Bolalar va chaqaloqlar uchun','icons/dok-bolalar.webp']
 ];
 const STORE_COUNTRIES = [
   ['Xitoy',            'Xitoy',            'Arzon narx, keng tanlov',      '🇨🇳'],
@@ -3591,7 +3588,8 @@ class Component extends DCLogic {
           /* Toifalarda chiziqli ikonka, davlatlarda bayroq — bayroq davlat
              uchun eng tushunarli belgi va u loyihadagi shriftdan chiqadi. */
           return { key, title, sub, count: n + ' ta', n, open: () => openFolder(key),
-            isSvg: !byCountry, isFlag: byCountry, flag: byCountry ? icon : '', d: byCountry ? '' : icon };
+            isPic: !byCountry, isFlag: byCountry, flag: byCountry ? icon : '',
+            pic: byCountry ? 'none' : "url('" + icon + "')" };
         }).filter(f => f.n > 0);
 
         return {
@@ -3607,11 +3605,11 @@ class Component extends DCLogic {
           setFolderByCountry: () => this.setState({ storeFolderBy: 'country' }),
           openAllStores: () => { this.setState({ storeFolder: 'all:', storeQuery: '' }); this.push('storefolder'); },
           allStoresCount: STORES.length + ' ta',
-          folderIsSvg: !folderDef || folderDef[3].indexOf('M') === 0,
-          folderIsFlag: !!folderDef && folderDef[3].indexOf('M') !== 0,
-          folderFlag: folderDef && folderDef[3].indexOf('M') !== 0 ? folderDef[3] : '',
-          folderD: folderDef && folderDef[3].indexOf('M') === 0 ? folderDef[3]
-            : 'M6.2 8.6h11.6l.9 11a1.7 1.7 0 0 1-1.7 1.8H7a1.7 1.7 0 0 1-1.7-1.8zM9 8.6V6.7a3 3 0 0 1 6 0v1.9',
+          folderIsPic: !folderDef || folderDef[3].indexOf('icons/') === 0,
+          folderIsFlag: !!folderDef && folderDef[3].indexOf('icons/') !== 0,
+          folderFlag: folderDef && folderDef[3].indexOf('icons/') !== 0 ? folderDef[3] : '',
+          folderPic: "url('" + (folderDef && folderDef[3].indexOf('icons/') === 0
+            ? folderDef[3] : 'icons/dok-universal.webp') + "')",
           folderName: folderDef ? folderDef[1] : 'Barcha do\'konlar',
           folderSub: folderDef ? folderDef[2] : 'Ro\'yxatdagi hamma do\'kon',
           /* Papkalar faqat "Do'konlar" ekranida va qidiruv/filtr bo'sh

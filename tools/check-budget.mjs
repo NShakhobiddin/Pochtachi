@@ -15,7 +15,9 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 const BUDGETS = [
   { name: 'logotiplar (logos/*.webp)', dir: 'logos', ext: ['.webp'], maxTotalKb: 150, maxFileKb: 20 },
-  { name: 'ikonkalar (icons/*.webp)', dir: 'icons', ext: ['.webp'], maxTotalKb: 120, maxFileKb: 25 },
+  // Do'kon papkalari uchun 6 ta 3D ikonka qo'shildi (~50 KB): ular olti
+  // bo'limning asosiy vizual belgisi va ekran ochilganda yuklanadi.
+  { name: 'ikonkalar (icons/*.webp)', dir: 'icons', ext: ['.webp'], maxTotalKb: 150, maxFileKb: 25 },
   /* Bitta matn shrifti (Onest, o'zgaruvchan) + bayroq subseti. Brauzer
      sahifadagi belgilarga qarab faqat keraklisini oladi: odatda lotin
      (32 KB), kirillcha matn bo'lsa yana 14 KB, bayroq ko'rinsa 44 KB. */

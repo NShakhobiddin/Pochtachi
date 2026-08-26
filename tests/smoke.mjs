@@ -342,6 +342,24 @@ try {
     folders.chooser && folders.cards >= 6 && folders.list === 0,
     `papkalar ${folders.cards}, ro'yxat ${folders.list}`);
 
+
+  /* Toifa papkalari 3D ikonka bilan: oltalasi ham yuklanishi shart.
+     Ilgari bu yerda bir xil ingichka chiziqlar turardi. */
+  const catIcons = await page.evaluate(async () => {
+    const urls = [...document.querySelectorAll('main div')]
+      .map(d => (d.style.backgroundImage || '').match(/icons\/(dok-[a-z]+)\.webp/))
+      .filter(Boolean).map(m => m[1]);
+    const uniq = [...new Set(urls)];
+    const ok = await Promise.all(uniq.map(u => new Promise(res => {
+      const im = new Image(); im.onload = () => res(im.naturalWidth > 0); im.onerror = () => res(false);
+      im.src = 'icons/' + u + '.webp';
+    })));
+    return { uniq, loaded: ok.filter(Boolean).length };
+  });
+  check("do'kon papkalarida 3D ikonka",
+    catIcons.uniq.length === 6 && catIcons.loaded === 6,
+    `${catIcons.uniq.length} ta ikonka, ${catIcons.loaded} tasi yuklandi`);
+
   await page.getByText('Elektronika', { exact: false }).first().click();
   await page.waitForTimeout(600);
   const inFolder = await page.evaluate(() => ({
