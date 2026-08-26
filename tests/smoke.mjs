@@ -228,6 +228,35 @@ try {
   });
   check('qo\'llanma kartochkalarida do\'kon logotipi', guideLogos.length === 7, guideLogos.join(', '));
 
+  /* Kartochkalardagi quti do'konning o'z rangida bo'lsin: ilgari 7 tasi ham
+     bir xil #F4F3FA edi va ro'yxat bir zayl ko'rinardi. */
+  const tints = await page.evaluate(() =>
+    [...document.querySelectorAll('main div[style*="width: 76px"]')].map(d => d.style.backgroundColor));
+  check("qo'llanma kartochkalari bir xil rangda emas",
+    tints.length === 7 && new Set(tints).size >= 5, `${tints.length} ta quti, ${new Set(tints).size} xil rang`);
+
+  /* Ekran almashganda kirish animatsiyasi qayta ishga tushadi. */
+  await page.locator('nav button', { hasText: 'Bojxona' }).first().click();
+  await page.waitForTimeout(80);
+  check('ekran almashganda animatsiya boshlanadi',
+    await page.evaluate(() => document.querySelector('main').classList.contains('xy-in')));
+
+  /* Ichkariga kirganda tepadan, orqaga qaytganda o'sha joyidan. */
+  await page.locator('nav button', { hasText: "Qo'llanmalar" }).first().click();
+  await page.waitForTimeout(700);
+  await page.evaluate(() => document.querySelector('main').scrollTo(0, 400));
+  await page.waitForTimeout(200);
+  const wasTop = await page.evaluate(() => document.querySelector('main').scrollTop);
+  await page.getByText('SHEIN', { exact: true }).first().click();
+  await page.waitForTimeout(1200);
+  const inTop = await page.evaluate(() => document.querySelector('main').scrollTop);
+  await page.goBack();
+  await page.waitForTimeout(800);
+  const backTop = await page.evaluate(() => document.querySelector('main').scrollTop);
+  check('yangi ekran tepadan boshlanadi', inTop === 0, String(inTop));
+  check('orqaga qaytganda joyi eslanadi', wasTop > 0 && Math.abs(backTop - wasTop) < 4,
+    `${wasTop} -> ${backTop}`);
+
   await page.getByText('Taobao', { exact: true }).first().click();
   await page.waitForTimeout(1800);
   const frame = page.frames().find(f => f.url().includes('guides/'));
