@@ -21,7 +21,7 @@ const GUIDES = [
   { id: 'taobao', title: 'Taobao', flag: '🇨🇳', sections: 10, desc: "Rasm orqali qidiruv, Alipay to'lovi, kargo ombori va bojxona" },
   { id: 'pinduoduo', title: 'Pinduoduo', flag: '🇨🇳', sections: 9, desc: "Guruh xaridi mexanikasi, xitoycha lug'at, eng arzon yo'nalish" },
   { id: 'poizon', title: 'Poizon (Dewu)', flag: '🇨🇳', sections: 10, desc: "Autentifikatsiya yorlig'i, krossovka o'lchami, vositachi tanlash" },
-  { id: 'shein', title: 'SHEIN', flag: '🇨🇳', sections: 9, desc: "Qaysi mamlakat manzili arzon, o'lcham xatolari, qaytarish" },
+  { id: 'shein', title: 'SHEIN', flag: '🇨🇳', sections: 9, desc: "To'g'ridan-to'g'ri pochta orqali yoki oraliq manzil bilan, o'lcham xatolari va qaytarish" },
   { id: 'trendyol', title: 'Trendyol', flag: '🇹🇷', sections: 9, desc: "Turk manzili, KDV qaytarilishi, beden tablosu va lug'at" },
   { id: 'amazon', title: 'Amazon', flag: '🇺🇸', sections: 10, desc: "AQSh manzili, sales tax 0% shtatlari, US o'lchamlari" },
   { id: 'ebay', title: 'eBay', flag: '🇺🇸', sections: 9, desc: "Auksion strategiyasi, eIS orqali to'g'ridan yetkazish" }
