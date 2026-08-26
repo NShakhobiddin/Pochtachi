@@ -142,9 +142,14 @@ for (const file of guides) {
         if (r.width < 40 || r.height < 40) bosh++;
         for (const el of f.querySelectorAll('*'))
           if (el.getBoundingClientRect().right > lim) { chiqqan++; break; }
-        /* Belgilar — maket ichidagi bir xonali oq raqamlar. */
+        /* Belgilar — rangli doira ustidagi raqam. Faqat shrift bo'yicha
+           ajratib bo'lmaydi: maket ichida ham bir xonali qalin sonlar bor
+           (masalan poyabzal o'lchami), shuning uchun doiraga qaraymiz. */
         const nums = [...f.querySelectorAll('svg text')]
-          .filter(t => /^\d$/.test(t.textContent.trim()) && t.getAttribute('font-weight') === '800')
+          .filter(t => {
+            const c = t.previousElementSibling;
+            return c && c.tagName === 'circle' && c.getAttribute('r') === '10' && /^\d$/.test(t.textContent.trim());
+          })
           .map(t => ({ n: +t.textContent, y: t.getBoundingClientRect().top }))
           .sort((a, b) => a.y - b.y);
         for (let k = 1; k < nums.length; k++)

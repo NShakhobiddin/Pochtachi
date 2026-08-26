@@ -18,7 +18,7 @@ const SITE = 'https://nshakhobiddin.github.io/Pochtachi/';
 const OG_IMAGE = SITE + 'icons/og-cover.png';
 
 const GUIDES = [
-  { id: 'taobao', title: 'Taobao', flag: '🇨🇳', sections: 10, desc: "Ekran maketlari bilan: rasm orqali qidiruv, Alipay to'lovi, kargo manzili va bojxona" },
+  { id: 'taobao', title: 'Taobao', flag: '🇨🇳', sections: 10, desc: "Rasm orqali qidiruv, Alipay to'lovi, kargo ombori va bojxona" },
   { id: 'pinduoduo', title: 'Pinduoduo', flag: '🇨🇳', sections: 10, desc: "Guruh xaridi mexanikasi, xitoycha lug'at, eng arzon yo'nalish" },
   { id: 'poizon', title: 'Poizon (Dewu)', flag: '🇨🇳', sections: 10, desc: "Autentifikatsiya yorlig'i, krossovka o'lchami, vositachi tanlash" },
   { id: 'shein', title: 'SHEIN', flag: '🇨🇳', sections: 9, desc: "Qaysi mamlakat manzili arzon, o'lcham xatolari, qaytarish" },
@@ -43,7 +43,7 @@ const MARK_END = '<!-- seo:end -->';
 function guideMeta(g) {
   const url = `${SITE}guides/inline/${g.id}.html`;
   const title = `${g.title} → O'zbekiston: bosqichma-bosqich qo'llanma`;
-  const desc = `${g.title} dan O'zbekistonga buyurtma berish: ${g.desc}. ${g.sections} bo'lim, bojxona kalkulyatori va lug'at bilan.`;
+  const desc = `${g.title} dan O'zbekistonga buyurtma berish: ${g.desc}. ${g.sections} bo'lim, ekran maketlari, bojxona kalkulyatori va lug'at bilan.`;
   return [
     MARK_START,
     `<meta name="description" content="${esc(desc)}">`,

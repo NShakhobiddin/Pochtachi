@@ -35,6 +35,7 @@ guides/index.html              GENERATSIYA: qo'llanmalarning indekslanadigan ro'
 guides/inline/*.html           7 ta platforma qo'llanmasi (mustaqil sahifa ham)
 guides/guide-base.css          qo'llanmalarning umumiy uslublari
                                (shu jumladan `figure.shot` — qadamlardagi ekran maketlari)
+tools/normalize-mockups.mjs    maketlarning ramkasi, belgilari va tartibini tekshiradi
 guides/guide-common.css        umumiy yordamchi uslublar
 guides/guide-engine.js         qo'llanmalarning umumiy render kodi (7 tasi uchun bitta)
 guides/guide.js                qo'llanmalarning umumiy skripti
@@ -52,6 +53,7 @@ npm test                 # smoke test + 7 ta qo'llanmaning tekshiruvi
 npm run links            # tashqi havolalarni tekshirish (haftalik CI ham qiladi)
 npm run logos            # logos/src/*.png -> logos/*.webp qayta yasash
 npm run icons            # icons/src/*.webp -> icons/*.webp (ekran o'lchamiga moslash)
+npm run mockups          # qadamlardagi telefon maketlarini bir me'yorga keltirish
 npm run store-logos      # do'kon logotiplari (--from DIR bilan tayyor rasmlardan)
 npm run cover            # icons/og-cover.png ni qayta yasash
 npm run fonts            # matn shriftlarini Google Fonts'dan qayta yuklab olish
@@ -149,6 +151,9 @@ Nima qilindi:
   ro'yxatlar faqat o'z ekrani ochiqligida quriladi.
 - Ilova ichidan ochilmaydigan eski qadam-ekrani (`GUIDES` massivi va uning
   skrinshot o'rni) olib tashlandi — `index.html` 11 KB ga qisqardi.
+- Ettala qo'llanmaning qadamlarida telefon maketlari bor (jami 35 ta, SVG).
+  Manbada joy oladi, lekin yaxshi siqiladi: bitta qo'llanma gzip bilan
+  ~24 KB. Byudjet shuning uchun gzip bo'yicha ham tekshiriladi.
 
 Do'kon logotiplari ham loyihaga ko'chirildi, shuning uchun ilovada uchinchi
 tomon serveriga birorta ham so'rov qolmadi.

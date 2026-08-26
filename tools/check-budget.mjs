@@ -6,7 +6,8 @@
 //
 // Ishlatish: node tools/check-budget.mjs
 
-import { readdirSync, statSync, existsSync } from 'node:fs';
+import { readdirSync, statSync, existsSync, readFileSync } from 'node:fs';
+import { gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, extname } from 'node:path';
 
@@ -22,7 +23,12 @@ const BUDGETS = [
   /* Do'kon logotiplari: 43 ta do'kon, har biri 128 px WebP. Do'konlar
      ekrani ochilgandagina yuklanadi. */
   { name: 'do\'kon logotiplari (stores/*.webp)', dir: 'stores', ext: ['.webp'], maxTotalKb: 260, maxFileKb: 20 },
-  { name: 'qo\'llanmalar (guides/inline/)', dir: 'guides/inline', ext: ['.html'], maxTotalKb: 470, maxFileKb: 90 }
+  /* Qo'llanmalar. Har birida qadamlar ichida 4-6 ta telefon maketi bor —
+     ular SVG bo'lgani uchun manbada joy oladi, lekin juda yaxshi siqiladi.
+     Foydalanuvchi bir vaqtda bitta qo'llanmani ochadi, shuning uchun
+     haqiqiy chegara — bitta faylning gzip hajmi. */
+  { name: 'qo\'llanmalar (guides/inline/)', dir: 'guides/inline', ext: ['.html'],
+    maxTotalKb: 660, maxFileKb: 95, gzipMaxFileKb: 30 }
 ];
 
 const kb = bytes => Math.round(bytes / 1024);
@@ -32,16 +38,23 @@ for (const b of BUDGETS) {
   const dir = join(ROOT, b.dir);
   if (!existsSync(dir)) { console.error(` XATO  ${b.name}: papka yo'q`); failed = true; continue; }
   const files = readdirSync(dir).filter(f => b.ext.includes(extname(f)));
-  let total = 0;
+  let total = 0, totalGz = 0;
   const oversize = [];
   for (const f of files) {
-    const size = statSync(join(dir, f)).size;
+    const path = join(dir, f);
+    const size = statSync(path).size;
     total += size;
     if (kb(size) > b.maxFileKb) oversize.push(`${f} ${kb(size)} KB`);
+    if (b.gzipMaxFileKb) {
+      const gz = gzipSync(readFileSync(path), { level: 9 }).length;
+      totalGz += gz;
+      if (kb(gz) > b.gzipMaxFileKb) oversize.push(`${f} gzip ${kb(gz)} KB`);
+    }
   }
   const totalOk = kb(total) <= b.maxTotalKb;
   const ok = totalOk && oversize.length === 0;
-  console.log(`${ok ? '  ok  ' : ' XATO '} ${b.name}: ${files.length} ta fayl, ${kb(total)} KB (chegara ${b.maxTotalKb} KB)`);
+  const gzInfo = b.gzipMaxFileKb ? `, gzip ${kb(totalGz)} KB (bittasi <= ${b.gzipMaxFileKb} KB)` : '';
+  console.log(`${ok ? '  ok  ' : ' XATO '} ${b.name}: ${files.length} ta fayl, ${kb(total)} KB (chegara ${b.maxTotalKb} KB)${gzInfo}`);
   if (oversize.length) console.log(`        chegaradan katta fayllar: ${oversize.join(', ')}`);
   if (!ok) failed = true;
 }

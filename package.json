@@ -6,7 +6,7 @@
   "description": "Chet el do'konlari, kuryerlar, bojxona kalkulyatori va qo'llanmalar — O'zbekiston uchun",
   "scripts": {
     "build": "node tools/build.mjs && node tools/seo.mjs",
-    "check": "node tools/build.mjs --check && node tools/optimize-logos.mjs --check && node tools/optimize-icons.mjs --check && node tools/check-budget.mjs",
+    "check": "node tools/build.mjs --check && node tools/optimize-logos.mjs --check && node tools/optimize-icons.mjs --check && node tools/normalize-mockups.mjs --check && node tools/check-budget.mjs",
     "test": "node tests/smoke.mjs && node tests/guides.mjs",
     "links": "node tools/check-links.mjs",
     "logos": "node tools/optimize-logos.mjs",
@@ -15,6 +15,7 @@
     "store-logos": "node tools/store-logos.mjs",
     "fonts": "node tools/fetch-fonts.mjs",
     "icons": "node tools/optimize-icons.mjs",
+    "mockups": "node tools/normalize-mockups.mjs",
     "flags": "python3 tools/build_flags_font.py"
   },
   "devDependencies": {
