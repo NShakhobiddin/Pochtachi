@@ -32,7 +32,11 @@ const target = name =>
   name.startsWith('dok-') ? 150 :
   name.startsWith('app-') ? 102 : 180;
 
-const sources = readdirSync(SRC).filter(f => f.endsWith('.webp')).sort();
+/* `raw-` bilan boshlanadiganlar — kesib olingan to'liq o'lchamdagi asl
+   nusxalar. Ular faqat qayta hisoblash uchun saqlanadi va ekranga
+   chiqmaydi, shuning uchun optimizatsiyadan chetlab o'tiladi. */
+const sources = readdirSync(SRC)
+  .filter(f => f.endsWith('.webp') && !f.startsWith('raw-')).sort();
 
 if (process.argv.includes('--check')) {
   const missing = sources.filter(f => !existsSync(join(OUT, f)));

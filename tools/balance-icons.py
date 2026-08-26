@@ -13,7 +13,7 @@ from PIL import Image
 
 N = ['universal','moda','poyabzal','elektronika','kosmetika','bolalar']
 # Manba: shaffof fonli PNG lar (kesib olingan asl nusxalar).
-SRC = os.environ.get('DOK_SRC', 'icons/src/raw-%s.png')
+SRC = os.environ.get('DOK_SRC', 'icons/src/raw-%s.webp')
 C   = 400          # kvadrat kanvas
 FIT = 0.90         # kattalashtirish uchun joy qoldiramiz
 SOFT = 0.70        # tuzatishning qanchasi qo'llanadi
