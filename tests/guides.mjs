@@ -176,13 +176,20 @@ for (const file of guides) {
     const blok = document.querySelector('#wizcard .applinks');
     if (!blok) return { bor: false };
     const a = [...blok.querySelectorAll('a.al')];
+    /* Har bir tugmada 3D do'kon ikonkasi bo'lsin va u haqiqatan yuklansin. */
+    const ims = a.map(x => x.querySelector('img.al-i'));
+    await Promise.all(ims.filter(Boolean).map(im => im.complete ? null : new Promise(r => {
+      im.onload = r; im.onerror = r;
+    })));
     return { bor: true, soni: a.length,
              nomlar: a.map(x => x.querySelector('b').textContent).join(' + '),
+             ikonka: ims.every(im => im && /icons\/app-(store|play)\.webp$/.test(im.getAttribute('src'))
+                                     && im.naturalWidth > 0),
              yaroqli: a.every(x => /^https:\/\/(apps\.apple\.com|play\.google\.com)\//.test(x.href)) };
   });
   check(`${name}: ilova yuklash tugmalari`,
-    apps.bor && apps.soni >= 1 && apps.yaroqli,
-    apps.bor ? apps.nomlar : 'tugma yo\'q');
+    apps.bor && apps.soni >= 1 && apps.yaroqli && apps.ikonka,
+    apps.bor ? apps.nomlar + (apps.ikonka ? ' · 3D ikonka' : ' · IKONKA YO\'Q') : 'tugma yo\'q');
 
   check(`${name}: qadam maketlari joyida`,
     shots.bosh === 0 && shots.chiqqan === 0 && shots.teskari.length === 0,
