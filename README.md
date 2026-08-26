@@ -152,6 +152,9 @@ Nima qilindi:
   ro'yxatlar faqat o'z ekrani ochiqligida quriladi.
 - Ilova ichidan ochilmaydigan eski qadam-ekrani (`GUIDES` massivi va uning
   skrinshot o'rni) olib tashlandi — `index.html` 11 KB ga qisqardi.
+- «Yo'l» bo'limi «Reja» deb ataladi: qadamlar tanlangan javobni ko'rsatadi,
+  o'tilgan qadamga bosib qaytish mumkin va bo'limdan chiqib qaytganda
+  tanlovlar saqlanadi.
 - Ettala qo'llanmaning qadamlarida telefon maketlari bor (jami 35 ta, SVG).
   Manbada joy oladi, lekin yaxshi siqiladi: bitta qo'llanma gzip bilan
   ~24 KB. Byudjet shuning uchun gzip bo'yicha ham tekshiriladi.

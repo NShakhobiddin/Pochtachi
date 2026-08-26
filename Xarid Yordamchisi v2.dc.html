@@ -265,7 +265,7 @@
         <div style="display:flex;flex-direction:column;gap:12px">
           <button sc-camel-on-click="{{ pickNovice }}" style="padding:18px;background:#FFFFFF;border:2px solid #FFFFFF;border-radius:20px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:4px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="border-color:#3B2CC9">
             <span style="font-size:17px;font-weight:700;color:#151329">Ha, birinchi marta</span>
-            <span style="font-size:13px;color:#5F5E7C;font-weight:500">5 qadamli yo'l ko'rsatiladi</span>
+            <span style="font-size:13px;color:#5F5E7C;font-weight:500">5 qadamda tayyor xarid rejasi</span>
           </button>
           <button sc-camel-on-click="{{ pickExpert }}" style="padding:18px;background:#FFFFFF;border:2px solid #FFFFFF;border-radius:20px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:4px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="border-color:#3B2CC9">
             <span style="font-size:17px;font-weight:700;color:#151329">Yo'q, tajribam bor</span>
@@ -433,7 +433,7 @@
         <button sc-camel-on-click="{{ goWizard }}" style="display:flex;align-items:center;gap:14px;background:#FFFFFF;border:none;border-radius:20px;padding:16px;cursor:pointer;text-align:left;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
           <div style="width:5px;align-self:stretch;border-radius:3px;background:repeating-linear-gradient(-45deg,#C8102E 0 6px,#FFFFFF 6px 12px,#1B4D8F 12px 18px,#FFFFFF 18px 24px)"></div>
           <div style="flex:1;display:flex;flex-direction:column;gap:3px">
-            <div style="font-size:17px;font-weight:700;color:#151329">5 qadamli yo'l</div>
+            <div style="font-size:17px;font-weight:700;color:#151329">Reja tuzish</div>
             <div style="font-size:13px;color:#5F5E7C;font-weight:500">Do'kon, kuryer va boj — birdaniga</div>
           </div>
           <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#C2C2D4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
@@ -1530,23 +1530,32 @@
         <div style="position:relative;display:flex;flex-direction:column;gap:13px">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
             <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
-              <span style="font-size:11px;font-weight:800;letter-spacing:1.3px;color:rgba(255,255,255,.60)">SEHRGAR</span>
+              <span style="font-size:11px;font-weight:800;letter-spacing:1.3px;color:rgba(255,255,255,.60)">XARID REJASI</span>
               <span style="font-family:'Onest','XY Flags',system-ui,sans-serif;font-size:18px;font-weight:800;color:#FFFFFF;letter-spacing:-.35px;line-height:1.15">{{ wizStepName }}</span>
             </div>
             <span style="flex:none;font-size:13px;font-weight:800;color:#FFFFFF;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);padding:7px 12px;border-radius:999px;font-variant-numeric:tabular-nums">{{ wizStepNo }}<span style="opacity:.6"> / 5</span></span>
           </div>
+          <!-- O'tilgan qadamlar bosiladi: tanlovni o'zgartirish uchun
+               boshidan boshlash shart emas. Yozuvda esa bo'lim nomi emas,
+               o'sha qadamda nima tanlangani ko'rinadi. -->
           <div style="display:flex;gap:5px;align-items:flex-end">
             <sc-for list="{{ wizDots }}" as="d" hint-placeholder-count="5">
-              <div style="flex:{{ d.flex }};display:flex;flex-direction:column;gap:8px;min-width:0">
-                <div style="height:{{ d.h }};border-radius:999px;background:{{ d.bg }};box-shadow:{{ d.glow }}"></div>
-                <span style="font-size:11px;font-weight:{{ d.w }};color:{{ d.fg2 }};letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.label }}</span>
-              </div>
+              <button sc-camel-on-click="{{ d.jump }}" aria-label="{{ d.aria }}" style="flex:{{ d.flex }};display:flex;flex-direction:column;gap:8px;min-width:0;background:none;border:none;padding:0;font-family:inherit;text-align:left;cursor:{{ d.cursor }}">
+                <div style="width:100%;height:{{ d.h }};border-radius:999px;background:{{ d.bg }};box-shadow:{{ d.glow }}"></div>
+                <span style="font-size:11px;font-weight:{{ d.w }};color:{{ d.fg2 }};letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">{{ d.label }}</span>
+              </button>
             </sc-for>
           </div>
         </div>
         </div>
 
         <div style="display:flex;flex-direction:column;gap:7px">
+          <sc-if value="{{ wizCanBack }}" hint-placeholder-val="{{ false }}">
+            <button sc-camel-on-click="{{ wizBack }}" style="align-self:flex-start;display:flex;align-items:center;gap:6px;background:none;border:none;padding:4px 0;margin-bottom:-2px;font-family:inherit;font-size:13px;font-weight:700;color:#3B2CC9;cursor:pointer" style-hover="opacity:.75">
+              <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+              {{ wizBackLabel }}
+            </button>
+          </sc-if>
           <div style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;font-weight:800;color:#151329;line-height:1.2;letter-spacing:-.7px">{{ wizTitle }}</div>
           <div style="font-size:15px;color:#5F5E7C;line-height:1.55;font-weight:500">{{ wizSub }}</div>
         </div>
@@ -1650,6 +1659,10 @@
             <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;font-weight:800;color:#3B2CC9;letter-spacing:-.5px;font-variant-numeric:tabular-nums">{{ planTotal }}</span>
           </div>
         </div>
+        <button sc-camel-on-click="{{ wizEdit }}" style="align-self:flex-start;display:flex;align-items:center;gap:6px;background:none;border:none;padding:2px 0;font-family:inherit;font-size:13px;font-weight:700;color:#3B2CC9;cursor:pointer" style-hover="opacity:.75">
+          <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+          Narx yoki og'irlikni o'zgartirish
+        </button>
         <div style="display:flex;gap:11px">
           <button sc-camel-on-click="{{ wizRestart }}" style="flex:1;height:52px;border-radius:20px;background:#FFFFFF;border:none;color:#151329;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">Qaytadan</button>
           <button sc-camel-on-click="{{ wizSave }}" style="flex:1.5;height:52px;border-radius:20px;background:linear-gradient(155deg,#5A46EC,#3423B3);border:none;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 14px 32px -16px rgba(45,30,150,.52)">Rejani saqlash</button>
@@ -1827,16 +1840,15 @@
       </button>
       <button sc-camel-on-click="{{ tWizard }}" aria-current="{{ tb.wizard.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:14px;padding:0;font-family:inherit">
         <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(155deg,#5A46EC,#3423B3);display:flex;align-items:center;justify-content:center;margin-top:-28px;transition:box-shadow .24s ease,transform .3s cubic-bezier(.34,1.5,.5,1);box-shadow:{{ tb.wizard.fabSh }};transform:{{ tb.wizard.fabTf }}">
+          <!-- Reja: belgilangan ro'yxat. Bojxonaning qalqonidan ham,
+               Qo'llanmalarning kitobidan ham aniq farq qiladi. -->
           <svg width="27" height="27" sc-camel-view-box="0 0 24 24" fill="none" style="flex:none">
-            <path d="M6.2 19.4c0-4.1 2.6-5.9 6.1-6.4 3.1-.45 4.6-2.1 4.6-5" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-dasharray="0.1 2.7" opacity=".78"></path>
-            <circle cx="6.2" cy="19.4" r="2.5" fill="#FFFFFF" opacity=".55"></circle>
-            <circle cx="6.2" cy="19.4" r="2.5" stroke="#FFFFFF" stroke-width="2"></circle>
-            <path d="M16.9 2.6c2.05 0 3.7 1.66 3.7 3.7 0 2.55-3.7 6.1-3.7 6.1s-3.7-3.55-3.7-6.1c0-2.04 1.65-3.7 3.7-3.7z" fill="#FFFFFF" opacity=".5"></path>
-            <path d="M16.9 2.6c2.05 0 3.7 1.66 3.7 3.7 0 2.55-3.7 6.1-3.7 6.1s-3.7-3.55-3.7-6.1c0-2.04 1.65-3.7 3.7-3.7z" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path>
-            <circle cx="16.9" cy="6.3" r="1.35" fill="#FFFFFF"></circle>
+            <path d="M4.4 7h8.4M4.4 12h8.4M4.4 17h5.2" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"></path>
+            <circle cx="17.3" cy="15.6" r="5.4" fill="#FFFFFF" opacity=".26"></circle>
+            <path d="M14.9 15.6l1.8 1.8 3.4-3.7" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>
         </div>
-        <span style="font-size:11px;letter-spacing:-.1px;font-weight:{{ tb.wizard.w }};color:{{ tb.wizard.lbl }}">Yo'l</span>
+        <span style="font-size:11px;letter-spacing:-.1px;font-weight:{{ tb.wizard.w }};color:{{ tb.wizard.lbl }}">Reja</span>
       </button>
       <button sc-camel-on-click="{{ tCustoms }}" aria-current="{{ tb.customs.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
         <div style="width:52px;height:32px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:{{ tb.customs.chip }};transition:background .16s ease">
@@ -1969,9 +1981,9 @@ const RU = {
   'Interfeys tili':'Язык интерфейса',
   'Interfeys tili — keyinchalik sozlamalarda o\'zgartirishingiz mumkin.':'Язык интерфейса — позже можно изменить в настройках.',
   'Do\'kon tavsiflari va qo\'llanmalar hozircha faqat o\'zbek tilida.':'Описания магазинов и инструкции пока только на узбекском.',
-  'Bosh sahifa':'Главная', "Qo'llanmalar":'Инструкции', "Yo'l":'Маршрут', 'Bojxona':'Таможня', 'Sozlamalar':'Настройки',
+  'Bosh sahifa':'Главная', "Qo'llanmalar":'Инструкции', "Reja":'План', 'Bojxona':'Таможня', 'Sozlamalar':'Настройки',
   "Do'konlar":'Магазины', 'Kuryerlar':'Курьеры', 'Kuzatuv':'Отслеживание', 'Taqqoslash':'Сравнение', 'Xarid rejasi':'План покупки',
-  "Qo'llanma":'Инструкция', "5 qadamli yo'l":'Маршрут из 5 шагов', 'Mening rejalarim':'Мои планы', 'Bugungi foydali':'Совет дня',
+  "Qo'llanma":'Инструкция', "Reja tuzish":'Составление плана', 'Mening rejalarim':'Мои планы', 'Bugungi foydali':'Совет дня',
   "Do'kon, kuryer yoki mahsulot":'Магазин, курьер или товар', "Do'kon nomi yoki kategoriya":'Название магазина или категория',
   'Tovar nomini yozing':'Введите название товара', "Saytga o'tish":'Перейти на сайт', "Telegram'da yozish":'Написать в Telegram',
   'Tozalash':'Очистить', "Natijani ko'rish":'Показать результат', 'Filtr':'Фильтр', "O'zgartirish":'Изменить',
@@ -2635,6 +2647,9 @@ const CUR_MATCH = {
   'Buyuk Britaniya':/angliya|britaniya|london|yevropa/i, BAA:/baa|dubay|amirlik|emirat/i, Global:/./
 };
 const WIZ_LABELS = ['Mahsulot','Davlat','Do\'kon','Kuryer','Hisob'];
+/* «Orqaga» tugmasi uchun tushum kelishigidagi shakl: qo'shimcha so'zga
+   qo'shilib yoziladi va har birida boshqacha. */
+const WIZ_BACK = ['Mahsulotni','Davlatni','Do\'konni','Kuryerni','Hisobni'];
 
 const PLAN_STEPS = [
   { t:'Reja tuzildi', d:'Do\'kon, kuryer va taxminiy xarajat aniqlandi' },
@@ -3104,7 +3119,7 @@ class Component extends DCLogic {
       return f.indexOf('from:') === 0
         ? (COURIER_ORIGINS.find(d => d[0] === f.slice(5)) || null) : null;
     })();
-    const titles = { plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? courierFolderDef[1] + ' yo\'nalishi' : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', wizard:'5 qadamli yo\'l', settings:'Sozlamalar', compare:'Taqqoslash' };
+    const titles = { plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? courierFolderDef[1] + ' yo\'nalishi' : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', wizard:'Reja tuzish', settings:'Sozlamalar', compare:'Taqqoslash' };
     /* Saralash tugmasi faqat ro'yxat ko'rinib turganda kerak: papkalar
        ekranida saralanadigan narsa yo'q. */
     const showSortBtn = cur === 'courierfolder' ||
@@ -3156,7 +3171,20 @@ class Component extends DCLogic {
       return [];
     };
     const wizTitles = ['Nimani olmoqchisiz?','Qaysi davlatdan?','Sizga mos do\'konlar','Sizga mos kuryerlar','Mahsulot narxi va og\'irligi'];
-    const wizSubs = ['Kategoriyani tanlang — shunga qarab do\'kon tavsiya qilaman.','Yo\'nalish narx va muddatni belgilaydi.','Kategoriya va davlatga mos barcha do\'konlar.','Shu yo\'nalishda ishlaydigan barcha kuryerlar, narxi bilan.','Ikkalasini yozing — yetkazish, boj va yig\'imni hisoblab beraman.'];
+    /* Filtr hech narsa topmasa, ro'yxat baribir to'liq ko'rsatiladi — lekin
+       buni aytib qo'yamiz. Ilgari izoh «tanlovingizga mos» deb turardi va
+       ostida 43 ta do'kon chiqardi. */
+    const wizSubs = [
+      'Kategoriyani tanlang — shunga qarab do\'kon tavsiya qilaman.',
+      'Yo\'nalish narx va muddatni belgilaydi.',
+      wizStores.length
+        ? 'Tanlovingizga mos ' + wizStores.length + ' ta do\'kon.'
+        : 'Bu kategoriya va davlatga mos do\'kon topilmadi — barchasi ko\'rsatilmoqda.',
+      wizCouriers.length
+        ? 'Shu yo\'nalishda ishlaydigan ' + wizCouriers.length + ' ta kuryer, arzonidan boshlab.'
+        : 'Bu yo\'nalishda kuryer topilmadi — barchasi ko\'rsatilmoqda.',
+      'Ikkalasini yozing — yetkazish, boj va yig\'imni hisoblab beraman.'
+    ];
 
     const tabColor = k => cur === k ? PRI : '#6E6E8C';
     const mainMap = {
@@ -3212,7 +3240,10 @@ class Component extends DCLogic {
       tHome: () => this.go('home'), tStores: () => this.go('stores'),
       tCustoms: () => this.go('customs'),
       tGuides: () => this.go('guides'),
-      tWizard: () => { this.setState({ wizStep:0 }); this.go('wizard'); },
+      /* Bo'limga qaytganda tanlovlar saqlanadi: ilgari har safar
+         birinchi qadamdan boshlanardi va boshqa bo'limga bir qarab
+         kelish butun ishni bekor qilardi. */
+      tWizard: () => this.go('wizard'),
       tShip: () => { this.setState({ shipId:null }); this.go('shipments'); },
       tSettings: () => this.go('settings'),
       cHome: tabColor('home'), cStores: tabColor('stores'), cWizard: tabColor('wizard'), cShip: tabColor('shipments'), cSet: tabColor('settings'),
@@ -3735,15 +3766,30 @@ class Component extends DCLogic {
       wizOptions: wizOpts(),
       wizStepNo: Math.min(st.wizStep, 4) + 1,
       wizStepName: WIZ_LABELS[Math.min(st.wizStep, 4)],
-      wizDots: WIZ_LABELS.map((label, i) => ({
-        n: i + 1, label,
-        flex: i === Math.min(st.wizStep, 4) ? 1.5 : 1,
-        h: i === Math.min(st.wizStep, 4) ? '7px' : '5px',
-        bg: i < st.wizStep ? 'rgba(255,255,255,.72)' : (i === Math.min(st.wizStep, 4) ? '#FFFFFF' : 'rgba(255,255,255,.20)'),
-        glow: i === Math.min(st.wizStep, 4) ? '0 3px 12px rgba(255,255,255,.45)' : 'none',
-        w: i === Math.min(st.wizStep, 4) ? 800 : 700,
-        fg2: i === Math.min(st.wizStep, 4) ? '#FFFFFF' : (i < st.wizStep ? 'rgba(255,255,255,.66)' : 'rgba(255,255,255,.44)')
-      })),
+      /* Nuqta yozuvida bo'lim nomi emas, o'sha qadamda tanlangan javob
+         turadi — 3-qadamda ham qaysi kategoriya va davlat tanlangani
+         ko'rinib turadi. O'tilgan nuqtaga bosib qaytish mumkin. */
+      wizDots: WIZ_LABELS.map((label, i) => {
+        const now = Math.min(st.wizStep, 4);
+        const javob = [st.wizCat, st.wizCountry, st.wizStore, st.wizCourier, null][i];
+        const otilgan = i < st.wizStep;
+        return {
+          n: i + 1,
+          label: otilgan && javob ? String(javob).replace(/^[^\p{L}]+/u, '') : label,
+          aria: (i + 1) + '-qadam: ' + label + (otilgan && javob ? ' — ' + javob : ''),
+          jump: i <= st.wizStep && st.wizStep < 5 ? () => this.setState({ wizStep: i }) : () => {},
+          cursor: i < st.wizStep && st.wizStep < 5 ? 'pointer' : 'default',
+          flex: i === now ? 1.5 : 1,
+          h: i === now ? '7px' : '5px',
+          bg: otilgan ? 'rgba(255,255,255,.72)' : (i === now ? '#FFFFFF' : 'rgba(255,255,255,.20)'),
+          glow: i === now ? '0 3px 12px rgba(255,255,255,.45)' : 'none',
+          w: i === now ? 800 : 700,
+          fg2: i === now ? '#FFFFFF' : (otilgan ? 'rgba(255,255,255,.80)' : 'rgba(255,255,255,.44)')
+        };
+      }),
+      wizCanBack: st.wizStep > 0 && st.wizStep < 5,
+      wizBackLabel: st.wizStep > 0 ? WIZ_BACK[st.wizStep - 1] + ' o\'zgartirish' : '',
+      wizBack: () => this.setState({ wizStep: Math.max(0, st.wizStep - 1) }),
       planRows: [
         { k:'Kategoriya', v: st.wizCat || '—' },
         { k:'Davlat', v: st.wizCountry || '—' },
@@ -3756,6 +3802,7 @@ class Component extends DCLogic {
       ],
       planTotal: '$' + wz.total.toFixed(2),
       wizRestart: () => this.setState({ wizStep:0, wizCat:null, wizCountry:null, wizStore:null, wizCourier:null }),
+      wizEdit: () => this.setState({ wizStep: 4 }),
       sharePlan: () => this.toast('Reja Telegram\'dagi saqlangan xabarlarga yuborildi'),
 
       sheetOpen: st.sheetOpen,

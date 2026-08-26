@@ -153,14 +153,43 @@ try {
   await page.goBack();
   await page.waitForTimeout(400);
 
-  /* 5 qadamli yo'lda do'kon logotipi cho'zilib ketmasin: so'z-belgi (2:1)
-     kvadrat qutida 30x30 ga siqilib turardi. */
-  await page.locator('nav button', { hasText: "Yo'l" }).first().click();
+  /* «Reja» bo'limi: 5 qadam, tanlovni o'zgartirish va logotiplar. */
+  await page.locator('nav button', { hasText: 'Reja' }).first().click();
   await page.waitForTimeout(600);
   for (const re of [/Elektronika|Kiyim|Poyabzal/, /Xitoy|AQSh|Turkiya/]) {
     await page.locator('button:visible').filter({ hasText: re }).first().click();
     await page.waitForTimeout(500);
   }
+
+  /* Bosqich yozuvlarida bo'lim nomi emas, tanlangan javob turishi kerak —
+     3-qadamda ham qaysi kategoriya va davlat tanlangani ko'rinadi. */
+  const wizJavob = await page.evaluate(() =>
+    [...document.querySelectorAll('button[aria-label*="qadam"]')]
+      .map(b => b.querySelector('span').textContent.trim()));
+  check('reja qadamlarida tanlangan javob ko\'rinadi',
+    wizJavob.length === 5 && !/^Mahsulot$/.test(wizJavob[0]) && !/^Davlat$/.test(wizJavob[1]),
+    wizJavob.join(' | '));
+
+  /* O'tilgan qadamga bosib qaytish mumkin (ilgari faqat boshidan boshlash bor edi). */
+  await page.locator('button[aria-label*="qadam"]').first().click({ force: true });
+  await page.waitForTimeout(500);
+  const wizQaytdi = await page.evaluate(() =>
+    (document.querySelector('span[style*="999px"][style*="tabular-nums"]') || {}).textContent || '');
+  check('o\'tilgan qadamga qaytish ishlaydi', /^1\s*\/\s*5/.test(wizQaytdi.replace(/\s+/g, ' ')), wizQaytdi.trim());
+
+  for (const re of [/Elektronika|Kiyim|Poyabzal/, /Xitoy|AQSh|Turkiya/]) {
+    await page.locator('button:visible').filter({ hasText: re }).first().click();
+    await page.waitForTimeout(500);
+  }
+
+  /* Boshqa bo'limga chiqib qaytganda tanlovlar saqlanishi kerak. */
+  await page.locator('nav button', { hasText: 'Bojxona' }).first().click();
+  await page.waitForTimeout(400);
+  await page.locator('nav button', { hasText: 'Reja' }).first().click();
+  await page.waitForTimeout(600);
+  const wizSaqlandi = await page.evaluate(() =>
+    (document.querySelector('span[style*="999px"][style*="tabular-nums"]') || {}).textContent || '');
+  check('bo\'limga qaytganda qadam saqlanadi', /^3\s*\/\s*5/.test(wizSaqlandi.replace(/\s+/g, ' ')), wizSaqlandi.trim());
   const wizLogo = await page.evaluate(() => {
     const btn = [...document.querySelectorAll('button')]
       .find(b => /Marketplace|Premium/.test(b.innerText) && b.querySelector('div[style*="background-image"]'));
@@ -171,7 +200,7 @@ try {
     return { bor: true, w: Math.round(r.width), h: Math.round(r.height),
              fit: getComputedStyle(img).backgroundSize };
   });
-  check('yo\'ldagi do\'kon logotipi cho\'zilmaydi',
+  check('rejadagi do\'kon logotipi cho\'zilmaydi',
     wizLogo.bor && wizLogo.w > wizLogo.h && wizLogo.fit === 'contain',
     wizLogo.bor ? `${wizLogo.w}x${wizLogo.h}, ${wizLogo.fit}` : 'topilmadi');
 
