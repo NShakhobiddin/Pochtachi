@@ -1530,18 +1530,68 @@
 
   <sc-if value="{{ sShip }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:14px">
+      <!-- Foydalanuvchining o'z jo'natmalari: saqlangan rejalardan -->
+      <sc-if value="{{ hasTracked }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 2px">
+          <h2 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:18px;font-weight:800;color:#151329;letter-spacing:-.3px">Mening jo'natmalarim</h2>
+          <span style="font-size:11px;font-weight:800;color:#6C6C88;background:#FFFFFF;padding:6px 11px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ trackedCount }}</span>
+        </div>
+        <sc-for list="{{ trackedList }}" as="t" hint-placeholder-count="2">
+          <div style="background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:13px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+            <button sc-camel-on-click="{{ t.open }}" style="display:flex;align-items:center;gap:12px;background:none;border:none;padding:0;cursor:pointer;text-align:left;width:100%;font-family:inherit">
+              <div style="width:44px;height:44px;border-radius:14px;flex:none;position:relative;background:#F4F3FA">
+                <div style="position:absolute;inset:9px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ t.logoCss }}"></div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0">
+                <span style="font-size:15.5px;font-weight:700;color:#151329;line-height:1.3">{{ t.title }}</span>
+                <span style="font-size:12.5px;font-weight:600;color:#8E8DA8">{{ t.courier }}</span>
+              </div>
+              <span style="flex:none;font-size:11px;font-weight:800;letter-spacing:.3px;padding:5px 10px;border-radius:999px;background:{{ t.stBg }};color:{{ t.stFg }}">{{ t.stLabel }}</span>
+            </button>
+            <div style="height:5px;border-radius:99px;background:#EFEEF7;overflow:hidden">
+              <div style="height:100%;border-radius:99px;background:linear-gradient(90deg,#5A46EC,#3423B3);width:{{ t.pct }};transition:width .4s cubic-bezier(.22,.9,.3,1)"></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;background:#FFFFFF;border:1.5px solid #E4E3EE;border-radius:16px;padding:9px 12px">
+              <input size="10" value="{{ t.track }}" sc-camel-on-change="{{ t.onTrack }}" placeholder="Trek raqamini yozing" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Trek raqam" style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;flex:1;min-width:0;border:none;outline:none;font-size:15px;font-weight:700;color:#151329;background:transparent;font-variant-numeric:tabular-nums;letter-spacing:.4px;caret-color:#3B2CC9">
+              <sc-if value="{{ t.hasTrack }}" hint-placeholder-val="{{ false }}">
+                <button sc-camel-on-click="{{ t.copy }}" style="flex:none;height:30px;padding:0 12px;border-radius:12px;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:800;color:#3B2CC9;background:#F0EDFE" style-hover="background:#E1DBFB">Nusxa</button>
+              </sc-if>
+            </div>
+            <div style="display:flex;gap:9px">
+              <sc-if value="{{ t.canNext }}" hint-placeholder-val="{{ true }}">
+                <button sc-camel-on-click="{{ t.next }}" style="flex:1;min-height:44px;border-radius:16px;border:none;background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;box-shadow:0 10px 24px -16px rgba(45,30,150,.8)">{{ t.nextLabel }}</button>
+              </sc-if>
+              <sc-if value="{{ t.hasSite }}" hint-placeholder-val="{{ false }}">
+                <a href="{{ t.site }}" target="_blank" rel="noopener noreferrer" style="flex:none;min-height:44px;padding:0 16px;border-radius:16px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:800;color:#4E4E6B;text-decoration:none">Kuryer sayti</a>
+              </sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </sc-if>
+
+      <sc-if value="{{ noTracked }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#FFFFFF;border-radius:20px;padding:22px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+          <div style="width:52px;height:52px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:url('icons/courier-3d.webp')"></div>
+          <div style="display:flex;flex-direction:column;gap:5px">
+            <span style="font-size:16.5px;font-weight:800;color:#151329;letter-spacing:-.2px">Hali kuzatiladigan jo'natma yo'q</span>
+            <span style="font-size:13.5px;color:#6C6C88;line-height:1.5;font-weight:500;text-wrap:pretty">Reja tuzsangiz, u shu yerda jo'natmaga aylanadi: holatini belgilab borasiz va trek raqamini saqlaysiz.</span>
+          </div>
+          <button sc-camel-on-click="{{ tWizard }}" style="min-height:46px;padding:0 22px;border-radius:16px;border:none;background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;font-family:inherit;font-size:14.5px;font-weight:750;cursor:pointer;box-shadow:0 12px 28px -16px rgba(45,30,150,.75)">Reja tuzish</button>
+        </div>
+      </sc-if>
+
       <div style="display:flex;gap:11px;background:#FDF3E3;border-radius:20px;padding:14px 16px">
         <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
-        <span style="font-size:13px;color:#B45309;line-height:1.55;font-weight:500;text-wrap:pretty">Ilova ichida real kuzatuv hozircha yo'q. Trek raqamini shu yerda saqlab, kuryerning o'z sayti yoki botida holatni ko'rishingiz mumkin.</span>
+        <span style="font-size:13px;color:#B45309;line-height:1.55;font-weight:500;text-wrap:pretty">Holatni o'zingiz belgilaysiz — ilova kuryer tizimlariga ulanmagan. Rasmiy holatni kuryerning o'z sayti yoki botida ko'ring.</span>
       </div>
 
       <div style="background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
-        <span style="font-size:11px;font-weight:800;color:#3B2CC9;letter-spacing:.2px">TREK RAQAM</span>
+        <span style="font-size:11px;font-weight:800;color:#3B2CC9;letter-spacing:.2px">BOSHQA JO'NATMA RAQAMI</span>
         <div style="display:flex;align-items:center;gap:8px;background:#FFFFFF;border:1.5px solid #DFDCF5;border-radius:20px;padding:11px 13px">
-          <input size="12" value="{{ trackNo }}" sc-camel-on-change="{{ onTrackNo }}" sc-camel-on-blur="{{ onTrackBlur }}" placeholder="FC 8842 1907 UZ" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" enterkeyhint="done" aria-label="Trek raqam" style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;flex:1;min-width:0;border:none;outline:none;font-size:17px;font-weight:800;color:#151329;background:transparent;font-variant-numeric:tabular-nums;letter-spacing:.6px;caret-color:#3B2CC9">
+          <input size="12" value="{{ trackNo }}" sc-camel-on-change="{{ onTrackNo }}" sc-camel-on-blur="{{ onTrackBlur }}" placeholder="Masalan: RB123456789CN" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" enterkeyhint="done" aria-label="Trek raqam" style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;flex:1;min-width:0;border:none;outline:none;font-size:17px;font-weight:800;color:#151329;background:transparent;font-variant-numeric:tabular-nums;letter-spacing:.6px;caret-color:#3B2CC9">
           <button sc-camel-on-click="{{ copyTrack }}" style="flex:none;height:32px;padding:0 13px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:800;color:#3B2CC9;background:#F0EDFE" style-hover="background:#E1DBFB">Nusxa</button>
         </div>
-        <span style="font-size:13px;color:#6C6C88;line-height:1.5">Raqamni nusxalab, quyidagi kuryer saytiga qo'ying.</span>
+        <span style="font-size:13px;color:#6C6C88;line-height:1.5">Rejasiz jo'natma raqamini shu yerda saqlab, quyidagi kuryer saytiga qo'ying.</span>
       </div>
 
       <div style="display:flex;align-items:center;gap:10px;padding:2px 2px 0">
@@ -3313,7 +3363,7 @@ class Component extends DCLogic {
     const stamp = planStamp(st.plans, d);
     const id = 'p' + d.getTime();
     const plan = {
-      id, step: 0,
+      id, step: 0, track: '',
       date: stamp.date,
       num: stamp.num,
       cat: (st.wizCat || 'Xarid').replace(/^[^\p{L}]+/u, ''),
@@ -3645,6 +3695,57 @@ class Component extends DCLogic {
       skipOnb: () => { this.setState({ onboarded: true }); this.go('home'); },
 
       wizardBig: st.novice, wizardSmall: !st.novice,
+      /* --- Kuzatuv: foydalanuvchining o'z rejalari ---
+         Reja saqlangandan keyin u jo'natmaga aylanadi. Holat qo'lda
+         belgilanadi — ilovada kuryer tizimlariga ulanish yo'q va buni
+         yashirmaymiz. */
+      ...(() => {
+        const mine = (st.plans || []).filter(p => p.step < 4)
+          .map(p => {
+            const k = COURIERS.find(c => c.id === p.courierId) || null;
+            return {
+              id: p.id,
+              title: p.cat + ' · ' + p.storeName,
+              courier: p.courierName || '—',
+              logoCss: p.logoCss || 'none',
+              stLabel: PLAN_STATUS[p.step].label,
+              stBg: PLAN_STATUS[p.step].bg,
+              stFg: PLAN_STATUS[p.step].fg,
+              pct: Math.round((p.step / 4) * 100) + '%',
+              track: p.track || '',
+              hasTrack: !!p.track,
+              noTrack: !p.track,
+              nextLabel: p.step < 4 ? PLAN_STEPS[p.step + 1].t : '',
+              canNext: p.step < 4,
+              site: k && k.track ? k.track : '',
+              hasSite: !!(k && k.track),
+              onTrack: e => {
+                const v = e.target.value.toUpperCase();
+                this.setState(x => ({ plans: x.plans.map(q => q.id === p.id ? { ...q, track: v } : q) }));
+              },
+              copy: () => {
+                if (!p.track) { this.toast('Avval trek raqamini yozing'); return; }
+                try { navigator.clipboard.writeText(p.track); this.toast('Trek raqam nusxalandi'); }
+                catch (e) { this.toast(p.track); }
+              },
+              next: () => {
+                this.setState(x => ({ plans: x.plans.map(q => q.id === p.id ? { ...q, step: Math.min(q.step + 1, 4) } : q) }));
+                haptic('light');
+                this.toast(PLAN_STEPS[Math.min(p.step + 1, 4)].t + ' — belgilandi');
+              },
+              open: () => { this.setState({ planId: p.id }); this.push('plan'); }
+            };
+          });
+        const yolda = mine.filter(x => x.stLabel === 'Yo\'lda' || x.stLabel === 'Omborda').length;
+        return {
+          trackedList: mine,
+          hasTracked: mine.length > 0,
+          noTracked: mine.length === 0,
+          trackedCount: mine.length + ' ta',
+          trackedSummary: mine.length === 0 ? ''
+            : (yolda > 0 ? yolda + ' ta yo\'lda · ' : '') + mine.length + ' ta kuzatuvda'
+        };
+      })(),
       hasShipments: shipList.length > 0,
       activeShipments: shipList.slice(0, 2).map(s => ({ ...s, stBg: LV[s.level].bg, stFg: LV[s.level].fg, open:() => { this.setState({ shipId:s.id }); this.push('shipments'); } })),
       tipNo: tipIdx + 1, tipTotal: TIPS.length,

@@ -392,6 +392,52 @@ try {
   check('xizmatlar: aloqasiz o\'lik havola ochilmaydi',
     !svcSafe.opened || svcSafe.tost, JSON.stringify(svcSafe));
 
+  /* Kuzatuv: saqlangan reja jo'natmaga aylanadi — trek raqami yoziladi
+     va bosqichi qo'lda suriladi. Kuzatuv tugmasi bosh sahifa sarlavhasida. */
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
+  await page.waitForTimeout(450);
+  await page.locator('button[aria-label*="kuzat"]').first().click();
+  await page.waitForTimeout(700);
+  const kuzBosh = (await page.evaluate(() => document.body.innerText)).includes('Hali kuzatiladigan');
+  check('kuzatuv: bo\'sh holat tushuntiriladi', kuzBosh);
+
+  await page.locator('nav button', { hasText: 'Reja' }).first().click();
+  await page.waitForTimeout(600);
+  /* Sehrgar oldingi tekshiruvdan keyin o'rtada turibdi — birinchi qadamga
+     qaytamiz (nuqtalar aria-label bilan belgilangan). */
+  const d1 = page.locator('button[aria-label^="1-qadam"]').first();
+  if (await d1.count()) { await d1.click(); await page.waitForTimeout(450); }
+  await page.locator('button:visible').filter({ hasText: /Elektronika|Kiyim|Poyabzal/ }).first().click();
+  await page.waitForTimeout(450);
+  await page.locator('button:visible').filter({ hasText: /Xitoy|AQSh|Turkiya/ }).first().click();
+  await page.waitForTimeout(550);
+  await page.locator('button:visible').filter({ hasText: /Marketplace/ }).first().click();
+  await page.waitForTimeout(550);
+  const kk = page.locator('main button:visible');
+  for (let i = 0; i < await kk.count(); i++) {
+    const t = (await kk.nth(i).innerText().catch(() => '')).trim();
+    if (/kun|\$/.test(t) && t.length > 6) { await kk.nth(i).click(); break; }
+  }
+  await page.waitForTimeout(700);
+  const kor = page.locator('main button', { hasText: "Rejani ko'rish" });
+  if (await kor.count()) { await kor.first().click(); await page.waitForTimeout(600); }
+  await page.locator('main button', { hasText: 'Rejani saqlash' }).first().click();
+  await page.waitForTimeout(800);
+
+  await page.locator('button[aria-label*="kuzat"]').first().click();
+  await page.waitForTimeout(700);
+  await page.locator('main input[placeholder="Trek raqamini yozing"]').first().fill('rb 1234 cn');
+  await page.locator('main input[placeholder="Trek raqamini yozing"]').first().blur();
+  await page.waitForTimeout(350);
+  const nx = page.locator('main button').filter({ hasText: /Buyurtma qilindi/ }).first();
+  if (await nx.count()) { await nx.click(); await page.waitForTimeout(600); }
+  const kuz = await page.evaluate(() => {
+    const inp = document.querySelector('main input[placeholder="Trek raqamini yozing"]');
+    return { trek: inp ? inp.value : '', holat: /Buyurtma qilindi/.test(document.body.innerText) };
+  });
+  check('kuzatuv: reja jo\'natmaga aylandi',
+    kuz.trek === 'RB 1234 CN' && kuz.holat, JSON.stringify(kuz));
+
   /* Taqiqlangan tovarlar ro'yxatida har bir pozitsiyaning o'z belgisi
      bo'lsin — 23 qator, kamida 20 xil ikonka. */
   await page.locator('nav button', { hasText: 'Bojxona' }).first().click();
