@@ -8,14 +8,14 @@
 <style>:root{--brand:#FF4400}</style>
 <link rel="stylesheet" href="../guide-common.css">
 <!-- seo:start -->
-<meta name="description" content="Taobao dan O'zbekistonga buyurtma berish: Rasm orqali qidiruv, Alipay to'lovi, kargo ombori va bojxona. 10 bo'lim, ekran maketlari, bojxona kalkulyatori va lug'at bilan.">
+<meta name="description" content="Taobao dan O'zbekistonga buyurtma berish: Rasm orqali qidiruv, Alipay to'lovi, kuryer ombori va bojxona. 10 bo'lim, ekran maketlari, bojxona kalkulyatori va lug'at bilan.">
 <link rel="canonical" href="https://nshakhobiddin.github.io/Pochtachi/guides/inline/taobao.html">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Xarid Yordamchisi">
 <meta property="og:locale" content="uz_UZ">
 <meta property="og:url" content="https://nshakhobiddin.github.io/Pochtachi/guides/inline/taobao.html">
 <meta property="og:title" content="Taobao → O'zbekiston: bosqichma-bosqich qo'llanma">
-<meta property="og:description" content="Taobao dan O'zbekistonga buyurtma berish: Rasm orqali qidiruv, Alipay to'lovi, kargo ombori va bojxona. 10 bo'lim, ekran maketlari, bojxona kalkulyatori va lug'at bilan.">
+<meta property="og:description" content="Taobao dan O'zbekistonga buyurtma berish: Rasm orqali qidiruv, Alipay to'lovi, kuryer ombori va bojxona. 10 bo'lim, ekran maketlari, bojxona kalkulyatori va lug'at bilan.">
 <meta property="og:image" content="https://nshakhobiddin.github.io/Pochtachi/icons/og-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#3B2CC9">
@@ -61,9 +61,9 @@
     <div class="grid g3">
       <div class="method">
         <div class="tag">ENG OMMABOP</div>
-        <h4>1. Kargo (forwarder)</h4>
+        <h4>1. Kuryer</h4>
         <div class="who">O'zingiz buyurtma berasiz</div>
-        <p class="mini">Kargo kompaniyasi sizga Xitoydagi ombor manzili va shaxsiy ID kod beradi. Siz Taobao'da o'zingiz xarid qilib, shu manzilga jo'natasiz — kargo esa O'zbekistonga olib keladi.</p>
+        <p class="mini">Kuryer kompaniyasi sizga Xitoydagi ombor manzili va shaxsiy ID kod beradi. Siz Taobao'da o'zingiz xarid qilib, shu manzilga jo'natasiz — kuryer esa O'zbekistonga olib keladi.</p>
         <ul>
           <li class="p">Eng arzon variant</li>
           <li class="p">Bir nechta buyurtmani birlashtirish (konsolidatsiya)</li>
@@ -102,7 +102,7 @@
 
     <div class="note info">
       <span class="ic">💡</span>
-      <div><b>Tavsiya:</b> Birinchi marta buyurtma berayotgan bo'lsangiz — <b>vositachi</b> orqali kichik summadan boshlang. Jarayonni tushunib olganingizdan keyin <b>kargo</b> usuliga o'ting: bir xil tovar odatda 10–20% arzonga tushadi.</div>
+      <div><b>Tavsiya:</b> Birinchi marta buyurtma berayotgan bo'lsangiz — <b>vositachi</b> orqali kichik summadan boshlang. Jarayonni tushunib olganingizdan keyin <b>kuryer</b> usuliga o'ting: bir xil tovar odatda 10–20% arzonga tushadi.</div>
     </div>
 
     <h3>Taobao, 1688 va Pinduoduo — farqi nimada?</h3>
@@ -140,7 +140,7 @@
   <!-- ============ 3. KALKULYATOR ============ -->
   <section class="panel" id="p-calc">
     <h2>Narx va boj kalkulyatori</h2>
-    <p class="sub">Tovar narxi + kargo + bojxona to'lovi — jami qancha turishini hisoblang.</p>
+    <p class="sub">Tovar narxi + kuryer + bojxona to'lovi — jami qancha turishini hisoblang.</p>
 
     <div class="grid g2">
       <div>
@@ -155,7 +155,7 @@
             <input type="number" id="price" value="350" min="0" step="1" oninput="calc()">
           </div>
           <div class="field">
-            <label class="f">Xitoy ichida yetkazish (¥) <span class="mini">— sotuvchidan kargo omboriga</span></label>
+            <label class="f">Xitoy ichida yetkazish (¥) <span class="mini">— sotuvchidan kuryer omboriga</span></label>
             <input type="number" id="inner" value="0" min="0" step="1" oninput="calc()">
           </div>
         </div>
@@ -179,7 +179,7 @@
 
       <div>
         <div class="card">
-          <h3 style="margin-top:0">Kargo</h3>
+          <h3 style="margin-top:0">Kuryer</h3>
           <div class="field">
             <label class="f">Yetkazish turi</label>
             <div class="seg">
@@ -195,7 +195,7 @@
             <label class="f">Hajmiy og'irlik bo'luvchisi</label>
             <select id="divisor" onchange="calc()">
               <option value="6000">6000 — avia standarti</option>
-              <option value="5000">5000 — qattiqroq (ba'zi kargolar)</option>
+              <option value="5000">5000 — qattiqroq (ba'zi kuryerlar)</option>
               <option value="0">Hisobga olinmasin</option>
             </select>
           </div>
@@ -210,7 +210,7 @@
           <div class="field">
             <label class="f">Kanal</label>
             <select id="channel" onchange="calc()">
-              <option value="200">Kuryerlik / kargo — $200 oyiga</option>
+              <option value="200">Kuryerlik — $200 oyiga</option>
               <option value="100">Pochta (UzPost, EMS) — $100</option>
             </select>
           </div>
@@ -232,7 +232,7 @@
 
     <div class="note info" style="margin-top:14px">
       <span class="ic">📐</span>
-      <div><b>Hajmiy og'irlik nima?</b> Yengil, lekin katta hajmli tovar (masalan, yostiq yoki kurtka) uchun kargo <b>hajm</b> bo'yicha hisoblaydi: <span class="kbd">U × E × B ÷ 6000</span>. Haqiqiy va hajmiy og'irlikning <b>kattarog'i</b> to'lanadi. Ba'zi kargolar yumshoqroq formula qo'llaydi — tarifni oldindan aniqlashtiring.</div>
+      <div><b>Hajmiy og'irlik nima?</b> Yengil, lekin katta hajmli tovar (masalan, yostiq yoki kurtka) uchun kuryer <b>hajm</b> bo'yicha hisoblaydi: <span class="kbd">U × E × B ÷ 6000</span>. Haqiqiy va hajmiy og'irlikning <b>kattarog'i</b> to'lanadi. Ba'zi kuryerlar yumshoqroq formula qo'llaydi — tarifni oldindan aniqlashtiring.</div>
     </div>
     <div class="note warn">
       <span class="ic">🧮</span>
@@ -247,7 +247,7 @@
 
     <div class="grid g2">
       <div class="card tight">
-        <div class="pill b">KURYERLIK / KARGO</div>
+        <div class="pill b">KURYERLIK</div>
         <div style="font-size:26px;font-weight:800;margin:8px 0 2px;color:var(--indigo-700)">$200</div>
         <div class="mini">bir <b>kalendar oy</b> ichida, bojsiz. Barcha jo'natmalar jamlanib hisoblanadi.</div>
       </div>
@@ -331,9 +331,9 @@
     </div>
   </section>
 
-  <!-- ============ 5. KARGO ============ -->
+  <!-- ============ 5. KURYER ============ -->
   <section class="panel" id="p-cargo">
-    <h2>Kargo kompaniyalari</h2>
+    <h2>Kuryer kompaniyalari</h2>
     <p class="sub">Xitoydan (va boshqa davlatlardan) O'zbekistonga tovar olib keluvchi xizmatlar. Narxlar taxminiy — buyurtmadan oldin rasmiy saytda tekshiring.</p>
     <div class="chips" id="cargochips"></div>
     <div class="tblwrap">
@@ -343,11 +343,11 @@
       </table>
     </div>
 
-    <h3>Kargo tanlashda nimaga qaraysiz?</h3>
+    <h3>Kuryer tanlashda nimaga qaraysiz?</h3>
     <div class="grid g2">
       <div class="card tight"><b>1. Yashirin to'lovlar</b><div class="mini" style="margin-top:4px">Minimal og'irlik (ko'pincha 0.5–1 kg), qadoqlash, konsolidatsiya, ombor saqlash, sug'urta — hammasi alohida pul bo'lishi mumkin.</div></div>
       <div class="card tight"><b>2. Hajmiy og'irlik formulasi</b><div class="mini" style="margin-top:4px">Kimdir ÷6000, kimdir ÷5000 ishlatadi. Yengil-hajmli tovarda farq 2 barobar bo'ladi.</div></div>
-      <div class="card tight"><b>3. «Brend» tarifi</b><div class="mini" style="margin-top:4px">Ko'p kargo brendli tovarga qimmatroq tarif qo'yadi (kontrafakt riski uchun). Nike krossovka oddiy krossovkadan 30–40% qimmat ketishi mumkin.</div></div>
+      <div class="card tight"><b>3. «Brend» tarifi</b><div class="mini" style="margin-top:4px">Ko'p kuryer brendli tovarga qimmatroq tarif qo'yadi (kontrafakt riski uchun). Nike krossovka oddiy krossovkadan 30–40% qimmat ketishi mumkin.</div></div>
       <div class="card tight"><b>4. Filial va yetkazish</b><div class="mini" style="margin-top:4px">Viloyatda yashasangiz — filiali bormi? Uygacha yetkazish narxga kirganmi?</div></div>
       <div class="card tight"><b>5. Bojxona bilan ishlashi</b><div class="mini" style="margin-top:4px">Norma oshsa, bojni kim va qanday to'laydi — ilova orqalimi yoki o'zingiz borasizmi?</div></div>
       <div class="card tight"><b>6. Yo'qolgan yuk siyosati</b><div class="mini" style="margin-top:4px">Kompensatsiya bormi, qancha? Sug'urta narxi tovar qiymatining necha foizi?</div></div>
@@ -524,8 +524,8 @@
   </section>
 
   <div class="foot">
-    Ma'lumotlar 2026-yil avgust holatiga. Bojxona normalari va kargo tariflari o'zgarishi mumkin —<br>
-    muhim qarorlardan oldin <b>customs.uz</b> va tanlagan kargo kompaniyasining rasmiy manbasini tekshiring.
+    Ma'lumotlar 2026-yil avgust holatiga. Bojxona normalari va kuryer tariflari o'zgarishi mumkin —<br>
+    muhim qarorlardan oldin <b>customs.uz</b> va tanlagan kuryer kompaniyasining rasmiy manbasini tekshiring.
   </div>
 </div>
 
@@ -536,7 +536,7 @@ const TABS=[
   {id:'p-steps',   n:'2', t:'Bosqichlar'},
   {id:'p-calc',    n:'3', t:'Kalkulyator'},
   {id:'p-customs', n:'4', t:'Bojxona'},
-  {id:'p-cargo',   n:'5', t:'Kargo'},
+  {id:'p-cargo',   n:'5', t:'Kuryer'},
   {id:'p-words',   n:'6', t:"Lug'at"},
   {id:'p-size',    n:'7', t:"O'lchamlar"},
   {id:'p-biz',     n:'8', t:'Biznes'},
@@ -545,10 +545,10 @@ const TABS=[
 ];
 
 const STEPS=[
-{t:"Kargo tanlang va ID oling", m:"10 daqiqa",
+{t:"Kuryer tanlang va ID oling", m:"10 daqiqa",
  b:`<p>Hamma narsa shu yerdan boshlanadi. Taobao'da xarid qilishdan <b>oldin</b> Xitoydagi manzilingiz bo'lishi kerak.</p>
 <ol>
-<li>«Kargo» bo'limidan sizga mos kompaniyani tanlang (narx, filial, muddat bo'yicha).</li>
+<li>«Kuryer» bo'limidan sizga mos kompaniyani tanlang (narx, filial, muddat bo'yicha).</li>
 <li>Ularning saytida yoki ilovasida ro'yxatdan o'ting — pasport ma'lumotlari va JShShIR so'raladi.</li>
 <li>Sizga <b>shaxsiy ID kod</b> beriladi (masalan <span class="kbd">UZ-48213</span>). Bu kod jo'natmani ombordagi minglab qutilar orasidan topish uchun ishlatiladi.</li>
 <li><b>Xitoydagi ombor manzili</b>ni nusxalab oling — u xitoycha yozilgan bo'ladi, aynan shu holicha kerak bo'ladi.</li>
@@ -595,24 +595,24 @@ const STEPS=[
 </ul>
 <div class="note warn"><span class="ic">🎭</span><div><b>Brend haqida:</b> Taobao'da brend nusxalari ko'p. Kontrafakt tovar O'zbekiston bojxonasida <b>ushlab qolinishi va yo'q qilinishi</b> mumkin — bu intellektual mulk huquqi buzilishi hisoblanadi. Original kerak bo'lsa — <b>Tmall</b>'dagi rasmiy do'kondan (旗舰店) oling.</div></div>`},
 
-{t:"Kargo manzilini kiriting", m:"5 daqiqa",
- b:`<figure class="shot wide"><figcaption>Kargo manzilini Taobao formasiga ko'chirish</figcaption><div class="shot-body"><div class="shot-svg"><div class="fmap"><div class="fcol src"><h5>KARGO BERGAN MANZIL (xitoycha)</h5><div class="frow"><span class="fl">Qabul qiluvchi</span><code class="fv">UZ48213 王先生</code></div><div class="frow"><span class="fl">Telefon</span><code class="fv">+86 138 0000 0000</code></div><div class="frow"><span class="fl">Hudud</span><code class="fv">广东省 广州市 白云区</code></div><div class="frow"><span class="fl">Manzil</span><code class="fv">…物流园 A栋 UZ48213</code></div></div><div class="fjoin"><span></span></div><div class="fcol dst"><h5>TAOBAO MANZIL FORMASI</h5><div class="ffield hl"><span class="fl">收货人 — qabul qiluvchi</span><div class="fin"><code>UZ48213 王先生</code><b class="fn">1</b></div></div><div class="ffield"><span class="fl">手机号码 — telefon</span><div class="fin"><code>13800000000</code><b class="fn">2</b></div></div><div class="ffield"><span class="fl">所在地区 — hudud</span><div class="fin"><code>广东省 / 广州市 / 白云区</code><b class="fn">3</b></div></div><div class="ffield hl"><span class="fl">详细地址 — batafsil</span><div class="fin"><code>…A栋  UZ48213</code><b class="fn">4</b></div></div></div></div></div><ol class="legend-list"><li><b class="n">1</b><span><b>收货人</b> maydoniga kargo bergan ism <u>va ID kodingiz</u> birga yoziladi. Faqat ismni yozsangiz posilka omborda egasiz qoladi.</span></li><li><b class="n">2</b><span><b>手机号码</b> — <b>ombor</b>ning xitoy raqami, o'zingizniki emas. Kuryer shu raqamga qo'ng'iroq qiladi.</span></li><li><b class="n">3</b><span><b>所在地区</b> — viloyat → shahar → tuman ketma-ket ro'yxatdan tanlanadi, qo'lda yozilmaydi.</span></li><li><b class="n">4</b><span><b>详细地址</b> oxiriga ID kodni <b>yana bir marta</b> yozing. Ombor xodimi qutini aynan shu kod bo'yicha topadi.</span></li></ol></div></figure>
-<p>Bu — butun jarayonning eng nozik qadami. Manzil <b>xitoy tilida</b>, kargo bergan shaklda, o'zgartirilmasdan kiritiladi.</p>
+{t:"Kuryer manzilini kiriting", m:"5 daqiqa",
+ b:`<figure class="shot wide"><figcaption>Kuryer manzilini Taobao formasiga ko'chirish</figcaption><div class="shot-body"><div class="shot-svg"><div class="fmap"><div class="fcol src"><h5>KURYER BERGAN MANZIL (xitoycha)</h5><div class="frow"><span class="fl">Qabul qiluvchi</span><code class="fv">UZ48213 王先生</code></div><div class="frow"><span class="fl">Telefon</span><code class="fv">+86 138 0000 0000</code></div><div class="frow"><span class="fl">Hudud</span><code class="fv">广东省 广州市 白云区</code></div><div class="frow"><span class="fl">Manzil</span><code class="fv">…物流园 A栋 UZ48213</code></div></div><div class="fjoin"><span></span></div><div class="fcol dst"><h5>TAOBAO MANZIL FORMASI</h5><div class="ffield hl"><span class="fl">收货人 — qabul qiluvchi</span><div class="fin"><code>UZ48213 王先生</code><b class="fn">1</b></div></div><div class="ffield"><span class="fl">手机号码 — telefon</span><div class="fin"><code>13800000000</code><b class="fn">2</b></div></div><div class="ffield"><span class="fl">所在地区 — hudud</span><div class="fin"><code>广东省 / 广州市 / 白云区</code><b class="fn">3</b></div></div><div class="ffield hl"><span class="fl">详细地址 — batafsil</span><div class="fin"><code>…A栋  UZ48213</code><b class="fn">4</b></div></div></div></div></div><ol class="legend-list"><li><b class="n">1</b><span><b>收货人</b> maydoniga kuryer bergan ism <u>va ID kodingiz</u> birga yoziladi. Faqat ismni yozsangiz posilka omborda egasiz qoladi.</span></li><li><b class="n">2</b><span><b>手机号码</b> — <b>ombor</b>ning xitoy raqami, o'zingizniki emas. Kuryer shu raqamga qo'ng'iroq qiladi.</span></li><li><b class="n">3</b><span><b>所在地区</b> — viloyat → shahar → tuman ketma-ket ro'yxatdan tanlanadi, qo'lda yozilmaydi.</span></li><li><b class="n">4</b><span><b>详细地址</b> oxiriga ID kodni <b>yana bir marta</b> yozing. Ombor xodimi qutini aynan shu kod bo'yicha topadi.</span></li></ol></div></figure>
+<p>Bu — butun jarayonning eng nozik qadami. Manzil <b>xitoy tilida</b>, kuryer bergan shaklda, o'zgartirilmasdan kiritiladi.</p>
 <ol>
 <li><span class="kbd">我的淘宝 → 我的地址 → 添加地址</span> (Mening manzillarim → Manzil qo'shish)</li>
-<li><b>收货人</b> (qabul qiluvchi): kargo bergan ism — ko'pincha <b>sizning ID kodingiz</b> bilan birga. Masalan: <span class="kbd">UZ48213 王</span></li>
-<li><b>手机号码</b> (telefon): <b>kargo omborining</b> xitoy raqami, o'zingizniki emas!</li>
-<li><b>所在地区</b> (hudud): viloyat → shahar → tuman — kargo ko'rsatgan tanlov</li>
+<li><b>收货人</b> (qabul qiluvchi): kuryer bergan ism — ko'pincha <b>sizning ID kodingiz</b> bilan birga. Masalan: <span class="kbd">UZ48213 王</span></li>
+<li><b>手机号码</b> (telefon): <b>kuryer omborining</b> xitoy raqami, o'zingizniki emas!</li>
+<li><b>所在地区</b> (hudud): viloyat → shahar → tuman — kuryer ko'rsatgan tanlov</li>
 <li><b>详细地址</b> (batafsil manzil): ombor manzili + <b>ID kodingiz</b>. Ko'pincha kod manzilning oxiriga qo'shiladi.</li>
 </ol>
 <div class="note dang"><span class="ic">⚠️</span><div>Manzilni <b>qo'lda qayta yozmang</b> — nusxalab qo'ying. Bitta iyeroglif xato bo'lsa, posilka boshqa manzilga ketadi va qaytarib bo'lmaydi.</div></div>
 <div class="note ok"><span class="ic">✅</span><div>Manzilni saqlab, <b>«asosiy» (默认地址)</b> qilib belgilab qo'ying — keyingi buyurtmalarda avtomatik tanlanadi.</div></div>`},
 
 {t:"To'lov qiling", m:"10–30 daqiqa",
- b:`<figure class="shot"><figcaption>Taobao — to'lov ekrani</figcaption><div class="shot-body"><div class="shot-svg"><svg viewBox="0 0 318 396" width="318" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="1" y="1" width="316" height="394" rx="26" fill="#1e293b"/><rect x="6" y="6" width="306" height="384" rx="20" fill="#fff"/><rect x="133" y="8" width="52" height="5" rx="2.5" fill="#cbd5e1"/><g transform="translate(9,19)"><path d="M0 0H300V351 a17 17 0 0 1 -17 17H17a17 17 0 0 1 -17 -17Z" fill="#f8fafc"/><rect x="0" y="0" width="300" height="34" fill="#ffffff"/><line x1="0" y1="34" x2="300" y2="34" stroke="#e2e8f0"/><path d="M14 17 l6 -6 M14 17 l6 6" fill="none" stroke="#64748b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><text x="150" y="21" font-size="12.5" fill="#0f172a" font-weight="700" text-anchor="middle">支付 — to'lov</text><rect x="12" y="52" width="276" height="54" rx="9" fill="#fff" stroke="#e2e8f0"/><text x="24" y="74" font-size="10" fill="#64748b" font-weight="600">To'lanadigan summa</text><text x="276" y="76" font-size="17" fill="#0f172a" font-weight="800" text-anchor="end">¥168.00</text><text x="24" y="92" font-size="9" fill="#94a3b8" font-weight="500">≈ $24.9 · yetkazish: 包邮 (bepul)</text><g class="xy-mark"><rect x="21.0" y="81.0" width="125.9" height="16.0" rx="5" fill="#4f46e5" fill-opacity=".09" stroke="#4f46e5" stroke-width="1.4"/><path d="M146.9 83.0L276.3 54.6" stroke="#4f46e5" stroke-width="1.2" stroke-dasharray="2.5 2.5" fill="none"/><rect x="9.0" y="111.0" width="151.2" height="42.0" rx="5" fill="#4f46e5" fill-opacity=".09" stroke="#4f46e5" stroke-width="1.4"/><path d="M160.2 132.0L276.0 132.0" stroke="#4f46e5" stroke-width="1.2" stroke-dasharray="2.5 2.5" fill="none"/><rect x="35.0" y="275.6" width="154.8" height="17.0" rx="5" fill="#4f46e5" fill-opacity=".09" stroke="#4f46e5" stroke-width="1.4"/><path d="M189.8 284.0L276.0 284.0" stroke="#4f46e5" stroke-width="1.2" stroke-dasharray="2.5 2.5" fill="none"/></g><circle cx="288" cy="52" r="11.5" fill="#fff"/><circle cx="288" cy="52" r="10" fill="#4f46e5"/><text x="288" y="55.6" font-size="10.5" fill="#fff" font-weight="800" text-anchor="middle">1</text><text x="12" y="122" font-size="9.5" fill="#64748b" font-weight="800">TO'LOV USULI</text><rect x="12" y="132" width="276" height="38" rx="8" fill="#fff" stroke="#4f46e5" stroke-width="1.6"/><circle cx="30" cy="151" r="7" fill="none" stroke="#4f46e5" stroke-width="1.6"/><circle cx="30" cy="151" r="3.6" fill="#4f46e5"/><text x="46" y="148" font-size="10.5" fill="#0f172a" font-weight="700">Kargo / vositachi balansi</text><text x="46" y="161" font-size="8.5" fill="#64748b" font-weight="500">Eng ishonchli · komissiya 3–10%</text><circle cx="272" cy="151" r="8" fill="#05966922"/><text x="272" y="154.5" font-size="9.5" fill="#059669" font-weight="800" text-anchor="middle">✓</text><rect x="12" y="176" width="276" height="38" rx="8" fill="#fff" stroke="#e2e8f0"/><circle cx="30" cy="195" r="7" fill="none" stroke="#cbd5e1" stroke-width="1.6"/><text x="46" y="192" font-size="10.5" fill="#0f172a" font-weight="700">支付宝 Alipay (TourPass)</text><text x="46" y="205" font-size="8.5" fill="#64748b" font-weight="500">Pasport bilan, ~3.5% konvertatsiya</text><circle cx="272" cy="195" r="8" fill="#d9770622"/><text x="272" y="198.5" font-size="9.5" fill="#d97706" font-weight="800" text-anchor="middle">~</text><rect x="12" y="220" width="276" height="38" rx="8" fill="#fff" stroke="#e2e8f0"/><circle cx="30" cy="239" r="7" fill="none" stroke="#cbd5e1" stroke-width="1.6"/><text x="46" y="236" font-size="10.5" fill="#0f172a" font-weight="700">国际信用卡 — xalqaro karta</text><text x="46" y="249" font-size="8.5" fill="#64748b" font-weight="500">Faqat ba'zi sotuvchilarda ishlaydi</text><circle cx="272" cy="239" r="8" fill="#dc262622"/><text x="272" y="242.5" font-size="9.5" fill="#dc2626" font-weight="800" text-anchor="middle">✕</text><circle cx="288" cy="132" r="11.5" fill="#fff"/><circle cx="288" cy="132" r="10" fill="#4f46e5"/><text x="288" y="135.6" font-size="10.5" fill="#fff" font-weight="800" text-anchor="middle">2</text><rect x="12" y="270" width="276" height="28" rx="7" fill="#fffbeb" stroke="#fcd34d"/><circle cx="26" cy="284" r="7" fill="#fcd34d"/><text x="26" y="287.5" font-size="9.5" fill="#fff" font-weight="800" text-anchor="middle">!</text><text x="39" y="287.6" font-size="9.5" fill="#92400e" font-weight="650">确认收货 tugmasini hozir bosmang!</text><circle cx="288" cy="284" r="11.5" fill="#fff"/><circle cx="288" cy="284" r="10" fill="#4f46e5"/><text x="288" y="287.6" font-size="10.5" fill="#fff" font-weight="800" text-anchor="middle">3</text><rect x="12" y="308" width="276" height="34" rx="8" fill="#4f46e5"/><text x="150" y="329" font-size="12" fill="#fff" font-weight="700" text-anchor="middle">立即支付  —  to'lash</text></g></svg></div><ol class="legend-list"><li><b class="n">1</b><span>Summani tekshiring: <b>包邮</b> bo'lsa Xitoy ichida yetkazish bepul, aks holda qo'shimcha qator chiqadi.</span></li><li><b class="n">2</b><span>Ishonchlilik bo'yicha tartib: kargo balansi → Alipay → xalqaro karta. O'zbek kartalari (Uzcard/Humo) ishlamaydi.</span></li><li><b class="n">3</b><span><b>Escrow:</b> pul sotuvchiga darhol o'tmaydi. <b>确认收货</b> («tovarni oldim») tugmasini tovar kargo omboriga <u>yetmaguncha</u> bosmang — aks holda nizo huquqingizni yo'qotasiz.</span></li></ol></div></figure>
+ b:`<figure class="shot"><figcaption>Taobao — to'lov ekrani</figcaption><div class="shot-body"><div class="shot-svg"><svg viewBox="0 0 318 396" width="318" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="1" y="1" width="316" height="394" rx="26" fill="#1e293b"/><rect x="6" y="6" width="306" height="384" rx="20" fill="#fff"/><rect x="133" y="8" width="52" height="5" rx="2.5" fill="#cbd5e1"/><g transform="translate(9,19)"><path d="M0 0H300V351 a17 17 0 0 1 -17 17H17a17 17 0 0 1 -17 -17Z" fill="#f8fafc"/><rect x="0" y="0" width="300" height="34" fill="#ffffff"/><line x1="0" y1="34" x2="300" y2="34" stroke="#e2e8f0"/><path d="M14 17 l6 -6 M14 17 l6 6" fill="none" stroke="#64748b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><text x="150" y="21" font-size="12.5" fill="#0f172a" font-weight="700" text-anchor="middle">支付 — to'lov</text><rect x="12" y="52" width="276" height="54" rx="9" fill="#fff" stroke="#e2e8f0"/><text x="24" y="74" font-size="10" fill="#64748b" font-weight="600">To'lanadigan summa</text><text x="276" y="76" font-size="17" fill="#0f172a" font-weight="800" text-anchor="end">¥168.00</text><text x="24" y="92" font-size="9" fill="#94a3b8" font-weight="500">≈ $24.9 · yetkazish: 包邮 (bepul)</text><g class="xy-mark"><rect x="21.0" y="81.0" width="125.9" height="16.0" rx="5" fill="#4f46e5" fill-opacity=".09" stroke="#4f46e5" stroke-width="1.4"/><path d="M146.9 83.0L276.3 54.6" stroke="#4f46e5" stroke-width="1.2" stroke-dasharray="2.5 2.5" fill="none"/><rect x="9.0" y="111.0" width="155.7" height="42.0" rx="5" fill="#4f46e5" fill-opacity=".09" stroke="#4f46e5" stroke-width="1.4"/><path d="M164.7 132.0L276.0 132.0" stroke="#4f46e5" stroke-width="1.2" stroke-dasharray="2.5 2.5" fill="none"/><rect x="35.0" y="275.6" width="154.8" height="17.0" rx="5" fill="#4f46e5" fill-opacity=".09" stroke="#4f46e5" stroke-width="1.4"/><path d="M189.8 284.0L276.0 284.0" stroke="#4f46e5" stroke-width="1.2" stroke-dasharray="2.5 2.5" fill="none"/></g><circle cx="288" cy="52" r="11.5" fill="#fff"/><circle cx="288" cy="52" r="10" fill="#4f46e5"/><text x="288" y="55.6" font-size="10.5" fill="#fff" font-weight="800" text-anchor="middle">1</text><text x="12" y="122" font-size="9.5" fill="#64748b" font-weight="800">TO'LOV USULI</text><rect x="12" y="132" width="276" height="38" rx="8" fill="#fff" stroke="#4f46e5" stroke-width="1.6"/><circle cx="30" cy="151" r="7" fill="none" stroke="#4f46e5" stroke-width="1.6"/><circle cx="30" cy="151" r="3.6" fill="#4f46e5"/><text x="46" y="148" font-size="10.5" fill="#0f172a" font-weight="700">Kuryer / vositachi balansi</text><text x="46" y="161" font-size="8.5" fill="#64748b" font-weight="500">Eng ishonchli · komissiya 3–10%</text><circle cx="272" cy="151" r="8" fill="#05966922"/><text x="272" y="154.5" font-size="9.5" fill="#059669" font-weight="800" text-anchor="middle">✓</text><rect x="12" y="176" width="276" height="38" rx="8" fill="#fff" stroke="#e2e8f0"/><circle cx="30" cy="195" r="7" fill="none" stroke="#cbd5e1" stroke-width="1.6"/><text x="46" y="192" font-size="10.5" fill="#0f172a" font-weight="700">支付宝 Alipay (TourPass)</text><text x="46" y="205" font-size="8.5" fill="#64748b" font-weight="500">Pasport bilan, ~3.5% konvertatsiya</text><circle cx="272" cy="195" r="8" fill="#d9770622"/><text x="272" y="198.5" font-size="9.5" fill="#d97706" font-weight="800" text-anchor="middle">~</text><rect x="12" y="220" width="276" height="38" rx="8" fill="#fff" stroke="#e2e8f0"/><circle cx="30" cy="239" r="7" fill="none" stroke="#cbd5e1" stroke-width="1.6"/><text x="46" y="236" font-size="10.5" fill="#0f172a" font-weight="700">国际信用卡 — xalqaro karta</text><text x="46" y="249" font-size="8.5" fill="#64748b" font-weight="500">Faqat ba'zi sotuvchilarda ishlaydi</text><circle cx="272" cy="239" r="8" fill="#dc262622"/><text x="272" y="242.5" font-size="9.5" fill="#dc2626" font-weight="800" text-anchor="middle">✕</text><circle cx="288" cy="132" r="11.5" fill="#fff"/><circle cx="288" cy="132" r="10" fill="#4f46e5"/><text x="288" y="135.6" font-size="10.5" fill="#fff" font-weight="800" text-anchor="middle">2</text><rect x="12" y="270" width="276" height="28" rx="7" fill="#fffbeb" stroke="#fcd34d"/><circle cx="26" cy="284" r="7" fill="#fcd34d"/><text x="26" y="287.5" font-size="9.5" fill="#fff" font-weight="800" text-anchor="middle">!</text><text x="39" y="287.6" font-size="9.5" fill="#92400e" font-weight="650">确认收货 tugmasini hozir bosmang!</text><circle cx="288" cy="284" r="11.5" fill="#fff"/><circle cx="288" cy="284" r="10" fill="#4f46e5"/><text x="288" y="287.6" font-size="10.5" fill="#fff" font-weight="800" text-anchor="middle">3</text><rect x="12" y="308" width="276" height="34" rx="8" fill="#4f46e5"/><text x="150" y="329" font-size="12" fill="#fff" font-weight="700" text-anchor="middle">立即支付  —  to'lash</text></g></svg></div><ol class="legend-list"><li><b class="n">1</b><span>Summani tekshiring: <b>包邮</b> bo'lsa Xitoy ichida yetkazish bepul, aks holda qo'shimcha qator chiqadi.</span></li><li><b class="n">2</b><span>Ishonchlilik bo'yicha tartib: kuryer balansi → Alipay → xalqaro karta. O'zbek kartalari (Uzcard/Humo) ishlamaydi.</span></li><li><b class="n">3</b><span><b>Escrow:</b> pul sotuvchiga darhol o'tmaydi. <b>确认收货</b> («tovarni oldim») tugmasini tovar kuryer omboriga <u>yetmaguncha</u> bosmang — aks holda nizo huquqingizni yo'qotasiz.</span></li></ol></div></figure>
 <p>Xorijdan to'lov — Taobao'ning eng murakkab qismi. Ishonchlilik bo'yicha tartiblangan variantlar:</p>
 <ol>
-<li><b>Vositachi / kargo balansi</b> — eng ishonchli. Kargoga so'm yoki dollar o'tkazasiz, ular yuan bilan to'laydi. Komissiya 3–10%. Ko'p Toshkent kargolari shu xizmatni beradi.</li>
+<li><b>Vositachi / kuryer balansi</b> — eng ishonchli. Kuryerga so'm yoki dollar o'tkazasiz, ular yuan bilan to'laydi. Komissiya 3–10%. Ko'p Toshkent kuryerlari shu xizmatni beradi.</li>
 <li><b>Alipay (支付宝) TourPass</b> — pasport bilan ro'yxatdan o'tib, xalqaro karta orqali balans to'ldiriladi. Konvertatsiya komissiyasi ~3.5%, bitta tranzaksiya limiti bor.</li>
 <li><b>Xalqaro Visa / Mastercard</b> — to'g'ridan-to'g'ri. Faqat <b>国际卡支付</b> belgisi bor sotuvchilarda ishlaydi. Muvaffaqiyat ehtimoli o'rtacha — ko'pincha rad etiladi.</li>
 <li><b>WeChat Pay</b> — xorij hamyoni. Kunlik limit past, hamma sotuvchi qabul qilmaydi.</li>
@@ -620,15 +620,15 @@ const STEPS=[
 <div class="note info"><span class="ic">🛡️</span><div><b>Escrow tizimi:</b> Taobao pulni darhol sotuvchiga bermaydi — u <b>tizimda ushlab turiladi</b>. Siz «tovarni oldim» (确认收货) tugmasini bosgandan keyin yoki avtomatik muddat (odatda 10 kun) tugagach o'tkaziladi. Shuning uchun tovar omborga yetmaguncha bu tugmani <b>bosmang</b>.</div></div>
 <div class="note warn"><span class="ic">💳</span><div>O'zbek kartalari (Uzcard/Humo) Taobao'da ishlamaydi. Xalqaro Visa/MC kerak — yoki vositachi.</div></div>`},
 
-{t:"Trek raqamini kargoga bering", m:"3 daqiqa",
- b:`<p>Sotuvchi jo'natgach, sizga <b>快递单号</b> (trek raqami) beriladi. Uni kargo kabinetiga kiritish <b>majburiy</b>.</p>
+{t:"Trek raqamini kuryerga bering", m:"3 daqiqa",
+ b:`<p>Sotuvchi jo'natgach, sizga <b>快递单号</b> (trek raqami) beriladi. Uni kuryer kabinetiga kiritish <b>majburiy</b>.</p>
 <ol>
 <li>Taobao: <span class="kbd">我的订单 → 查看物流</span> — trek raqami va kuryer nomi (顺丰 / 中通 / 圆通 / 韵达 / 极兔) ko'rinadi.</li>
-<li>Kargo ilovasida «Kutilayotgan jo'natma» / «Ожидаемая посылка» bo'limini oching.</li>
+<li>Kuryer ilovasida «Kutilayotgan jo'natma» / «Ожидаемая посылка» bo'limini oching.</li>
 <li>Trek raqami, tovar nomi (o'zbekcha/ruscha), <b>miqdori</b> va <b>real qiymati</b>ni kiriting.</li>
 </ol>
 <div class="note warn"><span class="ic">🧾</span><div><b>Qiymatni kamaytirib yozmang.</b> Bu vaqtinchalik «tejash» bo'lib ko'rinadi, lekin: (a) jo'natma <b>qizil yo'lak</b>ka tushib ochiladi, (b) yo'qolgan taqdirda kompensatsiya siz yozgan summa bo'yicha to'lanadi, (c) qiymatni pasaytirish aniqlansa — ma'muriy javobgarlik.</div></div>
-<p>Posilka omborga yetib kelgach, kargo ilovasida status <b>«Omborda»</b> ga o'zgaradi va og'irligi ko'rsatiladi.</p>`},
+<p>Posilka omborga yetib kelgach, kuryer ilovasida status <b>«Omborda»</b> ga o'zgaradi va og'irligi ko'rsatiladi.</p>`},
 
 {t:"Konsolidatsiya va jo'natish", m:"5 daqiqa",
  b:`<p>Barcha buyurtmalaringiz omborga yig'ilgach — jo'natmani shakllantirasiz.</p>
@@ -643,7 +643,7 @@ const STEPS=[
 <div class="note info"><span class="ic">🔋</span><div><b>Avia cheklovlari:</b> litiy batareya (powerbank, noutbuk batareyasi), suyuqlik, aerozol, atir, lak, magnit, gaz ballonchalari — avia bilan <b>qabul qilinmaydi yoki cheklanadi</b>. Bunday tovarni <b>avto</b> yo'nalishi bilan yuboring.</div></div>`},
 
 {t:"Yo'lda kuzatish", m:"7–30 kun",
- b:`<p>Jo'natma bosqichlari (kargo ilovasida ko'rinadi):</p>
+ b:`<p>Jo'natma bosqichlari (kuryer ilovasida ko'rinadi):</p>
 <ol>
 <li><b>Omborga qabul qilindi</b> — Guanchjou / Iu / Urumchi</li>
 <li><b>Qadoqlandi va tortildi</b> — yakuniy og'irlik va narx aniqlanadi</li>
@@ -653,7 +653,7 @@ const STEPS=[
 <li><b>Rasmiylashtirilmoqda</b> — my.gov.uz'da xabarnoma paydo bo'ladi</li>
 <li><b>Filialga yetib keldi</b> — olish uchun tayyor</li>
 </ol>
-<div class="note warn"><span class="ic">⏳</span><div>Muddat <b>ombordan chiqqan kundan</b> sanaladi, buyurtma bergan kundan emas. Sotuvchi 1–5 kun jo'natadi + Xitoy ichida 2–5 kun + kargo omborida to'planish 1–7 kun. Real muddat e'lon qilingandan 1.5–2 barobar uzunroq bo'lishi normal.</div></div>
+<div class="note warn"><span class="ic">⏳</span><div>Muddat <b>ombordan chiqqan kundan</b> sanaladi, buyurtma bergan kundan emas. Sotuvchi 1–5 kun jo'natadi + Xitoy ichida 2–5 kun + kuryer omborida to'planish 1–7 kun. Real muddat e'lon qilingandan 1.5–2 barobar uzunroq bo'lishi normal.</div></div>
 <div class="note info"><span class="ic">🎉</span><div><b>Katta savdo kunlari</b> (11.11 — Singles' Day, 6.18, Xitoy Yangi yili oldidan) narx tushadi, lekin logistika 2–3 haftaga cho'ziladi. Xitoy Yangi yili (yanvar–fevral) davrida zavodlar 2–4 hafta yopiladi — bu vaqtga buyurtma bermang.</div></div>`},
 
 {t:"Bojxona va to'lov", m:"1–5 kun",
@@ -663,16 +663,16 @@ const STEPS=[
 <li><b>my.gov.uz</b>ga push-xabar keladi → «Bojxona» bo'limi → xabarnomani ko'ring.</li>
 <li>Ma'lumotlarni tekshiring: tovar nomi, <b>qiymati</b>, vazni. To'g'ri bo'lsa — <b>Tasdiqlang</b>.</li>
 <li>Agar oylik norma ($200) ichida bo'lsa — <b>boj yo'q</b>, jo'natma chiqariladi.</li>
-<li>Norma oshgan bo'lsa — <b>30%</b> boj hisoblanadi (min. $3/kg). To'lovni kargo ilovasi, bank yoki bojxona to'lov tizimi orqali amalga oshirasiz.</li>
+<li>Norma oshgan bo'lsa — <b>30%</b> boj hisoblanadi (min. $3/kg). To'lovni kuryer ilovasi, bank yoki bojxona to'lov tizimi orqali amalga oshirasiz.</li>
 <li>To'lovdan keyin jo'natma filialingizga jo'natiladi.</li>
 </ol>
-<div class="note dang"><span class="ic">⏰</span><div><b>Muddatga e'tibor bering:</b> bojni to'lamasangiz, jo'natma kargo shartlariga qarab <b>15 kundan 6 oygacha</b> saqlanadi, keyin jo'natuvchiga qaytariladi yoki davlat foydasiga o'tkaziladi. Ombor saqlash haqi ham hisoblanishi mumkin.</div></div>
+<div class="note dang"><span class="ic">⏰</span><div><b>Muddatga e'tibor bering:</b> bojni to'lamasangiz, jo'natma kuryer shartlariga qarab <b>15 kundan 6 oygacha</b> saqlanadi, keyin jo'natuvchiga qaytariladi yoki davlat foydasiga o'tkaziladi. Ombor saqlash haqi ham hisoblanishi mumkin.</div></div>
 <p class="mini">Kalkulyator bo'limida boj summasini oldindan hisoblab ko'rishingiz mumkin.</p>`},
 
 {t:"Qabul qilish va tekshirish", m:"15 daqiqa",
  b:`<ol>
 <li>Filialda <b>pasport / ID karta</b> bilan boring.</li>
-<li>Qutini <b>joyida oching</b> va tarkibini tekshiring. Ko'p kargo «ketgandan keyin da'vo qabul qilinmaydi» qoidasini qo'llaydi.</li>
+<li>Qutini <b>joyida oching</b> va tarkibini tekshiring. Ko'p kuryer «ketgandan keyin da'vo qabul qilinmaydi» qoidasini qo'llaydi.</li>
 <li>Muammo bo'lsa — <b>ochish jarayonini videoga oling</b>. Bu yagona ishonchli dalil.</li>
 <li>Hammasi joyida bo'lsa — Taobao'da <span class="kbd">确认收货</span> (tovarni oldim) tugmasini bosing va sharh qoldiring.</li>
 </ol>
@@ -680,11 +680,11 @@ const STEPS=[
 <div class="tblwrap"><table class="narrow"><tbody>
 <tr><td><b>Tovar noto'g'ri / buzuq</b></td><td>Taobao'da 退款 (pul qaytarish) yoki 退货 (tovar qaytarish) arizasi. 7 kunlik muddat Xitoy ichida ishlaydi — tez harakat qiling.</td></tr>
 <tr><td><b>O'lchami to'g'ri kelmadi</b></td><td>Amalda Xitoyga qaytarish foydasiz — pochta narxi tovar narxidan qimmat. Shuning uchun o'lchamni oldindan aniqlang.</td></tr>
-<tr><td><b>Posilka omborda yo'qoldi</b></td><td>Trek raqami bilan kargoga murojaat. Xitoy kuryeri «yetkazildi» deb ko'rsatsa, kargo ombori javobgar.</td></tr>
-<tr><td><b>Yo'lda yo'qoldi</b></td><td>Kargoga da'vo. Kompensatsiya siz e'lon qilgan qiymat yoki shartnomadagi limit bo'yicha.</td></tr>
+<tr><td><b>Posilka omborda yo'qoldi</b></td><td>Trek raqami bilan kuryerga murojaat. Xitoy kuryeri «yetkazildi» deb ko'rsatsa, kuryer ombori javobgar.</td></tr>
+<tr><td><b>Yo'lda yo'qoldi</b></td><td>Kuryerga da'vo. Kompensatsiya siz e'lon qilgan qiymat yoki shartnomadagi limit bo'yicha.</td></tr>
 <tr><td><b>Sotuvchi javob bermayapti</b></td><td>Taobao'da 投诉 (shikoyat) oching — platforma o'rtaga tushadi. Escrow tufayli pul hali sotuvchida emas.</td></tr>
 </tbody></table></div>
-<div class="note ok" style="margin-top:14px"><span class="ic">🎯</span><div><b>Tabriklaymiz — birinchi buyurtma tugadi!</b> Keyingi safar bu jarayon 15 daqiqa oladi. Kargo ID va manzil saqlangan, Taobao akkaunti tayyor.</div></div>`}
+<div class="note ok" style="margin-top:14px"><span class="ic">🎯</span><div><b>Tabriklaymiz — birinchi buyurtma tugadi!</b> Keyingi safar bu jarayon 15 daqiqa oladi. Kuryer ID va manzil saqlangan, Taobao akkaunti tayyor.</div></div>`}
 ];
 
 const BAN=[
@@ -716,7 +716,7 @@ const BAN=[
  {n:"Kimyoviy reaktivlar, laboratoriya moddalari", s:"a", c:"ruxsat", d:"Ro'yxatga kiritilgan moddalar uchun ruxsat kerak."},
  {n:"Antikvariat, madaniy boyliklar", s:"a", c:"ruxsat", d:"Madaniyat vazirligi ekspertizasi."},
  {n:"Tibbiy asboblar (tonometr, glyukometr, ingalyator)", s:"a", c:"cheklov", d:"Ba'zilari ro'yxatdan o'tkazishni talab qiladi. Uy sharoiti uchun 1 dona odatda muammosiz."},
- {n:"Aerozol, lak, bo'yoq, yonuvchi suyuqliklar", s:"a", c:"cheklov", d:"Avia bilan qabul qilinmaydi. Ba'zi kargolar avto bilan ham olmaydi."},
+ {n:"Aerozol, lak, bo'yoq, yonuvchi suyuqliklar", s:"a", c:"cheklov", d:"Avia bilan qabul qilinmaydi. Ba'zi kuryerlar avto bilan ham olmaydi."},
  {n:"Kripto-mayning uskunalari (ASIC, ferma)", s:"a", c:"cheklov", d:"Alohida hisobga olish va energiya talablari. Jismoniy shaxs nomiga muammoli."},
 
  {n:"Kiyim-kechak, poyabzal", s:"g", c:"erkin", d:"Shaxsiy ehtiyoj miqdorida erkin. Bir xil tovar ko'p bo'lsa — tijorat deb baholanishi mumkin."},
@@ -823,27 +823,27 @@ const CARGO=[{"n":"Meest China","r":"Xitoy, Koreya","p":"Avia $10/kg · Avto $6/
 
 const FAQ=[
  {q:"Taobao O'zbekistonga to'g'ridan-to'g'ri yetkazadimi?",
-  a:"Ba'zi sotuvchilarda «海外直邮» (xalqaro to'g'ridan-to'g'ri) varianti bor va ilovada mamlakat sifatida O'zbekistonni tanlash mumkin. Lekin assortiment juda cheklangan va bu imkoniyat barqaror emas — sotuvchilarning katta qismi faqat Xitoy ichiga jo'natadi. Shuning uchun amalda 95% xaridlar kargo yoki vositachi orqali qilinadi."},
+  a:"Ba'zi sotuvchilarda «海外直邮» (xalqaro to'g'ridan-to'g'ri) varianti bor va ilovada mamlakat sifatida O'zbekistonni tanlash mumkin. Lekin assortiment juda cheklangan va bu imkoniyat barqaror emas — sotuvchilarning katta qismi faqat Xitoy ichiga jo'natadi. Shuning uchun amalda 95% xaridlar kuryer yoki vositachi orqali qilinadi."},
  {q:"Xitoy tilini bilmasam qanday xarid qilaman?",
   a:"Uchta yechim: (1) Chrome brauzerida avtomatik tarjima — sahifani ochib, o'ng tugma → «Tarjima qilish»; (2) telefonda Google Lens kamera tarjimasi — ekrandagi iyeroglifni real vaqtda o'giradi; (3) «Lug'at» bo'limidagi tayyor iyerogliflarni nusxalab qidiruvga qo'ying. Rasm orqali qidiruv esa til bilishni umuman talab qilmaydi."},
  {q:"O'zbek kartasi (Uzcard/Humo) bilan to'lay olamanmi?",
-  a:"Yo'q. Taobao xalqaro Visa/Mastercard, Alipay yoki WeChat Pay qabul qiladi. Eng oson yo'l — kargo yoki vositachining to'lov xizmati: siz ularga so'm o'tkazasiz, ular yuan bilan to'laydi. Komissiya odatda 3–10%."},
+  a:"Yo'q. Taobao xalqaro Visa/Mastercard, Alipay yoki WeChat Pay qabul qiladi. Eng oson yo'l — kuryer yoki vositachining to'lov xizmati: siz ularga so'm o'tkazasiz, ular yuan bilan to'laydi. Komissiya odatda 3–10%."},
  {q:"$200 normasi qanday hisoblanadi — jo'natma boshigami yoki oyigami?",
   a:"Kalendar oy bo'yicha jamlanib hisoblanadi. Agar oyning boshida $150 lik jo'natma olgan bo'lsangiz, shu oyda yana $100 lik olsangiz — $50 dan oshgani uchun boj hisoblanadi. Yangi oy boshlanganda norma qaytadan tiklanadi."},
  {q:"Bojxona qiymatiga yetkazish narxi kiradimi?",
-  a:"Ha. Bojxona qiymati = tovar narxi + yetkazib berish qiymati. Ya'ni $180 lik tovar + $30 kargo = $210, bu esa $200 normadan $10 ga oshadi."},
+  a:"Ha. Bojxona qiymati = tovar narxi + yetkazib berish qiymati. Ya'ni $180 lik tovar + $30 kuryer = $210, bu esa $200 normadan $10 ga oshadi."},
  {q:"Boj to'lamasam nima bo'ladi?",
-  a:"Jo'natma kargo shartlariga qarab 15 kundan 6 oygacha omborda saqlanadi, keyin jo'natuvchiga qaytariladi yoki qonun bo'yicha davlat foydasiga o'tkaziladi. Ba'zi kargolar saqlash uchun kunlik haq oladi."},
+  a:"Jo'natma kuryer shartlariga qarab 15 kundan 6 oygacha omborda saqlanadi, keyin jo'natuvchiga qaytariladi yoki qonun bo'yicha davlat foydasiga o'tkaziladi. Ba'zi kuryerlar saqlash uchun kunlik haq oladi."},
  {q:"Tovar qiymatini kamaytirib ko'rsatsam bo'ladimi?",
   a:"Bunday qilmang. Birinchidan, bu ma'muriy javobgarlikka olib keladi. Ikkinchidan, jo'natma «qizil yo'lak»ka tushib ochib tekshiriladi. Uchinchidan, posilka yo'qolsa kompensatsiya siz ko'rsatgan (past) summa bo'yicha to'lanadi. Bojxona bozor narxlari bazasiga ega — real narxdan keskin farq darhol ko'rinadi."},
  {q:"Bir nechta kichik posilka yuborsam, norma ko'proq bo'ladimi?",
   a:"Yo'q. Norma jo'natmaga emas, shaxsga va oyga bog'langan. Barcha jo'natmalar sizning JShShIR raqamingiz ostida jamlanadi. Bir oyda 5 ta $50 lik posilka olsangiz — jami $250, ya'ni $50 dan boj to'laysiz."},
  {q:"Brendli tovar (Nike, Apple) buyurtma qilsam bo'ladimi?",
-  a:"Original bo'lsa — ha, lekin Tmall'dagi rasmiy do'kondan (旗舰店) oling. Replika/kontrafakt esa intellektual mulk huquqi buzilishi hisoblanadi: tovar ushlab qolinishi va yo'q qilinishi mumkin. Bundan tashqari ko'p kargo brendli tovarga qimmatroq tarif qo'yadi."},
+  a:"Original bo'lsa — ha, lekin Tmall'dagi rasmiy do'kondan (旗舰店) oling. Replika/kontrafakt esa intellektual mulk huquqi buzilishi hisoblanadi: tovar ushlab qolinishi va yo'q qilinishi mumkin. Bundan tashqari ko'p kuryer brendli tovarga qimmatroq tarif qo'yadi."},
  {q:"Hajmiy og'irlik nima va nega men ko'proq to'layapman?",
-  a:"Yengil, lekin katta hajmli tovar samolyotda ko'p joy egallaydi. Shuning uchun kargo U×E×B÷6000 formulasi bilan «hajmiy og'irlik»ni hisoblaydi va haqiqiy og'irlik bilan solishtirib, kattarog'iga qarab pul oladi. Masalan 40×30×20 sm quti = 4 kg hajmiy og'irlik, ichida 1 kg tovar bo'lsa ham."},
+  a:"Yengil, lekin katta hajmli tovar samolyotda ko'p joy egallaydi. Shuning uchun kuryer U×E×B÷6000 formulasi bilan «hajmiy og'irlik»ni hisoblaydi va haqiqiy og'irlik bilan solishtirib, kattarog'iga qarab pul oladi. Masalan 40×30×20 sm quti = 4 kg hajmiy og'irlik, ichida 1 kg tovar bo'lsa ham."},
  {q:"Powerbank yoki batareya buyurtma qilsam bo'ladimi?",
-  a:"Avia bilan — deyarli yo'q yoki qattiq cheklov bilan (odatda 100 Wh gacha). Avto (yer usti) yo'nalishi bilan ko'p kargo qabul qiladi. Buyurtma berishdan oldin kargodan aniq so'rang — aks holda tovar Xitoy omborida qolib ketadi."},
+  a:"Avia bilan — deyarli yo'q yoki qattiq cheklov bilan (odatda 100 Wh gacha). Avto (yer usti) yo'nalishi bilan ko'p kuryer qabul qiladi. Buyurtma berishdan oldin kuryerdan aniq so'rang — aks holda tovar Xitoy omborida qolib ketadi."},
  {q:"11.11 va 6.18 chegirmalari haqiqiymi?",
   a:"Ha, lekin ehtiyot bo'ling: ba'zi sotuvchilar aksiyadan bir necha hafta oldin narxni ko'taradi. Narx tarixini kuzatish uchun tovarni oldindan savatga qo'ying va narxni yozib qo'ying. Yana bir muhim jihat — bu kunlarda logistika 2–3 haftaga cho'ziladi."},
  {q:"Xitoy Yangi yili buyurtmaga qanday ta'sir qiladi?",
@@ -851,8 +851,8 @@ const FAQ=[
  {q:"Sotuvchi bilan qanday yozishaman?",
   a:"Mahsulot sahifasidagi 客服 (mijozlarga xizmat) tugmasi orqali. Xitoycha yozing — Google Translate yetarli. Ko'p sotuvchi ingliz tilini tushunmaydi, lekin avtomatik tarjima ishlatadi. Qisqa va aniq savol bering: bitta xabarda bitta savol."},
  {q:"Tovar qaytarish ishlaydimi?",
-  a:"Xitoy ichida — ha, 7 kun ichida sababsiz (7天无理由退货 belgisi bo'lsa). Lekin tovar allaqachon kargo omborida bo'lsa yoki O'zbekistonga jo'natilgan bo'lsa, amalda qaytarish foydasiz: pochta narxi tovar narxidan qimmatga tushadi. Shuning uchun buyurtmadan oldin tekshirish muhim."},
- {q:"Kargo posilkamni yo'qotsa, qancha to'laydi?",
+  a:"Xitoy ichida — ha, 7 kun ichida sababsiz (7天无理由退货 belgisi bo'lsa). Lekin tovar allaqachon kuryer omborida bo'lsa yoki O'zbekistonga jo'natilgan bo'lsa, amalda qaytarish foydasiz: pochta narxi tovar narxidan qimmatga tushadi. Shuning uchun buyurtmadan oldin tekshirish muhim."},
+ {q:"Kuryer posilkamni yo'qotsa, qancha to'laydi?",
   a:"Shartnomaga bog'liq. Ko'pchilik siz e'lon qilgan qiymatni yoki kg boshiga belgilangan limitni (masalan $20/kg) to'laydi. Qimmat tovar uchun sug'urta oling — odatda qiymatning 1–3%."},
  {q:"Telefonni Taobao'dan olsam arzonmi?",
   a:"Narx jihatidan ha, lekin hisobga oling: (1) UzIMEI ro'yxati 88 000–110 000 so'm; (2) xitoy versiyasida Google Play bo'lmasligi mumkin; (3) kafolat O'zbekistonda ishlamaydi; (4) qiymati $200 dan oshsa boj to'laysiz; (5) diapazon (band) mosligini tekshiring — ba'zi xitoy modellari mahalliy 4G/5G chastotalarini to'liq qo'llab-quvvatlamaydi."},
@@ -862,10 +862,10 @@ const FAQ=[
 
 const CHECK=[
  {g:"Buyurtmadan oldin", items:[
-  {t:"Kargo tanlandi, ID kod olindi", d:"Tarif, filial va minimal og'irlik aniqlashtirildi"},
+  {t:"Kuryer tanlandi, ID kod olindi", d:"Tarif, filial va minimal og'irlik aniqlashtirildi"},
   {t:"Xitoy ombori manzili nusxalab olindi", d:"ID kod bilan birga, xitoycha holicha"},
   {t:"Tovar taqiq/cheklov ro'yxatida emasligi tekshirildi", d:"«Bojxona» bo'limidagi tekshiruv orqali"},
-  {t:"Kalkulyatorda jami narx hisoblandi", d:"Tovar + kargo + boj — bozor narxidan arzonmi?"},
+  {t:"Kalkulyatorda jami narx hisoblandi", d:"Tovar + kuryer + boj — bozor narxidan arzonmi?"},
   {t:"Shu oydagi qolgan norma aniqlandi", d:"my.gov.uz yoki oldingi jo'natmalar bo'yicha"},
   {t:"O'lcham sm bilan tekshirildi", d:"Sotuvchining 尺码表 jadvali bo'yicha, harflarga qaramasdan"},
   {t:"Sotuvchi reytingi va rasmli sharhlar ko'rildi", d:"差评 (yomon sharhlar) ham o'qildi"}
@@ -877,8 +877,8 @@ const CHECK=[
   {t:"Buyurtma skrinshoti saqlandi", d:"Narx va tovar tavsifi ko'rinadigan — invoys o'rnida kerak bo'ladi"}
  ]},
  {g:"Jo'natishdan keyin", items:[
-  {t:"Trek raqami kargo kabinetiga kiritildi", d:"Tovar nomi, miqdori va real qiymati bilan"},
-  {t:"Posilka omborga yetib kelgani tasdiqlandi", d:"Kargo ilovasida status «Omborda»"},
+  {t:"Trek raqami kuryer kabinetiga kiritildi", d:"Tovar nomi, miqdori va real qiymati bilan"},
+  {t:"Posilka omborga yetib kelgani tasdiqlandi", d:"Kuryer ilovasida status «Omborda»"},
   {t:"Konsolidatsiya va qadoqlash tanlandi", d:"Ortiqcha quti olib tashlandi, foto-hisobot buyurtma qilindi"},
   {t:"Avia yoki avto tanlandi", d:"Batareya/suyuqlik bo'lsa — faqat avto"},
   {t:"Sug'urta rasmiylashtirildi", d:"$200+ tovar uchun tavsiya etiladi"}
@@ -896,7 +896,7 @@ const CHECK=[
 /* Umumiy dvigatel (guide-engine.js) uchun sozlama va ro'yxatlar.
    Ilgari bu qiymatlar kodning o'ziga yozilgan edi. */
 const CALC={curDefault:'loc', airRate:10, roadRate:6, taxLabel:'Soliq',
-            shipLabel:'Kargo', shipShort:'Kargo', innerLabel:'Xitoy ichida yetkazish'};
+            shipLabel:'Kuryer', shipShort:'Kuryer', innerLabel:'Xitoy ichida yetkazish'};
 const CARGOCATS=[{k:'all',t:'Hammasi'},{k:'xitoy',t:'🇨🇳 Xitoydan'},{k:'boshqa',t:'🌍 Boshqa davlatlar'}];
 const WCATS=[{k:'all',t:'Hammasi'},{k:'savdo',t:'Savdo'},{k:'olcham',t:"O'lcham"},{k:'tovar',t:'Tovarlar'},{k:'buyurtma',t:'Buyurtma'},{k:'logistika',t:'Logistika'},{k:'muammo',t:'Sharh va nizo'}];
 </script>

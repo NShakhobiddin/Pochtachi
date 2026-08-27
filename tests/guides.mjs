@@ -93,7 +93,7 @@ for (const file of guides) {
   check(`${name}: bo'limlar to'ldi`,
     info.tabs >= 8 && info.wizard > 100 && info.words > 0 && info.faq > 0 &&
     info.checklist > 0 && info.cargo > 0 && info.ban > 0,
-    `tab ${info.tabs}, lug'at ${info.words}, FAQ ${info.faq}, checklist ${info.checklist}, kargo ${info.cargo}, taqiq ${info.ban}`);
+    `tab ${info.tabs}, lug'at ${info.words}, FAQ ${info.faq}, checklist ${info.checklist}, kuryer ${info.cargo}, taqiq ${info.ban}`);
 
   /* Ochilishda ortiqcha ish qilinmasin: faol bo'lmagan panellar bo'sh
      turishi kerak (talab bo'yicha chizish). */
