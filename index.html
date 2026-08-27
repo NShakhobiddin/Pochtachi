@@ -469,6 +469,16 @@
         </button>
       </div>
 
+      <!-- Pullik xizmatlar: ilovadagi ma'lumot yetmagan holatlar uchun -->
+      <button sc-camel-on-click="{{ goServices }}" style="display:flex;align-items:center;gap:14px;background:radial-gradient(120% 90% at 100% 0%, rgba(59,44,201,.14) 0%, #FFFFFF 66%);border:none;border-radius:20px;padding:16px;cursor:pointer;text-align:left;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+        <div style="width:42px;height:42px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:url('icons/svc-savol.webp')"></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0">
+          <span style="font-size:15.5px;font-weight:800;color:#151329;letter-spacing:-.2px">Mutaxassis yordami</span>
+          <span style="font-size:12.5px;color:#6C6C88;font-weight:600;line-height:1.4">Bojxona konsultatsiyasi · kuryerlarga yuridik va texnik yordam</span>
+        </div>
+        <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
+      </button>
+
       <sc-if value="{{ wizardSmall }}" hint-placeholder-val="{{ false }}">
         <button sc-camel-on-click="{{ goWizard }}" style="display:flex;align-items:center;gap:14px;background:#FFFFFF;border:none;border-radius:20px;padding:16px;cursor:pointer;text-align:left;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
           <div style="width:5px;align-self:stretch;border-radius:3px;background:repeating-linear-gradient(-45deg,#C8102E 0 6px,#FFFFFF 6px 12px,#1B4D8F 12px 18px,#FFFFFF 18px 24px)"></div>
@@ -1158,6 +1168,19 @@
           </div>
         </button>
       </div>
+
+      <!-- Ma'lumotnoma yetmasa: mutaxassis bilan ishlash (pullik) -->
+      <button sc-camel-on-click="{{ goServices }}" style="display:flex;align-items:center;gap:14px;background:radial-gradient(120% 90% at 100% 0%, rgba(59,44,201,.14) 0%, #FFFFFF 66%);border:none;border-radius:20px;padding:15px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+        <div style="width:44px;height:44px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:url('icons/svc-savol.webp')"></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
+          <h2 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Mutaxassis konsultatsiyasi</h2>
+          <span style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.45">ushlangan jo'natma · boj hisobi · hujjatlar</span>
+        </div>
+        <div style="width:30px;height:30px;border-radius:14px;background:#EBE8FE;display:flex;align-items:center;justify-content:center;flex:none">
+          <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+        </div>
+      </button>
+
       <div style="display:flex;gap:11px;background:#FDF3E3;border-radius:20px;padding:14px 16px">
         <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
         <span style="font-size:13px;color:#B45309;line-height:1.55;font-weight:500">Ma'lumotlar amaldagi qonunchilik hujjatlaridan olingan. Yakuniy qaror bojxona organi tomonidan qabul qilinadi.</span>
@@ -1787,6 +1810,81 @@
     </div>
   </sc-if>
 
+  <sc-if value="{{ sServices }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:16px;padding-bottom:8px">
+
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div style="font-size:14px;color:#5F5E7C;line-height:1.55;font-weight:500;text-wrap:pretty">Ilovadagi ma'lumot yetmasa — mutaxassis bilan ishlash. Quyidagilar pullik xizmatlar.</div>
+      </div>
+
+      <!-- Kim uchun: jismoniy shaxs yoki kuryerlik tashkiloti -->
+      <div style="display:flex;gap:3px;background:#EAE9F3;border-radius:999px;padding:3px">
+        <button sc-camel-on-click="{{ svcPickShaxs }}" aria-pressed="{{ svcShaxsOn }}" style="flex:1;height:38px;border:none;border-radius:999px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;background:{{ svcShaxsBg }};color:{{ svcShaxsFg }};box-shadow:{{ svcShaxsSh }}">Men xaridorman</button>
+        <button sc-camel-on-click="{{ svcPickTashkilot }}" aria-pressed="{{ svcTashkilotOn }}" style="flex:1;height:38px;border:none;border-radius:999px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;background:{{ svcTashkilotBg }};color:{{ svcTashkilotFg }};box-shadow:{{ svcTashkilotSh }}">Kuryer tashkilotiman</button>
+      </div>
+
+      <div style="font-size:12.5px;color:#8E8DA8;font-weight:600;line-height:1.5;padding:0 2px">{{ svcLaneHint }}</div>
+
+      <sc-for list="{{ helpList }}" as="sv" hint-placeholder-count="5">
+        <div style="background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+          <div style="display:flex;align-items:flex-start;gap:13px">
+            <div style="width:38px;height:38px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ sv.pic }}"></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
+              <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+                <span style="font-size:16px;font-weight:800;color:#151329;letter-spacing:-.2px">{{ sv.title }}</span>
+                <sc-if value="{{ sv.hasTag }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-size:10px;font-weight:800;letter-spacing:.4px;color:#3B2CC9;background:#EBE8FE;padding:3px 7px;border-radius:8px">{{ sv.tag }}</span>
+                </sc-if>
+              </div>
+              <span style="font-size:13.5px;color:#5F5E7C;font-weight:500;line-height:1.5;text-wrap:pretty">{{ sv.sub }}</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <sc-for list="{{ sv.items }}" as="qq" hint-placeholder-count="2">
+              <div style="display:flex;gap:9px;align-items:flex-start">
+                <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#12874A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:3px"><path d="M4 12.5l5.2 5.2L20 7"></path></svg>
+                <span style="font-size:13px;color:#4E4E6B;font-weight:500;line-height:1.5">{{ qq.t }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #F0EFF7;padding-top:12px">
+            <div style="display:flex;flex-direction:column;gap:1px;min-width:0">
+              <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#9B9AB5">NARX</span>
+              <span style="font-size:14px;font-weight:800;color:#151329">{{ sv.price }}</span>
+            </div>
+            <button sc-camel-on-click="{{ sv.ask }}" style="flex:none;height:42px;padding:0 20px;border:none;border-radius:16px;background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;font-family:inherit;font-size:14px;font-weight:750;cursor:pointer;box-shadow:0 10px 24px -14px rgba(45,30,150,.7)">Bog'lanish</button>
+          </div>
+        </div>
+      </sc-for>
+
+      <!-- Aloqa -->
+      <div style="background:linear-gradient(155deg,#4A38DC,#2E1FA8);border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:14px;color:#fff">
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:19px;font-weight:800;letter-spacing:-.3px">To'g'ridan-to'g'ri bog'lanish</span>
+          <span style="font-size:13px;opacity:.86;line-height:1.5">{{ svcHours }}</span>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button sc-camel-on-click="{{ svcTg }}" style="flex:1 1 130px;height:48px;border:none;border-radius:16px;background:#FFFFFF;color:#2E1FA8;font-family:inherit;font-size:14.5px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+            <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="currentColor" style="flex:none"><path d="M21.5 4.3 2.9 11.5c-1 .4-1 1.8 0 2.2l4.6 1.6 1.8 5.5c.3.9 1.4 1.1 2 .4l2.5-2.6 4.6 3.4c.7.5 1.7.1 1.9-.7l3.1-15c.2-.9-.7-1.6-1.5-1.3z"></path></svg>
+            Telegram
+          </button>
+          <sc-if value="{{ svcHasPhone }}" hint-placeholder-val="{{ false }}">
+            <button sc-camel-on-click="{{ svcCall }}" style="flex:1 1 130px;height:48px;border:none;border-radius:16px;background:rgba(255,255,255,.18);color:#fff;font-family:inherit;font-size:14.5px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+              <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"></path></svg>
+              Qo'ng'iroq
+            </button>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:11px;background:#FDF3E3;border-radius:20px;padding:14px 16px">
+        <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+        <span style="font-size:12.5px;color:#B45309;line-height:1.55;font-weight:500;text-wrap:pretty">Konsultatsiya — hujjat tayyorlash va tartibni tushuntirish. Bojxona bo'yicha yakuniy qarorni faqat bojxona organi qabul qiladi; xizmat natijani kafolatlamaydi.</span>
+      </div>
+
+    </div>
+  </sc-if>
+
   <sc-if value="{{ sSettings }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:14px">
       <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
@@ -1977,7 +2075,7 @@ const TABS = ['home', 'guides', 'customs', 'settings', 'wizard'];
 const PERSIST = ['lang', 'novice', 'notif', 'onboarded', 'plans', 'monthly', 'trackNo',
   /* filtrlar va oxirgi ochilgan bo'lim ham eslab qolinadi */
   'storeCountries', 'storeCats', 'storeDirect', 'storeGroup', 'storeFolderBy',
-  'courierCountries', 'courierMode', 'sort', 'lastTab'];
+  'courierCountries', 'courierMode', 'sort', 'lastTab', 'svcLane'];
 const loadState = () => {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -2037,6 +2135,11 @@ const RU = {
   'Yagona boj ($3 × kg)':'Единая пошлина ($3 × кг)', 'Bu oyda':'В этом месяце', "Jo'natma qo'shish":'Добавить посылку',
   "Oy summasini qo'yish":'Сумма месяца', "Jo'natmani o'chirish":'Удалить посылку',
   'Til':'Язык', "Jo'natma bildirishnomalari":'Уведомления о посылках', 'Foydalanuvchi turi':'Тип пользователя',
+  'Xizmatlar':'Услуги', 'Mutaxassis yordami':'Помощь специалиста',
+  'Mutaxassis konsultatsiyasi':'Консультация специалиста',
+  'Men xaridorman':'Я покупатель', 'Kuryer tashkilotiman':'Я курьерская компания',
+  "Bog'lanish":'Связаться', 'NARX':'ЦЕНА', "To'g'ridan-to'g'ri bog'lanish":'Прямая связь',
+  'Telegram':'Telegram', "Qo'ng'iroq":'Звонок',
   'Yangi boshlovchi':'Новичок', 'Tajribali xaridor':'Опытный покупатель', "Ma'lumot noto'g'ri — xabar berish":'Сообщить об ошибке',
   'Ilova haqida':'О приложении', 'Tilni tanlang':'Выберите язык',
   "Keyinchalik sozlamalarda o'zgartirishingiz mumkin.":'Позже можно изменить в настройках.',
@@ -2514,6 +2617,69 @@ const CBU_URL = 'https://cbu.uz/uz/arkhiv-kursov-valyut/json/USD/';
 /* Eskirgan yoki noto'g'ri ma'lumot haqida xabar beriladigan manzil. */
 const REPORT_URL = 'https://github.com/NShakhobiddin/Pochtachi/issues/new';
 
+/* --- Pullik xizmatlar ---
+   Aloqa manzillari. TG va PHONE bo'sh bo'lsa tugmalar o'lik havolaga emas,
+   ogohlantirishga olib boradi — shuning uchun ularni to'ldirmaguningizcha
+   ilova noto'g'ri va'da bermaydi. */
+const CONTACT = {
+  tg: '',            // masalan: 'xaridyordam' (@ siz)
+  phone: '',         // masalan: '+998901234567'
+  hours: 'Dush–Shan, 09:00–19:00'
+};
+const tgLink = text => CONTACT.tg
+  ? 'https://t.me/' + CONTACT.tg + (text ? '?text=' + encodeURIComponent(text) : '') : '';
+
+/* Xizmatlar ro'yxati. Narxni shu yerda o'zgartirasiz — boshqa joyda
+   takrorlanmaydi. `lane`: 'shaxs' — jismoniy shaxslar, 'tashkilot' —
+   kuryerlik kompaniyalari. */
+const SERVICES = [
+  { lane:'shaxs', icon:'svc-savol', title:'Tezkor savol', tag:'ENG KO\'P SO\'RALADI',
+    sub:'Bitta aniq savolga yozma javob — hujjat, me\'yor yoki tartib bo\'yicha.',
+    items:['Telegram orqali, ish kunlari ichida javob', 'Javobda qaysi hujjatga tayanilgani ko\'rsatiladi'],
+    price:'Kelishilgan holda' },
+  { lane:'shaxs', icon:'svc-ushlangan', title:'Jo\'natma ushlanib qoldi', tag:'',
+    sub:'Bojxonada to\'xtatilgan jo\'natma bo\'yicha nima qilish kerakligi.',
+    items:['Sabab aniqlanadi va kerakli hujjatlar ro\'yxati beriladi','Ariza matni tayyorlab beriladi','Keyingi qadamlar tartibi'],
+    price:'Kelishilgan holda' },
+  { lane:'shaxs', icon:'svc-hisob', title:'Boj hisobini tekshirish', tag:'',
+    sub:'Sizga yozilgan boj va yig\'im to\'g\'ri hisoblanganmi.',
+    items:['Me\'yor, kurs va stavka qayta hisoblanadi','Ortiqcha to\'lov bo\'lsa — qaytarish tartibi'],
+    price:'Kelishilgan holda' },
+  { lane:'shaxs', icon:'svc-hujjat', title:'Hujjatlarni tayyorlash', tag:'',
+    sub:'Deklaratsiya, xabarnoma va tushuntirish xatlari.',
+    items:['Tovar tijorat maqsadida emasligi haqidagi tushuntirish','To\'ldirilgan namuna beriladi'],
+    price:'Kelishilgan holda' },
+  { lane:'shaxs', icon:'svc-taqiq', title:'Taqiq va cheklov tekshiruvi', tag:'',
+    sub:'Olib kirmoqchi bo\'lgan tovar ruxsat etiladimi, qanday hujjat kerak.',
+    items:['Taqiqlangan va cheklangan ro\'yxatlari bo\'yicha tekshiruv','Ruxsat/sertifikat kerak bo\'lsa — qayerdan olinishi'],
+    price:'Kelishilgan holda' },
+
+  { lane:'tashkilot', icon:'svc-yuridik', title:'Hujjatlar va litsenziya', tag:'YURIDIK',
+    sub:'Kuryerlik faoliyatini rasmiylashtirish va bojxona brokeri bilan ishlash.',
+    items:['Kerakli ruxsat va ro\'yxatdan o\'tish hujjatlari','Broker bilan shartnoma shartlari'],
+    price:'Loyiha bo\'yicha' },
+  { lane:'tashkilot', icon:'svc-shartnoma', title:'Mijoz bilan shartnoma', tag:'YURIDIK',
+    sub:'Javobgarlik chegaralari aniq yozilgan shartnoma.',
+    items:['Yo\'qolgan yoki shikastlangan jo\'natma bo\'yicha kompensatsiya','Muddat kechikishi va fors-major','Ommaviy oferta matni'],
+    price:'Loyiha bo\'yicha' },
+  { lane:'tashkilot', icon:'svc-bahs', title:'Bojxona bilan bahs', tag:'YURIDIK',
+    sub:'Ushlab qolingan yuk, jarima yoki qaror ustidan shikoyat.',
+    items:['Shikoyat va e\'tiroz matni','Muddatlar va qaysi organga murojaat qilish'],
+    price:'Loyiha bo\'yicha' },
+  { lane:'tashkilot', icon:'svc-texnik', title:'Sayt va Telegram bot', tag:'TEXNIK',
+    sub:'Mijoz o\'zi tarif hisoblaydigan va buyurtma qoldiradigan kanal.',
+    items:['Tarif kalkulyatori','Buyurtma qabul qilish va ariza','Telegram Mini App ko\'rinishida ham'],
+    price:'Loyiha bo\'yicha' },
+  { lane:'tashkilot', icon:'svc-integratsiya', title:'Trek tizimi integratsiyasi', tag:'TEXNIK',
+    sub:'Ombor holati mijozga o\'zi yetib boradigan qilib ulanadi.',
+    items:['Ombor tizimi bilan bog\'lash','Status o\'zgarganda Telegram/SMS xabarnoma','Mijoz uchun kuzatuv sahifasi'],
+    price:'Loyiha bo\'yicha' },
+  { lane:'tashkilot', icon:'svc-hamkorlik', title:'Ilovada joylashish', tag:'HAMKORLIK',
+    sub:'Xarid Yordamchisi ro\'yxatida ko\'rinish va tariflarni yangilab turish.',
+    items:['Kuryerlar ro\'yxatida karta','Tarif va muddatlarni o\'z vaqtida yangilash','Yo\'nalish bo\'yicha ajratib ko\'rsatish'],
+    price:'Kelishilgan holda' }
+];
+
 const BANNED = [
   { name:'Giyohvandlik vositalari, psixotrop moddalar va prekursorlar', level:'red', src:'VMQ 330-son, 1-band, 5–7-ilovalar', note:'Bu moddalar muomalasi cheklangan, to\'liq ro\'yxatlar 5–7-ilovalarda keltirilgan. Shaxsiy tibbiy foydalanish istisnolari 191-son Nizomga muvofiq qo\'llanadi.' },
   { name:'Fuqaroviy qurol va uning o\'q-dorilari', level:'amber', src:'O\'RQ-550, 31–32-moddalar; VMQ 366-son', note:'IIV ruxsatnomasi talab etiladi. Vaqtincha turgan chet el fuqarolari faqat ov va sport qurolini tegishli taklifnoma hamda ruxsatnoma bilan olib kirishi mumkin. Import ruxsatnomasi arizasi 10 ish kunida ko\'riladi.' },
@@ -2750,6 +2916,7 @@ class Component extends DCLogic {
     /* Papka ko'rinishi: qaysi kesimda ('cat' yoki 'country') va ochilgan papka
        ('cat:elektronika' kabi, ochilmagan bo'lsa null). */
     storeFolderBy: SAVED.storeFolderBy === 'country' ? 'country' : 'cat',
+    svcLane: SAVED.svcLane === 'tashkilot' ? 'tashkilot' : 'shaxs',
     storeFolder: null,
     /* Kuryerlar papkasi: 'from:Xitoy' kabi, ochilmagan bo'lsa null. */
     courierFolder: null,
@@ -2803,6 +2970,16 @@ class Component extends DCLogic {
   }
   popScreen() { this.rememberScroll(); this.setState(st => st.stack.length > 1 ? { stack: st.stack.slice(0, -1), toast: '' } : {}); }
   toast(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 2600); }
+
+  /* Xizmat bo'yicha yozish. Manzil kiritilmagan bo'lsa o'lik havolani
+     ochmaymiz — foydalanuvchiga ochiq aytamiz. */
+  contactAbout(title) {
+    const url = tgLink(title ? 'Assalomu alaykum! «' + title + '» xizmati bo\'yicha yozmoqchiman.' : '');
+    if (!url) { this.toast('Aloqa manzili hali kiritilmagan'); return; }
+    let opened = null;
+    try { opened = window.open(url, '_blank', 'noopener,noreferrer'); } catch (e) {}
+    if (!opened) this.toast('Telegram: @' + CONTACT.tg);
+  }
 
   chip(label, on, toggle) {
     return { label, toggle,
@@ -3246,7 +3423,7 @@ class Component extends DCLogic {
       return f.indexOf('from:') === 0
         ? (COURIER_ORIGINS.find(d => d[0] === f.slice(5)) || null) : null;
     })();
-    const titles = { plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? courierFolderDef[1] + ' yo\'nalishi' : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', wizard:'Reja tuzish', settings:'Sozlamalar', compare:'Taqqoslash' };
+    const titles = { plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? courierFolderDef[1] + ' yo\'nalishi' : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', wizard:'Reja tuzish', settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
     /* Saralash tugmasi faqat ro'yxat ko'rinib turganda kerak: papkalar
        ekranida saralanadigan narsa yo'q. */
     const showSortBtn = cur === 'courierfolder' ||
@@ -3645,6 +3822,40 @@ class Component extends DCLogic {
       /* Ilgari bu tugma hech narsa yubormasa ham "Xabaringiz yuborildi" deb
          yozardi. Endi haqiqiy kanal ochiladi — manzilni REPORT_URL da
          o'zgartirish mumkin (masalan Telegram havolasiga). */
+      /* --- Pullik xizmatlar --- */
+      sServices: cur === 'services',
+      goServices: () => this.push('services'),
+      ...(() => {
+        const lane = st.svcLane === 'tashkilot' ? 'tashkilot' : 'shaxs';
+        const on = '0 1px 2px rgba(20,19,43,.10),0 4px 10px -6px rgba(20,19,43,.28)';
+        return {
+          svcShaxsOn: lane === 'shaxs', svcTashkilotOn: lane === 'tashkilot',
+          svcShaxsBg: lane === 'shaxs' ? '#FFFFFF' : 'transparent',
+          svcShaxsFg: lane === 'shaxs' ? '#3B2CC9' : '#7A7996',
+          svcShaxsSh: lane === 'shaxs' ? on : 'none',
+          svcTashkilotBg: lane === 'tashkilot' ? '#FFFFFF' : 'transparent',
+          svcTashkilotFg: lane === 'tashkilot' ? '#3B2CC9' : '#7A7996',
+          svcTashkilotSh: lane === 'tashkilot' ? on : 'none',
+          svcPickShaxs: () => this.setState({ svcLane: 'shaxs' }),
+          svcPickTashkilot: () => this.setState({ svcLane: 'tashkilot' }),
+          svcLaneHint: lane === 'shaxs'
+            ? 'Chet eldan buyurtma qilgan jismoniy shaxslar uchun.'
+            : 'Kuryerlik va logistika kompaniyalari uchun yuridik va texnik yordam.',
+          helpList: SERVICES.filter(v => v.lane === lane).map(v => ({
+            ...v,
+            pic: "url('icons/" + v.icon + ".webp')",
+            hasTag: !!v.tag,
+            items: v.items.map(t => ({ t })),
+            ask: () => this.contactAbout(v.title)
+          }))
+        };
+      })(),
+      svcHours: CONTACT.hours,
+      svcHasPhone: !!CONTACT.phone,
+      svcTg: () => this.contactAbout(''),
+      svcCall: () => { if (CONTACT.phone) location.href = 'tel:' + CONTACT.phone;
+                       else this.toast('Telefon raqami hali kiritilmagan'); },
+
       reportInfo: () => {
         let opened = null;
         try { opened = window.open(REPORT_URL, '_blank', 'noopener,noreferrer'); } catch (e) {}

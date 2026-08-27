@@ -33,10 +33,13 @@ const target = name =>
   name.startsWith('app-') ? 102 : 180;
 
 /* `raw-` bilan boshlanadiganlar — kesib olingan to'liq o'lchamdagi asl
-   nusxalar. Ular faqat qayta hisoblash uchun saqlanadi va ekranga
-   chiqmaydi, shuning uchun optimizatsiyadan chetlab o'tiladi. */
+   nusxalar; ular faqat qayta hisoblash uchun saqlanadi va ekranga chiqmaydi.
+   `svc-` — bir rangli tekis gliflar: canvas orqali yo'qotishli siqilsa
+   chekkalari kirlanadi va hajmi ham kattaroq chiqadi, shuning uchun ular
+   tools/flatten-glyphs.py da yo'qotishsiz tayyorlanadi. Ikkalasi ham bu
+   yerda chetlab o'tiladi. */
 const sources = readdirSync(SRC)
-  .filter(f => f.endsWith('.webp') && !f.startsWith('raw-')).sort();
+  .filter(f => f.endsWith('.webp') && !f.startsWith('raw-') && !f.startsWith('svc-')).sort();
 
 if (process.argv.includes('--check')) {
   const missing = sources.filter(f => !existsSync(join(OUT, f)));
