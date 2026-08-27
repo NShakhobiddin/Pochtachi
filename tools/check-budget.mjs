@@ -20,6 +20,9 @@ const BUDGETS = [
      va xizmat kartochkalari. Hammasi ekran ochilganda yuklanadi va service
      worker keshiga tushadi; do'kon logotiplari (178 KB) bilan bir darajada. */
   { name: 'ikonkalar (icons/*.webp)', dir: 'icons', ext: ['.webp'], maxTotalKb: 200, maxFileKb: 25 },
+  /* Taqiqlangan tovarlar ro'yxati uchun 22 ta belgi. Faqat o'sha bo'lim
+     ochilganda yuklanadi, shuning uchun alohida hisoblanadi. */
+  { name: 'taqiq belgilari (icons/ban/*.webp)', dir: 'icons/ban', ext: ['.webp'], maxTotalKb: 70, maxFileKb: 8 },
   /* Bitta matn shrifti (Onest, o'zgaruvchan) + bayroq subseti. Brauzer
      sahifadagi belgilarga qarab faqat keraklisini oladi: odatda lotin
      (32 KB), kirillcha matn bo'lsa yana 14 KB, bayroq ko'rinsa 44 KB. */

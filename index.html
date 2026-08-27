@@ -1283,8 +1283,8 @@
           <sc-for list="{{ banList }}" as="b" hint-placeholder-count="6">
             <div style="background:#FFFFFF;border-radius:20px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);content-visibility:auto;contain-intrinsic-size:auto 62px">
               <button sc-camel-on-click="{{ b.toggle }}" style="display:flex;align-items:center;gap:12px;background:transparent;border:none;width:100%;text-align:left;padding:14px 15px;cursor:pointer;font-family:inherit">
-                <div style="width:34px;height:34px;border-radius:20px;flex:none;display:flex;align-items:center;justify-content:center;background:{{ b.bg }}">
-                  <div style="width:10px;height:10px;border-radius:50%;background:{{ b.dot }}"></div>
+                <div style="width:38px;height:38px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:{{ b.bg }}">
+                  <div style="width:22px;height:22px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ b.pic }}"></div>
                 </div>
                 <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
                   <span style="font-size:15px;font-weight:700;color:#151329;line-height:1.35">{{ b.name }}</span>
@@ -1293,7 +1293,7 @@
                 <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transform:rotate({{ b.rot }})"><path d="M6 9l6 6 6-6"></path></svg>
               </button>
               <sc-if value="{{ b.open }}" hint-placeholder-val="{{ false }}">
-                <div style="display:flex;flex-direction:column;gap:9px;padding:0 15px 15px 61px">
+                <div style="display:flex;flex-direction:column;gap:9px;padding:0 15px 15px 65px">
                   <span style="font-size:13px;color:#4A4A66;line-height:1.6;text-wrap:pretty">{{ b.note }}</span>
                   <div style="display:flex;flex-direction:column;gap:3px;background:#F5F4FC;border-radius:20px;padding:10px 12px">
                     <span style="font-size:11px;font-weight:800;letter-spacing:.4px;color:#6C6C88">HUQUQIY MANBA</span>
@@ -2681,29 +2681,29 @@ const SERVICES = [
 ];
 
 const BANNED = [
-  { name:'Giyohvandlik vositalari, psixotrop moddalar va prekursorlar', level:'red', src:'VMQ 330-son, 1-band, 5–7-ilovalar', note:'Bu moddalar muomalasi cheklangan, to\'liq ro\'yxatlar 5–7-ilovalarda keltirilgan. Shaxsiy tibbiy foydalanish istisnolari 191-son Nizomga muvofiq qo\'llanadi.' },
-  { name:'Fuqaroviy qurol va uning o\'q-dorilari', level:'amber', src:'O\'RQ-550, 31–32-moddalar; VMQ 366-son', note:'IIV ruxsatnomasi talab etiladi. Vaqtincha turgan chet el fuqarolari faqat ov va sport qurolini tegishli taklifnoma hamda ruxsatnoma bilan olib kirishi mumkin. Import ruxsatnomasi arizasi 10 ish kunida ko\'riladi.' },
-  { name:'Radioelektron vositalar va yuqori chastotali qurilmalar', level:'amber', src:'VMQ 801-son 4-ilova; VMQ 417-son', note:'EMMM ruxsatnomasi bilan olib kiriladi. Ro\'yxatda ayrim telefoniya apparatlari, sun\'iy yo\'ldosh aloqa apparatlari, bazaviy stansiyalar, signal generatorlar va uchuvchisiz uchish apparatlari bor. REV uchun 7, YuChQ uchun 5 ish kuni; yig\'im undirilmaydi.' },
-  { name:'Diniy mazmundagi materiallar', level:'amber', src:'VMQ 180-son Nizom, 3, 9–12, 16–19, 27–30-bandlar', note:'Ijobiy dinshunoslik ekspertizasi xulosasidan keyin olib kiriladi. Jismoniy shaxs o\'z ehtiyoji va ilmiy-tadqiqot uchun har bir nomlanishdan 3 nusxadan oshmagan miqdorda olib kirishi mumkin. Ekspertiza odatda 10, zaruratda 20 ish kunigacha.' },
-  { name:'Xulosasi va gologrammasi yo\'q diniy materiallar', level:'red', src:'VMQ 180-son Nizom, 11-band', note:'Ijobiy xulosa olinmagan va gologramma bilan tamg\'alanmagan materiallarni hududga olib kirish, saqlash va realizatsiya qilish taqiqlanadi.' },
-  { name:'Saqlanishi taqiqlangan yovvoyi hayvonlar', level:'red', src:'VMQ 736-son 1-ilova; VMQ 821-son', note:'736-sonning 1-ilovasida zaharli va yirtqich hayvonlarning keng ro\'yxati berilgan. Ushbu ro\'yxatdagi hayvonlarni jismoniy shaxslar olib kirishi taqiqlanadi va ruxsatnoma berilmaydi.' },
-  { name:'Mineral o\'g\'itlar va o\'simlik himoya vositalari', level:'amber', src:'VMQ 481-son, 1-ilova 3–6, 9-bandlar; 2-ilova 5–8-bandlar', note:'Agentlik ruxsatnomasi talab etiladi. O\'z ehtiyoji uchun import qilgan shaxs faqat o\'z yer maydonida foydalanishi mumkin, savdo taqiqlanadi. Ruxsatnoma 12 oy amal qiladi.' },
-  { name:'O\'g\'it va kimyoviy vositalarni pochta orqali yuborish', level:'red', src:'VMQ 481-son pasporti, 9-band "o" kichik bandi', note:'Qo\'l yuki, bagaj, pochta jo\'natmasi yoki boshqa yuk bilan olib o\'tish taqiqlanadi. Faqat tajriba-sinov uchun ruxsatnoma asosida pochta jo\'natmasi mumkin.' },
-  { name:'Madaniy boyliklar', level:'amber', src:'"Madaniy boyliklar" Qonuni 5-modda; VMQ 131-son', note:'Import va eksport yagona davlat tartibiga, ro\'yxatga olish va ekspertizaga bo\'ysunadi. Miqdoriy limit ushbu hujjatlarda aniqlanmagan.' },
-  { name:'Hayvonotga mansub oziq-ovqat mahsulotlari', level:'amber', src:'PQ-4508, 1-band', note:'Qo\'l yuki, kuzatib borilayotgan bagaj va pochta jo\'natmalari orqali olib kiriladigan hayvonotga mansub oziq-ovqat mahsulotlarida ishlab chiqarish o\'rovi majburiy.' },
-  { name:'Elektron sigaretalar va nikotinli suyuqliklar', level:'red', src:'O\'RQ-844, 24.05.2023, 37-modda', note:'Nikotinni iste\'mol qiluvchi va oshiruvchi qo\'shimchalarli suyuqliklar hamda moslamalarni olib kirish va realizatsiya qilish taqiqlanadi.' },
-  { name:'Portlovchi materiallar va masofadan portlatish qurilmalari', level:'red', src:'VMQ 213, 06.05.2004, 2-band', note:'Jismoniy shaxslar tomonidan olib kirish qat\'iyan taqiqlangan, kuzatilmaydigan bagajda ham.' },
-  { name:'Pul yutug\'i bo\'lgan o\'yin avtomatlari', level:'red', src:'VMQ 176, 16.08.2007, 1-band', note:'Umuman olib kirish taqiqlanadi, nazorat bojxona qo\'mitasi zimmasida.' },
-  { name:'Pirotexnika vositalari (II xavflilik sinfi)', level:'red', src:'VMQ 309, 10.12.2009, 1-band', note:'Uy-ro\'zg\'or pirotexnikasini olib kirish, ishlab chiqarish, saqlash, realizatsiya va foydalanish vaqtincha taqiqlangan.' },
-  { name:'Portativ lazerli nur tarqatuvchilar', level:'red', src:'VMQ 50, 20.02.2013, 1-band · TN kod 9013 20 0000', note:'2013-yil 1-martdan chetdan kirishi va savdosi taqiqlangan.' },
-  { name:'Uchuvchisiz uchish apparatlari (dron)', level:'amber', src:'VMQ 658, 15.11.2022 · TN 8802200001, 8802200002, 8802200008, 8803100000, 8803200000', note:'Fuqarolik aviatsiyasi agentligi ruxsatnomasi talab qilinadi. Olib kirish bojxona nazorati ostida amalga oshiriladi, noqonuniy olib kirish taqiqlanadi.' },
-  { name:'Ishlatilgan induksion pechlar va kameralar', level:'red', src:'VMQ 999, 14.12.2019, 1-band · TN kod 8514 20 1000', note:'2020-yil 1-martdan boshlab ishlab chiqilganiga 3 yildan oshgan uskunani shaxsiy import uchun olib kirish taqiqlanadi.' },
-  { name:'Ekstremistik, zo\'ravonlik va pornografik materiallar', level:'red', src:'PF-5286, 15.12.2017, 2-ilova', note:'Terrorchilik, zo\'ravonlik, irqchilik, diniy nafrat va pornografiya mazmunidagi materiallar importi va tarqatilishi umuman taqiqlangan.' },
-  { name:'O\'zbekiston pul belgilari va xorijiy valyuta', level:'red', src:'AV-2219, 3-ilova, 1-band', note:'Markaziy bank va uning muassasalari tomonidan yuboriladiganlardan tashqari barcha holatlarda taqiqlanadi.' },
-  { name:'Tirik hayvonlar', level:'red', src:'AV-2219, 3-ilova, 1-band', note:'Pochta jo\'natmalari orqali yuborish taqiqlanadi.' },
-  { name:'Qimmatbaho buyumlar (qiymati e\'lon qilinmagan posilkada)', level:'red', src:'AV-2219, 3-ilova, 4-band', note:'Tangalar, bank va kredit chiptalari, yo\'l cheklari, platina, oltin yoki kumushdan yasalgan buyumlar, ishlov berilmagan qimmatbaho toshlar va zargarlik buyumlarini qiymati e\'lon qilinmagan posilkada jo\'natish taqiqlanadi.' },
-  { name:'Alkogol va tamaki mahsulotlari', level:'red', src:'VMQ-244, 1-ilova', note:'Xalqaro pochta va kuryerlik jo\'natmalari orqali olib kirilishi taqiqlanadi.' },
-  { name:'Dori vositalari', level:'amber', src:'Sog\'liqni saqlash vazirligi tartibi', note:'Shaxsiy tibbiy foydalanish uchun retsept va tegishli ruxsat bilan olib kiriladi, miqdor davolash kursiga mos bo\'lishi kerak.' }
+  { icon:'giyohvand', name:'Giyohvandlik vositalari, psixotrop moddalar va prekursorlar', level:'red', src:'VMQ 330-son, 1-band, 5–7-ilovalar', note:'Bu moddalar muomalasi cheklangan, to\'liq ro\'yxatlar 5–7-ilovalarda keltirilgan. Shaxsiy tibbiy foydalanish istisnolari 191-son Nizomga muvofiq qo\'llanadi.' },
+  { icon:'qurol', name:'Fuqaroviy qurol va uning o\'q-dorilari', level:'amber', src:'O\'RQ-550, 31–32-moddalar; VMQ 366-son', note:'IIV ruxsatnomasi talab etiladi. Vaqtincha turgan chet el fuqarolari faqat ov va sport qurolini tegishli taklifnoma hamda ruxsatnoma bilan olib kirishi mumkin. Import ruxsatnomasi arizasi 10 ish kunida ko\'riladi.' },
+  { icon:'radio', name:'Radioelektron vositalar va yuqori chastotali qurilmalar', level:'amber', src:'VMQ 801-son 4-ilova; VMQ 417-son', note:'EMMM ruxsatnomasi bilan olib kiriladi. Ro\'yxatda ayrim telefoniya apparatlari, sun\'iy yo\'ldosh aloqa apparatlari, bazaviy stansiyalar, signal generatorlar va uchuvchisiz uchish apparatlari bor. REV uchun 7, YuChQ uchun 5 ish kuni; yig\'im undirilmaydi.' },
+  { icon:'diniy', name:'Diniy mazmundagi materiallar', level:'amber', src:'VMQ 180-son Nizom, 3, 9–12, 16–19, 27–30-bandlar', note:'Ijobiy dinshunoslik ekspertizasi xulosasidan keyin olib kiriladi. Jismoniy shaxs o\'z ehtiyoji va ilmiy-tadqiqot uchun har bir nomlanishdan 3 nusxadan oshmagan miqdorda olib kirishi mumkin. Ekspertiza odatda 10, zaruratda 20 ish kunigacha.' },
+  { icon:'gologramma', name:'Xulosasi va gologrammasi yo\'q diniy materiallar', level:'red', src:'VMQ 180-son Nizom, 11-band', note:'Ijobiy xulosa olinmagan va gologramma bilan tamg\'alanmagan materiallarni hududga olib kirish, saqlash va realizatsiya qilish taqiqlanadi.' },
+  { icon:'yovvoyi', name:'Saqlanishi taqiqlangan yovvoyi hayvonlar', level:'red', src:'VMQ 736-son 1-ilova; VMQ 821-son', note:'736-sonning 1-ilovasida zaharli va yirtqich hayvonlarning keng ro\'yxati berilgan. Ushbu ro\'yxatdagi hayvonlarni jismoniy shaxslar olib kirishi taqiqlanadi va ruxsatnoma berilmaydi.' },
+  { icon:'ogit', name:'Mineral o\'g\'itlar va o\'simlik himoya vositalari', level:'amber', src:'VMQ 481-son, 1-ilova 3–6, 9-bandlar; 2-ilova 5–8-bandlar', note:'Agentlik ruxsatnomasi talab etiladi. O\'z ehtiyoji uchun import qilgan shaxs faqat o\'z yer maydonida foydalanishi mumkin, savdo taqiqlanadi. Ruxsatnoma 12 oy amal qiladi.' },
+  { icon:'kimyoviy', name:'O\'g\'it va kimyoviy vositalarni pochta orqali yuborish', level:'red', src:'VMQ 481-son pasporti, 9-band "o" kichik bandi', note:'Qo\'l yuki, bagaj, pochta jo\'natmasi yoki boshqa yuk bilan olib o\'tish taqiqlanadi. Faqat tajriba-sinov uchun ruxsatnoma asosida pochta jo\'natmasi mumkin.' },
+  { icon:'madaniy', name:'Madaniy boyliklar', level:'amber', src:'"Madaniy boyliklar" Qonuni 5-modda; VMQ 131-son', note:'Import va eksport yagona davlat tartibiga, ro\'yxatga olish va ekspertizaga bo\'ysunadi. Miqdoriy limit ushbu hujjatlarda aniqlanmagan.' },
+  { icon:'ozuqa', name:'Hayvonotga mansub oziq-ovqat mahsulotlari', level:'amber', src:'PQ-4508, 1-band', note:'Qo\'l yuki, kuzatib borilayotgan bagaj va pochta jo\'natmalari orqali olib kiriladigan hayvonotga mansub oziq-ovqat mahsulotlarida ishlab chiqarish o\'rovi majburiy.' },
+  { icon:'vape', name:'Elektron sigaretalar va nikotinli suyuqliklar', level:'red', src:'O\'RQ-844, 24.05.2023, 37-modda', note:'Nikotinni iste\'mol qiluvchi va oshiruvchi qo\'shimchalarli suyuqliklar hamda moslamalarni olib kirish va realizatsiya qilish taqiqlanadi.' },
+  { icon:'portlovchi', name:'Portlovchi materiallar va masofadan portlatish qurilmalari', level:'red', src:'VMQ 213, 06.05.2004, 2-band', note:'Jismoniy shaxslar tomonidan olib kirish qat\'iyan taqiqlangan, kuzatilmaydigan bagajda ham.' },
+  { icon:'qimor', name:'Pul yutug\'i bo\'lgan o\'yin avtomatlari', level:'red', src:'VMQ 176, 16.08.2007, 1-band', note:'Umuman olib kirish taqiqlanadi, nazorat bojxona qo\'mitasi zimmasida.' },
+  { icon:'portlovchi', name:'Pirotexnika vositalari (II xavflilik sinfi)', level:'red', src:'VMQ 309, 10.12.2009, 1-band', note:'Uy-ro\'zg\'or pirotexnikasini olib kirish, ishlab chiqarish, saqlash, realizatsiya va foydalanish vaqtincha taqiqlangan.' },
+  { icon:'lazer', name:'Portativ lazerli nur tarqatuvchilar', level:'red', src:'VMQ 50, 20.02.2013, 1-band · TN kod 9013 20 0000', note:'2013-yil 1-martdan chetdan kirishi va savdosi taqiqlangan.' },
+  { icon:'dron', name:'Uchuvchisiz uchish apparatlari (dron)', level:'amber', src:'VMQ 658, 15.11.2022 · TN 8802200001, 8802200002, 8802200008, 8803100000, 8803200000', note:'Fuqarolik aviatsiyasi agentligi ruxsatnomasi talab qilinadi. Olib kirish bojxona nazorati ostida amalga oshiriladi, noqonuniy olib kirish taqiqlanadi.' },
+  { icon:'pech', name:'Ishlatilgan induksion pechlar va kameralar', level:'red', src:'VMQ 999, 14.12.2019, 1-band · TN kod 8514 20 1000', note:'2020-yil 1-martdan boshlab ishlab chiqilganiga 3 yildan oshgan uskunani shaxsiy import uchun olib kirish taqiqlanadi.' },
+  { icon:'ekstremist', name:'Ekstremistik, zo\'ravonlik va pornografik materiallar', level:'red', src:'PF-5286, 15.12.2017, 2-ilova', note:'Terrorchilik, zo\'ravonlik, irqchilik, diniy nafrat va pornografiya mazmunidagi materiallar importi va tarqatilishi umuman taqiqlangan.' },
+  { icon:'valyuta', name:'O\'zbekiston pul belgilari va xorijiy valyuta', level:'red', src:'AV-2219, 3-ilova, 1-band', note:'Markaziy bank va uning muassasalari tomonidan yuboriladiganlardan tashqari barcha holatlarda taqiqlanadi.' },
+  { icon:'hayvon', name:'Tirik hayvonlar', level:'red', src:'AV-2219, 3-ilova, 1-band', note:'Pochta jo\'natmalari orqali yuborish taqiqlanadi.' },
+  { icon:'qimmatbaho', name:'Qimmatbaho buyumlar (qiymati e\'lon qilinmagan posilkada)', level:'red', src:'AV-2219, 3-ilova, 4-band', note:'Tangalar, bank va kredit chiptalari, yo\'l cheklari, platina, oltin yoki kumushdan yasalgan buyumlar, ishlov berilmagan qimmatbaho toshlar va zargarlik buyumlarini qiymati e\'lon qilinmagan posilkada jo\'natish taqiqlanadi.' },
+  { icon:'alkogol', name:'Alkogol va tamaki mahsulotlari', level:'red', src:'VMQ-244, 1-ilova', note:'Xalqaro pochta va kuryerlik jo\'natmalari orqali olib kirilishi taqiqlanadi.' },
+  { icon:'dori', name:'Dori vositalari', level:'amber', src:'Sog\'liqni saqlash vazirligi tartibi', note:'Shaxsiy tibbiy foydalanish uchun retsept va tegishli ruxsat bilan olib kiriladi, miqdor davolash kursiga mos bo\'lishi kerak.' }
 ];
 
 /* Kartochkalardagi raqamlar amaldagi me'yordan hisoblanadi: BHM o'zgarganda
@@ -3324,8 +3324,16 @@ class Component extends DCLogic {
       rate: wz.perKgLabel, price: wz.price, kg: wz.kg,
       ship: wz.ship, dutyUsd: wz.dutyUsd, feeUsd: wz.feeUsd, total: wz.total
     };
-    this.setState(x => ({ plans: [plan, ...x.plans], planId: id, wizStep: 0, stack: ['home'] }));
-    this.toast('Reja saqlandi — bosh sahifada');
+    /* Reja bojxona me'yoriga ham qo'shiladi: me'yor kalendar oyga beriladi
+       va foydalanuvchi jo'natmalarini qo'lda qo'shib chiqmasligi kerak.
+       Reja identifikatori yoziladi, shuning uchun qayta saqlansa ikki
+       marta sanalmaydi. */
+    const mEntry = { id: 'm' + id, plan: id, date: todayIso(), usd: num(wz.price), kg: num(wz.kg) };
+    this.setState(x => ({
+      plans: [plan, ...x.plans], planId: id, wizStep: 0, stack: ['home'],
+      monthly: [...(x.monthly || []).filter(m => m.plan !== id), mEntry]
+    }));
+    this.toast('Reja saqlandi — bojxona me\'yoriga ham qo\'shildi');
     this.celebrate();
   }
 
@@ -3403,6 +3411,7 @@ class Component extends DCLogic {
       .filter(b => !bq || b.name.toLowerCase().includes(bq) || b.note.toLowerCase().includes(bq))
       .map((b, i) => ({
         ...b, ...LV[b.level],
+        pic: "url('icons/ban/" + b.icon + ".webp')",
         label: b.level === 'red' ? 'TAQIQLANGAN' : 'CHEKLANGAN',
         open: st.banOpen === b.name,
         rot: st.banOpen === b.name ? '180deg' : '0deg',
@@ -3971,11 +3980,12 @@ class Component extends DCLogic {
       monthBar: mPct <= 100 ? 'linear-gradient(90deg,#34D399,#0F7B3E)' : (mPct <= 150 ? 'linear-gradient(90deg,#E0A32E,#B45309)' : 'linear-gradient(90deg,#EF6A4B,#B91C1C)'),
       monthMeta: monthList.length
         ? monthList.length + ' ta jo\'natma · ' + mTot.kg.toFixed(1) + ' kg · ' + (mTot.usd <= NC.freeUsd ? '$' + Math.round(NC.freeUsd - mTot.usd) + ' qoldi' : 'me\'yordan $' + Math.round(mTot.usd - NC.freeUsd) + ' ortiq')
-        : 'Jo\'natmalarni qo\'shsangiz, $' + NC.freeUsd + ' me\'yor shu yerda yig\'ilib boradi.',
+        : 'Saqlangan rejalar shu yerga o\'zi qo\'shiladi; qo\'lda ham kiritsangiz bo\'ladi.',
       hasMonth: monthList.length > 0,
       monthRows: monthList.slice().reverse().map(x => ({
         usd: '$' + Math.round(num(x.usd)),
-        meta: fmtDate(x.date).slice(0, 5) + ' · ' + num(x.kg).toFixed(1) + ' kg',
+        meta: fmtDate(x.date).slice(0, 5) + ' · ' + num(x.kg).toFixed(1) + ' kg'
+              + (x.plan ? ' · rejadan' : ''),
         del: () => this.setState(s => ({ monthly: (s.monthly || []).filter(y => y.id !== x.id) }))
       })),
       monthAdd: () => {

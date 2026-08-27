@@ -392,6 +392,27 @@ try {
   check('xizmatlar: aloqasiz o\'lik havola ochilmaydi',
     !svcSafe.opened || svcSafe.tost, JSON.stringify(svcSafe));
 
+  /* Taqiqlangan tovarlar ro'yxatida har bir pozitsiyaning o'z belgisi
+     bo'lsin — 23 qator, kamida 20 xil ikonka. */
+  await page.locator('nav button', { hasText: 'Bojxona' }).first().click();
+  await page.waitForTimeout(600);
+  await page.getByText('Taqiqlangan va cheklangan', { exact: false }).first().click();
+  await page.waitForTimeout(800);
+  const ban = await page.evaluate(async () => {
+    const u = [...document.querySelectorAll('main div')]
+      .map(d => (d.style.backgroundImage || '').match(/icons\/ban\/([a-z]+)\.webp/))
+      .filter(Boolean).map(m => m[1]);
+    const uniq = [...new Set(u)];
+    const ok = await Promise.all(uniq.map(x => new Promise(r => {
+      const im = new Image(); im.onload = () => r(true); im.onerror = () => r(false);
+      im.src = 'icons/ban/' + x + '.webp';
+    })));
+    return { qator: u.length, xil: uniq.length, yuklandi: ok.filter(Boolean).length };
+  });
+  check('taqiq ro\'yxatida belgilar',
+    ban.qator === 23 && ban.xil >= 20 && ban.yuklandi === ban.xil,
+    `${ban.qator} qator, ${ban.xil} xil, ${ban.yuklandi} yuklandi`);
+
   // Keyingi tekshiruvlar papkalar ekranidan davom etadi.
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(400);
