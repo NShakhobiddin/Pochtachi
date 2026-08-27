@@ -23,6 +23,8 @@ const BUDGETS = [
   /* Taqiqlangan tovarlar ro'yxati uchun 22 ta belgi. Faqat o'sha bo'lim
      ochilganda yuklanadi, shuning uchun alohida hisoblanadi. */
   { name: 'taqiq belgilari (icons/ban/*.webp)', dir: 'icons/ban', ext: ['.webp'], maxTotalKb: 70, maxFileKb: 8 },
+  /* Bojxona me'yorlari bo'limi uchun 5 ta belgi. */
+  { name: 'me\'yor belgilari (icons/norm/*.webp)', dir: 'icons/norm', ext: ['.webp'], maxTotalKb: 40, maxFileKb: 8 },
   /* Bitta matn shrifti (Onest, o'zgaruvchan) + bayroq subseti. Brauzer
      sahifadagi belgilarga qarab faqat keraklisini oladi: odatda lotin
      (32 KB), kirillcha matn bo'lsa yana 14 KB, bayroq ko'rinsa 44 KB. */

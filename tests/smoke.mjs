@@ -438,6 +438,39 @@ try {
   check('kuzatuv: reja jo\'natmaga aylandi',
     kuz.trek === 'RB 1234 CN' && kuz.holat, JSON.stringify(kuz));
 
+  /* Bojxona me'yorlari: kartochkalarda belgilar bo'lsin. */
+  await page.locator('nav button', { hasText: 'Bojxona' }).first().click();
+  await page.waitForTimeout(600);
+  await page.getByText("Bojsiz olib kirish me'yori", { exact: false }).first().click();
+  await page.waitForTimeout(800);
+  const nrm = await page.evaluate(async () => {
+    const u = [...document.querySelectorAll('main div')]
+      .map(d => (d.style.backgroundImage || '').match(/icons\/norm\/([a-z]+)\.webp/))
+      .filter(Boolean).map(m => m[1]);
+    const uniq = [...new Set(u)];
+    const ok = await Promise.all(uniq.map(x => new Promise(r => {
+      const im = new Image(); im.onload = () => r(true); im.onerror = () => r(false);
+      im.src = 'icons/norm/' + x + '.webp';
+    })));
+    return { xil: uniq.join(','), yuklandi: ok.filter(Boolean).length, soni: uniq.length };
+  });
+  check("me'yor kartochkalarida belgilar",
+    nrm.soni >= 3 && nrm.yuklandi === nrm.soni, `${nrm.xil} (${nrm.yuklandi}/${nrm.soni})`);
+
+  /* Bog'lanish: to'liq raqam bosiladigan bo'lsin, ichki nomerlar emas. */
+  await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
+  await page.waitForTimeout(600);
+  await page.getByText('Bojxona organlari bilan', { exact: false }).first().click();
+  await page.waitForTimeout(800);
+  const aloqa = await page.evaluate(() => ({
+    tel: [...document.querySelectorAll('a[href^="tel:"]')].map(a => a.getAttribute('href')),
+    ichki: /44-11/.test(document.body.innerText),
+    xarita: [...document.querySelectorAll('a')].filter(a => /Xaritada/.test(a.innerText) && a.querySelector('svg')).length
+  }));
+  check("bog'lanishda raqam bosiladi",
+    aloqa.tel.length === 1 && aloqa.tel[0] === 'tel:+998555028630' && aloqa.ichki && aloqa.xarita >= 3,
+    JSON.stringify(aloqa));
+
   /* Taqiqlangan tovarlar ro'yxatida har bir pozitsiyaning o'z belgisi
      bo'lsin — 23 qator, kamida 20 xil ikonka. */
   await page.locator('nav button', { hasText: 'Bojxona' }).first().click();
