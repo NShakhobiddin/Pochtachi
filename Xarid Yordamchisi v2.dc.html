@@ -522,12 +522,12 @@
       <!-- Papka ichida turganda: qaysi papka ekani va nechta do'kon borligi -->
       <sc-if value="{{ sInFolder }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:13px 15px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
-          <div style="width:46px;height:46px;flex:none;display:flex;align-items:center;justify-content:center">
+          <div style="width:52px;height:52px;flex:none;display:flex;align-items:center;justify-content:center">
             <sc-if value="{{ folderIsPic }}" hint-placeholder-val="{{ true }}">
-              <div style="width:46px;height:46px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ folderPic }}"></div>
+              <div style="width:52px;height:52px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ folderPic }}"></div>
             </sc-if>
             <sc-if value="{{ folderIsFlag }}" hint-placeholder-val="{{ false }}">
-              <span style="font-size:22px;line-height:1">{{ folderFlag }}</span>
+              <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:34px;line-height:1;filter:drop-shadow(0 3px 6px rgba(20,19,43,.2))">{{ folderFlag }}</span>
             </sc-if>
           </div>
           <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
@@ -553,9 +553,9 @@
             <sc-for list="{{ storeFolders }}" as="f" hint-placeholder-count="6">
               <button sc-camel-on-click="{{ f.open }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:9px;background:#FFFFFF;border:none;border-radius:20px;padding:16px 15px;cursor:pointer;text-align:left;width:100%;min-width:0;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%">
-                  <div style="width:50px;height:50px;flex:none;display:flex;align-items:center;justify-content:center">
+                  <div style="width:58px;height:58px;flex:none;display:flex;align-items:center;justify-content:center">
                     <sc-if value="{{ f.isPic }}" hint-placeholder-val="{{ true }}">
-                      <div style="width:50px;height:50px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ f.pic }}"></div>
+                      <div style="width:58px;height:58px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ f.pic }}"></div>
                     </sc-if>
                     <sc-if value="{{ f.isFlag }}" hint-placeholder-val="{{ false }}">
                       <span style="font-size:22px;line-height:1">{{ f.flag }}</span>
@@ -837,7 +837,13 @@
             <sc-for list="{{ courierFolders }}" as="f" hint-placeholder-count="8">
               <button sc-camel-on-click="{{ f.open }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:9px;background:#FFFFFF;border:none;border-radius:20px;padding:16px 15px;cursor:pointer;text-align:left;width:100%;min-width:0;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%">
-                  <div style="width:44px;height:44px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#F4F3FA;font-size:22px;line-height:1">{{ f.flag }}</div>
+                  <!-- Papka aslida yo'nalish: qayerdan qayerga. Shuning uchun
+                       bitta bayroq emas, "chetdan -> O'zbekistonga" ko'rsatiladi. -->
+                  <div style="display:flex;align-items:center;gap:4px;flex:none">
+                    <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:31px;line-height:1;filter:drop-shadow(0 3px 6px rgba(20,19,43,.22))">{{ f.flag }}</span>
+                    <svg width="13" height="13" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B9B8CE" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 12h13M13 7l5 5-5 5"></path></svg>
+                    <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:19px;line-height:1;opacity:.88">🇺🇿</span>
+                  </div>
                   <span style="flex:none;font-size:11px;font-weight:800;color:#6C6C88;background:#F1F1F8;padding:5px 9px;border-radius:999px;font-variant-numeric:tabular-nums">{{ f.count }}</span>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:3px;width:100%;min-width:0">

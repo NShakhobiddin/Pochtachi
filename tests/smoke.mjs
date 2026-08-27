@@ -508,6 +508,29 @@ try {
     cFolders.chooser && cFolders.cards >= 8 && cFolders.list === 0,
     `papkalar ${cFolders.cards}, ro'yxat ${cFolders.list}`);
 
+  /* Papka aslida yo'nalish: chetdagi bayroq katta, yonida O'zbekiston.
+     Bayroq kichrayib ketmasin va qator kartochkadan chiqmasin. */
+  const bayroq = await page.evaluate(() => {
+    const b = document.querySelector('main button > div:first-child');
+    if (!b) return null;
+    /* Dvigatel {{ }} ni yana bitta span ichiga o'raydi, shuning uchun
+       joylashuvga emas, matnga qarab topamiz. */
+    const sp = [...b.querySelectorAll('span')];
+    const uzSpan = sp.find(x => x.textContent.trim() === '\u{1F1FA}\u{1F1FF}');
+    const manbaSpan = sp.find(x => x !== uzSpan && x.textContent.trim().length > 0);
+    const kids = [...b.children];
+    const kerak = kids.reduce((a, k) => a + k.getBoundingClientRect().width, 0);
+    return {
+      manba: manbaSpan ? Math.round(parseFloat(getComputedStyle(manbaSpan).fontSize)) : 0,
+      uzBor: !!uzSpan,
+      strelka: !!b.querySelector('svg'),
+      sigadi: kerak <= b.getBoundingClientRect().width + 1
+    };
+  });
+  check('kuryer papkasida yo\'nalish ko\'rinadi',
+    bayroq && bayroq.manba >= 28 && bayroq.uzBor && bayroq.strelka && bayroq.sigadi,
+    JSON.stringify(bayroq));
+
   await page.getByText('Turkiya', { exact: false }).first().click();
   await page.waitForTimeout(600);
   const cInside = await page.evaluate(() => ({
@@ -516,6 +539,7 @@ try {
     noCountryChips: !/🇨🇳 Xitoy/.test(document.body.innerText),
     title: /Turkiya yo'nalishi/.test(document.body.innerText)
   }));
+
   check('kuryer papkasi ichida faqat o\'sha yo\'nalish',
     cInside.list > 0 && cInside.list < 20 && cInside.noCountryChips && cInside.title,
     `${cInside.list} ta`);

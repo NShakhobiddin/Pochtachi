@@ -24,12 +24,12 @@ const QUALITY = 0.88;
    Bo'lim ikonkalari 64 px chiziladi, ya'ni 192 px kerak bo'lardi — asl
    nusxalar 180 px, shuning uchun ular kichraytirilmaydi.
    `boj-` ikonkalari bojxona qatorlarida 46 px, `dok-` ikonkalari
-   do'kon papkalarida 50 px, `app-` ikonkalari qo'llanmalardagi ilova
+   do'kon papkalarida 58 px, `app-` ikonkalari qo'llanmalardagi ilova
    yuklash tugmalarida 34 px chiziladi. */
 const target = name =>
   name.startsWith('tab-') ? 72 :
   name.startsWith('boj-') ? 144 :
-  name.startsWith('dok-') ? 150 :
+  name.startsWith('dok-') ? 174 :
   name.startsWith('app-') ? 102 : 180;
 
 /* `raw-` bilan boshlanadiganlar — kesib olingan to'liq o'lchamdagi asl
