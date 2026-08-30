@@ -920,27 +920,28 @@ try {
     cFolders.chooser && cFolders.cards >= 8 && cFolders.list === 0,
     `papkalar ${cFolders.cards}, ro'yxat ${cFolders.list}`);
 
-  /* Papka aslida yo'nalish: chetdagi bayroq katta, yonida O'zbekiston.
-     Bayroq kichrayib ketmasin va qator kartochkadan chiqmasin. */
+  /* Chetdagi davlat bayrog'i yirik ko'rinadi. Manzil doim O'zbekiston
+     bo'lgani uchun ikkinchi bayroq va strelka olib tashlangan — ular har
+     qatorda bir xil ma'lumotni takrorlardi. */
   const bayroq = await page.evaluate(() => {
-    const b = document.querySelector('main button > div:first-child');
-    if (!b) return null;
-    /* Dvigatel {{ }} ni yana bitta span ichiga o'raydi, shuning uchun
-       joylashuvga emas, matnga qarab topamiz. */
-    const sp = [...b.querySelectorAll('span')];
-    const uzSpan = sp.find(x => x.textContent.trim() === '\u{1F1FA}\u{1F1FF}');
-    const manbaSpan = sp.find(x => x !== uzSpan && x.textContent.trim().length > 0);
-    const kids = [...b.children];
-    const kerak = kids.reduce((a, k) => a + k.getBoundingClientRect().width, 0);
-    return {
-      manba: manbaSpan ? Math.round(parseFloat(getComputedStyle(manbaSpan).fontSize)) : 0,
-      uzBor: !!uzSpan,
-      strelka: !!b.querySelector('svg'),
-      sigadi: kerak <= b.getBoundingClientRect().width + 1
-    };
+    const kart = [...document.querySelectorAll('main button')]
+      .filter(b => /\d+ ta/.test(b.innerText) && b.querySelector('span'));
+    const olcham = [];
+    let uzBor = false, strelka = false;
+    for (const b of kart) {
+      for (const sp of b.querySelectorAll('span')) {
+        if (sp.children.length) continue;
+        const t = sp.textContent.trim();
+        if (t === '\u{1F1FA}\u{1F1FF}') uzBor = true;
+        if (/^\p{RI}\p{RI}$/u.test(t) || t === '\u{1F30D}') olcham.push(Math.round(parseFloat(getComputedStyle(sp).fontSize)));
+      }
+      const box = b.querySelector('div');
+      if (box && box.querySelector('svg') && box.querySelector('span')) strelka = true;
+    }
+    return { eng: olcham.length ? Math.min(...olcham) : 0, soni: olcham.length, uzBor, strelka };
   });
-  check('kuryer papkasida yo\'nalish ko\'rinadi',
-    bayroq && bayroq.manba >= 28 && bayroq.uzBor && bayroq.strelka && bayroq.sigadi,
+  check('kuryer papkasida bayroq yirik va yagona',
+    bayroq && bayroq.soni >= 8 && bayroq.eng >= 40 && !bayroq.uzBor && !bayroq.strelka,
     JSON.stringify(bayroq));
 
   /* Yo'nalishlar bir xil oq plitka emas: ustida eng ko'p kuryerli yo'nalish

@@ -993,10 +993,12 @@
           <!-- Eng ko'p kuryerli yo'nalish: kengi to'liq, soni yirik raqamda. -->
           <sc-if value="{{ hasCourierTop }}" hint-placeholder-val="{{ true }}">
             <button sc-camel-on-click="{{ courierTop.open }}" style="display:flex;align-items:center;gap:14px;background:linear-gradient(150deg,#F1F8F9 0%,#E3F2F4 100%);border:none;border-radius:22px;padding:17px 16px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:inset 0 0 0 1px rgba(14,133,149,.12),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
-              <div style="display:flex;align-items:center;gap:5px;flex:none">
-                <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:38px;line-height:1;filter:drop-shadow(0 3px 6px rgba(20,19,43,.22))">{{ courierTop.flag }}</span>
-                <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#9FC4C9" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 12h13M13 7l5 5-5 5"></path></svg>
-                <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:23px;line-height:1;opacity:.9">&#127482;&#127487;</span>
+              <!-- Manzil doim O'zbekiston, shuning uchun ikkinchi bayroq
+                   va strelka har qatorda bir xil ma'lumotni takrorlardi.
+                   Ular olib tashlandi, bo'shagan joy chetdagi davlat
+                   bayrog'iga berildi. -->
+              <div style="display:flex;align-items:center;flex:none">
+                <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:52px;line-height:1;filter:drop-shadow(0 4px 8px rgba(20,19,43,.24))">{{ courierTop.flag }}</span>
               </div>
               <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
                 <span style="font-size:10.5px;font-weight:500;color:#4F8A92;letter-spacing:.6px">ENG KO'P KURYER</span>
@@ -1016,12 +1018,11 @@
             <sc-for list="{{ courierFolders }}" as="f" hint-placeholder-count="8">
               <button sc-camel-on-click="{{ f.open }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:9px;background:radial-gradient(125% 82% at 100% 0%, {{ f.tintBg }} 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:16px 15px;cursor:pointer;text-align:left;width:100%;min-width:0;font-family:inherit;box-shadow:inset 0 0 0 1px {{ f.tintRing }},0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%">
-                  <!-- Papka aslida yo'nalish: qayerdan qayerga. Shuning uchun
-                       bitta bayroq emas, "chetdan -> O'zbekistonga" ko'rsatiladi. -->
-                  <div style="display:flex;align-items:center;gap:4px;flex:none">
-                    <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:31px;line-height:1;filter:drop-shadow(0 3px 6px rgba(20,19,43,.22))">{{ f.flag }}</span>
-                    <svg width="13" height="13" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B9B8CE" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 12h13M13 7l5 5-5 5"></path></svg>
-                    <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:19px;line-height:1;opacity:.88">🇺🇿</span>
+                  <!-- Chetdagi davlat bayrog'i. O'zbekiston bayrog'i har
+                       plitkada takrorlanardi — bo'lim allaqachon "qayerdan
+                       olib keladi" haqida, shuning uchun olib tashlandi. -->
+                  <div style="display:flex;align-items:center;flex:none">
+                    <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:44px;line-height:1;filter:drop-shadow(0 4px 8px rgba(20,19,43,.24))">{{ f.flag }}</span>
                   </div>
                   <span style="flex:none;font-size:11px;font-weight:500;color:{{ f.tintFg }};background:{{ f.tintChip }};padding:5px 9px;border-radius:999px;font-variant-numeric:tabular-nums">{{ f.count }}</span>
                 </div>
