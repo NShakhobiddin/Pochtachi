@@ -3466,7 +3466,11 @@ class Component extends DCLogic {
   chip(label, on, toggle) {
     return { label, toggle,
       bg: on ? PRI : '#FFFFFF', fg: on ? '#FFFFFF' : '#4E4E6B', bd: on ? PRI : '#FFFFFF',
-      sh: on ? '0 6px 16px rgba(67,56,202,.28)' : '4px 4px 12px rgba(160,164,201,.34),-3px -3px 10px rgba(255,255,255,.92)' };
+      /* Filtr chipi ilovadagi yagona "neumorfik" element edi: qo'sh soya
+         (pastdan kulrang, tepadan oq) qolgan hamma joydagi yumshoq bitta
+         soyaga o'xshamasdi. Umumiy soyaga keltirildi. */
+      sh: on ? '0 6px 16px rgba(67,56,202,.28)'
+             : '0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)' };
   }
   toggleIn(key, val) {
     this.setState(st => {
