@@ -371,7 +371,99 @@
             </sc-for>
           </div>
         </sc-if>
+
+        <!-- Qidiruv bo'sh turganda: oxirgi ishlagan so'rovlar. Tarixga
+             faqat natijasi ochilgan so'rov tushadi, shuning uchun bu yerda
+             yarim yozilgan so'zlar qolmaydi. -->
+        <sc-if value="{{ hasSearches }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 2px">
+            <span style="font-size:11px;font-weight:500;color:#8E8DA8;letter-spacing:.5px;flex:none">OXIRGI QIDIRUVLAR</span>
+            <sc-for list="{{ searchChips }}" as="sq" hint-placeholder-count="3">
+              <button sc-camel-on-click="{{ sq.run }}" style="flex:none;height:30px;padding:0 12px;border:none;border-radius:999px;background:#FFFFFF;color:#4E4E6B;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">{{ sq.t }}</button>
+            </sc-for>
+            <button sc-camel-on-click="{{ clearSearches }}" aria-label="Qidiruv tarixini tozalash" style="flex:none;width:30px;height:30px;border:none;border-radius:999px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#EFEEF6">
+              <svg width="13" height="13" sc-camel-view-box="0 0 24 24" fill="none" stroke="#9A99B5" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+            </button>
+          </div>
+        </sc-if>
       </div>
+
+      <!-- Ilovadagi yagona har kuni o'zgaradigan raqam. Bosh sahifada
+           turgani uchun ilova "tirik" ko'rinadi va so'mdagi hisob-kitob
+           qaysi kursga tayanayotgani darrov ma'lum bo'ladi. -->
+      <button sc-camel-on-click="{{ goSettings }}" style="display:flex;align-items:center;gap:13px;background:linear-gradient(150deg,#FFFFFF 0%,#F6F5FF 100%);border:none;border-radius:18px;padding:13px 15px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+        <div style="width:34px;height:34px;border-radius:12px;flex:none;background:#EEEBFC;display:flex;align-items:center;justify-content:center">
+          <span style="font-size:16px;font-weight:800;color:#3B2CC9;line-height:1">$</span>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
+          <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
+            <span style="font-family:'Onest','XY Flags',system-ui,sans-serif;font-size:17px;font-weight:800;color:#151329;letter-spacing:-.5px;font-variant-numeric:tabular-nums">{{ rateValue }}</span>
+            <span style="font-size:12px;font-weight:500;color:#6C6C88">so'm / 1 USD</span>
+            <sc-if value="{{ rateHasDiff }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:10.5px;font-weight:500;padding:2px 7px;border-radius:999px;font-variant-numeric:tabular-nums;color:{{ rateDiffFg }};background:{{ rateDiffBg }}">{{ rateDiffLabel }}</span>
+            </sc-if>
+          </div>
+          <span style="font-size:11px;font-weight:500;color:#8E8DA8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ rateSrcLabel }}</span>
+        </div>
+        <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B9B8CE" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
+      </button>
+
+      <!-- Sevimlilar: foydalanuvchi o'zi belgilagan do'kon, kuryer va
+           qo'llanmalar. Belgilanmagan bo'lsa blok umuman chizilmaydi. -->
+      <sc-if value="{{ hasFavs }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div style="display:flex;align-items:center;gap:9px;padding:0 2px">
+            <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="#F5B301" stroke="#F5B301" stroke-width="1.6" stroke-linejoin="round" style="flex:none"><path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.75L12 16.9l-5.2 2.7 1-5.75-4.2-4.1 5.8-.85z"></path></svg>
+            <h2 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:18px;font-weight:800;color:#151329;letter-spacing:-.3px">Sevimlilar</h2>
+            <div style="flex:1"></div>
+            <span style="flex:none;font-size:11px;font-weight:500;color:#6C6C88;background:#FFFFFF;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ favCount }}</span>
+          </div>
+          <div style="display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;margin:0 -18px;padding:2px 18px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 30px),transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 30px),transparent 100%)">
+            <sc-for list="{{ favRow }}" as="fv" hint-placeholder-count="3">
+              <button sc-camel-on-click="{{ fv.open }}" style="flex:none;width:138px;display:flex;flex-direction:column;align-items:flex-start;gap:9px;background:#FFFFFF;border:none;border-radius:18px;padding:13px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+                <div style="width:100%;height:40px;border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:{{ fv.tint }}">
+                  <sc-if value="{{ fv.showMono }}" hint-placeholder-val="{{ true }}">
+                    <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:14px;font-weight:800;letter-spacing:-.3px;color:{{ fv.color }}">{{ fv.mono }}</span>
+                  </sc-if>
+                  <div style="position:absolute;inset:6px;background-size:{{ fv.fit }};background-repeat:no-repeat;background-position:center;background-image:{{ fv.logoCss }}"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:2px;width:100%;min-width:0">
+                  <span style="font-size:13.5px;font-weight:800;color:#151329;letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ fv.title }}</span>
+                  <span style="font-size:11px;font-weight:500;color:#8E8DA8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ fv.kindLabel }} · {{ fv.sub }}</span>
+                </div>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- Yaqinda ko'rilgan: oxirgi ochilgan do'kon/kuryer/qo'llanma.
+           Sevimlida turgani bu yerda takrorlanmaydi. -->
+      <sc-if value="{{ hasRecent }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div style="display:flex;align-items:center;gap:9px;padding:0 2px">
+            <h2 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:18px;font-weight:800;color:#151329;letter-spacing:-.3px">Yaqinda ko'rilgan</h2>
+            <div style="flex:1"></div>
+            <button sc-camel-on-click="{{ clearRecent }}" style="flex:none;height:30px;padding:0 12px;border:none;border-radius:999px;background:transparent;color:#8E8DA8;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer" style-hover="background:#EFEEF6">Tozalash</button>
+          </div>
+          <div style="display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;margin:0 -18px;padding:2px 18px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 30px),transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 30px),transparent 100%)">
+            <sc-for list="{{ recentRow }}" as="rc" hint-placeholder-count="3">
+              <button sc-camel-on-click="{{ rc.open }}" style="flex:none;width:138px;display:flex;flex-direction:column;align-items:flex-start;gap:9px;background:#FFFFFF;border:none;border-radius:18px;padding:13px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+                <div style="width:100%;height:40px;border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:{{ rc.tint }}">
+                  <sc-if value="{{ rc.showMono }}" hint-placeholder-val="{{ true }}">
+                    <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:14px;font-weight:800;letter-spacing:-.3px;color:{{ rc.color }}">{{ rc.mono }}</span>
+                  </sc-if>
+                  <div style="position:absolute;inset:6px;background-size:{{ rc.fit }};background-repeat:no-repeat;background-position:center;background-image:{{ rc.logoCss }}"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:2px;width:100%;min-width:0">
+                  <span style="font-size:13.5px;font-weight:800;color:#151329;letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ rc.title }}</span>
+                  <span style="font-size:11px;font-weight:500;color:#8E8DA8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ rc.kindLabel }} · {{ rc.sub }}</span>
+                </div>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
 
       <sc-if value="{{ hasPlans }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;flex-direction:column;gap:12px">
@@ -436,7 +528,10 @@
           </div>
           <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
             <h2 style="margin:0;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.25;overflow-wrap:anywhere;text-wrap:pretty">Do'konlar</h2>
-            <div style="font-size:13px;color:#6C6C88;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.4">43 ta do'kon</div>
+            <div style="display:flex;align-items:baseline;gap:5px;font-variant-numeric:tabular-nums">
+              <span style="font-size:23px;font-weight:800;color:#151329;letter-spacing:-.8px;line-height:1.1">{{ storeCountAll }}</span>
+              <span style="font-size:12.5px;font-weight:500;color:#6C6C88;line-height:1.4">ta do'kon</span>
+            </div>
           </div>
         </button>
         <button sc-camel-on-click="{{ goCouriers }}" style="background:radial-gradient(125% 82% at 100% 0%, rgba(14,133,149,.20) 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:18px;cursor:pointer;text-align:left;display:flex;flex-direction:column;justify-content:space-between;gap:14px;min-height:164px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
@@ -450,7 +545,10 @@
           </div>
           <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
             <h2 style="margin:0;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.25;overflow-wrap:anywhere;text-wrap:pretty">Kuryerlar</h2>
-            <div style="font-size:13px;color:#6C6C88;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.4">{{ courierCount }} ta kuryer</div>
+            <div style="display:flex;align-items:baseline;gap:5px;font-variant-numeric:tabular-nums">
+              <span style="font-size:23px;font-weight:800;color:#151329;letter-spacing:-.8px;line-height:1.1">{{ courierCount }}</span>
+              <span style="font-size:12.5px;font-weight:500;color:#6C6C88;line-height:1.4">ta kuryer</span>
+            </div>
           </div>
         </button>
         <button sc-camel-on-click="{{ goCustoms }}" style="background:radial-gradient(125% 82% at 100% 0%, rgba(184,116,0,.22) 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:18px;cursor:pointer;text-align:left;display:flex;flex-direction:column;justify-content:space-between;gap:14px;min-height:164px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
@@ -464,7 +562,10 @@
           </div>
           <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
             <h2 style="margin:0;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.25;overflow-wrap:anywhere;text-wrap:pretty">Bojxona</h2>
-            <div style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.4">boj va yig'im hisobi</div>
+            <div style="display:flex;align-items:baseline;gap:5px;font-variant-numeric:tabular-nums">
+              <span style="font-size:23px;font-weight:800;color:#151329;letter-spacing:-.8px;line-height:1.1">${{ freeUsdLabel }}</span>
+              <span style="font-size:12.5px;font-weight:500;color:#6C6C88;line-height:1.4">bojsiz me'yor</span>
+            </div>
           </div>
         </button>
         <button sc-camel-on-click="{{ goGuides }}" style="background:radial-gradient(125% 82% at 100% 0%, rgba(18,135,74,.19) 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:18px;cursor:pointer;text-align:left;display:flex;flex-direction:column;justify-content:space-between;gap:14px;min-height:164px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
@@ -478,7 +579,10 @@
           </div>
           <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
             <h2 style="margin:0;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.25;overflow-wrap:anywhere;text-wrap:pretty">Qo'llanmalar</h2>
-            <div style="font-size:13px;color:#6C6C88;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.4">{{ fullGuideCount }} ta platforma</div>
+            <div style="display:flex;align-items:baseline;gap:5px;font-variant-numeric:tabular-nums">
+              <span style="font-size:23px;font-weight:800;color:#151329;letter-spacing:-.8px;line-height:1.1">{{ fullGuideCount }}</span>
+              <span style="font-size:12.5px;font-weight:500;color:#6C6C88;line-height:1.4">ta qo'llanma</span>
+            </div>
           </div>
         </button>
       </div>
@@ -719,10 +823,15 @@
           </sc-if>
           <div style="position:absolute;inset:10px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ store.logoCss }}"></div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:5px;min-width:0">
+        <div style="flex:1;display:flex;flex-direction:column;gap:5px;min-width:0">
           <div style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;font-weight:800;color:#151329;letter-spacing:-.5px">{{ store.name }}</div>
           <div style="font-size:13px;color:#5F5E7C;font-weight:600">{{ store.flag }} {{ store.country }} · {{ store.cat }}</div>
         </div>
+        <!-- Sevimliga belgilash: belgilangani bosh sahifada alohida tasmada
+             chiqadi va qidirib o'tirish shart bo'lmaydi. -->
+        <button sc-camel-on-click="{{ storeFav }}" aria-label="{{ storeFavLabel }}" style="flex:none;width:44px;height:44px;border:none;border-radius:999px;background:{{ storeFavBg }};cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#F2F1FA">
+          <svg width="21" height="21" sc-camel-view-box="0 0 24 24" fill="{{ storeFavFill }}" stroke="{{ storeFavStroke }}" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.75L12 16.9l-5.2 2.7 1-5.75-4.2-4.1 5.8-.85z"></path></svg>
+        </button>
       </div>
 
       <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
@@ -1049,6 +1158,9 @@
               <span style="font-size:11px;font-weight:700;color:#4E4E6B;background:#F1F1F8;padding:5px 10px;border-radius:999px">{{ courier.mode }}</span>
             </div>
           </div>
+          <button sc-camel-on-click="{{ courierFav }}" aria-label="{{ courierFavLabel }}" style="flex:none;width:44px;height:44px;border:none;border-radius:999px;background:{{ courierFavBg }};cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#F2F1FA">
+          <svg width="21" height="21" sc-camel-view-box="0 0 24 24" fill="{{ courierFavFill }}" stroke="{{ courierFavStroke }}" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.75L12 16.9l-5.2 2.7 1-5.75-4.2-4.1 5.8-.85z"></path></svg>
+        </button>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:none">
             <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;font-weight:800;color:#151329;letter-spacing:-.6px;font-variant-numeric:tabular-nums">{{ courier.priceLabel }}</span>
             <span style="font-size:11px;font-weight:700;color:#6C6C88">eng arzon tarif</span>
@@ -1156,11 +1268,20 @@
             <h2 style="margin:0;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px">Bu oyda</h2>
             <span style="font-size:13px;font-weight:600;color:#5F5E7C;line-height:1.45;text-wrap:pretty">{{ monthMeta }}</span>
           </div>
-          <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;font-weight:800;color:{{ monthColor }};letter-spacing:-.6px;font-variant-numeric:tabular-nums;flex:none">{{ monthUsd }}</span>
+          <div style="display:flex;align-items:baseline;gap:3px;flex:none;font-variant-numeric:tabular-nums">
+            <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;font-weight:800;color:{{ monthColor }};letter-spacing:-.6px">{{ monthUsd }}</span>
+            <!-- Yolg'iz "$0" hech nima demaydi; me'yor yonida tursa,
+                 raqamning ma'nosi darrov ko'rinadi. -->
+            <span style="font-size:13px;font-weight:500;color:#9A99B5">/ {{ monthLimit }}</span>
+          </div>
         </div>
-        <div style="height:7px;background:#E4E3EE;border-radius:4px;overflow:hidden">
-          <div style="height:100%;border-radius:4px;background:{{ monthBar }};width:{{ monthPct }}"></div>
-        </div>
+        <!-- Chiziq faqat to'lgan bo'lsa: bo'sh holatda 2% li chiziq
+             foydalanuvchiga hech narsa bermay, kartani cho'zib turardi. -->
+        <sc-if value="{{ hasMonth }}" hint-placeholder-val="{{ false }}">
+          <div style="height:7px;background:#E4E3EE;border-radius:4px;overflow:hidden">
+            <div style="height:100%;border-radius:4px;background:{{ monthBar }};width:{{ monthPct }}"></div>
+          </div>
+        </sc-if>
         <sc-if value="{{ hasMonth }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;flex-direction:column;gap:7px">
             <sc-for list="{{ monthRows }}" as="m" hint-placeholder-count="2">
@@ -1175,9 +1296,16 @@
           </div>
         </sc-if>
         <div style="display:flex;gap:9px">
-          <button sc-camel-on-click="{{ monthAdd }}" style="flex:1;min-height:44px;border-radius:14px;border:1.5px solid #DCD8F7;background:#FFFFFF;color:#3B2CC9;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer" style-hover="background:#F7F5FF">Jo'natma qo'shish</button>
-          <sc-if value="{{ hasMonth }}" hint-placeholder-val="{{ false }}">
+          <!-- Bo'sh holatda "Jo'natma qo'shish" kalkulyatorning oldindan
+               yozilgan summasini jimgina qo'shib yuborardi. Endi avval
+               kalkulyator ochiladi: summani foydalanuvchining o'zi kiritadi. -->
+          <sc-if value="{{ hasMonth }}" hint-placeholder-val="{{ true }}">
+            <button sc-camel-on-click="{{ monthAdd }}" style="flex:1;min-height:44px;border-radius:14px;border:1.5px solid #DCD8F7;background:#FFFFFF;color:#3B2CC9;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer" style-hover="background:#F7F5FF">Jo'natma qo'shish</button>
             <button sc-camel-on-click="{{ monthToCalc }}" style="flex:1;min-height:44px;border-radius:14px;border:none;background:#EEEBFC;color:#3423B3;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer" style-hover="background:#E5E1FB">Oy summasini qo'yish</button>
+          </sc-if>
+          <sc-if value="{{ monthEmpty }}" hint-placeholder-val="{{ false }}">
+            <button sc-camel-on-click="{{ goCalcSec }}" style="flex:1;min-height:44px;border-radius:14px;border:none;background:#EEEBFC;color:#3423B3;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer" style-hover="background:#E5E1FB">Kalkulyatorda hisoblash</button>
+            <button sc-camel-on-click="{{ goWizard }}" style="flex:1;min-height:44px;border-radius:14px;border:1.5px solid #DCD8F7;background:#FFFFFF;color:#3B2CC9;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer" style-hover="background:#F7F5FF">Reja tuzish</button>
           </sc-if>
         </div>
       </div>
@@ -1932,6 +2060,21 @@
 
   <sc-if value="{{ sPlan }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:14px;padding-bottom:24px">
+      <!-- Sehrgar endigina tugagan bo'lsa: nima chiqqanini bitta qatorda
+           ko'rsatadigan yakun. Boshqa paytda bu banner chizilmaydi. -->
+      <sc-if value="{{ planJustSaved }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:13px;background:linear-gradient(150deg,#EAF9F0 0%,#DEF3E7 100%);border-radius:20px;padding:15px;box-shadow:inset 0 0 0 1px rgba(15,123,62,.13)">
+          <div style="width:38px;height:38px;border-radius:999px;flex:none;background:#0F7B3E;display:flex;align-items:center;justify-content:center">
+            <svg width="19" height="19" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.2 5.2L20 7"></path></svg>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0">
+            <span style="font-size:16px;font-weight:800;color:#0B5B2E;letter-spacing:-.2px">Rejangiz tayyor</span>
+            <span style="font-size:12.5px;font-weight:500;color:#2C6B47;line-height:1.45;text-wrap:pretty">{{ planDoneLine }}</span>
+            <!-- Ilgari bu ma'lumot toastda chiqib, bir soniyada yo'qolardi. -->
+            <span style="font-size:11px;font-weight:500;color:#3F7A57;line-height:1.4">Bojxonaning oylik me'yoriga ham qo'shildi</span>
+          </div>
+        </div>
+      </sc-if>
       <div style="display:flex;align-items:center;gap:13px">
         <div style="width:54px;height:54px;border-radius:14px;flex:none;position:relative;background:#F4F3FA">
           <div style="position:absolute;inset:12px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ planLogo }}"></div>
@@ -2267,7 +2410,13 @@ const TABS = ['home', 'guides', 'customs', 'settings', 'wizard'];
 const PERSIST = ['lang', 'novice', 'notif', 'onboarded', 'plans', 'monthly', 'trackNo',
   /* filtrlar va oxirgi ochilgan bo'lim ham eslab qolinadi */
   'storeCountries', 'storeCats', 'storeDirect', 'storeGroup', 'storeFolderBy',
-  'courierCountries', 'courierMode', 'sort', 'lastTab', 'svcLane'];
+  'courierCountries', 'courierMode', 'sort', 'lastTab', 'svcLane',
+  /* shaxsiy iz: sevimlilar, oxirgi ko'rilganlar va qidiruv tarixi.
+     Hammasi shu brauzerda qoladi — hech qayerga yuborilmaydi. */
+  'favs', 'recent', 'searches'];
+/* Ro'yxatlar cheksiz o'smasin: eskisi oxiridan tushib ketadi. */
+const RECENT_MAX = 8;
+const SEARCH_MAX = 6;
 const loadState = () => {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -3148,8 +3297,14 @@ class Component extends DCLogic {
     customsSec: 0, calcPrice: '320', calcWeight: '2.5', calcShip: '9', banQuery: '', banFilter: 0, banOpen: null,
     fullId: 'taobao',
     shipId: null, trackNo: SAVED.trackNo || '',
+    /* 'store:taobao' ko'rinishidagi kalitlar — do'kon, kuryer va qo'llanma
+       bitta ro'yxatda yashashi uchun. */
+    favs: Array.isArray(SAVED.favs) ? SAVED.favs : [],
+    recent: Array.isArray(SAVED.recent) ? SAVED.recent : [],
+    searches: Array.isArray(SAVED.searches) ? SAVED.searches : [],
     wizStep: 0, wizCat: null, wizCountry: null, wizStore: null, wizCourier: null, wizPrice: '150', wizWeight: '1.2',
     plans: SAVED.plans || [], planId: null,
+    justSaved: false,
     sheetOpen: false, notif: SAVED.notif !== undefined ? SAVED.notif : true, toast: '', showShipments: this.props.showActiveShipments !== false
   };
 
@@ -3275,10 +3430,77 @@ class Component extends DCLogic {
     this.screenMoved();
   }
 
+  /* --- Shaxsiy iz: sevimlilar, oxirgi ko'rilganlar, qidiruv tarixi ---
+     Kalit 'store:taobao' ko'rinishida bo'lgani uchun uchala tur bitta
+     ro'yxatda tura oladi va bitta chizuvchi bilan chiziladi. */
+  refItem(key) {
+    const i = String(key || '').indexOf(':');
+    if (i < 0) return null;
+    const kind = key.slice(0, i);
+    const id = key.slice(i + 1);
+    if (kind === 'store') {
+      const o = STORES.find(x => x.id === id);
+      return o && { key, kind, title:o.name, sub:o.country, color:o.color, mono:o.mono,
+        tint:o.tint, logoCss:o.logoCss, logoOff:o.logoOn === false, fit:'contain',
+        open:() => { this.setState({ storeId:o.id }); this.push('store'); } };
+    }
+    if (kind === 'courier') {
+      const o = COURIERS.find(x => x.id === id);
+      return o && { key, kind, title:o.name, sub:o.days, color:o.color, mono:o.mono,
+        tint:rgba(o.color, '0.13'), logoCss:o.logoCss, logoOff:!o.logoCss || o.logoCss === 'none',
+        fit:o.logoFit || 'contain',
+        open:() => { this.setState({ courierId:o.id }); this.push('courier'); } };
+    }
+    if (kind === 'guide') {
+      const o = FULL_GUIDES.find(x => x.id === id);
+      return o && { key, kind, title:o.title, sub:o.sections + ' ta bo\'lim', color:o.color,
+        mono:o.mono, tint:o.tint, logoCss:o.logoCss, logoOff:o.logoOff !== false, fit:'contain',
+        open:() => { this.setState({ fullId:o.id }); this.push('fullguide'); } };
+    }
+    return null;
+  }
+
+  isFav(key) { return (this.state.favs || []).includes(key); }
+
+  toggleFav(key) {
+    if (!key) return;
+    haptic('light');
+    const on = this.isFav(key);
+    this.setState(x => ({ favs: on ? x.favs.filter(k => k !== key) : [key, ...x.favs] }));
+    this.toast(on ? 'Sevimlilardan olib tashlandi' : 'Sevimlilarga qo\'shildi');
+  }
+
+  /* Ekran ochilganda chaqiriladi. Bir xil kalit ketma-ket kelsa holatni
+     qaytadan yozmaymiz — aks holda componentDidUpdate cheksiz aylanadi. */
+  noteRecent(key) {
+    if (!key || this._lastRecent === key) return;
+    this._lastRecent = key;
+    if (!this.refItem(key)) return;
+    this.setState(x => ({ recent: [key, ...(x.recent || []).filter(k => k !== key)].slice(0, RECENT_MAX) }));
+  }
+
+  /* Qidiruv natijasi ochilganda yoziladi: shunda tarixda yarim yozilgan
+     so'zlar emas, ishlagan so'rovlar qoladi. */
+  noteSearch(q) {
+    const t = String(q || '').trim();
+    if (t.length < 2) return;
+    this.setState(x => ({ searches: [t, ...(x.searches || []).filter(v => v.toLowerCase() !== t.toLowerCase())].slice(0, SEARCH_MAX) }));
+  }
+
   screenMoved() {
     const now = this.state.stack;
     const was = this._prevStack;
     this._prevStack = now;
+    /* Ochilgan do'kon/kuryer/qo'llanma "yaqinda ko'rilgan"ga yoziladi.
+       Kirish yo'llari ko'p (qidiruv, papka, sehrgar, tasma), shuning uchun
+       har bir tugmaga emas, ekran almashishiga ulanadi. */
+    const top = now[now.length - 1];
+    const noteKey = top === 'store' ? 'store:' + this.state.storeId
+      : top === 'courier' ? 'courier:' + this.state.courierId
+      : top === 'fullguide' ? 'guide:' + this.state.fullId : '';
+    if (noteKey) this.noteRecent(noteKey); else this._lastRecent = '';
+    /* "Endi saqlandi" tabrigi faqat shu ekranda va faqat bir marta. */
+    if (this.state.justSaved && top !== 'plan') this.setState({ justSaved: false });
     if (was && was.length === now.length && was[was.length - 1] === now[now.length - 1]) return;
     const main = this._mainEl();
     if (!main) return;
@@ -3547,11 +3769,15 @@ class Component extends DCLogic {
        Reja identifikatori yoziladi, shuning uchun qayta saqlansa ikki
        marta sanalmaydi. */
     const mEntry = { id: 'm' + id, plan: id, date: todayIso(), usd: num(wz.price), kg: num(wz.kg) };
+    /* Ilgari 5 qadamdan keyin foydalanuvchi bosh sahifaga tashlanardi va
+       nima chiqqanini ko'rmasdi. Endi reja ekrani ochiladi: yakun, jami
+       summa va keyingi bosqichlar bir joyda turadi. */
     this.setState(x => ({
       plans: [plan, ...x.plans], planId: id, wizStep: 0, stack: ['home'],
-      monthly: [...(x.monthly || []).filter(m => m.plan !== id), mEntry]
+      monthly: [...(x.monthly || []).filter(m => m.plan !== id), mEntry],
+      justSaved: true
     }));
-    this.toast('Reja saqlandi — bojxona me\'yoriga ham qo\'shildi');
+    this.push('plan');
     this.celebrate();
   }
 
@@ -3835,6 +4061,8 @@ class Component extends DCLogic {
       })),
       wizSave: () => this.savePlan(wz),
       planLogo: pl ? pl.logoCss : 'none',
+      planJustSaved: !!st.justSaved,
+      planDoneLine: pl ? [pl.country, pl.storeName, pl.courierName, pl.days].filter(Boolean).join(' · ') : '',
       planTitleBig: pl ? pl.cat : '',
       planSub: pl ? pl.storeName + (pl.country ? ' · ' + pl.country : '') + ' · ' + pl.kg.toFixed(1) + ' kg' : '',
       planNum: pl ? pl.num + ' · ' + pl.date : '',
@@ -3941,6 +4169,34 @@ class Component extends DCLogic {
 
       hq: st.homeQuery,
       onHq: e => this.setState({ homeQuery: e.target.value }),
+
+      /* --- Shaxsiy bloklar: sevimlilar, yaqinda ko'rilgan, qidiruv tarixi.
+         Uchalasi ham faqat to'lgan bo'lsa chiziladi — bo'sh blok bosh
+         sahifani cho'zib, hech narsa bermaydi. */
+      ...(() => {
+        const draw = k => this.refItem(k);
+        const favs = (st.favs || []).map(draw).filter(Boolean).slice(0, 8);
+        const recent = (st.recent || []).map(draw).filter(Boolean)
+          /* Sevimlida turgan narsa yana "yaqinda"da takrorlanmasin. */
+          .filter(r => !(st.favs || []).includes(r.key)).slice(0, 6);
+        const kindLabel = { store:'Do\'kon', courier:'Kuryer', guide:'Qo\'llanma' };
+        const deco = r => ({ ...r, kindLabel: kindLabel[r.kind] || '',
+          hasLogo: r.logoCss && r.logoCss !== 'none', showMono: !(r.logoCss && r.logoCss !== 'none') });
+        return {
+          favRow: favs.map(deco), hasFavs: favs.length > 0, favCount: favs.length + ' ta',
+          recentRow: recent.map(deco), hasRecent: recent.length > 0,
+          clearRecent: () => { this._lastRecent = ''; this.setState({ recent: [] }); }
+        };
+      })(),
+      ...(() => {
+        const list = (st.searches || []).filter(Boolean);
+        return {
+          searchChips: list.map(t => ({ t, run: () => this.setState({ homeQuery: t }) })),
+          hasSearches: list.length > 0 && norm(st.homeQuery).length < 2,
+          clearSearches: () => this.setState({ searches: [] })
+        };
+      })(),
+
       clearHq: () => this.setState({ homeQuery: '' }),
       ...(() => {
         const q = norm(st.homeQuery);
@@ -3955,7 +4211,7 @@ class Component extends DCLogic {
             /* So'z-belgi logotip: qutiga to'liq sig'sin, ozgina bo'shliq bilan. */
             mono: s.mono, color: s.color, bg: '#F4F3FA', fit: '84%', logoCss: s.logoCss,
             logoOn: s.logoOn !== false, logoOff: s.logoOn === false,
-            open: () => { this.warmGuide(s.id); this.setState({ storeId: s.id, homeQuery: '' }); this.push('store'); }
+            open: () => { this.noteSearch(st.homeQuery); this.warmGuide(s.id); this.setState({ storeId: s.id, homeQuery: '' }); this.push('store'); }
           }));
         const couriers = byRank(COURIERS
           .filter(c => matches(hay(c.name, c.mode, c.route, c.countries, c.note, (c.from || []).join(' ')), q)), 'name')
@@ -3964,7 +4220,7 @@ class Component extends DCLogic {
             kind: 'Kuryer', name: c.name, sub: c.days + ' · ' + c.mode,
             mono: (c.mono || '').slice(0, 4), color: '#FFFFFF',
             bg: c.logoBg === 'transparent' ? c.color : c.logoBg, fit: c.logoFit, logoCss: c.logoCss,
-            open: () => { this.setState({ homeQuery: '' }); this.openCourierId(c.id); }
+            open: () => { this.noteSearch(st.homeQuery); this.setState({ homeQuery: '' }); this.openCourierId(c.id); }
           }));
         const guides = byRank(FULL_GUIDES
           .filter(f => matches(hay(f.title, f.desc), q)), 'title')
@@ -3972,7 +4228,7 @@ class Component extends DCLogic {
           .map(f => ({
             kind: 'Qo\'llanma', name: f.title, sub: f.sections + ' bo\'lim · kalkulyator',
             mono: f.mono, color: '#FFFFFF', bg: f.color, fit: 'cover', logoCss: 'none',
-            open: () => { this.setState({ fullId: f.id, homeQuery: '' }); this.push('fullguide'); }
+            open: () => { this.noteSearch(st.homeQuery); this.setState({ fullId: f.id, homeQuery: '' }); this.push('fullguide'); }
           }));
         const all = [...stores, ...couriers, ...guides];
         return { hqOn: true, hqEmpty: all.length === 0, hqCount: String(all.length), hqResults: all };
@@ -4095,6 +4351,21 @@ class Component extends DCLogic {
           folderGuides: fGuides,
           sFolderGuides: cur === 'storefolder' && fGuides.length > 0
         };
+      })(),
+
+      /* Yulduzcha holati: to'ldirilgan sariq yoki bo'sh kulrang kontur. */
+      ...(() => {
+        const mk = (key, what) => {
+          const on = this.isFav(key);
+          return {
+            [what + 'Fav']: () => this.toggleFav(key),
+            [what + 'FavLabel']: on ? 'Sevimlilardan olib tashlash' : 'Sevimlilarga qo\'shish',
+            [what + 'FavFill']: on ? '#F5B301' : 'none',
+            [what + 'FavStroke']: on ? '#F5B301' : '#B9B8CE',
+            [what + 'FavBg']: on ? '#FEF6E0' : '#F7F7FB'
+          };
+        };
+        return { ...mk('store:' + st.storeId, 'store'), ...mk('courier:' + st.courierId, 'courier') };
       })(),
 
       store: { ...store, apps: storeApps, hasApps: storeApps.length > 0,
@@ -4254,6 +4525,7 @@ class Component extends DCLogic {
       }) },
       svcList: courier.svc.map(s => ({ ...s, d: FEAT_ICONS[s.k] || 'M5 12h14' })),
       courierCount: COURIERS.length,
+      storeCountAll: STORES.length,
       hasSvc: courier.svc.length > 0,
       hasLimits: courier.limits.length > 0,
 
@@ -4291,8 +4563,10 @@ class Component extends DCLogic {
       monthBar: mPct <= 100 ? 'linear-gradient(90deg,#34D399,#0F7B3E)' : (mPct <= 150 ? 'linear-gradient(90deg,#E0A32E,#B45309)' : 'linear-gradient(90deg,#EF6A4B,#B91C1C)'),
       monthMeta: monthList.length
         ? monthList.length + ' ta jo\'natma · ' + mTot.kg.toFixed(1) + ' kg · ' + (mTot.usd <= NC.freeUsd ? '$' + Math.round(NC.freeUsd - mTot.usd) + ' qoldi' : 'me\'yordan $' + Math.round(mTot.usd - NC.freeUsd) + ' ortiq')
-        : 'Saqlangan rejalar shu yerga o\'zi qo\'shiladi; qo\'lda ham kiritsangiz bo\'ladi.',
+        : 'Bu oyda hali jo\'natma yo\'q. Reja saqlasangiz shu yerga o\'zi qo\'shiladi — yoki kalkulyatorda hisoblab qo\'ying.',
       hasMonth: monthList.length > 0,
+      monthEmpty: monthList.length === 0,
+      monthLimit: '$' + NC.freeUsd,
       monthRows: monthList.slice().reverse().map(x => ({
         usd: '$' + Math.round(num(x.usd)),
         meta: fmtDate(x.date).slice(0, 5) + ' · ' + num(x.kg).toFixed(1) + ' kg'

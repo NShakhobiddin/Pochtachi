@@ -378,6 +378,115 @@ try {
     `${catIcons.uniq.length} ta ikonka, ${catIcons.loaded} tasi yuklandi`);
 
 
+  /* --- Shaxsiy iz: sevimlilar, yaqinda ko'rilgan, qidiruv tarixi ---
+     Uchalasi ham shu brauzerda saqlanadi va bo'sh bo'lsa chizilmaydi. */
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
+  await page.waitForTimeout(500);
+  const bosh0 = await page.evaluate(() => {
+    const saq = JSON.parse(localStorage.getItem('xy_state_v1') || '{}');
+    return {
+      favs: (saq.favs || []).length, searches: (saq.searches || []).length,
+      favBlok: /Sevimlilar/.test(document.body.innerText),
+      tarixBlok: /OXIRGI QIDIRUVLAR/.test(document.body.innerText)
+    };
+  });
+  check('bo\'sh shaxsiy bloklar chizilmaydi',
+    bosh0.favs === 0 && bosh0.searches === 0 && !bosh0.favBlok && !bosh0.tarixBlok,
+    JSON.stringify(bosh0));
+
+  /* Kurs bloki: har kirganda o'zgaradigan yagona raqam. */
+  const kurs = await page.evaluate(() => {
+    const b = [...document.querySelectorAll('main button')]
+      .find(x => /so'm \/ 1 USD/.test(x.innerText));
+    if (!b) return null;
+    const yirik = [...b.querySelectorAll('span')]
+      .find(x => x.children.length === 0 && /^[\d\s\u00a0]+$/.test(x.textContent.trim()) &&
+                 parseFloat(getComputedStyle(x).fontSize) >= 16);
+    return { bor: true, son: yirik ? yirik.textContent.trim() : '',
+      manba: /Markaziy bank|zaxira/.test(b.innerText) };
+  });
+  check('bosh sahifada kurs bloki',
+    kurs && kurs.son.replace(/\D/g, '').length >= 4 && kurs.manba,
+    kurs ? `${kurs.son} · manba ${kurs.manba}` : 'blok topilmadi');
+
+  /* Bosh sahifadagi kartochkalarda son kulrang izohda emas, yirik raqamda. */
+  const yirikSon = await page.evaluate(() => {
+    const kart = [...document.querySelectorAll('main button')]
+      .filter(b => b.querySelector('img[src*="-3d.webp"]') && b.querySelector('h2'));
+    return kart.map(b => {
+      const big = [...b.querySelectorAll('span')]
+        .filter(x => x.children.length === 0 && parseFloat(getComputedStyle(x).fontSize) >= 22);
+      return { nom: b.querySelector('h2').textContent.trim(), son: big.length ? big[0].textContent.trim() : '' };
+    });
+  });
+  check('bosh kartochkalarda raqam yirik',
+    yirikSon.length === 4 && yirikSon.every(x => /\d/.test(x.son)),
+    yirikSon.map(x => x.nom + ':' + x.son).join(' · '));
+
+  /* Qidiruv orqali do'kon ochilsa: so'rov tarixga, do'kon "yaqinda"ga tushadi. */
+  await page.locator('main input').first().fill('taobao');
+  await page.waitForTimeout(600);
+  await page.locator('main button').filter({ hasText: 'Taobao' }).first().click();
+  await page.waitForTimeout(900);
+  const yulduz = page.locator('button[aria-label*="Sevimlilarga"]').first();
+  const yulduzBor = await yulduz.count();
+  if (yulduzBor) { await yulduz.click(); await page.waitForTimeout(500); }
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
+  await page.waitForTimeout(800);
+  const iz = await page.evaluate(() => {
+    const saqlangan = JSON.parse(localStorage.getItem('xy_state_v1') || '{}');
+    const t = document.body.innerText;
+    return {
+      favs: saqlangan.favs || [], searches: saqlangan.searches || [], recent: saqlangan.recent || [],
+      favBlok: /Sevimlilar/.test(t), tarixBlok: /OXIRGI QIDIRUVLAR/.test(t),
+      /* Sevimlida turgani "yaqinda" tasmasida takrorlanmasin — shuning
+         uchun butun sahifa matniga emas, aynan tasmalar ichiga qaraymiz. */
+      ...(() => {
+        const bolim = nom => [...document.querySelectorAll('main h2')]
+          .find(h => h.textContent.trim() === nom);
+        const tasma = h => h && [...h.closest('div').parentElement.children]
+          .find(d => d.style && d.style.overflowX === 'auto');
+        /* Do'kon "Taobao" va qo'llanma "Taobao" bir xil nomlanadi, shuning
+           uchun nomga emas, nom + tur satriga qaraymiz. */
+        const nomlar = h => { const el = tasma(h); return el
+          ? [...el.children].map(b => b.innerText.split('\n').slice(0, 2).map(x => x.trim()).join(' | ')) : []; };
+        return { favNom: nomlar(bolim('Sevimlilar')), yaqinNom: nomlar(bolim("Yaqinda ko'rilgan")) };
+      })()
+    };
+  });
+  check('sevimli, tarix va yaqinda yoziladi',
+    yulduzBor === 1 && iz.favs.includes('store:taobao') && iz.searches.includes('taobao') &&
+    iz.recent.includes('store:taobao') && iz.favBlok && iz.tarixBlok &&
+    iz.favNom.some(x => /^Taobao \| Do'kon/.test(x)) &&
+    !iz.yaqinNom.some(x => /^Taobao \| Do'kon/.test(x)),
+    `sevimli [${iz.favNom.join()}] · yaqinda [${iz.yaqinNom.join()}] · tarix ${iz.searches.join()}`);
+
+  /* Yulduzchani qayta bosganda sevimlidan chiqadi va blok yo'qoladi.
+     hasText registrga sezgir emas, shuning uchun oddiy 'Taobao' qidiruv
+     tarixidagi "taobao" chipiga ham tushadi — kartochkani tur satri
+     bilan birga qidiramiz. */
+  await page.locator('main button').filter({ hasText: /Taobao[\s\S]*Do'kon/ }).first().click();
+  await page.waitForTimeout(800);
+  await page.locator('button[aria-label*="olib tashlash"]').first().click();
+  await page.waitForTimeout(500);
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
+  await page.waitForTimeout(800);
+  const ochirildi = await page.evaluate(() => {
+    const h = [...document.querySelectorAll('main h2')].find(x => x.textContent.trim() === "Yaqinda ko'rilgan");
+    const el = h && [...h.closest('div').parentElement.children]
+      .find(d => d.style && d.style.overflowX === 'auto');
+    return {
+      favs: (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').favs) || [],
+      favBlok: /Sevimlilar/.test(document.body.innerText),
+      /* Sevimlidan chiqqach "yaqinda ko'rilgan"da paydo bo'ladi. */
+      yaqinNom: el ? [...el.children].map(b => b.innerText.split('\n').slice(0, 2).map(x => x.trim()).join(' | ')) : []
+    };
+  });
+  check('sevimlidan olib tashlanadi',
+    ochirildi.favs.length === 0 && !ochirildi.favBlok &&
+    ochirildi.yaqinNom.some(x => /^Taobao \| Do'kon/.test(x)),
+    `${ochirildi.favs.length} ta qoldi · yaqinda [${ochirildi.yaqinNom.join()}]`);
+
   /* Pullik xizmatlar bo'limi: ikkala yo'nalish ham to'ladi va har bir
      kartochkada ikonka, narx va "Bog'lanish" tugmasi bor. */
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
@@ -481,8 +590,24 @@ try {
   const kor = page.locator('main button', { hasText: "Rejani ko'rish" });
   if (await kor.count()) { await kor.first().click(); await page.waitForTimeout(600); }
   await page.locator('main button', { hasText: 'Rejani saqlash' }).first().click();
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(900);
 
+  /* Saqlangandan keyin reja ekrani ochiladi va tepasida yakun turadi —
+     ilgari foydalanuvchi bosh sahifaga tashlanardi va nima chiqqanini
+     ko'rmasdi. */
+  const yakun = await page.evaluate(() => {
+    const t = document.body.innerText;
+    return { tayyor: /Rejangiz tayyor/.test(t), meyor: /me'yoriga ham qo'shildi/.test(t),
+      jami: /TAXMINIY JAMI/.test(t),
+      yol: (t.match(/Rejangiz tayyor\n([^\n]+)/) || [])[1] || '' };
+  });
+  check('reja saqlangach yakun ko\'rinadi',
+    yakun.tayyor && yakun.meyor && yakun.jami && yakun.yol.split('·').length >= 3,
+    yakun.yol || JSON.stringify(yakun));
+
+  /* Kuzatuv tugmasi bosh sahifa sarlavhasida — avval o'sha yerga qaytamiz. */
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
+  await page.waitForTimeout(500);
   await page.locator('button[aria-label*="kuzat"]').first().click();
   await page.waitForTimeout(700);
   await page.locator('main input[placeholder="Trek raqamini yozing"]').first().fill('rb 1234 cn');
