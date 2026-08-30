@@ -86,10 +86,10 @@ const page = await context.newPage();
 const errors = [];
 const missing = [];
 page.on('pageerror', e => errors.push(e.message));
-// Ma'lum va zararsiz xabarlar: brauzer <x-dc> shablonini render'dan oldin
-// parse qilganda SVG `d="{{ ... }}"` qiymatlaridan shikoyat qiladi; shriftlar
-// esa test muhitida tashqi domendan yuklanmaydi.
-const BENIGN = /Expected moveto path command|font|CORS|net::ERR/i;
+// Ma'lum va zararsiz xabarlar: shriftlar test muhitida tashqi domendan
+// yuklanmaydi. SVG `d="{{ ... }}"` xatosi ilgari shu ro'yxatda edi — endi
+// belgilar CSS foniga o'tkazilgani uchun umuman chiqmaydi va yashirilmaydi.
+const BENIGN = /font|CORS|net::ERR/i;
 page.on('console', m => { if (m.type() === 'error' && !BENIGN.test(m.text())) errors.push(m.text()); });
 page.on('response', r => { if (r.status() >= 400 && r.url().startsWith(base)) missing.push(r.status() + ' ' + r.url()); });
 /* Oddiy brauzerda ilova tashqariga faqat valyuta kursi uchun chiqadi.
@@ -487,6 +487,79 @@ try {
     ochirildi.yaqinNom.some(x => /^Taobao \| Do'kon/.test(x)),
     `${ochirildi.favs.length} ta qoldi · yaqinda [${ochirildi.yaqinNom.join()}]`);
 
+  /* --- Audit tuzatishlari qaytib kelmasin --- */
+
+  /* Buzuq yoki eski reja ilovani yiqitmasin: ilgari maydoni yetishmagan
+     reja `total.toFixed` da TypeError berardi. */
+  const buzuq = await page.evaluate(async () => {
+    const oldRaw = localStorage.getItem('xy_state_v1');
+    const st = JSON.parse(oldRaw || '{}');
+    st.plans = [{ id: 'pX' }, { id: 'pY', step: 99, total: null, kg: 'x', price: undefined }];
+    localStorage.setItem('xy_state_v1', JSON.stringify(st));
+    return oldRaw;
+  });
+  const xato = [];
+  page.on('pageerror', e => xato.push(e.message));
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForTimeout(1600);
+  const tikladi = await page.evaluate(() => ({
+    bor: !!document.querySelector('main'),
+    reja: /Mening rejalarim/.test(document.body.innerText)
+  }));
+  check('buzuq reja ilovani yiqitmaydi',
+    tikladi.bor && tikladi.reja && xato.length === 0,
+    xato[0] ? xato[0].slice(0, 70) : JSON.stringify(tikladi));
+  await page.evaluate(v => { if (v) localStorage.setItem('xy_state_v1', v); }, buzuq);
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForTimeout(1400);
+
+  /* Matn kontrasti: 11-13px li ikkilamchi yozuvlar WCAG AA (4.5:1) dan
+     past bo'lmasin. Ilgari ikkilamchi kulrang 2.9-3.2 edi. */
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
+  await page.waitForTimeout(500);
+  const kontrast = await page.evaluate(() => {
+    const lin = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+    const lum = c => 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]);
+    const parse = t => { const m = t.match(/rgba?\(([^)]+)\)/); if (!m) return null;
+      const a = m[1].split(',').map(Number); return { c: a.slice(0, 3), a: a.length > 3 ? a[3] : 1 }; };
+    /* Gradient fonli blokda haqiqiy fon rangini o'lchab bo'lmaydi — ular
+       chetlab o'tiladi (oq matn siyohrang gradient ustida turadi). */
+    const gradient = el => { let n = el;
+      while (n && n !== document.body) { if (getComputedStyle(n).backgroundImage !== 'none') return true; n = n.parentElement; }
+      return false; };
+    const bgOf = el => { let n = el;
+      while (n && n !== document.documentElement) { const b = parse(getComputedStyle(n).backgroundColor);
+        if (b && b.a > 0.85) return b.c; n = n.parentElement; }
+      return [242, 241, 248]; };
+    const yomon = [];
+    for (const el of document.querySelectorAll('main *')) {
+      if (el.children.length) continue;
+      const t = (el.textContent || '').trim(); if (t.length < 3) continue;
+      const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
+      if (gradient(el)) continue;
+      const cs = getComputedStyle(el), fg = parse(cs.color); if (!fg) continue;
+      const L1 = lum(fg.c), L2 = lum(bgOf(el));
+      const ratio = (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05);
+      const px = parseFloat(cs.fontSize), wt = parseInt(cs.fontWeight) || 400;
+      const need = (px >= 24 || (px >= 18.66 && wt >= 700)) ? 3 : 4.5;
+      if (ratio < need) yomon.push(t.slice(0, 26) + ' ' + ratio.toFixed(2));
+    }
+    return [...new Set(yomon)];
+  });
+  check('matn kontrasti AA darajasida', kontrast.length === 0, kontrast.slice(0, 4).join(' | '));
+
+  /* Teginish maydonlari: matn havolalari 17px balandlikda edi. */
+  const mayda = await page.evaluate(() => {
+    const out = [];
+    for (const el of document.querySelectorAll('main button, main a[href]')) {
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      if (r.height < 32) out.push((el.innerText || el.getAttribute('aria-label') || '?').trim().slice(0, 24) + ' ' + Math.round(r.height) + 'px');
+    }
+    return [...new Set(out)];
+  });
+  check('teginish maydonlari 32px dan kichik emas', mayda.length === 0, mayda.slice(0, 4).join(' | '));
+
   /* Pullik xizmatlar bo'limi: ikkala yo'nalish ham to'ladi va har bir
      kartochkada ikonka, narx va "Bog'lanish" tugmasi bor. */
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
@@ -631,12 +704,17 @@ try {
   await page.waitForTimeout(700);
   await page.getByText('MYMEEST', { exact: false }).first().click();
   await page.waitForTimeout(800);
+  /* Belgi endi <svg> emas, CSS foni: {{ }} ni to'g'ridan-to'g'ri
+     <path d> ichiga yozish har yuklanishda brauzer xatosi berardi. */
   const chip = await page.evaluate(() =>
     [...document.querySelectorAll('main a[href^="http"]')]
       .filter(a => /^(Sayt|Telegram|Instagram|iOS|Android)$/.test(a.innerText.trim()))
-      .map(a => a.innerText.trim() + ':' +
-        (a.querySelector('svg') ? 'svg'
-         : /icons\/app-/.test((a.querySelector('div') || {}).style?.backgroundImage || '') ? 'rasm' : 'yo\'q')));
+      .map(a => {
+        const bg = ((a.querySelector('div') || {}).style || {}).backgroundImage || '';
+        return a.innerText.trim() + ':' +
+          (/data:image\/svg\+xml.*%3Cpath/.test(bg) ? 'chiziq'
+           : /icons\/app-/.test(bg) ? 'rasm' : 'yo\'q');
+      }));
   check('kuryer havolalarida belgilar',
     chip.length === 5 && chip.every(x => !/yo'q$/.test(x)), chip.join(' '));
 

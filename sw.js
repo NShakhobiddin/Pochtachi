@@ -8,7 +8,7 @@
  *     qat'i nazar saqlanadigan keshda qoladi.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
  */
-const VERSION = '2fb030168b26';
+const VERSION = '999acc469cd3';
 const CACHE = 'xarid-' + VERSION;
 /* Logotiplar keshi ilova versiyasiga bog'lanmaydi: yangilanish chiqqanda
    ular qaytadan yuklanmaydi. */
@@ -34,6 +34,28 @@ const PRECACHE = [
   "icons/app-play.webp",
   "icons/app-store.webp",
   "icons/apple-touch-icon.png",
+  "icons/ban/alkogol.webp",
+  "icons/ban/diniy.webp",
+  "icons/ban/dori.webp",
+  "icons/ban/dron.webp",
+  "icons/ban/ekstremist.webp",
+  "icons/ban/giyohvand.webp",
+  "icons/ban/gologramma.webp",
+  "icons/ban/hayvon.webp",
+  "icons/ban/kimyoviy.webp",
+  "icons/ban/lazer.webp",
+  "icons/ban/madaniy.webp",
+  "icons/ban/ogit.webp",
+  "icons/ban/ozuqa.webp",
+  "icons/ban/pech.webp",
+  "icons/ban/portlovchi.webp",
+  "icons/ban/qimmatbaho.webp",
+  "icons/ban/qimor.webp",
+  "icons/ban/qurol.webp",
+  "icons/ban/radio.webp",
+  "icons/ban/valyuta.webp",
+  "icons/ban/vape.webp",
+  "icons/ban/yovvoyi.webp",
   "icons/boj-aloqa.webp",
   "icons/boj-kalkulyator.webp",
   "icons/boj-meyor.webp",
@@ -50,6 +72,11 @@ const PRECACHE = [
   "icons/dok-universal.webp",
   "icons/guides-3d.webp",
   "icons/icon-192.png",
+  "icons/norm/atir.webp",
+  "icons/norm/bad.webp",
+  "icons/norm/meyor.webp",
+  "icons/norm/tolov.webp",
+  "icons/norm/yigim.webp",
   "icons/stores-3d.webp",
   "icons/svc-bahs.webp",
   "icons/svc-hamkorlik.webp",

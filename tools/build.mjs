@@ -41,16 +41,34 @@ function precacheList() {
   }
   // Do'kon logotiplari saqlangan bo'lsa, ular ham qobiq bilan birga keshlanadi.
   if (existsSync(join(ROOT, 'stores', 'index.json'))) files.push('stores/index.json');
-  for (const dir of ['icons', 'logos', 'stores']) {
-    for (const f of readdirSync(join(ROOT, dir)).sort()) {
-      if (/\.(webp|png)$/.test(f) && f !== 'og-cover.png') files.push(`${dir}/${f}`);
+  /* Ichki papkalar ham kerak: taqiq va me'yor belgilari icons/ban va
+     icons/norm ichida turadi. Ilgari sikl faqat birinchi darajani
+     aylanardi va oflaynda o'sha 27 ta belgi bo'sh chiqardi.
+     icons/src va icons/glyphs — ikonka tayyorlash uchun manba (1.1 MB),
+     ishga tushmaydi: ularni keshlash oflayn yuklamani behuda oshiradi. */
+  const SRC_DIRS = new Set(['src', 'glyphs']);
+  const walkIcons = dir => {
+    for (const e of readdirSync(join(ROOT, dir), { withFileTypes: true }).sort((a, b) => a.name < b.name ? -1 : 1)) {
+      if (e.isDirectory()) { if (!SRC_DIRS.has(e.name)) walkIcons(`${dir}/${e.name}`); continue; }
+      if (/\.(webp|png)$/.test(e.name) && e.name !== 'og-cover.png') files.push(`${dir}/${e.name}`);
     }
-  }
+  };
+  for (const dir of ['icons', 'logos', 'stores']) walkIcons(dir);
   return files;
 }
 
 function buildServiceWorker(indexHtml) {
   const files = precacheList();
+  /* Ro'yxat qo'lda yozilgan qoidalarga tayanadi, shuning uchun teskari
+     tomondan ham tekshiramiz: sahifa murojaat qilgan ikonka keshda
+     bo'lmasa, oflaynda u bo'sh chiqadi va buni hech kim sezmaydi. */
+  const runtime = indexHtml.replace(/<meta\b[^>]*>/gi, '');   // OG rasmi ilovada emas, ulashishda ishlatiladi
+  const used = new Set([...runtime.matchAll(/(?:icons|logos|stores)\/[\w./-]+\.(?:webp|png)/g)].map(m => m[0]));
+  const missing = [...used].filter(u => !files.includes(u));
+  if (missing.length) {
+    console.error('Keshga tushmagan ikonkalar:', missing.join(', '));
+    process.exitCode = 1;
+  }
   const hash = createHash('sha256');
   hash.update(indexHtml);
   for (const f of files) {

@@ -69,17 +69,36 @@ for (const b of BUDGETS) {
 }
 
 // Asosiy sahifa: gzip'siz hajm (GitHub Pages gzip beradi, lekin manba ham
-// o'smasin). Chegara 420 dan 450 KB ga ko'tarildi — bo'limlarga qo'shilgan
-// ohang, guruh sarlavhalari va katta kartochkalar markupni ~12 KB o'stirdi.
+// o'smasin). Chegara 420 -> 450 -> 470 KB: birinchisi bo'limlarga qo'shilgan
+// ohang va katta kartochkalar uchun, ikkinchisi rus tili lug'ati to'ldirilgani
+// uchun (butun qo'llanmalar ekrani tarjimasiz qolgan edi).
 // Foydalanuvchiga yetadigan hajm gzipdan keyingisi, shuning uchun u ham
 // chiqariladi: qaror shu raqamga qarab qabul qilinsin.
 const index = join(ROOT, 'index.html');
 if (existsSync(index)) {
   const size = kb(statSync(index).size);
   const gz = kb(gzipSync(readFileSync(index), { level: 9 }).length);
-  const ok = size <= 450;
-  console.log(`${ok ? '  ok  ' : ' XATO '} index.html: ${size} KB (chegara 450 KB), gzip ${gz} KB`);
+  const ok = size <= 470;
+  console.log(`${ok ? '  ok  ' : ' XATO '} index.html: ${size} KB (chegara 470 KB), gzip ${gz} KB`);
   if (!ok) failed = true;
+}
+
+/* Oflayn kesh: taqiq va me'yor belgilari ichki papkalarda turadi va
+   ilgari precacheList ularni aylanmagani uchun oflaynda bo'sh chiqardi. */
+const sw = join(ROOT, 'sw.js');
+if (existsSync(sw)) {
+  const txt = readFileSync(sw, 'utf8');
+  const need = [['icons/ban/', 22], ['icons/norm/', 5]];
+  for (const [dir, n] of need) {
+    const have = (txt.match(new RegExp(dir.replace('/', '\\/'), 'g')) || []).length;
+    const ok = have >= n;
+    console.log(`${ok ? '  ok  ' : ' XATO '} oflayn kesh ${dir}: ${have} ta (kamida ${n})`);
+    if (!ok) failed = true;
+  }
+  /* Manba papkalari keshga tushmasin: 1.1 MB behuda yuklama. */
+  const src = /icons\/(?:src|glyphs)\//.test(txt);
+  console.log(`${src ? ' XATO ' : '  ok  '} manba papkalari keshda emas`);
+  if (src) failed = true;
 }
 
 if (failed) {
