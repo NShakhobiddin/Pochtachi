@@ -348,8 +348,8 @@
         <sc-if value="{{ hqOn }}" hint-placeholder-val="{{ false }}">
           <div style="background:#FFFFFF;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 15px 11px">
-              <span style="font-size:11px;font-weight:800;letter-spacing:.5px;color:#8E8DA8">NATIJALAR</span>
-              <span style="font-size:11px;font-weight:800;color:#6C6C88;font-variant-numeric:tabular-nums">{{ hqCount }}</span>
+              <span style="font-size:11px;font-weight:500;letter-spacing:.5px;color:#8E8DA8">NATIJALAR</span>
+              <span style="font-size:11px;font-weight:500;color:#6C6C88;font-variant-numeric:tabular-nums">{{ hqCount }}</span>
             </div>
             <sc-if value="{{ hqEmpty }}" hint-placeholder-val="{{ false }}">
               <div style="padding:4px 15px 17px;font-size:13px;font-weight:600;color:#6C6C88;line-height:1.5">Hech narsa topilmadi. Do'kon nomi, kuryer nomi yoki kategoriya bilan urinib ko'ring.</div>
@@ -358,7 +358,7 @@
               <button sc-camel-on-click="{{ r.open }}" style="display:flex;align-items:center;gap:12px;width:100%;border:none;background:#FFFFFF;padding:11px 15px;cursor:pointer;text-align:left;font-family:inherit;border-top:1px solid #F2F2F7" style-hover="background:#FBFAFF">
                 <div style="width:52px;height:36px;border-radius:12px;flex:none;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:{{ r.bg }}">
                   <sc-if value="{{ r.logoOff }}" hint-placeholder-val="{{ false }}">
-                    <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;letter-spacing:-.2px;color:{{ r.color }}">{{ r.mono }}</span>
+                    <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;letter-spacing:-.2px;color:{{ r.color }}">{{ r.mono }}</span>
                   </sc-if>
                   <div style="position:absolute;inset:0;background-size:{{ r.fit }};background-repeat:no-repeat;background-position:center;background-image:{{ r.logoCss }}"></div>
                 </div>
@@ -366,7 +366,7 @@
                   <span style="font-size:15px;font-weight:700;color:#151329">{{ r.name }}</span>
                   <span style="font-size:11px;font-weight:600;color:#8E8DA8">{{ r.sub }}</span>
                 </div>
-                <span style="flex:none;font-size:11px;font-weight:800;color:#3B2CC9;background:#EBE8FE;padding:5px 9px;border-radius:999px">{{ r.kind }}</span>
+                <span style="flex:none;font-size:11px;font-weight:500;color:#3B2CC9;background:#EBE8FE;padding:5px 9px;border-radius:999px">{{ r.kind }}</span>
               </button>
             </sc-for>
           </div>
@@ -377,7 +377,7 @@
         <div style="display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
             <h2 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:18px;font-weight:800;color:#151329;letter-spacing:-.3px">Mening rejalarim</h2>
-            <span style="font-size:11px;font-weight:800;color:#6C6C88;background:#FFFFFF;padding:6px 11px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ planCount }}</span>
+            <span style="font-size:11px;font-weight:500;color:#6C6C88;background:#FFFFFF;padding:6px 11px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ planCount }}</span>
           </div>
           <sc-for list="{{ myPlans }}" as="p" hint-placeholder-count="1">
             <button sc-camel-on-click="{{ p.open }}" style="background:#FFFFFF;border:none;border-radius:20px;padding:16px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:13px;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
@@ -509,7 +509,7 @@
         <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
             <div style="display:flex;align-items:center;gap:7px;min-width:0">
-              <span style="font-size:11px;font-weight:800;letter-spacing:.5px;color:#B45309;background:#FDF3E3;padding:6px 11px;border-radius:999px;white-space:nowrap">{{ tipCat }}</span>
+              <span style="font-size:11px;font-weight:500;letter-spacing:.5px;color:#B45309;background:#FDF3E3;padding:6px 11px;border-radius:999px;white-space:nowrap">{{ tipCat }}</span>
               <sc-if value="{{ tipToday }}" hint-placeholder-val="{{ true }}">
                 <span style="font-size:11px;font-weight:700;color:#8E8DA8;letter-spacing:.2px;white-space:nowrap">Bugungi</span>
               </sc-if>
@@ -549,7 +549,7 @@
             <span style="font-size:16px;font-weight:800;color:#151329;letter-spacing:-.2px">{{ folderName }}</span>
             <span style="font-size:13px;color:#8E8DA8;font-weight:600">{{ folderSub }}</span>
           </div>
-          <span style="flex:none;font-size:11px;font-weight:800;color:#6C6C88;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ storeCount }} ta</span>
+          <span style="flex:none;font-size:11px;font-weight:500;color:#6C6C88;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ storeCount }} ta</span>
         </div>
       </sc-if>
 
@@ -576,7 +576,7 @@
                       <span style="font-size:22px;line-height:1">{{ f.flag }}</span>
                     </sc-if>
                   </div>
-                  <span style="flex:none;font-size:11px;font-weight:800;color:#6C6C88;background:#F1F1F8;padding:5px 9px;border-radius:999px;font-variant-numeric:tabular-nums">{{ f.count }}</span>
+                  <span style="flex:none;font-size:11px;font-weight:500;color:#6C6C88;background:#F1F1F8;padding:5px 9px;border-radius:999px;font-variant-numeric:tabular-nums">{{ f.count }}</span>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:3px;width:100%;min-width:0">
                   <span style="font-size:15.5px;font-weight:800;color:#151329;letter-spacing:-.2px;overflow-wrap:anywhere">{{ f.title }}</span>
@@ -591,7 +591,7 @@
               <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </div>
             <span style="flex:1;font-size:15.5px;font-weight:800;color:#151329">Barcha do'konlar</span>
-            <span style="flex:none;font-size:11px;font-weight:800;color:#6C6C88;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ allStoresCount }}</span>
+            <span style="flex:none;font-size:11px;font-weight:500;color:#6C6C88;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ allStoresCount }}</span>
             <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
           </button>
         </div>
@@ -636,13 +636,13 @@
             <sc-if value="{{ g.showHead }}" hint-placeholder-val="{{ true }}">
             <div style="display:flex;align-items:center;gap:9px;padding:0 2px">
               <sc-if value="{{ g.hasBadge }}" hint-placeholder-val="{{ false }}">
-                <span style="font-size:11px;font-weight:800;color:#3B2CC9;background:#EBE8FE;padding:6px 10px;border-radius:12px;letter-spacing:.5px;flex:none">{{ g.badge }}</span>
+                <span style="font-size:11px;font-weight:500;color:#3B2CC9;background:#EBE8FE;padding:6px 10px;border-radius:12px;letter-spacing:.5px;flex:none">{{ g.badge }}</span>
               </sc-if>
               <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
                 <h2 style="margin:0;font-family:'Onest','XY Flags',system-ui,sans-serif;font-size:18px;font-weight:800;color:#151329;letter-spacing:-.35px">{{ g.title }}</h2>
                 <span style="font-size:13px;color:#8E8DA8;font-weight:600">{{ g.sub }}</span>
               </div>
-              <span style="flex:none;font-size:11px;font-weight:800;color:#6C6C88;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ g.count }}</span>
+              <span style="flex:none;font-size:11px;font-weight:500;color:#6C6C88;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ g.count }}</span>
             </div>
             </sc-if>
             <div style="display:flex;flex-direction:column;gap:11px">
@@ -665,7 +665,7 @@
                 <span style="font-size:15px">{{ s.flag }}</span>
               </div>
               <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-                <span style="font-size:11px;font-weight:800;color:#3B2CC9;background:#EBE8FE;padding:4px 9px;border-radius:999px;letter-spacing:.4px">{{ s.tier }}</span>
+                <span style="font-size:11px;font-weight:500;color:#3B2CC9;background:#EBE8FE;padding:4px 9px;border-radius:999px;letter-spacing:.4px">{{ s.tier }}</span>
                 <sc-for list="{{ s.tags }}" as="t" hint-placeholder-count="2">
                   <span style="font-size:11px;font-weight:700;color:#6C6C88;background:#F1F1F8;padding:4px 9px;border-radius:999px">{{ t }}</span>
                 </sc-for>
@@ -716,7 +716,7 @@
         </div>
         <sc-if value="{{ store.hasCouriers }}" hint-placeholder-val="{{ true }}">
           <div style="display:flex;flex-direction:column;gap:9px">
-            <div style="font-size:11px;font-weight:800;letter-spacing:.5px;color:#8E8DA8">ENG ARZON UCHTA KURYER</div>
+            <div style="font-size:11px;font-weight:500;letter-spacing:.5px;color:#8E8DA8">ENG ARZON UCHTA KURYER</div>
             <sc-for list="{{ store.topCouriers }}" as="k" hint-placeholder-count="3">
               <button sc-camel-on-click="{{ k.open }}" style="display:flex;align-items:center;gap:11px;background:#F8F8FC;border:none;border-radius:14px;padding:11px 12px;cursor:pointer;text-align:left;width:100%;box-shadow:inset 0 0 0 1px #EDECF4" style-hover="background:#F1F0FA">
                 <div style="width:34px;height:34px;border-radius:12px;flex:none;position:relative;overflow:hidden;background:{{ k.logoBg }}">
@@ -830,7 +830,7 @@
       </sc-if>
 
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-        <span style="font-size:11px;font-weight:800;letter-spacing:.4px;color:#63637E;background:#FFFFFF;padding:7px 12px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">YANGILANDI {{ store.updated }}</span>
+        <span style="font-size:11px;font-weight:500;letter-spacing:.4px;color:#63637E;background:#FFFFFF;padding:7px 12px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">YANGILANDI {{ store.updated }}</span>
         <button sc-camel-on-click="{{ reportInfo }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#3B2CC9;cursor:pointer;padding:0">Ma'lumot noto'g'rimi?</button>
       </div>
     </div>
@@ -847,7 +847,7 @@
             <span style="font-size:16px;font-weight:800;color:#151329;letter-spacing:-.2px">{{ courierFolderName }}</span>
             <span style="font-size:13px;color:#8E8DA8;font-weight:600">{{ courierFolderSub }}</span>
           </div>
-          <span style="flex:none;font-size:11px;font-weight:800;color:#6C6C88;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ courierListCount }} ta</span>
+          <span style="flex:none;font-size:11px;font-weight:500;color:#6C6C88;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ courierListCount }} ta</span>
         </div>
       </sc-if>
 
@@ -867,7 +867,7 @@
                     <svg width="13" height="13" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B9B8CE" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 12h13M13 7l5 5-5 5"></path></svg>
                     <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:19px;line-height:1;opacity:.88">🇺🇿</span>
                   </div>
-                  <span style="flex:none;font-size:11px;font-weight:800;color:#6C6C88;background:#F1F1F8;padding:5px 9px;border-radius:999px;font-variant-numeric:tabular-nums">{{ f.count }}</span>
+                  <span style="flex:none;font-size:11px;font-weight:500;color:#6C6C88;background:#F1F1F8;padding:5px 9px;border-radius:999px;font-variant-numeric:tabular-nums">{{ f.count }}</span>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:3px;width:100%;min-width:0">
                   <span style="font-size:15.5px;font-weight:800;color:#151329;letter-spacing:-.2px;overflow-wrap:anywhere">{{ f.title }}</span>
@@ -882,7 +882,7 @@
               <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </div>
             <span style="flex:1;font-size:15.5px;font-weight:800;color:#151329">Barcha kuryerlar</span>
-            <span style="flex:none;font-size:11px;font-weight:800;color:#6C6C88;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ allCouriersCount }}</span>
+            <span style="flex:none;font-size:11px;font-weight:500;color:#6C6C88;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ allCouriersCount }}</span>
             <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
           </button>
         </div>
@@ -917,7 +917,7 @@
             </sc-if>
             <button sc-camel-on-click="{{ c.open }}" style="flex:1;background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;min-width:0;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
               <sc-if value="{{ c.hasBadge }}" hint-placeholder-val="{{ false }}">
-                <span style="align-self:flex-start;display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;letter-spacing:.3px;padding:5px 11px;border-radius:999px;background:{{ c.badgeBg }};color:{{ c.badgeFg }}">{{ c.badge }}</span>
+                <span style="align-self:flex-start;display:flex;align-items:center;gap:5px;font-size:11px;font-weight:500;letter-spacing:.3px;padding:5px 11px;border-radius:999px;background:{{ c.badgeBg }};color:{{ c.badgeFg }}">{{ c.badge }}</span>
               </sc-if>
               <div style="display:flex;align-items:center;gap:13px">
                 <div style="width:52px;height:52px;border-radius:20px;flex:none;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;text-align:center;line-height:1.1;letter-spacing:.2px;background:{{ c.color }}">{{ c.mono }}
@@ -1043,7 +1043,7 @@
               <span style="font-size:17px">{{ t.f }}</span>
               <span style="font-size:15px;font-weight:700;color:#151329;flex:1">{{ t.c }}</span>
               <sc-if value="{{ t.hasT }}" hint-placeholder-val="{{ false }}">
-                <span style="font-size:11px;font-weight:800;letter-spacing:.3px;color:#3B2CC9;background:#EBE8FE;padding:5px 10px;border-radius:999px;flex:none">{{ t.t }}</span>
+                <span style="font-size:11px;font-weight:500;letter-spacing:.3px;color:#3B2CC9;background:#EBE8FE;padding:5px 10px;border-radius:999px;flex:none">{{ t.t }}</span>
               </sc-if>
             </div>
             <span style="font-size:13px;font-weight:600;color:#151329;line-height:1.55;text-wrap:pretty">{{ t.v }}</span>
@@ -1150,7 +1150,7 @@
 
       <div style="display:flex;flex-direction:column;gap:11px">
         <div style="display:flex;align-items:center;gap:10px;padding:2px 2px 0">
-          <span style="font-size:11px;font-weight:800;color:#8E8DA8;letter-spacing:.6px">MA'LUMOTNOMA</span>
+          <span style="font-size:11px;font-weight:500;color:#8E8DA8;letter-spacing:.6px">MA'LUMOTNOMA</span>
           <div style="flex:1;height:1px;background:#E4E3EE"></div>
         </div>
         <button sc-camel-on-click="{{ sec1 }}" style="display:flex;align-items:center;gap:14px;background:#FFFFFF;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);border:none;border-radius:20px;padding:15px;cursor:pointer;text-align:left;width:100%;font-family:inherit" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
@@ -1276,7 +1276,7 @@
           </div>
           <sc-for list="{{ criteria }}" as="c" hint-placeholder-count="7">
             <div style="display:flex;gap:11px;align-items:baseline">
-              <span style="font-size:11px;font-weight:800;color:#3B2CC9;flex:none;width:15px;font-variant-numeric:tabular-nums">{{ c.n }}</span>
+              <span style="font-size:11px;font-weight:500;color:#3B2CC9;flex:none;width:15px;font-variant-numeric:tabular-nums">{{ c.n }}</span>
               <span style="font-size:13px;color:#4A4A66;line-height:1.55;flex:1;text-wrap:pretty">{{ c.t }}</span>
             </div>
           </sc-for>
@@ -1333,7 +1333,7 @@
                 </div>
                 <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
                   <span style="font-size:15px;font-weight:700;color:#151329;line-height:1.35">{{ b.name }}</span>
-                  <span style="font-size:11px;font-weight:800;letter-spacing:.5px;color:{{ b.fg }}">{{ b.label }}</span>
+                  <span style="font-size:11px;font-weight:500;letter-spacing:.5px;color:{{ b.fg }}">{{ b.label }}</span>
                 </div>
                 <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transform:rotate({{ b.rot }})"><path d="M6 9l6 6 6-6"></path></svg>
               </button>
@@ -1341,7 +1341,7 @@
                 <div style="display:flex;flex-direction:column;gap:9px;padding:0 15px 15px 65px">
                   <span style="font-size:13px;color:#4A4A66;line-height:1.6;text-wrap:pretty">{{ b.note }}</span>
                   <div style="display:flex;flex-direction:column;gap:3px;background:#F5F4FC;border-radius:20px;padding:10px 12px">
-                    <span style="font-size:11px;font-weight:800;letter-spacing:.4px;color:#6C6C88">HUQUQIY MANBA</span>
+                    <span style="font-size:11px;font-weight:500;letter-spacing:.4px;color:#6C6C88">HUQUQIY MANBA</span>
                     <span style="font-size:13px;font-weight:600;color:#4A4A66;line-height:1.5">{{ b.src }}</span>
                   </div>
                 </div>
@@ -1465,7 +1465,7 @@
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:2px">
             <span style="font-size:11px;font-weight:700;color:#B4B4C8;font-variant-numeric:tabular-nums">1 USD = {{ calcRate }} so'm · BHM {{ bhmLabel }} so'm</span>
             <span style="font-size:11px;font-weight:700;color:#8E8DA8">{{ rateSrcLabel }}</span>
-            <button sc-camel-on-click="{{ refreshRate }}" aria-label="Valyuta kursini yangilash" style="background:none;border:none;font-family:inherit;font-size:11px;font-weight:800;color:#3B2CC9;cursor:pointer;padding:6px 0;min-height:44px">{{ rateBtnLabel }}</button>
+            <button sc-camel-on-click="{{ refreshRate }}" aria-label="Valyuta kursini yangilash" style="background:none;border:none;font-family:inherit;font-size:11px;font-weight:500;color:#3B2CC9;cursor:pointer;padding:6px 0;min-height:44px">{{ rateBtnLabel }}</button>
           </div>
         </div>
 
@@ -1507,7 +1507,7 @@
                   <a class="xy-tap" href="{{ t.href }}" style="display:flex;align-items:center;gap:11px;background:linear-gradient(155deg,#5A46EC,#3423B3);border-radius:16px;padding:11px 14px;text-decoration:none;box-shadow:0 10px 24px -16px rgba(45,30,150,.8)">
                     <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"></path></svg>
                     <span style="display:flex;flex-direction:column;gap:1px;min-width:0">
-                      <span style="font-size:10.5px;font-weight:800;letter-spacing:.5px;color:rgba(255,255,255,.72)">QO'NG'IROQ QILISH</span>
+                      <span style="font-size:10.5px;font-weight:500;letter-spacing:.5px;color:rgba(255,255,255,.72)">QO'NG'IROQ QILISH</span>
                       <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:17px;font-weight:800;color:#FFFFFF;letter-spacing:-.2px;font-variant-numeric:tabular-nums">{{ t.label }}</span>
                     </span>
                   </a>
@@ -1537,7 +1537,7 @@
       <div style="flex:none;display:flex;align-items:center;gap:9px;padding:8px 16px;background:#FFFFFF;border-bottom:1px solid #E8E8F1">
         <div style="width:42px;height:28px;border-radius:9px;flex:none;position:relative;background:#F4F3FA">
           <sc-if value="{{ fullLogoOff }}" hint-placeholder-val="{{ true }}">
-            <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:11px;font-weight:800;color:{{ fullColor }}">{{ fullMono }}</span>
+            <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:11px;font-weight:500;color:{{ fullColor }}">{{ fullMono }}</span>
           </sc-if>
           <div style="position:absolute;inset:4px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ fullLogoCss }}"></div>
         </div>
@@ -1577,8 +1577,8 @@
             </div>
             <span style="font-size:13px;font-weight:600;color:#6C6C88;line-height:1.4">{{ f.desc }}</span>
             <div style="display:flex;gap:6px;margin-top:2px">
-              <span style="font-size:11px;font-weight:800;letter-spacing:.3px;color:#3B2CC9;background:#EBE8FE;padding:3px 8px;border-radius:10px">{{ f.sections }} BO'LIM</span>
-              <span style="font-size:11px;font-weight:800;letter-spacing:.3px;color:#0F7B3E;background:#E9F8EF;padding:3px 8px;border-radius:10px">{{ f.tag }}</span>
+              <span style="font-size:11px;font-weight:500;letter-spacing:.3px;color:#3B2CC9;background:#EBE8FE;padding:3px 8px;border-radius:10px">{{ f.sections }} BO'LIM</span>
+              <span style="font-size:11px;font-weight:500;letter-spacing:.3px;color:#0F7B3E;background:#E9F8EF;padding:3px 8px;border-radius:10px">{{ f.tag }}</span>
             </div>
           </div>
           <div style="width:30px;height:30px;border-radius:14px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;flex:none">
@@ -1596,7 +1596,7 @@
       <sc-if value="{{ hasTracked }}" hint-placeholder-val="{{ true }}">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 2px">
           <h2 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:18px;font-weight:800;color:#151329;letter-spacing:-.3px">Mening jo'natmalarim</h2>
-          <span style="font-size:11px;font-weight:800;color:#6C6C88;background:#FFFFFF;padding:6px 11px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ trackedCount }}</span>
+          <span style="font-size:11px;font-weight:500;color:#6C6C88;background:#FFFFFF;padding:6px 11px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ trackedCount }}</span>
         </div>
         <sc-for list="{{ trackedList }}" as="t" hint-placeholder-count="2">
           <div style="background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:13px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
@@ -1608,7 +1608,7 @@
                 <span style="font-size:15.5px;font-weight:700;color:#151329;line-height:1.3">{{ t.title }}</span>
                 <span style="font-size:12.5px;font-weight:600;color:#8E8DA8">{{ t.courier }}</span>
               </div>
-              <span style="flex:none;font-size:11px;font-weight:800;letter-spacing:.3px;padding:5px 10px;border-radius:999px;background:{{ t.stBg }};color:{{ t.stFg }}">{{ t.stLabel }}</span>
+              <span style="flex:none;font-size:11px;font-weight:500;letter-spacing:.3px;padding:5px 10px;border-radius:999px;background:{{ t.stBg }};color:{{ t.stFg }}">{{ t.stLabel }}</span>
             </button>
             <div style="height:5px;border-radius:99px;background:#EFEEF7;overflow:hidden">
               <div style="height:100%;border-radius:99px;background:linear-gradient(90deg,#5A46EC,#3423B3);width:{{ t.pct }};transition:width .4s cubic-bezier(.22,.9,.3,1)"></div>
@@ -1648,7 +1648,7 @@
       </div>
 
       <div style="background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
-        <span style="font-size:11px;font-weight:800;color:#3B2CC9;letter-spacing:.2px">BOSHQA JO'NATMA RAQAMI</span>
+        <span style="font-size:11px;font-weight:500;color:#3B2CC9;letter-spacing:.2px">BOSHQA JO'NATMA RAQAMI</span>
         <div style="display:flex;align-items:center;gap:8px;background:#FFFFFF;border:1.5px solid #DFDCF5;border-radius:20px;padding:11px 13px">
           <input size="12" value="{{ trackNo }}" sc-camel-on-change="{{ onTrackNo }}" sc-camel-on-blur="{{ onTrackBlur }}" placeholder="Masalan: RB123456789CN" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" enterkeyhint="done" aria-label="Trek raqam" style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;flex:1;min-width:0;border:none;outline:none;font-size:17px;font-weight:800;color:#151329;background:transparent;font-variant-numeric:tabular-nums;letter-spacing:.6px;caret-color:#3B2CC9">
           <button sc-camel-on-click="{{ copyTrack }}" style="flex:none;height:32px;padding:0 13px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:800;color:#3B2CC9;background:#F0EDFE" style-hover="background:#E1DBFB">Nusxa</button>
@@ -1657,7 +1657,7 @@
       </div>
 
       <div style="display:flex;align-items:center;gap:10px;padding:2px 2px 0">
-        <span style="font-size:11px;font-weight:800;color:#8E8DA8;letter-spacing:.6px">KURYER SAYTIDA KUZATISH</span>
+        <span style="font-size:11px;font-weight:500;color:#8E8DA8;letter-spacing:.6px">KURYER SAYTIDA KUZATISH</span>
         <div style="flex:1;height:1px;background:#E4E3EE"></div>
       </div>
 
@@ -1705,7 +1705,7 @@
         <div style="position:relative;display:flex;flex-direction:column;gap:13px">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
             <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
-              <span style="font-size:11px;font-weight:800;letter-spacing:1.3px;color:rgba(255,255,255,.60)">XARID REJASI</span>
+              <span style="font-size:11px;font-weight:500;letter-spacing:1.3px;color:rgba(255,255,255,.60)">XARID REJASI</span>
               <span style="font-family:'Onest','XY Flags',system-ui,sans-serif;font-size:18px;font-weight:800;color:#FFFFFF;letter-spacing:-.35px;line-height:1.15">{{ wizStepName }}</span>
             </div>
             <span style="flex:none;font-size:13px;font-weight:800;color:#FFFFFF;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);padding:7px 12px;border-radius:999px;font-variant-numeric:tabular-nums">{{ wizStepNo }}<span style="opacity:.6"> / 5</span></span>
@@ -1820,7 +1820,7 @@
               <span style="font-size:13px;font-weight:700;color:#6C6C88;font-variant-numeric:tabular-nums;letter-spacing:.3px">{{ planNum }} · {{ planDate }}</span>
             </div>
             <div style="width:54px;height:54px;border:2px solid #3B2CC9;border-radius:50%;display:flex;align-items:center;justify-content:center;transform:rotate(-10deg);flex:none;background:#EBE8FE">
-              <span style="font-size:11px;font-weight:800;color:#4132CC;text-align:center;line-height:1.15;letter-spacing:.3px">REJA<br>TAYYOR</span>
+              <span style="font-size:11px;font-weight:500;color:#4132CC;text-align:center;line-height:1.15;letter-spacing:.3px">REJA<br>TAYYOR</span>
             </div>
           </div>
           <sc-for list="{{ planRows }}" as="r" hint-placeholder-count="5">
@@ -1866,11 +1866,11 @@
         <div style="position:absolute;top:-70px;right:-45px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.18),rgba(255,255,255,0) 70%)"></div>
         <div style="position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
           <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
-            <span style="font-size:11px;font-weight:800;letter-spacing:1.3px;color:rgba(255,255,255,.60)">TAXMINIY JAMI</span>
+            <span style="font-size:11px;font-weight:500;letter-spacing:1.3px;color:rgba(255,255,255,.60)">TAXMINIY JAMI</span>
             <span style="font-family:'Onest','XY Flags',system-ui,sans-serif;font-size:26px;font-weight:800;color:#FFFFFF;letter-spacing:-1px;line-height:1;font-variant-numeric:tabular-nums">{{ planTotalBig }}</span>
             <span style="font-size:13px;font-weight:600;color:rgba(255,255,255,.78);font-variant-numeric:tabular-nums">{{ planTotalUzs }}</span>
           </div>
-          <span style="flex:none;font-size:11px;font-weight:800;color:#FFFFFF;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);padding:6px 11px;border-radius:999px;white-space:nowrap">{{ planStatusLabel }}</span>
+          <span style="flex:none;font-size:11px;font-weight:500;color:#FFFFFF;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);padding:6px 11px;border-radius:999px;white-space:nowrap">{{ planStatusLabel }}</span>
         </div>
         <div style="position:relative;height:6px;border-radius:999px;background:rgba(255,255,255,.20);overflow:hidden">
           <div style="height:100%;border-radius:999px;background:#FFFFFF;box-shadow:0 2px 10px rgba(255,255,255,.5);width:{{ planPct }}"></div>
@@ -1882,7 +1882,7 @@
         <sc-for list="{{ planStepsList }}" as="s" hint-placeholder-count="5">
           <div style="display:flex;gap:12px;padding:12px 18px;border-top:1px solid #F2F2F7;align-items:flex-start">
             <div style="width:24px;height:24px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;margin-top:1px;background:{{ s.dotBg }};box-shadow:inset 0 0 0 2px {{ s.dotBd }}">
-              <span style="font-size:11px;font-weight:800;color:{{ s.dotFg }};font-variant-numeric:tabular-nums">{{ s.n }}</span>
+              <span style="font-size:11px;font-weight:500;color:{{ s.dotFg }};font-variant-numeric:tabular-nums">{{ s.n }}</span>
             </div>
             <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
               <span style="font-size:15px;font-weight:{{ s.w }};color:{{ s.fg }};letter-spacing:-.1px">{{ s.t }}</span>
@@ -1916,7 +1916,7 @@
       </div>
 
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-        <span style="font-size:11px;font-weight:800;letter-spacing:.4px;color:#63637E;background:#FFFFFF;padding:7px 12px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ planNum }}</span>
+        <span style="font-size:11px;font-weight:500;letter-spacing:.4px;color:#63637E;background:#FFFFFF;padding:7px 12px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ planNum }}</span>
         <button sc-camel-on-click="{{ planDelete }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#C0392B;cursor:pointer;padding:0">Rejani o'chirish</button>
       </div>
     </div>
@@ -1945,7 +1945,7 @@
               <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
                 <span style="font-size:16px;font-weight:800;color:#151329;letter-spacing:-.2px">{{ sv.title }}</span>
                 <sc-if value="{{ sv.hasTag }}" hint-placeholder-val="{{ false }}">
-                  <span style="font-size:10px;font-weight:800;letter-spacing:.4px;color:#3B2CC9;background:#EBE8FE;padding:3px 7px;border-radius:8px">{{ sv.tag }}</span>
+                  <span style="font-size:10px;font-weight:500;letter-spacing:.4px;color:#3B2CC9;background:#EBE8FE;padding:3px 7px;border-radius:8px">{{ sv.tag }}</span>
                 </sc-if>
               </div>
               <span style="font-size:13.5px;color:#5F5E7C;font-weight:500;line-height:1.5;text-wrap:pretty">{{ sv.sub }}</span>
@@ -1961,7 +1961,7 @@
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #F0EFF7;padding-top:12px">
             <div style="display:flex;flex-direction:column;gap:1px;min-width:0">
-              <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#9B9AB5">NARX</span>
+              <span style="font-size:10.5px;font-weight:500;letter-spacing:.4px;color:#9B9AB5">NARX</span>
               <span style="font-size:14px;font-weight:800;color:#151329">{{ sv.price }}</span>
             </div>
             <button sc-camel-on-click="{{ sv.ask }}" style="flex:none;height:42px;padding:0 20px;border:none;border-radius:16px;background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;font-family:inherit;font-size:14px;font-weight:750;cursor:pointer;box-shadow:0 10px 24px -14px rgba(45,30,150,.7)">Bog'lanish</button>
@@ -2002,12 +2002,12 @@
       <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
           <div style="display:flex;flex-direction:column;gap:5px;min-width:0">
-            <span style="font-size:11px;font-weight:800;letter-spacing:.5px;color:#8E8DA8">DOLLAR KURSI</span>
+            <span style="font-size:11px;font-weight:500;letter-spacing:.5px;color:#8E8DA8">DOLLAR KURSI</span>
             <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
               <span style="font-family:'Onest','XY Flags',system-ui,sans-serif;font-size:22px;font-weight:800;color:#151329;letter-spacing:-.7px;font-variant-numeric:tabular-nums">{{ rateValue }}</span>
               <span style="font-size:13px;font-weight:700;color:#6C6C88">so'm</span>
               <sc-if value="{{ rateHasDiff }}" hint-placeholder-val="{{ false }}">
-                <span style="font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px;font-variant-numeric:tabular-nums;color:{{ rateDiffFg }};background:{{ rateDiffBg }}">{{ rateDiffLabel }}</span>
+                <span style="font-size:11px;font-weight:500;padding:3px 8px;border-radius:999px;font-variant-numeric:tabular-nums;color:{{ rateDiffFg }};background:{{ rateDiffBg }}">{{ rateDiffLabel }}</span>
               </sc-if>
             </div>
             <span style="font-size:13px;font-weight:600;color:#8E8DA8">{{ rateSrcLabel }}</span>
