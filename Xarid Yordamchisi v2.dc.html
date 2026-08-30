@@ -645,7 +645,7 @@
               <div style="width:52px;height:52px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ folderPic }}"></div>
             </sc-if>
             <sc-if value="{{ folderIsFlag }}" hint-placeholder-val="{{ false }}">
-              <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:34px;line-height:1;filter:drop-shadow(0 3px 6px rgba(20,19,43,.2))">{{ folderFlag }}</span>
+              <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:44px;line-height:1;filter:drop-shadow(0 4px 8px rgba(20,19,43,.24))">{{ folderFlag }}</span>
             </sc-if>
           </div>
           <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
@@ -700,8 +700,11 @@
                     <sc-if value="{{ f.isPic }}" hint-placeholder-val="{{ true }}">
                       <div style="width:58px;height:58px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ f.pic }}"></div>
                     </sc-if>
+                    <!-- Toifa ikonkasi 58px li qutini to'ldiradi, bayroq esa
+                         22px edi — yonma-yon turganda u yo'qolib ketardi.
+                         Kuryer papkalaridagi o'lcham va soyaga keltirildi. -->
                     <sc-if value="{{ f.isFlag }}" hint-placeholder-val="{{ false }}">
-                      <span style="font-size:22px;line-height:1">{{ f.flag }}</span>
+                      <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:44px;line-height:1;filter:drop-shadow(0 4px 8px rgba(20,19,43,.24))">{{ f.flag }}</span>
                     </sc-if>
                   </div>
                   <span style="flex:none;font-size:11px;font-weight:500;color:#6C6B85;background:#F1F1F8;padding:5px 9px;border-radius:999px;font-variant-numeric:tabular-nums">{{ f.count }}</span>

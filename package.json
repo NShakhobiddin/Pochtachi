@@ -15,6 +15,7 @@
     "store-logos": "node tools/store-logos.mjs",
     "fonts": "node tools/fetch-fonts.mjs",
     "icons": "node tools/optimize-icons.mjs",
+    "icons:clean": "python3 tools/clean-icon-strays.py",
     "mockups": "node tools/normalize-mockups.mjs",
     "flags": "python3 tools/build_flags_font.py"
   },
