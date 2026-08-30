@@ -867,6 +867,25 @@ try {
     yorliq.bir && !yorliq.kesilgan && yorliq.soni >= 2 && yorliq.qator <= 30 && yorliq.karta <= 100,
     `${yorliq.matn} · qator ${yorliq.qator}px, karta ${yorliq.karta}px`);
 
+  /* Yorliqlar qaror uchun muhim faktlarni ko'rsatsin: narx darajasi doim,
+     originallik doim, buyurtma qulayligi esa faqat e'tiborga loyiq
+     bo'lganda (43 do'kondan 30 tasi "o'rtacha" va bu hech narsa demaydi).
+     Yo'nalish (vositachi / to'g'ridan) bu yerdan olib tashlangan. */
+  const faktlar = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll('main button[style*="content-visibility"]')];
+    const rows = cards.map(c => [...c.children[1].children[1].children].map(x => x.textContent.trim()));
+    return {
+      narx: rows.every(r => /^\$+$/.test(r[0])),
+      original: rows.every(r => r.some(x => /^(original|noaniq|o'rtacha)$/.test(x))),
+      qulaylik: rows.filter(r => r.some(x => /^(oson|murakkab|VPN kerak)$/.test(x))).length,
+      yonalish: rows.some(r => r.some(x => /vositachi|to'g'ridan/.test(x))),
+      eng: Math.max(...rows.map(r => r.length))
+    };
+  });
+  check("yorliqlarda narx, originallik va qulaylik",
+    faktlar.narx && faktlar.original && !faktlar.yonalish && faktlar.eng <= 3,
+    `originallik ${faktlar.original}, qulaylik ${faktlar.qulaylik} kartada, eng ko'pi ${faktlar.eng} ta`);
+
   /* Papka ichida bosqichma-bosqich qo'llanmalar yon tomonga suriladigan
      tasmada chiqadi — vertikal bir xil qatorlar ketma-ketligini uzadi.
      Elektronikada qo'llanmali do'kon yo'q, shuning uchun Universalga
