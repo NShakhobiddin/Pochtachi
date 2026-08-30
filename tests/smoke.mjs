@@ -407,6 +407,28 @@ try {
      qaytamiz (nuqtalar aria-label bilan belgilangan). */
   const d1 = page.locator('button[aria-label^="1-qadam"]').first();
   if (await d1.count()) { await d1.click(); await page.waitForTimeout(450); }
+  /* Kategoriya qatorlarida emoji emas, ilovaning o'z 3D ikonkalari. */
+  const wizIk = await page.evaluate(async () => {
+    const btns = [...document.querySelectorAll('main button')]
+      .filter(b => /ta do'kon mavjud/.test(b.innerText));
+    const pics = btns.map(b => {
+      const d = [...b.querySelectorAll('div')]
+        .find(x => /icons\/dok-[a-z]+\.webp/.test(x.style.backgroundImage || ''));
+      return d ? d.style.backgroundImage.match(/icons\/dok-[a-z]+\.webp/)[0] : null;
+    });
+    const uniq = [...new Set(pics.filter(Boolean))];
+    const ok = await Promise.all(uniq.map(u => new Promise(r => {
+      const im = new Image(); im.onload = () => r(true); im.onerror = () => r(false); im.src = u;
+    })));
+    return { qator: btns.length, bor: pics.filter(Boolean).length, xil: uniq.length,
+      yuklandi: ok.filter(Boolean).length,
+      emoji: btns.some(b => /[\u{1F300}-\u{1FAFF}]/u.test(b.innerText)) };
+  });
+  check('sehrgar 1-qadamida ikonka (emoji emas)',
+    wizIk.qator === 6 && wizIk.bor === 6 && wizIk.xil === 6 &&
+    wizIk.yuklandi === 6 && !wizIk.emoji,
+    `${wizIk.bor}/${wizIk.qator} ikonka, ${wizIk.yuklandi} yuklandi` + (wizIk.emoji ? ', emoji qoldi' : ''));
+
   await page.locator('button:visible').filter({ hasText: /Elektronika|Kiyim|Poyabzal/ }).first().click();
   await page.waitForTimeout(450);
   await page.locator('button:visible').filter({ hasText: /Xitoy|AQSh|Turkiya/ }).first().click();
@@ -485,6 +507,31 @@ try {
   check('bosiladigan elementlar ajralib turadi',
     tap.yalang.length === 0 && tap.qoida, tap.yalang.join(' | ') || (tap.qoida ? '' : 'bosish effekti yo\'q'));
 
+  /* Bojxona ma'lumotnomasi bir xil oq qatorlar emas: bitta katta kartochka
+     (bojsiz me'yor, raqami yirik) va mavzu rangiga bo'yalgan 2x2 plitka. */
+  await page.locator('nav button', { hasText: 'Bojxona' }).first().click();
+  await page.waitForTimeout(700);
+  const ritm = await page.evaluate(() => {
+    const btns = [...document.querySelectorAll('main button')];
+    const hero = btns.find(b => /BOJSIZ OLIB KIRISH/i.test(b.innerText));
+    const grid = [...document.querySelectorAll('main div')]
+      .find(d => /repeat\(2|1fr\) minmax/.test(d.style.gridTemplateColumns || '') &&
+                 d.querySelectorAll(':scope > button').length === 4);
+    const plita = grid ? [...grid.querySelectorAll(':scope > button')] : [];
+    const fon = plita.map(b => getComputedStyle(b).backgroundImage);
+    const katta = hero ? [...hero.querySelectorAll('span')]
+      .some(x => parseFloat(getComputedStyle(x).fontSize) >= 30 && /^\$\d/.test(x.textContent.trim())) : false;
+    return {
+      hero: !!hero, heroH: hero ? Math.round(hero.getBoundingClientRect().height) : 0,
+      katta, plita: plita.length,
+      plitaH: plita.length ? Math.round(plita[0].getBoundingClientRect().height) : 0,
+      xilFon: new Set(fon).size
+    };
+  });
+  check('bojxona ma\'lumotnomasi bir xil emas',
+    ritm.hero && ritm.katta && ritm.plita === 4 && ritm.xilFon === 4 && ritm.heroH > ritm.plitaH * 0.6,
+    `katta ${ritm.heroH}px, 4 plitka ${ritm.plitaH}px, ${ritm.xilFon} xil fon`);
+
   /* Bojxona me'yorlari: kartochkalarda belgilar bo'lsin. */
   await page.locator('nav button', { hasText: 'Bojxona' }).first().click();
   await page.waitForTimeout(600);
@@ -507,7 +554,7 @@ try {
   /* Bog'lanish: to'liq raqam bosiladigan bo'lsin, ichki nomerlar emas. */
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(600);
-  await page.getByText('Bojxona organlari bilan', { exact: false }).first().click();
+  await page.getByText('Bojxona organlari', { exact: false }).first().click();
   await page.waitForTimeout(800);
   const aloqa = await page.evaluate(() => ({
     tel: [...document.querySelectorAll('a[href^="tel:"]')].map(a => a.getAttribute('href')),
@@ -522,7 +569,7 @@ try {
      bo'lsin — 23 qator, kamida 20 xil ikonka. */
   await page.locator('nav button', { hasText: 'Bojxona' }).first().click();
   await page.waitForTimeout(600);
-  await page.getByText('Taqiqlangan va cheklangan', { exact: false }).first().click();
+  await page.getByText('Taqiqlangan tovarlar', { exact: false }).first().click();
   await page.waitForTimeout(800);
   const ban = await page.evaluate(async () => {
     const u = [...document.querySelectorAll('main div')]
@@ -556,6 +603,51 @@ try {
   check('papka ichida faqat o\'sha turdagi do\'konlar',
     inFolder.cards > 0 && inFolder.onlyCat && inFolder.hint,
     `${inFolder.cards} ta`);
+
+  /* Papka ichida bosqichma-bosqich qo'llanmalar yon tomonga suriladigan
+     tasmada chiqadi — vertikal bir xil qatorlar ketma-ketligini uzadi.
+     Elektronikada qo'llanmali do'kon yo'q, shuning uchun Universalga
+     o'tamiz. */
+  await page.goBack();
+  await page.waitForTimeout(600);
+  await page.getByText('Universal', { exact: true }).first().click();
+  await page.waitForTimeout(700);
+  const tasma = await page.evaluate(() => {
+    const bosh = [...document.querySelectorAll('main span')]
+      .find(x => /BOSQICHMA-BOSQICH/.test(x.textContent || ''));
+    const el = bosh && [...bosh.closest('div').parentElement.children]
+      .find(d => d.style && d.style.overflowX === 'auto');
+    if (!el) return null;
+    const kartalar = [...el.children];
+    const chap = kartalar[0].getBoundingClientRect().left;
+    const qidiruv = document.querySelector('main input').closest('div').getBoundingClientRect().left;
+    return { soni: kartalar.length, chetga: Math.round(chap - qidiruv),
+      /* Kartochkaning birinchi qatori — so'z-belgi (淘), do'kon nomi esa
+         "N ta bo'lim" satridan bittagina yuqorida turadi. */
+      sarlavha: kartalar.map(b => {
+        const L = b.innerText.trim().split('\n').map(x => x.trim()).filter(Boolean);
+        const i = L.findIndex(x => /ta bo'lim/.test(x));
+        return i > 0 ? L[i - 1] : L[L.length - 1];
+      }),
+      bolim: kartalar.every(b => /\d+ ta bo'lim/.test(b.innerText)) };
+  });
+  check("papkada qo'llanma tasmasi suriladi",
+    tasma && tasma.soni >= 2 && tasma.bolim && Math.abs(tasma.chetga) <= 1,
+    tasma ? `${tasma.soni} ta: ${tasma.sarlavha.join(', ')}` : 'tasma topilmadi');
+
+  /* Tasmadagi kartochka o'sha do'konning qo'llanmasini ochsin. */
+  const tasmaNom = tasma ? tasma.sarlavha[0] : '';
+  await page.locator('main div[style*="mask-image"] > button').first().click();
+  await page.waitForTimeout(900);
+  const ochildi = await page.evaluate(() => ({
+    iframe: !!document.querySelector('iframe'),
+    matn: document.body.innerText.slice(0, 400)
+  }));
+  check("tasmadagi qo'llanma ochiladi",
+    ochildi.iframe && ochildi.matn.includes(tasmaNom),
+    `${tasmaNom} — iframe ${ochildi.iframe ? 'bor' : "yo'q"}`);
+  await page.goBack();
+  await page.waitForTimeout(700);
 
   await page.goBack();
   await page.waitForTimeout(500);

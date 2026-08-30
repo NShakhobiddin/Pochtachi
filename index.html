@@ -553,6 +553,31 @@
         </div>
       </sc-if>
 
+      <!-- Bosqichma-bosqich qo'llanmasi bor do'konlar: yon tomonga suriladigan
+           tasma. Papkadagi vertikal ustunni uzadi va qo'llanmalar bo'limiga
+           o'tmasdan turib ochish yo'lini beradi. -->
+      <sc-if value="{{ sFolderGuides }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:10px;padding:0 2px">
+            <span style="font-size:11px;font-weight:500;color:#8E8DA8;letter-spacing:.6px">BOSQICHMA-BOSQICH QO'LLANMA</span>
+            <div style="flex:1;height:1px;background:#E4E3EE"></div>
+          </div>
+          <div style="display:flex;gap:11px;overflow-x:auto;overflow-y:hidden;margin:0 -18px;padding:2px 18px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 30px),transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 30px),transparent 100%)">
+            <sc-for list="{{ folderGuides }}" as="g" hint-placeholder-count="3">
+              <button sc-camel-on-click="{{ g.open }}" sc-camel-on-pointer-enter="{{ g.warm }}" style="flex:none;width:152px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;background:#FFFFFF;border:none;border-radius:18px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+                <div style="width:44px;height:44px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:{{ g.tint }}">
+                  <span style="font-size:15px;font-weight:800;letter-spacing:-.3px;color:{{ g.color }}">{{ g.mono }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:3px;width:100%;min-width:0">
+                  <span style="font-size:14.5px;font-weight:800;color:#151329;letter-spacing:-.2px;overflow-wrap:anywhere">{{ g.title }}</span>
+                  <span style="font-size:11px;font-weight:500;color:#8E8DA8;font-variant-numeric:tabular-nums">{{ g.sub }}</span>
+                </div>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
       <!-- Papkalar: tovar turi yoki davlat kesimida -->
       <sc-if value="{{ sFolders }}" hint-placeholder-val="{{ true }}">
         <div style="display:flex;flex-direction:column;gap:14px">
@@ -1153,56 +1178,72 @@
           <span style="font-size:11px;font-weight:500;color:#8E8DA8;letter-spacing:.6px">MA'LUMOTNOMA</span>
           <div style="flex:1;height:1px;background:#E4E3EE"></div>
         </div>
-        <button sc-camel-on-click="{{ sec1 }}" style="display:flex;align-items:center;gap:14px;background:#FFFFFF;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);border:none;border-radius:20px;padding:15px;cursor:pointer;text-align:left;width:100%;font-family:inherit" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
-          <img src="icons/boj-meyor.webp" alt="" width="46" height="46" style="width:46px;height:46px;object-fit:contain;flex:none" decoding="async">
-          <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
-            <h2 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Bojsiz olib kirish me'yori</h2>
-            <span style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.45">${{ freeUsdLabel }} chegara · notijorat maqsad · miqdoriy normalar</span>
+        <!-- Bojsiz me'yor — bo'limning eng ko'p so'raladigan raqami, shuning
+             uchun u qolgan to'rttasidan katta va raqami yirik yoziladi.
+             Ilgari beshovi ham bir xil qator edi va ekran monoton ko'rinardi. -->
+        <button sc-camel-on-click="{{ sec1 }}" style="display:flex;align-items:center;gap:15px;background:linear-gradient(150deg,#F4F2FF 0%,#E9E5FD 100%);border:none;border-radius:22px;padding:17px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:inset 0 0 0 1px rgba(59,44,201,.10),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+          <img src="icons/boj-meyor.webp" alt="" width="62" height="62" style="width:62px;height:62px;object-fit:contain;flex:none" decoding="async">
+          <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
+            <span style="font-size:10.5px;font-weight:500;color:#6A61B6;letter-spacing:.6px">BOJSIZ OLIB KIRISH ME'YORI</span>
+            <span style="font-size:34px;font-weight:800;color:#2C1FA3;letter-spacing:-1.4px;line-height:1.08;font-variant-numeric:tabular-nums">${{ freeUsdLabel }}</span>
+            <span style="font-size:12px;font-weight:500;color:#5F5E7C;line-height:1.4">oyiga · notijorat maqsad · miqdoriy normalar</span>
           </div>
-          <div style="width:30px;height:30px;border-radius:14px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;flex:none">
+          <div style="width:30px;height:30px;border-radius:14px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;flex:none">
             <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
           </div>
         </button>
-        <button sc-camel-on-click="{{ sec2 }}" style="display:flex;align-items:center;gap:14px;background:#FFFFFF;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);border:none;border-radius:20px;padding:15px;cursor:pointer;text-align:left;width:100%;font-family:inherit" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
-          <img src="icons/boj-tolov.webp" alt="" width="46" height="46" style="width:46px;height:46px;object-fit:contain;flex:none" decoding="async">
-          <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
-            <h2 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Yagona bojxona to'lovi</h2>
-            <span style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.45">me'yordan ortiq qismga {{ dutyPctLabel }} yoki ${{ minPerKgLabel }}/kg</span>
+        <!-- Qolgan to'rttasi 2x2 plitka: mavzu bo'yicha rangi bor, shu bilan
+             bir xil oq qatorlar ketma-ketligi uziladi. -->
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:11px">
+        <button sc-camel-on-click="{{ sec2 }}" style="background:radial-gradient(125% 82% at 100% 0%, rgba(180,83,9,.17) 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:15px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:152px;box-shadow:inset 0 0 0 1px rgba(180,83,9,.10),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%">
+            <img src="icons/boj-tolov.webp" alt="" width="44" height="44" style="width:44px;height:44px;object-fit:contain;flex:none" decoding="async">
+            <div style="width:26px;height:26px;border-radius:999px;background:#FAECD8;display:flex;align-items:center;justify-content:center;flex:none">
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+            </div>
           </div>
-          <div style="width:30px;height:30px;border-radius:14px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;flex:none">
-            <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-          </div>
-        </button>
-        <button sc-camel-on-click="{{ sec3 }}" style="display:flex;align-items:center;gap:14px;background:#FFFFFF;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);border:none;border-radius:20px;padding:15px;cursor:pointer;text-align:left;width:100%;font-family:inherit" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
-          <img src="icons/boj-taqiq.webp" alt="" width="46" height="46" style="width:46px;height:46px;object-fit:contain;flex:none" decoding="async">
-          <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
-            <h2 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Taqiqlangan va cheklangan tovarlar</h2>
-            <span style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.45">23 pozitsiya · huquqiy manba bilan</span>
-          </div>
-          <div style="width:30px;height:30px;border-radius:14px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;flex:none">
-            <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+          <div style="display:flex;flex-direction:column;gap:3px;width:100%;min-width:0">
+            <h2 style="margin:0;font-size:15px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.25;overflow-wrap:anywhere;text-wrap:pretty">Yagona bojxona to'lovi</h2>
+            <div style="font-size:11.5px;font-weight:500;color:#63637E;line-height:1.4">ortiqcha qismga {{ dutyPctLabel }}</div>
           </div>
         </button>
-        <button sc-camel-on-click="{{ sec4 }}" style="display:flex;align-items:center;gap:14px;background:#FFFFFF;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);border:none;border-radius:20px;padding:15px;cursor:pointer;text-align:left;width:100%;font-family:inherit" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
-          <img src="icons/boj-tartib.webp" alt="" width="46" height="46" style="width:46px;height:46px;object-fit:contain;flex:none" decoding="async">
-          <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
-            <h2 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Rasmiylashtirish tartibi</h2>
-            <span style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.45">xabarnoma · tasdiqlash · saqlov holatlari</span>
+        <button sc-camel-on-click="{{ sec3 }}" style="background:radial-gradient(125% 82% at 100% 0%, rgba(155,28,28,.15) 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:15px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:152px;box-shadow:inset 0 0 0 1px rgba(155,28,28,.10),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%">
+            <img src="icons/boj-taqiq.webp" alt="" width="44" height="44" style="width:44px;height:44px;object-fit:contain;flex:none" decoding="async">
+            <div style="width:26px;height:26px;border-radius:999px;background:#F9E3E3;display:flex;align-items:center;justify-content:center;flex:none">
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#9B1C1C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+            </div>
           </div>
-          <div style="width:30px;height:30px;border-radius:14px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;flex:none">
-            <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-          </div>
-        </button>
-        <button sc-camel-on-click="{{ sec6 }}" style="display:flex;align-items:center;gap:14px;background:#FFFFFF;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);border:none;border-radius:20px;padding:15px;cursor:pointer;text-align:left;width:100%;font-family:inherit" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
-          <img src="icons/boj-aloqa.webp" alt="" width="46" height="46" style="width:46px;height:46px;object-fit:contain;flex:none" decoding="async">
-          <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
-            <h2 style="margin:0;display:block;font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.35">Bojxona organlari bilan bog'lanish</h2>
-            <span style="font-size:13px;color:#6C6C88;font-weight:600;line-height:1.45">manzil · telefon · xarita</span>
-          </div>
-          <div style="width:30px;height:30px;border-radius:14px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;flex:none">
-            <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+          <div style="display:flex;flex-direction:column;gap:3px;width:100%;min-width:0">
+            <h2 style="margin:0;font-size:15px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.25;overflow-wrap:anywhere;text-wrap:pretty">Taqiqlangan tovarlar</h2>
+            <div style="font-size:11.5px;font-weight:500;color:#63637E;line-height:1.4">{{ banCount }} pozitsiya · manba bilan</div>
           </div>
         </button>
+        <button sc-camel-on-click="{{ sec4 }}" style="background:radial-gradient(125% 82% at 100% 0%, rgba(14,133,149,.20) 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:15px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:152px;box-shadow:inset 0 0 0 1px rgba(14,133,149,.11),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%">
+            <img src="icons/boj-tartib.webp" alt="" width="44" height="44" style="width:44px;height:44px;object-fit:contain;flex:none" decoding="async">
+            <div style="width:26px;height:26px;border-radius:999px;background:#DDF1F4;display:flex;align-items:center;justify-content:center;flex:none">
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#0E8595" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:3px;width:100%;min-width:0">
+            <h2 style="margin:0;font-size:15px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.25;overflow-wrap:anywhere;text-wrap:pretty">Rasmiylashtirish tartibi</h2>
+            <div style="font-size:11.5px;font-weight:500;color:#63637E;line-height:1.4">xabarnoma · tasdiqlash · saqlov</div>
+          </div>
+        </button>
+        <button sc-camel-on-click="{{ sec6 }}" style="background:radial-gradient(125% 82% at 100% 0%, rgba(59,44,201,.17) 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:15px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:152px;box-shadow:inset 0 0 0 1px rgba(59,44,201,.10),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%">
+            <img src="icons/boj-aloqa.webp" alt="" width="44" height="44" style="width:44px;height:44px;object-fit:contain;flex:none" decoding="async">
+            <div style="width:26px;height:26px;border-radius:999px;background:#EEEBFC;display:flex;align-items:center;justify-content:center;flex:none">
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:3px;width:100%;min-width:0">
+            <h2 style="margin:0;font-size:15px;font-weight:700;color:#151329;letter-spacing:-.2px;line-height:1.25;overflow-wrap:anywhere;text-wrap:pretty">Bojxona organlari</h2>
+            <div style="font-size:11.5px;font-weight:500;color:#63637E;line-height:1.4">manzil · telefon · xarita</div>
+          </div>
+        </button>
+        </div>
       </div>
 
       <!-- Ma'lumotnoma yetmasa: mutaxassis bilan ishlash (pullik) -->
@@ -1738,6 +1779,9 @@
         <div style="display:flex;flex-direction:column;gap:11px">
           <sc-for list="{{ wizOptions }}" as="o" hint-placeholder-count="4">
             <button sc-camel-on-click="{{ o.pick }}" style="display:flex;align-items:center;gap:14px;padding:17px;border-radius:20px;cursor:pointer;text-align:left;width:100%;background:#FFFFFF;border:none;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+              <sc-if value="{{ o.hasPic }}" hint-placeholder-val="{{ false }}">
+                <div style="width:44px;height:44px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ o.pic }}"></div>
+              </sc-if>
               <sc-if value="{{ o.hasMono }}" hint-placeholder-val="{{ false }}">
                 <!-- Do'kon logotiplari so'z-belgi (2:1), kuryerlarniki esa
                      kvadrat va butun qutini to'ldiradi — shuning uchun quti
@@ -2978,13 +3022,16 @@ const LV = {
   done:{ bg:'#F3F3F8', fg:'#63637E', dot:'#D3D2E0', ring:'#EDECF4', label:'' }
 };
 
+/* Ilovaning qolgan hamma joyida kategoriyalar 3D ikonka bilan chiziladi;
+   sehrgar 1-qadamida esa emoji qolib ketgan edi va boshqacha ko'rinardi.
+   Ikonkalar do'konlar bo'limi bilan bir xil fayllardan olinadi. */
 const WIZ_CATS = [
-  { label:'Kiyim va moda', key:'kiyim va moda', emoji:'👕' },
-  { label:'Poyabzal va krossovka', key:'poyabzal', emoji:'👟' },
-  { label:'Elektronika va texnika', key:'elektronika', emoji:'💻' },
-  { label:'Kosmetika va parfyumeriya', key:'kosmetika', emoji:'💄' },
-  { label:'Bolalar va o\'yinchoq', key:'bolalar', emoji:'🧸' },
-  { label:'Universal marketpleys', key:'universal', emoji:'🛍️' }
+  { label:'Kiyim va moda', key:'kiyim va moda', icon:'dok-moda' },
+  { label:'Poyabzal va krossovka', key:'poyabzal', icon:'dok-poyabzal' },
+  { label:'Elektronika va texnika', key:'elektronika', icon:'dok-elektronika' },
+  { label:'Kosmetika va parfyumeriya', key:'kosmetika', icon:'dok-kosmetika' },
+  { label:'Bolalar va o\'yinchoq', key:'bolalar', icon:'dok-bolalar' },
+  { label:'Universal marketpleys', key:'universal', icon:'dok-universal' }
 ];
 const WIZ_COUNTRIES = [
   { label:'🇨🇳 Xitoy', key:'Xitoy', note:'Eng arzon, muddat uzunroq' },
@@ -3593,11 +3640,14 @@ class Component extends DCLogic {
 
     const wizOpts = () => {
       if (!onWizard) return [];
-      const plain = { hasMono:false, hasPrice:false, plain:true, color:'', mono:'', price:'', logoCss:'none', logoFit:'cover', logoBg:'transparent', boxW:'48px', logoInset:'0', logoOff:true };
+      const plain = { hasMono:false, hasPic:false, pic:'none', hasPrice:false, plain:true, color:'', mono:'', price:'', logoCss:'none', logoFit:'cover', logoBg:'transparent', boxW:'48px', logoInset:'0', logoOff:true };
+      /* ...plain oxirida turadi va undan oldingi kalitlarni bosib ketadi,
+         shuning uchun ikonka maydonlari spreaddan keyin yoziladi. */
       if (st.wizStep === 0) return WIZ_CATS.map(o => ({
-        label:o.emoji + '  ' + o.label,
+        label:o.label,
         note: STORES.filter(s => o.key === 'universal' ? s.cat === 'universal' : (s.cat === o.key || s.cat === 'universal')).length + ' ta do\'kon mavjud',
-        pick:() => this.setState({ wizCat:o.label, wizStep:1 }), ...plain }));
+        pick:() => this.setState({ wizCat:o.label, wizStep:1 }), ...plain,
+        hasPic:true, pic:"url('icons/" + o.icon + ".webp')" }));
       if (st.wizStep === 1) return WIZ_COUNTRIES.map(o => ({
         label:o.label, note:o.note,
         pick:() => this.setState({ wizCountry:o.label, wizStep:2 }), ...plain }));
@@ -3952,6 +4002,13 @@ class Component extends DCLogic {
           this.setState({ storeFolder: kind + ':' + key, storeQuery: '' });
           this.push('storefolder');
         };
+        const inFolder = cur === 'storefolder' ? this.storesFiltered() : [];
+        const fGuides = !inFolder.length ? [] : FULL_GUIDES
+          .filter(g => inFolder.some(x => x.id === g.id))
+          .map(g => ({ id:g.id, title:g.title, tag:g.tag, mono:g.mono, color:g.color, tint:g.tint,
+            sub: g.sections + ' ta bo\'lim',
+            warm: () => this.warmGuide(g.id),
+            open: () => { this.setState({ fullId: g.id }); this.push('fullguide'); } }));
         const folders = defs.map(([key, title, sub, icon]) => {
           const n = STORES.filter(x => x[field] === key).length;
           /* Toifalarda chiziqli ikonka, davlatlarda bayroq — bayroq davlat
@@ -3985,7 +4042,13 @@ class Component extends DCLogic {
              bo'lganda ko'rinadi; qolgan hollarda ro'yxatning o'zi chiqadi. */
           sFolders: cur === 'stores' && !filtersOn,
           sStoreList: cur === 'storefolder' || (cur === 'stores' && filtersOn),
-          sInFolder: cur === 'storefolder'
+          sInFolder: cur === 'storefolder',
+          /* Papka ichida shu papkadagi do'konlarning bosqichma-bosqich
+             qo'llanmalari yon tomonga suriladigan tasmada chiqadi: vertikal
+             bir xil qatorlar ketma-ketligini uzadi va qo'llanmani alohida
+             bo'limga bormasdan ochish imkonini beradi. */
+          folderGuides: fGuides,
+          sFolderGuides: cur === 'storefolder' && fGuides.length > 0
         };
       })(),
 
@@ -4210,6 +4273,7 @@ class Component extends DCLogic {
         { t: Math.round(normsAt().dutyPct * 100) + '% va har kg uchun $' + normsAt().minPerKg + ' hisoblanadi, kattasi olinadi; ustiga BHM ning ' + Math.round(normsAt().feeShare * 100) + '% yig\'imi qo\'shiladi.' }
       ],
       dutyPctLabel: Math.round(normsAt().dutyPct * 100) + '%', minPerKgLabel: String(normsAt().minPerKg),
+      banCount: String(BANNED.length),
       freeUsdLabel: String(normsAt().freeUsd),
       appVersion: APP_VERSION,
       canInstall: !!this._installEvt,
