@@ -438,6 +438,53 @@ try {
   check('kuzatuv: reja jo\'natmaga aylandi',
     kuz.trek === 'RB 1234 CN' && kuz.holat, JSON.stringify(kuz));
 
+  /* Kuryer kartochkasidagi havola chiplarida belgi bo'lsin. */
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
+  await page.waitForTimeout(450);
+  await page.getByText('Kuryerlar', { exact: false }).first().click();
+  await page.waitForTimeout(700);
+  await page.getByText('Barcha kuryerlar', { exact: false }).first().click();
+  await page.waitForTimeout(700);
+  await page.getByText('MYMEEST', { exact: false }).first().click();
+  await page.waitForTimeout(800);
+  const chip = await page.evaluate(() =>
+    [...document.querySelectorAll('main a[href^="http"]')]
+      .filter(a => /^(Sayt|Telegram|Instagram|iOS|Android)$/.test(a.innerText.trim()))
+      .map(a => a.innerText.trim() + ':' +
+        (a.querySelector('svg') ? 'svg'
+         : /icons\/app-/.test((a.querySelector('div') || {}).style?.backgroundImage || '') ? 'rasm' : 'yo\'q')));
+  check('kuryer havolalarida belgilar',
+    chip.length === 5 && chip.every(x => !/yo'q$/.test(x)), chip.join(' '));
+
+  /* Bosiladigan har bir element ko'rinib tursin (yuza, ramka yoki
+     strelka) va bosilganda javob bersin. */
+  const tap = await page.evaluate(() => {
+    const yalang = [];
+    for (const el of document.querySelectorAll('main button, main a.xy-tap')) {
+      if (el.closest('nav')) continue;
+      const r = el.getBoundingClientRect();
+      if (r.width < 30 || r.height < 24) continue;
+      const c = getComputedStyle(el);
+      const bor = c.boxShadow !== 'none' || c.borderTopWidth !== '0px'
+        || (c.backgroundColor !== 'rgba(0, 0, 0, 0)' && c.backgroundColor !== 'transparent')
+        || c.backgroundImage !== 'none'
+        || !!el.querySelector('svg path[d^="M9 18l6-6"], svg path[d^="M6 9l6 6"], svg path[d*="17L17 7"], svg path[d^="M5 12h13"]');
+      /* Kartochka ichidagi shaffof bosish sohasi o'zi ko'rinmasligi
+         mumkin — uni kartochkaning yuzasi ajratib turadi. */
+      const ota = el.parentElement && el.parentElement.closest('div');
+      const otaKor = ota && (() => { const o = getComputedStyle(ota);
+        return o.boxShadow !== 'none' || o.borderTopWidth !== '0px'
+          || (o.backgroundColor !== 'rgba(0, 0, 0, 0)' && o.backgroundColor !== 'transparent'); })();
+      if (!bor && !otaKor) yalang.push((el.innerText || '').trim().slice(0, 30));
+    }
+    const st = [...document.styleSheets].some(ss => { try {
+      return [...ss.cssRules].some(r => r.cssText && r.cssText.includes('.xy-tap:active'));
+    } catch (e) { return false; } });
+    return { yalang, qoida: st };
+  });
+  check('bosiladigan elementlar ajralib turadi',
+    tap.yalang.length === 0 && tap.qoida, tap.yalang.join(' | ') || (tap.qoida ? '' : 'bosish effekti yo\'q'));
+
   /* Bojxona me'yorlari: kartochkalarda belgilar bo'lsin. */
   await page.locator('nav button', { hasText: 'Bojxona' }).first().click();
   await page.waitForTimeout(600);
