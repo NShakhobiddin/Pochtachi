@@ -796,10 +796,12 @@
                 <span style="font-size:17px;font-weight:700;color:#151329">{{ s.name }}</span>
                 <span style="font-size:15px">{{ s.flag }}</span>
               </div>
-              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-                <span style="font-size:11px;font-weight:500;color:#3B2CC9;background:#EBE8FE;padding:4px 9px;border-radius:999px;letter-spacing:.4px">{{ s.tier }}</span>
-                <sc-for list="{{ s.tags }}" as="t" hint-placeholder-count="2">
-                  <span style="font-size:11px;font-weight:700;color:#6C6B85;background:#F1F1F8;padding:4px 9px;border-radius:999px">{{ t }}</span>
+              <!-- Bitta qator. Ilgari to'rt yorliq uch qatorga yoyilib,
+                   kartochkani 135px ga cho'zardi. To'liq ro'yxat do'kon
+                   ekranida turadi, bu yerda esa sanoq ko'rsatiladi. -->
+              <div style="display:flex;gap:6px;flex-wrap:nowrap;align-items:center;overflow:hidden">
+                <sc-for list="{{ s.chips }}" as="t" hint-placeholder-count="3">
+                  <span style="flex:{{ t.fx }};min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:11px;font-weight:700;white-space:nowrap;color:{{ t.fg }};background:{{ t.bg }};padding:4px 9px;border-radius:999px">{{ t.t }}</span>
                 </sc-for>
               </div>
             </div>
@@ -4382,7 +4384,33 @@ class Component extends DCLogic {
       setGroupCat: () => this.setState({ storeGroup:'cat' }), setGroupPrice: () => this.setState({ storeGroup:'price' }),
       storeGroups: (() => {
         if (cur !== 'stores' && cur !== 'storefolder') return [];
-        const list = this.storesFiltered().map(s => ({ ...s, open:() => { this.warmGuide(s.id); this.setState({ storeId:s.id }); this.push('store'); } }));
+        /* Kartochkadagi yorliqlar ilgari to'rt dona edi va uch qatorga
+           yoyilib ketardi (jami 326px, joy esa 122-192px). Endi ular bitta
+           qatorda turadi va qaror uchun eng muhim ikkitasi qoldirilgan:
+           narx darajasi va yo'nalish. */
+        const chipsOf = s => {
+          const tags = s.tags || [];
+          const route = tags.find(t => /vositachi|to'g'ridan/.test(t));
+          /* `fx` — flex qiymati. Narx darajasi va sanoq hech qachon
+             qisqarmaydi; yo'nalish yorlig'i esa tor ekranda o'z ichida
+             ko'p nuqta bilan qisqaradi. Shunda 320px da ham qator butun
+             ko'rinadi: ilgari chipning o'zi kesilib, buzuqdek chiqardi. */
+          const out = [{ t: s.tier, fg: '#3B2CC9', bg: '#EBE8FE', fx: 'none' }];
+          /* Yo'nalish — eng ko'p qaror qildiradigan fakt, shuning uchun u
+             do'kon ekranidagi kabi rangli: yashil to'g'ridan yuboradi,
+             sarg'ish vositachi orqali. Ro'yxatda qisqa shakli ishlatiladi:
+             to'liq "vositachi kerak" 320px li ekranda sig'may, "vosi..."
+             bo'lib qolardi va hech narsa demasdi. Do'kon ekranida yorliq
+             to'liq yoziladi.
+             Sifat belgisi ("katta assortiment", "premium") narx darajasi
+             bilan deyarli bir xil narsani aytadi, toifa esa papka nomini
+             takrorlaydi — ikkalasi ham ro'yxatda ortiqcha. */
+          if (route) out.push(s.direct
+            ? { t: "to'g'ridan", fg: '#0F7B3E', bg: '#E9F8EF', fx: 'none' }
+            : { t: 'vositachi', fg: '#B45309', bg: '#FDF3E3', fx: 'none' });
+          return out;
+        };
+        const list = this.storesFiltered().map(s => ({ ...s, chips: chipsOf(s), open:() => { this.warmGuide(s.id); this.setState({ storeId:s.id }); this.push('store'); } }));
         const CATS = [
           ['universal', 'Universal', 'Hamma turdagi tovarlar'],
           ['kiyim va moda', 'Kiyim va moda', 'Kiyim, sumka, aksessuar'],

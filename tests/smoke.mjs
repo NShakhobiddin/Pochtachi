@@ -834,15 +834,38 @@ try {
 
   await page.getByText('Elektronika', { exact: false }).first().click();
   await page.waitForTimeout(600);
-  const inFolder = await page.evaluate(() => ({
-    cards: document.querySelectorAll('button[style*="content-visibility"]').length,
-    onlyCat: [...document.querySelectorAll('button[style*="content-visibility"]')]
-      .every(b => /elektronika/i.test(b.innerText)),
-    hint: /Shu bo'lim ichida qidirish/.test(document.body.innerHTML)
-  }));
+  /* Kartochkada toifa yorlig'i ilgari chiziladi va shu bilan tekshirilardi.
+     Endi u yo'q (papka nomini takrorlardi), shuning uchun filtr papka
+     sarlavhasidagi son bilan solishtiriladi. */
+  const inFolder = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll('button[style*="content-visibility"]')];
+    const t = document.body.innerText;
+    const bosh = (t.match(/Elektronika[\s\S]{0,80}?(\d+)\s*ta/) || [])[1];
+    const topildi = (t.match(/(\d+)\s*ta do'kon topildi/) || [])[1];
+    return { cards: cards.length, bosh: Number(bosh), topildi: Number(topildi),
+      hint: /Shu bo'lim ichida qidirish/.test(document.body.innerHTML) };
+  });
   check('papka ichida faqat o\'sha turdagi do\'konlar',
-    inFolder.cards > 0 && inFolder.onlyCat && inFolder.hint,
-    `${inFolder.cards} ta`);
+    inFolder.cards > 0 && inFolder.cards === inFolder.bosh &&
+    inFolder.cards === inFolder.topildi && inFolder.hint,
+    `${inFolder.cards} ta karta · sarlavhada ${inFolder.bosh} · natijada ${inFolder.topildi}`);
+
+  /* Yorliqlar bitta qatorga sig'sin: ilgari to'rttasi uch qatorga yoyilib,
+     kartochkani 135px ga cho'zardi. */
+  const yorliq = await page.evaluate(() => {
+    const card = [...document.querySelectorAll('main button[style*="content-visibility"]')][0];
+    const row = card.children[1].children[1];
+    const chips = [...row.children];
+    const bir = new Set(chips.map(c => Math.round(c.getBoundingClientRect().top))).size === 1;
+    const kesilgan = chips.some(c => c.scrollWidth > c.clientWidth + 1);
+    return { soni: chips.length, bir, kesilgan,
+      matn: chips.map(c => c.textContent.trim()).join(' '),
+      qator: Math.round(row.getBoundingClientRect().height),
+      karta: Math.round(card.getBoundingClientRect().height) };
+  });
+  check("do'kon yorliqlari bitta qatorda",
+    yorliq.bir && !yorliq.kesilgan && yorliq.soni >= 2 && yorliq.qator <= 30 && yorliq.karta <= 100,
+    `${yorliq.matn} · qator ${yorliq.qator}px, karta ${yorliq.karta}px`);
 
   /* Papka ichida bosqichma-bosqich qo'llanmalar yon tomonga suriladigan
      tasmada chiqadi — vertikal bir xil qatorlar ketma-ketligini uzadi.
