@@ -68,12 +68,17 @@ for (const b of BUDGETS) {
   if (!ok) failed = true;
 }
 
-// Asosiy sahifa: gzip'siz hajm (GitHub Pages gzip beradi, lekin manba ham o'smasin)
+// Asosiy sahifa: gzip'siz hajm (GitHub Pages gzip beradi, lekin manba ham
+// o'smasin). Chegara 420 dan 450 KB ga ko'tarildi — bo'limlarga qo'shilgan
+// ohang, guruh sarlavhalari va katta kartochkalar markupni ~12 KB o'stirdi.
+// Foydalanuvchiga yetadigan hajm gzipdan keyingisi, shuning uchun u ham
+// chiqariladi: qaror shu raqamga qarab qabul qilinsin.
 const index = join(ROOT, 'index.html');
 if (existsSync(index)) {
   const size = kb(statSync(index).size);
-  const ok = size <= 420;
-  console.log(`${ok ? '  ok  ' : ' XATO '} index.html: ${size} KB (chegara 420 KB)`);
+  const gz = kb(gzipSync(readFileSync(index), { level: 9 }).length);
+  const ok = size <= 450;
+  console.log(`${ok ? '  ok  ' : ' XATO '} index.html: ${size} KB (chegara 450 KB), gzip ${gz} KB`);
   if (!ok) failed = true;
 }
 

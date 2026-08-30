@@ -881,9 +881,31 @@
         <div style="display:flex;flex-direction:column;gap:14px">
           <div style="font-size:13px;font-weight:700;color:#6C6C88">Yo'nalishni tanlang</div>
 
+          <!-- Eng ko'p kuryerli yo'nalish: kengi to'liq, soni yirik raqamda. -->
+          <sc-if value="{{ hasCourierTop }}" hint-placeholder-val="{{ true }}">
+            <button sc-camel-on-click="{{ courierTop.open }}" style="display:flex;align-items:center;gap:14px;background:linear-gradient(150deg,#F1F8F9 0%,#E3F2F4 100%);border:none;border-radius:22px;padding:17px 16px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:inset 0 0 0 1px rgba(14,133,149,.12),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+              <div style="display:flex;align-items:center;gap:5px;flex:none">
+                <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:38px;line-height:1;filter:drop-shadow(0 3px 6px rgba(20,19,43,.22))">{{ courierTop.flag }}</span>
+                <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#9FC4C9" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 12h13M13 7l5 5-5 5"></path></svg>
+                <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:23px;line-height:1;opacity:.9">&#127482;&#127487;</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
+                <span style="font-size:10.5px;font-weight:500;color:#4F8A92;letter-spacing:.6px">ENG KO'P KURYER</span>
+                <div style="display:flex;align-items:baseline;gap:6px">
+                  <span style="font-size:30px;font-weight:800;color:#0C6C79;letter-spacing:-1.2px;line-height:1.1;font-variant-numeric:tabular-nums">{{ courierTop.num }}</span>
+                  <span style="font-size:15px;font-weight:700;color:#151329;letter-spacing:-.2px">kuryer</span>
+                </div>
+                <span style="font-size:12px;font-weight:500;color:#5F5E7C;line-height:1.4;overflow-wrap:anywhere">{{ courierTop.title }} · {{ courierTop.sub }}</span>
+              </div>
+              <div style="width:30px;height:30px;border-radius:14px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;flex:none">
+                <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#0E8595" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+              </div>
+            </button>
+          </sc-if>
+
           <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
             <sc-for list="{{ courierFolders }}" as="f" hint-placeholder-count="8">
-              <button sc-camel-on-click="{{ f.open }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:9px;background:#FFFFFF;border:none;border-radius:20px;padding:16px 15px;cursor:pointer;text-align:left;width:100%;min-width:0;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+              <button sc-camel-on-click="{{ f.open }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:9px;background:radial-gradient(125% 82% at 100% 0%, {{ f.tintBg }} 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:16px 15px;cursor:pointer;text-align:left;width:100%;min-width:0;font-family:inherit;box-shadow:inset 0 0 0 1px {{ f.tintRing }},0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%">
                   <!-- Papka aslida yo'nalish: qayerdan qayerga. Shuning uchun
                        bitta bayroq emas, "chetdan -> O'zbekistonga" ko'rsatiladi. -->
@@ -892,7 +914,7 @@
                     <svg width="13" height="13" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B9B8CE" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 12h13M13 7l5 5-5 5"></path></svg>
                     <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:19px;line-height:1;opacity:.88">🇺🇿</span>
                   </div>
-                  <span style="flex:none;font-size:11px;font-weight:500;color:#6C6C88;background:#F1F1F8;padding:5px 9px;border-radius:999px;font-variant-numeric:tabular-nums">{{ f.count }}</span>
+                  <span style="flex:none;font-size:11px;font-weight:500;color:{{ f.tintFg }};background:{{ f.tintChip }};padding:5px 9px;border-radius:999px;font-variant-numeric:tabular-nums">{{ f.count }}</span>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:3px;width:100%;min-width:0">
                   <span style="font-size:15.5px;font-weight:800;color:#151329;letter-spacing:-.2px;overflow-wrap:anywhere">{{ f.title }}</span>
@@ -1600,10 +1622,21 @@
         <img src="icons/guides-3d.webp" alt="" style="width:44px;height:44px;object-fit:contain;flex:none">
         <span style="flex:1;font-size:13px;font-weight:600;color:#6C6C88;line-height:1.5;font-variant-numeric:tabular-nums">{{ fullGuideCount }} ta platforma uchun to'liq qo'llanma — bosqichlar, kalkulyator, lug'at va FAQ bilan.</span>
       </div>
-      <sc-for list="{{ fullGuides }}" as="f" hint-placeholder-count="7">
+      <!-- Yettita bir xil oq qator o'rniga davlat bo'yicha guruhlar: qaysi
+           bozor uchun qo'llanma borligi bir qarashda ko'rinadi. -->
+      <sc-for list="{{ guideGroups }}" as="gr" hint-placeholder-count="3">
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div style="display:flex;align-items:center;gap:9px;padding:6px 2px 0">
+            <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:17px;line-height:1;flex:none">{{ gr.flag }}</span>
+            <span style="font-size:11px;font-weight:500;color:#8E8DA8;letter-spacing:.6px;flex:none">{{ gr.country }}</span>
+            <div style="flex:1;height:1px;background:#E4E3EE"></div>
+            <span style="flex:none;font-size:11px;font-weight:500;color:#6C6C88;background:#F1F1F8;padding:4px 9px;border-radius:999px;font-variant-numeric:tabular-nums">{{ gr.count }}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <sc-for list="{{ gr.items }}" as="f" hint-placeholder-count="3">
         <!-- Barmoq tekkan zahoti yuklay boshlaymiz: bosish hodisasi kelguncha
              va ekran chizilguncha o'tadigan vaqt behuda ketmasin. -->
-        <button sc-camel-on-pointer-down="{{ f.warm }}" sc-camel-on-click="{{ f.open }}" style="display:flex;align-items:center;gap:14px;background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+        <button sc-camel-on-pointer-down="{{ f.warm }}" sc-camel-on-click="{{ f.open }}" style="display:flex;align-items:center;gap:14px;background:radial-gradient(120% 88% at 100% 0%, {{ f.soft }} 0%, #FFFFFF 62%);border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:inset 0 0 0 1px {{ f.ring }},0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
           <!-- Do'konlar bo'limidagi bilan bir xil quti: logotiplar so'z-belgi (2:1). -->
           <div style="width:76px;height:54px;border-radius:14px;flex:none;position:relative;display:flex;align-items:center;justify-content:center;background:{{ f.tint }}">
             <sc-if value="{{ f.logoOff }}" hint-placeholder-val="{{ true }}">
@@ -1622,10 +1655,13 @@
               <span style="font-size:11px;font-weight:500;letter-spacing:.3px;color:#0F7B3E;background:#E9F8EF;padding:3px 8px;border-radius:10px">{{ f.tag }}</span>
             </div>
           </div>
-          <div style="width:30px;height:30px;border-radius:14px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;flex:none">
+          <div style="width:30px;height:30px;border-radius:14px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;flex:none">
             <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
           </div>
         </button>
+            </sc-for>
+          </div>
+        </div>
       </sc-for>
 
     </div>
@@ -1982,7 +2018,7 @@
       <div style="font-size:12.5px;color:#8E8DA8;font-weight:600;line-height:1.5;padding:0 2px">{{ svcLaneHint }}</div>
 
       <sc-for list="{{ helpList }}" as="sv" hint-placeholder-count="5">
-        <div style="background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+        <div style="background:{{ sv.cardBg }};border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:{{ sv.cardRing }}0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
           <div style="display:flex;align-items:flex-start;gap:13px">
             <div style="width:38px;height:38px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ sv.pic }}"></div>
             <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
@@ -2003,7 +2039,7 @@
               </div>
             </sc-for>
           </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #F0EFF7;padding-top:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid {{ sv.lineColor }};padding-top:12px">
             <div style="display:flex;flex-direction:column;gap:1px;min-width:0">
               <span style="font-size:10.5px;font-weight:500;letter-spacing:.4px;color:#9B9AB5">NARX</span>
               <span style="font-size:14px;font-weight:800;color:#151329">{{ sv.price }}</span>
@@ -2706,17 +2742,26 @@ const LINK_ICON = {
   'Android': { pic: "url('icons/app-play.webp')" }
 };
 
+/* Beshinchi ustun — mintaqa. To'qqizta yo'nalishga to'qqizta rang berilsa
+   ola-quroq chiqadi; mintaqa bo'yicha to'rt ohang esa oq plitkalar
+   ketma-ketligini uzadi va yo'nalishlarni guruhga ajratib ko'rsatadi. */
 const COURIER_ORIGINS = [
-  ['Xitoy',      'Xitoy',      'Kuryer va konsolidatsiya',      '🇨🇳'],
-  ['AQSH',       'AQSh',       'AQSh omborlari orqali',        '🇺🇸'],
-  ['Turkiya',    'Turkiya',    'Yaqin ombor, tez yetkazish',   '🇹🇷'],
-  ['Yevropa',    'Yevropa',    'Yevropa omborlari',            '🇪🇺'],
-  ['Koreya',     'Koreya',     'Koreya yo\'nalishi',           '🇰🇷'],
-  ['Rossiya',    'Rossiya',    'Rossiya orqali',               '🇷🇺'],
-  ['BAA',        'BAA',        'Dubay omborlari',              '🇦🇪'],
-  ['MDH',        'MDH',        'Qo\'shni davlatlar',           '🇰🇿'],
-  ['Malayziya',  'Malayziya',  'Janubi-sharqiy Osiyo',         '🇲🇾']
+  ['Xitoy',      'Xitoy',      'Kuryer va konsolidatsiya',      '🇨🇳', 'osiyo'],
+  ['AQSH',       'AQSh',       'AQSh omborlari orqali',        '🇺🇸', 'garb'],
+  ['Turkiya',    'Turkiya',    'Yaqin ombor, tez yetkazish',   '🇹🇷', 'yaqin'],
+  ['Yevropa',    'Yevropa',    'Yevropa omborlari',            '🇪🇺', 'garb'],
+  ['Koreya',     'Koreya',     'Koreya yo\'nalishi',           '🇰🇷', 'osiyo'],
+  ['Rossiya',    'Rossiya',    'Rossiya orqali',               '🇷🇺', 'shimol'],
+  ['BAA',        'BAA',        'Dubay omborlari',              '🇦🇪', 'yaqin'],
+  ['MDH',        'MDH',        'Qo\'shni davlatlar',           '🇰🇿', 'shimol'],
+  ['Malayziya',  'Malayziya',  'Janubi-sharqiy Osiyo',         '🇲🇾', 'osiyo']
 ];
+const ORIGIN_TINT = {
+  osiyo:  { bg:'rgba(14,133,149,.18)',  ring:'rgba(14,133,149,.10)',  chip:'#DDF1F4', fg:'#0E8595' },
+  garb:   { bg:'rgba(59,44,201,.16)',   ring:'rgba(59,44,201,.10)',   chip:'#EBE8FE', fg:'#3B2CC9' },
+  yaqin:  { bg:'rgba(180,83,9,.17)',    ring:'rgba(180,83,9,.10)',    chip:'#FAECD8', fg:'#B45309' },
+  shimol: { bg:'rgba(155,28,28,.14)',   ring:'rgba(155,28,28,.09)',   chip:'#F9E3E3', fg:'#9B1C1C' }
+};
 
 const LOGO_DOMAIN = {
   'poizon.com':'dewu.com', 'pinduoduo.com':'yangkeduo.com', 'noon.com':'noon.com',
@@ -4096,10 +4141,18 @@ class Component extends DCLogic {
           svcLaneHint: lane === 'shaxs'
             ? 'Chet eldan buyurtma qilgan jismoniy shaxslar uchun.'
             : 'Kuryerlik va logistika kompaniyalari uchun yuridik va texnik yordam.',
+          /* Yorlig'i bor xizmat (masalan "eng ko'p so'raladi") ohang bilan
+             ajratiladi — qolganlari bir xil oq kartochka bo'lib qolsa,
+             qaysi biridan boshlash kerakligi ko'rinmasdi. */
           helpList: SERVICES.filter(v => v.lane === lane).map(v => ({
             ...v,
             pic: "url('icons/" + v.icon + ".webp')",
             hasTag: !!v.tag,
+            cardBg: v.tag
+              ? 'radial-gradient(120% 88% at 100% 0%, rgba(59,44,201,.15) 0%, #FFFFFF 62%)'
+              : '#FFFFFF',
+            cardRing: v.tag ? 'inset 0 0 0 1.5px rgba(59,44,201,.16),' : '',
+            lineColor: v.tag ? 'rgba(59,44,201,.14)' : '#F0EFF7',
             items: v.items.map(t => ({ t })),
             ask: () => this.contactAbout(v.title)
           }))
@@ -4124,11 +4177,20 @@ class Component extends DCLogic {
           this.setState({ courierFolder: 'from:' + key });
           this.push('courierfolder');
         };
-        const folders = COURIER_ORIGINS.map(([key, title, sub, flag]) => {
+        const all = COURIER_ORIGINS.map(([key, title, sub, flag, region]) => {
           const n = COURIERS.filter(c => (c.from || []).includes(key)).length;
-          return { key, title, sub, flag, count: n + ' ta', n, open: () => openFolder(key) };
+          const t = ORIGIN_TINT[region] || ORIGIN_TINT.garb;
+          return { key, title, sub, flag, count: n + ' ta', n, num: String(n),
+            tintBg: t.bg, tintRing: t.ring, tintChip: t.chip, tintFg: t.fg,
+            open: () => openFolder(key) };
         }).filter(f => f.n > 0);
+        /* Eng ko'p kuryerli yo'nalish ustida katta kartochka bo'lib turadi,
+           qolganlari mintaqa rangidagi plitkalar. Ilgari to'qqiztasi ham bir
+           xil oq plitka edi va ekran monoton ko'rinardi. */
+        const top = all.reduce((a, b) => (b.n > a.n ? b : a), all[0]);
+        const folders = all.filter(f => f !== top);
         return {
+          courierTop: top, hasCourierTop: !!top,
           courierFolders: folders,
           openAllCouriers: () => { this.setState({ courierFolder: 'all:' }); this.push('courierfolder'); },
           allCouriersCount: COURIERS.length + ' ta',
@@ -4327,6 +4389,28 @@ class Component extends DCLogic {
         warm: () => this.warmGuide(f.id),
         open: () => { this.setState({ fullId: f.id }); this.push('fullguide'); } })),
       fullGuideCount: FULL_GUIDES.length,
+      /* Yettita qo'llanma bir xil oq qator bo'lib turardi. Endi ular do'kon
+         qaysi davlatda ekaniga qarab guruhlanadi (davlat do'konlar
+         ro'yxatidan olinadi) va har bir kartochka o'z brend ohangida
+         bo'yaladi — ohang logotip kvadratchasidan yengilroq, aks holda
+         kvadratcha fonda yo'qolib ketardi. */
+      guideGroups: (() => {
+        /* Guruh do'konning yuborish davlati emas, bozori bo'yicha: SHEIN
+           dunyoning ko'p yeriga yuboradi ("Global"), lekin qo'llanma xitoy
+           bozori haqida. Shuning uchun qo'llanmaning o'z bayrog'i asos
+           qilinadi, nomi esa STORE_COUNTRIES dan olinadi. */
+        const nameOf = fl => (STORE_COUNTRIES.find(c => c[3] === fl) || [])[1] || 'Boshqa';
+        const order = [];
+        FULL_GUIDES.forEach(g => { if (!order.includes(g.flag)) order.push(g.flag); });
+        return order.map(flag => {
+          const items = FULL_GUIDES.filter(g => g.flag === flag).map(g => ({ ...g,
+            soft: rgba(g.color, '0.09'),
+            ring: rgba(g.color, '0.10'),
+            warm: () => this.warmGuide(g.id),
+            open: () => { this.setState({ fullId: g.id }); this.push('fullguide'); } }));
+          return { country: nameOf(flag), flag, items, count: items.length + ' ta' };
+        });
+      })(),
 
       sFull: cur === 'fullguide',
       fullSrc: fullG.file, fullTitle: fullG.title, fullMono: fullG.mono, fullColor: fullG.color, fullSections: fullG.sections,

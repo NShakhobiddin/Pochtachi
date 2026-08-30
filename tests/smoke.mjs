@@ -235,6 +235,23 @@ try {
   check("qo'llanma kartochkalari bir xil rangda emas",
     tints.length === 7 && new Set(tints).size >= 5, `${tints.length} ta quti, ${new Set(tints).size} xil rang`);
 
+  /* Yettita qo'llanma endi davlat bo'yicha guruhlangan va har bir kartochka
+     o'z brend ohangida — ilgari hammasi bir xil oq qator edi. */
+  const grp = await page.evaluate(() => {
+    /* Dvigatel {{ }} ni yana bitta span ichiga o'raydi, shuning uchun
+       tashqi o'ram ham mos keladi — ichkarisini olamiz. */
+    const bosh = [...document.querySelectorAll('main span')]
+      .filter(x => x.children.length === 0 &&
+        /^(Xitoy|Turkiya|AQSh|Global|Buyuk Britaniya|BAA)$/.test((x.textContent || '').trim()));
+    const kart = [...document.querySelectorAll('main button')]
+      .filter(x => /BO'LIM/.test(x.innerText));
+    const fon = new Set(kart.map(x => getComputedStyle(x).backgroundImage));
+    return { guruh: bosh.map(x => x.textContent.trim()), kart: kart.length, ohang: fon.size };
+  });
+  check("qo'llanmalar davlat bo'yicha guruhlangan",
+    grp.guruh.length === 3 && grp.guruh[0] === 'Xitoy' && grp.kart === 7 && grp.ohang >= 5,
+    `${grp.guruh.join(' / ')} · ${grp.kart} kartochka, ${grp.ohang} xil ohang`);
+
   /* Ekran almashganda kirish animatsiyasi qayta ishga tushadi. */
   await page.locator('nav button', { hasText: 'Bojxona' }).first().click();
   await page.waitForTimeout(80);
@@ -373,6 +390,26 @@ try {
       .filter(d => /icons\/svc-/.test(d.style.backgroundImage)).length;
     return { n: b.length, ic };
   });
+  /* Yorlig'i bor xizmat ("eng ko'p so'raladi") qolganlaridan ajralib tursin:
+     foni ohangli va atrofida halqasi bor. */
+  const svcBelgi = await page.evaluate(() => {
+    const kart = [...document.querySelectorAll('main div')]
+      .filter(d => /border-radius: 20px/.test(d.style.cssText) &&
+                   /Bog'lanish/.test(d.innerText) && /NARX/.test(d.innerText));
+    const yorliq = kart.filter(d => /SO'RALADI/.test(d.innerText));
+    const oddiy = kart.filter(d => !/SO'RALADI/.test(d.innerText));
+    const fon = d => getComputedStyle(d).backgroundImage;
+    return {
+      jami: kart.length, belgili: yorliq.length,
+      ohangli: yorliq.every(d => fon(d) !== 'none'),
+      halqa: yorliq.every(d => /inset/.test(getComputedStyle(d).boxShadow)),
+      oddiyTekis: oddiy.every(d => fon(d) === 'none')
+    };
+  });
+  check("xizmatlarda ajratilgan kartochka",
+    svcBelgi.jami === 5 && svcBelgi.belgili === 1 && svcBelgi.ohangli &&
+    svcBelgi.halqa && svcBelgi.oddiyTekis,
+    `${svcBelgi.belgili}/${svcBelgi.jami} ajratilgan`);
   await page.getByText('Kuryer tashkilotiman', { exact: false }).first().click();
   await page.waitForTimeout(600);
   const svcTash = await page.evaluate(() =>
@@ -702,6 +739,27 @@ try {
   check('kuryer papkasida yo\'nalish ko\'rinadi',
     bayroq && bayroq.manba >= 28 && bayroq.uzBor && bayroq.strelka && bayroq.sigadi,
     JSON.stringify(bayroq));
+
+  /* Yo'nalishlar bir xil oq plitka emas: ustida eng ko'p kuryerli yo'nalish
+     katta kartochkada, qolganlari mintaqa ohangida bo'yalgan. */
+  const yoRitm = await page.evaluate(() => {
+    const btns = [...document.querySelectorAll('main button')];
+    const hero = btns.find(x => /ENG KO'P KURYER/.test(x.innerText));
+    const grid = [...document.querySelectorAll('main div')]
+      .find(d => /repeat\(2/.test(d.style.gridTemplateColumns || '') &&
+                 d.querySelectorAll(':scope > button').length >= 6);
+    const plita = grid ? [...grid.querySelectorAll(':scope > button')] : [];
+    const fon = new Set(plita.map(x => getComputedStyle(x).backgroundImage));
+    const katta = hero ? [...hero.querySelectorAll('span')]
+      .some(x => parseFloat(getComputedStyle(x).fontSize) >= 26 && /^\d+$/.test(x.textContent.trim())) : false;
+    return { hero: !!hero, katta, plita: plita.length, ohang: fon.size,
+      keng: hero && grid ? Math.round(hero.getBoundingClientRect().width -
+        plita[0].getBoundingClientRect().width) : 0 };
+  });
+  check("yo'nalishlar bir xil emas",
+    yoRitm.hero && yoRitm.katta && yoRitm.plita >= 6 &&
+    yoRitm.ohang === 4 && yoRitm.keng > 100,
+    `katta kartochka +${yoRitm.keng}px, ${yoRitm.plita} plitka, ${yoRitm.ohang} ohang`);
 
   await page.getByText('Turkiya', { exact: false }).first().click();
   await page.waitForTimeout(600);
