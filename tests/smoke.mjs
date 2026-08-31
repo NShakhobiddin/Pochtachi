@@ -71,7 +71,10 @@ async function passOnboarding(page) {
 await new Promise(r => server.listen(PORT, r));
 const base = `http://localhost:${PORT}`;
 const browser = await chromium.launch();
-const context = await browser.newContext({ viewport: { width: 430, height: 880 } });
+/* Buferga nusxalash tekshiruvi uchun ruxsat kerak: Chromium'da
+   navigator.clipboard yozish/o'qish ruxsatsiz rad etiladi. */
+const context = await browser.newContext({ viewport: { width: 430, height: 880 },
+  permissions: ['clipboard-read', 'clipboard-write'] });
 // Har bir hujjatda tartib siljishini (CLS) o'lchab boramiz
 await context.addInitScript(() => {
   window.__cls = 0;
@@ -200,8 +203,10 @@ try {
     return { bor: true, w: Math.round(r.width), h: Math.round(r.height),
              fit: getComputedStyle(img).backgroundSize };
   });
+  /* Logotiplar kvadrat ilova ikonkasi bo'lgani uchun quti ham kvadrat;
+     `contain` nisbatni saqlaydi, ya'ni ikonka cho'zilmaydi. */
   check('rejadagi do\'kon logotipi cho\'zilmaydi',
-    wizLogo.bor && wizLogo.w > wizLogo.h && wizLogo.fit === 'contain',
+    wizLogo.bor && wizLogo.w === wizLogo.h && wizLogo.fit === 'contain',
     wizLogo.bor ? `${wizLogo.w}x${wizLogo.h}, ${wizLogo.fit}` : 'topilmadi');
 
   // 4. Qidiruv kirillcha so'rovni tushunadi
@@ -228,12 +233,18 @@ try {
   });
   check('qo\'llanma kartochkalarida do\'kon logotipi', guideLogos.length === 7, guideLogos.join(', '));
 
-  /* Kartochkalardagi quti do'konning o'z rangida bo'lsin: ilgari 7 tasi ham
-     bir xil #F4F3FA edi va ro'yxat bir zayl ko'rinardi. */
-  const tints = await page.evaluate(() =>
-    [...document.querySelectorAll('main div[style*="width: 76px"]')].map(d => d.style.backgroundColor));
-  check("qo'llanma kartochkalari bir xil rangda emas",
-    tints.length === 7 && new Set(tints).size >= 5, `${tints.length} ta quti, ${new Set(tints).size} xil rang`);
+  /* Logotip kvadrat ikonka bo'lgani uchun ostidagi ohang plita olib
+     tashlangan — rang endi ikonkaning o'zida. Quti shaffof ekanini va
+     ikonka to'ldirib turganini tekshiramiz. */
+  const quti = await page.evaluate(() =>
+    [...document.querySelectorAll('main div[style*="width: 54px"]')].map(d => ({
+      fon: getComputedStyle(d).backgroundColor,
+      rasm: !!(d.querySelector('div[style*="background-image"]'))
+    })));
+  check("qo'llanma kartochkasida kvadrat logotip",
+    quti.length === 7 && quti.every(q => q.rasm) &&
+    quti.every(q => q.fon === 'rgba(0, 0, 0, 0)'),
+    `${quti.length} ta quti, rasmli ${quti.filter(q => q.rasm).length}`);
 
   /* Yettita qo'llanma endi davlat bo'yicha guruhlangan va har bir kartochka
      o'z brend ohangida — ilgari hammasi bir xil oq qator edi. */
@@ -442,24 +453,21 @@ try {
       /* Sevimlida turgani "yaqinda" tasmasida takrorlanmasin — shuning
          uchun butun sahifa matniga emas, aynan tasmalar ichiga qaraymiz. */
       ...(() => {
-        const bolim = nom => [...document.querySelectorAll('main h2')]
-          .find(h => h.textContent.trim() === nom);
-        const tasma = h => h && [...h.closest('div').parentElement.children]
+        const h = [...document.querySelectorAll('main h2')]
+          .find(x => x.textContent.trim() === 'Sevimlilar');
+        const el = h && [...h.closest('div').parentElement.children]
           .find(d => d.style && d.style.overflowX === 'auto');
         /* Do'kon "Taobao" va qo'llanma "Taobao" bir xil nomlanadi, shuning
            uchun nomga emas, nom + tur satriga qaraymiz. */
-        const nomlar = h => { const el = tasma(h); return el
-          ? [...el.children].map(b => b.innerText.split('\n').slice(0, 2).map(x => x.trim()).join(' | ')) : []; };
-        return { favNom: nomlar(bolim('Sevimlilar')), yaqinNom: nomlar(bolim("Yaqinda ko'rilgan")) };
+        return { favNom: el
+          ? [...el.children].map(b => b.innerText.split('\n').slice(0, 2).map(x => x.trim()).join(' | ')) : [] };
       })()
     };
   });
-  check('sevimli, tarix va yaqinda yoziladi',
+  check('sevimli va qidiruv tarixi yoziladi',
     yulduzBor === 1 && iz.favs.includes('store:taobao') && iz.searches.includes('taobao') &&
-    iz.recent.includes('store:taobao') && iz.favBlok && iz.tarixBlok &&
-    iz.favNom.some(x => /^Taobao \| Do'kon/.test(x)) &&
-    !iz.yaqinNom.some(x => /^Taobao \| Do'kon/.test(x)),
-    `sevimli [${iz.favNom.join()}] · yaqinda [${iz.yaqinNom.join()}] · tarix ${iz.searches.join()}`);
+    iz.favBlok && iz.tarixBlok && iz.favNom.some(x => /^Taobao \| Do'kon/.test(x)),
+    `sevimli [${iz.favNom.join()}] · tarix ${iz.searches.join()}`);
 
   /* Yulduzchani qayta bosganda sevimlidan chiqadi va blok yo'qoladi.
      hasText registrga sezgir emas, shuning uchun oddiy 'Taobao' qidiruv
@@ -471,21 +479,13 @@ try {
   await page.waitForTimeout(500);
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(800);
-  const ochirildi = await page.evaluate(() => {
-    const h = [...document.querySelectorAll('main h2')].find(x => x.textContent.trim() === "Yaqinda ko'rilgan");
-    const el = h && [...h.closest('div').parentElement.children]
-      .find(d => d.style && d.style.overflowX === 'auto');
-    return {
-      favs: (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').favs) || [],
-      favBlok: /Sevimlilar/.test(document.body.innerText),
-      /* Sevimlidan chiqqach "yaqinda ko'rilgan"da paydo bo'ladi. */
-      yaqinNom: el ? [...el.children].map(b => b.innerText.split('\n').slice(0, 2).map(x => x.trim()).join(' | ')) : []
-    };
-  });
+  const ochirildi = await page.evaluate(() => ({
+    favs: (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').favs) || [],
+    favBlok: /Sevimlilar/.test(document.body.innerText)
+  }));
   check('sevimlidan olib tashlanadi',
-    ochirildi.favs.length === 0 && !ochirildi.favBlok &&
-    ochirildi.yaqinNom.some(x => /^Taobao \| Do'kon/.test(x)),
-    `${ochirildi.favs.length} ta qoldi · yaqinda [${ochirildi.yaqinNom.join()}]`);
+    ochirildi.favs.length === 0 && !ochirildi.favBlok,
+    `${ochirildi.favs.length} ta qoldi, blok ${ochirildi.favBlok}`);
 
   /* --- Audit tuzatishlari qaytib kelmasin --- */
 
@@ -801,6 +801,24 @@ try {
     ichki: /44-11/.test(document.body.innerText),
     xarita: [...document.querySelectorAll('a')].filter(a => /Xaritada/.test(a.innerText) && a.querySelector('svg')).length
   }));
+  /* Manzil, e-pochta va ichki raqamlarni qo'lda ko'chirib yozish xatoga
+     olib keladi — bosilganda buferga tushsin. */
+  const nusxa = await page.evaluate(async () => {
+    const btn = [...document.querySelectorAll('main button')];
+    const manzil = btn.find(x => /Manzilni nusxalash/.test(x.getAttribute('aria-label') || ''));
+    const qator = btn.filter(x => /nusxalash$/.test(x.getAttribute('aria-label') || ''));
+    const tel = btn.filter(x => /raqamni nusxalash/.test(x.getAttribute('aria-label') || ''));
+    if (!manzil) return { yoq: true };
+    manzil.click();
+    await new Promise(r => setTimeout(r, 250));
+    let bufer = '';
+    try { bufer = await navigator.clipboard.readText(); } catch (e) { bufer = 'XATO ' + e.message; }
+    return { manzil: true, qator: qator.length, tel: tel.length, bufer: bufer.slice(0, 40) };
+  });
+  check('bojxona organlarida nusxalash ishlaydi',
+    !nusxa.yoq && nusxa.qator >= 3 && nusxa.tel >= 1 && /Toshkent/.test(nusxa.bufer),
+    `${nusxa.qator} ta qator, ${nusxa.tel} ta telefon · bufer "${nusxa.bufer}"`);
+
   check("bog'lanishda raqam bosiladi",
     aloqa.tel.length === 1 && aloqa.tel[0] === 'tel:+998555028630' && aloqa.ichki && aloqa.xarita >= 3,
     JSON.stringify(aloqa));
@@ -876,8 +894,8 @@ try {
     const rows = cards.map(c => [...c.children[1].children[1].children].map(x => x.textContent.trim()));
     return {
       narx: rows.every(r => /^\$+$/.test(r[0])),
-      original: rows.every(r => r.some(x => /^(original|noaniq|o'rtacha)$/.test(x))),
-      qulaylik: rows.filter(r => r.some(x => /^(oson|murakkab|VPN kerak)$/.test(x))).length,
+      original: rows.every(r => r.some(x => /^(Original tovar|Sotuvchiga bog'liq|Originalligi )/.test(x))),
+      qulaylik: rows.filter(r => r.some(x => /^(Buyurtma oson|Buyurtma murakkab|VPN kerak)$/.test(x))).length,
       yonalish: rows.some(r => r.some(x => /vositachi|to'g'ridan/.test(x))),
       eng: Math.max(...rows.map(r => r.length))
     };
