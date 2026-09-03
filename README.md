@@ -25,11 +25,12 @@ manifest.webmanifest           PWA manifesti
 data/norms.json                bojxona me'yorlari (kodga tegmasdan yangilanadi)
 vendor/                        React va ReactDOM (unpkg'dagi asl fayllar)
 fonts/                         matn shriftlari (o'z domenimizda) va bayroq subseti
-icons/                         3D bo'lim ikonkalari (`boj-*` — bojxona qatorlari), tab-bar va PWA ikonkalari
+icons/                         3D bo'lim ikonkalari (`boj-*` — bojxona qatorlari), tab-bar,
+                               brend logotipi (`brand*.webp`) va PWA ikonkalari
 icons/src/                     ikonkalarning asl (katta) nusxalari (saytga chiqmaydi)
 logos/                         kuryer logotiplari (128 px WebP)
 logos/src/                     logotiplarning asl PNG nusxalari (saytga chiqmaydi)
-stores/                        do'kon logotiplari (224x112 WebP) va index.json
+stores/                        do'kon logotiplari (128x128 WebP) va index.json
 stores/src/                    logotiplarning asl PNG nusxalari (saytga chiqmaydi)
 guides/index.html              GENERATSIYA: qo'llanmalarning indekslanadigan ro'yxati
 guides/inline/*.html           7 ta platforma qo'llanmasi (mustaqil sahifa ham)
@@ -56,6 +57,7 @@ npm run logos            # logos/src/*.png -> logos/*.webp qayta yasash
 npm run icons            # icons/src/*.webp -> icons/*.webp (ekran o'lchamiga moslash)
 npm run mockups          # qadamlardagi telefon maketlarini bir me'yorga keltirish
 npm run store-logos      # do'kon logotiplari (--from DIR bilan tayyor rasmlardan)
+npm run brand            # icons/src/brand.webp -> logotip va ilova ikonkalari
 npm run cover            # icons/og-cover.png ni qayta yasash
 npm run fonts            # matn shriftlarini Google Fonts'dan qayta yuklab olish
 npm run serve            # lokal server: http://localhost:8000
@@ -95,9 +97,25 @@ Telegram ichida ilova o'zi:
 
 Oddiy brauzerda bu kodning ta'siri yo'q — sayt avvalgidek ishlayveradi.
 
+## Brend logotipi
+
+Yagona manba — `icons/src/brand.webp` (to'liq lokap: belgi + `Pochtam.` +
+shior, shaffof fonda, 2000 px). `npm run brand` undan to'rt faylni yasaydi:
+
+| Fayl | Qayerda |
+| --- | --- |
+| `icons/brand.webp` | bosh ekran sarlavhasi — 36 px balandlikda, shiorsiz |
+| `icons/brand-full.webp` | tanishuv ekrani — 240 px kenglikda, shior bilan |
+| `icons/icon-192.png` | PWA ikonkasi |
+| `icons/apple-touch-icon.png` | iOS ikonkasi |
+
+Sarlavhada shior kesiladi: 36 px balandlikda uning harflari 4 px ga
+tushib o'qilmay qoladi. Ikonkalar oq fonda — shaffof bo'lsa tizim ularni
+qora bilan to'ldiradi va ko'k belgi yo'qoladi.
+
 ## Do'kon logotiplari
 
-43 ta do'konning hammasida logotip bor: `stores/*.webp`, 224x112 px, jami ~178 KB. Ular so'z-belgi (wordmark) ko'rinishida, shuning uchun ilovada cho'ziq qutida ko'rsatiladi. Asl PNG nusxalar `stores/src/` da (saytga chiqmaydi).
+43 ta do'konning hammasida logotip bor: `stores/*.webp`, 128x128 px, jami ~197 KB. Ular kvadrat ilova-ikonkasi ko'rinishida, shuning uchun ilovada kvadrat qutida, ohangsiz ko'rsatiladi. Asl PNG nusxalar `stores/src/` da (saytga chiqmaydi).
 
 Qayta yasash:
 

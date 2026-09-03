@@ -16,6 +16,7 @@
     "fonts": "node tools/fetch-fonts.mjs",
     "icons": "node tools/optimize-icons.mjs",
     "icons:clean": "python3 tools/clean-icon-strays.py",
+    "brand": "python3 tools/brand-logo.py",
     "mockups": "node tools/normalize-mockups.mjs",
     "flags": "python3 tools/build_flags_font.py"
   },

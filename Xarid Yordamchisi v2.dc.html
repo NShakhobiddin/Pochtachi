@@ -269,7 +269,9 @@
       </button>
     </sc-if>
     <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
-      <h1 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;font-weight:800;color:#151329;letter-spacing:-.5px">Xarid <span style="color:#3B2CC9">Yordamchisi</span></h1>
+      <h1 style="margin:0;display:flex;align-items:center">
+        <img src="icons/brand.webp" alt="Pochtam" width="113" height="36" style="width:113px;height:36px;object-fit:contain;display:block">
+      </h1>
     </sc-if>
     <sc-if value="{{ hasTitle }}" hint-placeholder-val="{{ false }}">
       <h1 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;flex:1;text-align:center;font-size:22px;font-weight:800;color:#3B2CC9;letter-spacing:-.4px;padding-right:{{ titlePad }}">{{ headerTitle }}</h1>
@@ -293,6 +295,7 @@
 
   <sc-if value="{{ sOnboard }}" hint-placeholder-val="{{ false }}">
     <div style="padding-top:30px;display:flex;flex-direction:column;gap:24px">
+      <img src="icons/brand-full.webp" alt="Pochtam — global xaridlar biz bilan oson" width="240" height="77" style="width:240px;height:77px;object-fit:contain;align-self:flex-start">
       <div style="height:7px;border-radius:4px;background:repeating-linear-gradient(-45deg,#C8102E 0 9px,#F5F5FA 9px 18px,#1B4D8F 18px 27px,#F5F5FA 27px 36px)"></div>
       <sc-if value="{{ onbLang }}" hint-placeholder-val="{{ true }}">
         <div style="display:flex;flex-direction:column;gap:10px">

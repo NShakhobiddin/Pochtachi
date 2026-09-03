@@ -111,7 +111,26 @@ try {
   await page.goto(base + '/', { waitUntil: 'load' });
   await page.waitForTimeout(1500);
   check('ilova ko\'tariladi', await page.evaluate(() => !!document.querySelector('#dc-root')?.firstChild));
+  /* Brend logotipi: tanishuv ekranida to'liq lokap (shior bilan),
+     sarlavhada shiorsizi. naturalWidth 0 bo'lsa rasm yuklanmagan —
+     404 yoki noto'g'ri yo'l shu yerda ko'rinadi. */
+  const onbLogo = await page.evaluate(() => {
+    const im = [...document.images].find(i => /brand-full\.webp/.test(i.currentSrc || i.src));
+    return im ? { w: Math.round(im.getBoundingClientRect().width), nat: im.naturalWidth } : null;
+  });
+  check('tanishuv ekranida logotip', !!onbLogo && onbLogo.nat > 0 && onbLogo.w >= 200,
+    onbLogo ? `${onbLogo.w}px, manba ${onbLogo.nat}px` : 'topilmadi');
   check('onboarding o\'tadi', await passOnboarding(page));
+  const homeLogo = await page.evaluate(() => {
+    const im = document.querySelector('header img');
+    if (!im) return null;
+    const r = im.getBoundingClientRect();
+    return { w: Math.round(r.width), h: Math.round(r.height), nat: im.naturalWidth,
+      alt: im.alt, src: (im.currentSrc || im.src).split('/').pop() };
+  });
+  check('bosh sarlavhada logotip', !!homeLogo && homeLogo.src === 'brand.webp'
+    && homeLogo.nat > 0 && homeLogo.h >= 32 && !!homeLogo.alt,
+    homeLogo ? `${homeLogo.src} ${homeLogo.w}x${homeLogo.h}, alt "${homeLogo.alt}"` : 'topilmadi');
 
   // 2. Bo'limlar almashadi
   for (const tab of ["Qo'llanmalar", 'Bojxona', 'Sozlamalar', 'Bosh sahifa']) {
