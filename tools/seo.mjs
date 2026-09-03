@@ -56,7 +56,7 @@ function guideMeta(g) {
     `<meta property="og:description" content="${esc(desc)}">`,
     `<meta property="og:image" content="${OG_IMAGE}">`,
     `<meta name="twitter:card" content="summary_large_image">`,
-    `<meta name="theme-color" content="#3B2CC9">`,
+    `<meta name="theme-color" content="#1A1FB0">`,
     ...fontLinks('../../'),
     /* Ilova ichida ochilganini birinchi chizishdan OLDIN belgilaymiz: aks holda
        avval to'liq sarlavha chizilib, keyin ixchamlashadi va butun matn
@@ -122,7 +122,7 @@ const hub = `<!DOCTYPE html>
 <meta property="og:description" content="${esc(hubDesc)}">
 <meta property="og:image" content="${OG_IMAGE}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#3B2CC9">
+<meta name="theme-color" content="#1A1FB0">
 <link rel="icon" href="../icons/icon-192.png" sizes="192x192">
 ${fontLinks('../').join('\n')}
 <link rel="stylesheet" href="guide-base.css">

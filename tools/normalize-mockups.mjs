@@ -158,8 +158,8 @@ async function belgila(page, fig) {
     const by = Math.min(Math.max(m.cy, y + 2), y + h - 2);
     const dx = m.cx - bx, dy = m.cy - by, uz = Math.hypot(dx, dy);
     const chiziq = uz > 15
-      ? `<path d="M${bx.toFixed(1)} ${by.toFixed(1)}L${(m.cx - dx / uz * 12).toFixed(1)} ${(m.cy - dy / uz * 12).toFixed(1)}" stroke="#4f46e5" stroke-width="1.2" stroke-dasharray="2.5 2.5" fill="none"/>` : '';
-    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="5" fill="#4f46e5" fill-opacity=".09" stroke="#4f46e5" stroke-width="1.4"/>${chiziq}`;
+      ? `<path d="M${bx.toFixed(1)} ${by.toFixed(1)}L${(m.cx - dx / uz * 12).toFixed(1)} ${(m.cy - dy / uz * 12).toFixed(1)}" stroke="#464BE5" stroke-width="1.2" stroke-dasharray="2.5 2.5" fill="none"/>` : '';
+    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="5" fill="#464BE5" fill-opacity=".09" stroke="#464BE5" stroke-width="1.4"/>${chiziq}`;
   }).join('');
   if (!chiz) return fig;
   // Belgilardan oldin chizamiz — raqamlar tepada qolsin.

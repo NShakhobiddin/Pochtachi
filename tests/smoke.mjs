@@ -655,6 +655,28 @@ try {
   }
   check('soya qatlamlari sanoqli', qatlam.size <= 18, qatlam.size + ' xil');
 
+  /* Rang tizimi: do'kon/kuryer brend ranglaridan tashqari hamma rang
+     logotipning ko'k oilasida (ton 238) bo'lsin va soni cheklangan.
+     Ilgari 150 ta rang bor edi, 77 tasi bir martadan; asosiy rang esa
+     binafsha (ton 246) bo'lib, logotip va 3D rasmlardan ajralib turardi. */
+  const brendRang = new Set([...src.matchAll(/color:\s*"(#[0-9A-Fa-f]{6})"/g)]
+    .map(m => m[1].toUpperCase()));
+  const dizaynRang = [...new Set((src.match(/#[0-9A-Fa-f]{6}/g) || []).map(h => h.toUpperCase()))]
+    .filter(h => !brendRang.has(h));
+  const binafsha = dizaynRang.filter(h => {
+    const [r, g, b] = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255);
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+    if (mx - mn < 0.06) return false;
+    let hue;
+    if (mx === r) hue = 60 * (((g - b) / (mx - mn)) % 6);
+    else if (mx === g) hue = 60 * ((b - r) / (mx - mn) + 2);
+    else hue = 60 * ((r - g) / (mx - mn) + 4);
+    if (hue < 0) hue += 360;
+    return hue > 240.5 && hue < 256;
+  });
+  check('ranglar soni cheklangan', dizaynRang.length <= 80, dizaynRang.length + ' ta');
+  check('binafsha qoldig\'i yo\'q', binafsha.length === 0, binafsha.slice(0, 6).join(' '));
+
   /* Kulrang shkala uch pog'onadan iborat: kuchli, passiv, bezak. */
   const kulrang = [...new Set((src.match(/#[0-9A-F]{6}/gi) || []).map(h => h.toUpperCase()))]
     .filter(h => {
