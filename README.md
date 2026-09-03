@@ -58,6 +58,8 @@ npm run icons            # icons/src/*.webp -> icons/*.webp (ekran o'lchamiga mo
 npm run mockups          # qadamlardagi telefon maketlarini bir me'yorga keltirish
 npm run store-logos      # do'kon logotiplari (--from DIR bilan tayyor rasmlardan)
 npm run brand            # icons/src/brand.webp -> logotip va ilova ikonkalari
+npm run tint             # ikonka manbalarini brend toniga (238) keltirish
+npm run glyphs           # icons/glyphs/*.png -> tekis svc-* belgilar
 npm run cover            # icons/og-cover.png ni qayta yasash
 npm run fonts            # matn shriftlarini Google Fonts'dan qayta yuklab olish
 npm run serve            # lokal server: http://localhost:8000
@@ -112,6 +114,55 @@ shior, shaffof fonda, 2000 px). `npm run brand` undan to'rt faylni yasaydi:
 Sarlavhada shior kesiladi: 36 px balandlikda uning harflari 4 px ga
 tushib o'qilmay qoladi. Ikonkalar oq fonda — shaffof bo'lsa tizim ularni
 qora bilan to'ldiradi va ko'k belgi yo'qoladi.
+
+## Dizayn tizimi
+
+Bir necha bosqichli audit natijasi. Har bir band `tests/smoke.mjs` da
+tekshiriladi, ya'ni tizimdan chetga chiqish CI da ushlanadi.
+
+**Rang.** Asosiy rang `#1A1FB0` — logotipdagi ko'kning (ton 238) ilova
+uchun ochroq pog'onasi. Butun oila shu tonda: bosilgan `#13189D`,
+gradient `#5C61EB -> #1A1FB0 -> #0E127B`, ohang `#E9EAFD` va `#DCDDFA`.
+Kulrang uch pog'ona: `#4E4F6B` kuchli, `#6B6C85` passiv (oq bilan
+5.2:1, AA), `#A6A7BC` faqat bezak. Holat ranglari alohida: yashil
+`#0F7B3E`, sariq `#B45309`, qizil `#9B1C1C`, moviy `#0E8595`.
+Do'kon va kuryerlarning o'z brend ranglari tizimga kirmaydi.
+
+**Matn.** Kegl 11 / 13 / 15 / 17 / 22 / 26 / 34 (44 va 52 — bayroq
+glifi). Har bir keglda ko'pi bilan ikki qalinlik: 11 -> 600/700,
+13 va 15 -> 500/700, 17 -> 700, 22 va undan yuqorisi -> 800. Harf
+oralig'i faqat keglga bog'liq: >=34px `-.035em`, 26px `-.03em`,
+22px `-.025em`, 17px `-.02em`, 11-15px uchun `body` dagi `-.012em`.
+Katta harfli yorliqlar `text-transform:uppercase` bilan, manbada
+jumla ko'rinishida yoziladi — shunda ruscha tarjima ham ishlaydi.
+
+**Ikonkalar — to'rt pog'ona, rol bo'yicha.**
+
+| Pog'ona | Qayerda | Uslub | O'lcham |
+| --- | --- | --- | --- |
+| P1 | bo'lim qahramoni | 3D ko'p rangli (`*-3d`, `boj-*`) | 64px |
+| P2 | papka / kategoriya | 3D bir rangli (`dok-*`) | 48px |
+| P3 | ro'yxat va yorliq | tekis (`svc-*`, `ban/*`, `norm/*`) | 24-40px |
+| P4 | interfeys | chiziqli SVG | 14/18/22/28px |
+
+Rasm uyalari 16 / 24 / 32 / 40 / 48 / 64 qadamlarida. Chiziqli
+ikonkalarda `viewBox` doim 24, chiziq qalinligi esa o'lchamga bog'lab
+tanlanadi (14 -> 2.7, 18 -> 2.1, 22 -> 1.75, 28 -> 1.4) — shunda ekranda
+hamma joyda ~1.6px bo'lib chiqadi.
+
+**Masofa.** `padding`, `gap`, `margin` faqat juft qadamlarda:
+0 2 4 6 8 10 12 14 16 18 20 24 28 32.
+
+**Soya.** Tayyor qatlamlardan yig'iladi: karta
+(`0 1px 2px rgba(20,19,43,.04)` + `0 8px 20px -12px rgba(20,19,43,.24)`),
+brend, yorug'lik (`0 14px 32px -16px rgba(17,21,132,.52)`), ramka
+(`inset 0 0 0 1px` — brend `.09`, holat `.12`, neytral `#E3E3EE`).
+
+**Qolgan ish.** `svc-*` (11 ta) tekis uslubda, lekin ular Xizmatlar
+bo'limining asosiy kartochkalarida turadi — ya'ni P3 da chizilgan
+P1/P2 roli. Ularni 3D uslubda qayta chizdirish kerak. Aksincha,
+`app-play` va `app-store` 3D, lekin mayda yordamchi belgilar — ular
+P3 ga tushishi kerak.
 
 ## Do'kon logotiplari
 

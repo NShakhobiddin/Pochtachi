@@ -14,7 +14,7 @@ import numpy as np
 from PIL import Image
 
 SRC = sys.argv[1] if len(sys.argv) > 1 else 'icons/glyphs'
-INK = np.array([59, 44, 201], np.float32)     # #3B2CC9
+INK = np.array([26, 31, 176], np.float32)     # #1A1FB0
 SIZE = 96                                      # ekranda 38 px, 2.5x
 
 # manba glif -> ilovadagi nom

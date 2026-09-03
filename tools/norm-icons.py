@@ -12,7 +12,7 @@ from PIL import Image
 
 SRC = sys.argv[1] if len(sys.argv) > 1 else 'icons/glyphs'
 SIZE = 96
-INK = np.array([0x3B, 0x2C, 0xC9], np.float32)
+INK = np.array([0x1A, 0x1F, 0xB0], np.float32)
 
 MAP = {
     'tax-free':   'meyor',   # bojsiz me'yor

@@ -677,6 +677,20 @@ try {
   check('ranglar soni cheklangan', dizaynRang.length <= 80, dizaynRang.length + ' ta');
   check('binafsha qoldig\'i yo\'q', binafsha.length === 0, binafsha.slice(0, 6).join(' '));
 
+  /* Rasm uyalari ham shkalada: 3D ikonkalar 42, 44, 46, 52, 58, 62, 64 px
+     kabi yetti xil o'lchamda chizilar edi. */
+  const UYA = new Set([16, 24, 32, 40, 48, 64]);
+  const yomonUya = new Set();
+  for (const m of src.matchAll(/style="([^"]*width:(\d+)px;height:\2px[^"]*)"/g)) {
+    const st = m[1];
+    if (st.includes('brand')) continue;
+    if (!st.includes('icons/') && !/\bpic\s*\}\}/.test(st)) continue;
+    if (!UYA.has(+m[2])) yomonUya.add(m[2] + 'px');
+  }
+  for (const m of src.matchAll(/<img src="icons\/([^"]+)"[^>]*width="(\d+)"/g))
+    if (!m[1].startsWith('brand') && !UYA.has(+m[2])) yomonUya.add(m[2] + 'px');
+  check('rasm uyalari shkalada', yomonUya.size === 0, [...yomonUya].join(' '));
+
   /* Kulrang shkala uch pog'onadan iborat: kuchli, passiv, bezak. */
   const kulrang = [...new Set((src.match(/#[0-9A-F]{6}/gi) || []).map(h => h.toUpperCase()))]
     .filter(h => {
