@@ -266,7 +266,7 @@
   <header style="display:flex;align-items:center;gap:10px;padding:calc(22px + var(--xy-safe-top)) 18px 12px;flex:none;min-height:44px">
     <sc-if value="{{ showBack }}" hint-placeholder-val="{{ false }}">
       <button sc-camel-on-click="{{ back }}" aria-label="Orqaga qaytish" style="width:44px;height:44px;border:none;background:#FFFFFF;border-radius:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="background:#F0EFFC">
-        <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#151329" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+        <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#151329" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
       </button>
     </sc-if>
     <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
@@ -281,13 +281,13 @@
       <div style="flex:1"></div>
       <div style="display:flex;gap:10px">
         <button sc-camel-on-click="{{ goShipments }}" aria-label="Jo'natmalarni kuzatish" style="width:44px;height:44px;border:none;background:#FFFFFF;border-radius:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="background:#F0EFFC">
-          <svg width="19" height="19" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"></path></svg>
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"></path></svg>
         </button>
       </div>
     </sc-if>
     <sc-if value="{{ showSortBtn }}" hint-placeholder-val="{{ false }}">
       <button sc-camel-on-click="{{ openSheet }}" aria-label="Saralash va filtr" style="width:44px;height:44px;border:none;background:#FFFFFF;border-radius:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="background:#F0EFFC">
-        <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M7 20l-3-3M17 20V4M17 4l3 3"></path></svg>
+        <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M7 20l-3-3M17 20V4M17 4l3 3"></path></svg>
       </button>
     </sc-if>
   </header>
@@ -339,11 +339,11 @@
 
       <div style="display:flex;flex-direction:column;gap:10px">
         <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:0 16px;height:52px;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
-          <svg width="19" height="19" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
           <input value="{{ hq }}" sc-camel-on-input="{{ onHq }}" placeholder="Do'kon, kuryer yoki mahsulot" type="search" enterkeyhint="search" aria-label="Do'kon, kuryer yoki mahsulot izlash" style="flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;font-weight:500;color:#151329">
           <sc-if value="{{ hqOn }}" hint-placeholder-val="{{ false }}">
             <button sc-camel-on-click="{{ clearHq }}" style="width:28px;height:28px;border-radius:999px;border:none;background:#F1F1F8;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none" style-hover="background:#E9E8F2">
-              <svg width="13" height="13" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.7" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
             </button>
           </sc-if>
         </div>
@@ -385,7 +385,7 @@
               <button sc-camel-on-click="{{ sq.run }}" style="flex:none;height:36px;padding:0 13px;border:none;border-radius:999px;background:#FFFFFF;color:#4E4E6B;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">{{ sq.t }}</button>
             </sc-for>
             <button sc-camel-on-click="{{ clearSearches }}" aria-label="Qidiruv tarixini tozalash" style="flex:none;width:36px;height:36px;border:none;border-radius:999px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#EFEEF6">
-              <svg width="13" height="13" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.7" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
             </button>
           </div>
         </sc-if>
@@ -408,7 +408,7 @@
           </div>
           <span style="font-size:11px;font-weight:500;color:#6C6B85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ rateSrcLabel }}</span>
         </div>
-        <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
+        <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
       </button>
 
       <!-- Sevimlilar: foydalanuvchi o'zi belgilagan do'kon, kuryer va
@@ -416,7 +416,7 @@
       <sc-if value="{{ hasFavs }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;align-items:center;gap:10px;padding:0 2px">
-            <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="#F5B301" stroke="#F5B301" stroke-width="1.6" stroke-linejoin="round" style="flex:none"><path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.75L12 16.9l-5.2 2.7 1-5.75-4.2-4.1 5.8-.85z"></path></svg>
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="#F5B301" stroke="#F5B301" stroke-width="2.7" stroke-linejoin="round" style="flex:none"><path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.75L12 16.9l-5.2 2.7 1-5.75-4.2-4.1 5.8-.85z"></path></svg>
             <h2 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:17px;font-weight:800;color:#151329;letter-spacing:-.3px">Sevimlilar</h2>
             <div style="flex:1"></div>
             <span style="flex:none;font-size:11px;font-weight:500;color:#6C6B85;background:#FFFFFF;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ favCount }}</span>
@@ -479,7 +479,7 @@
                 <div style="font-size:15px;color:rgba(255,255,255,.93);line-height:1.5">5 qadamda yo'lni ko'rsataman — do'kondan bojgacha.</div>
               </div>
               <div style="width:44px;height:44px;border-radius:20px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 8px 18px -8px rgba(45,30,150,.40)">
-                <svg width="19" height="19" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
               </div>
             </div>
             <div style="display:flex;gap:8px;align-items:center">
@@ -498,7 +498,7 @@
           <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
             <img src="icons/stores-3d.webp" alt="" width="64" height="64" style="width:64px;height:64px;object-fit:contain;flex:none">
             <div style="width:28px;height:28px;border-radius:999px;background:#EBE8FE;display:flex;align-items:center;justify-content:center;flex:none">
-              <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
             </div>
           </div>
           <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
@@ -515,7 +515,7 @@
           <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
             <img src="icons/courier-3d.webp" alt="" width="64" height="64" style="width:64px;height:64px;object-fit:contain;flex:none">
             <div style="width:28px;height:28px;border-radius:999px;background:#DDF1F4;display:flex;align-items:center;justify-content:center;flex:none">
-              <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#0E8595" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#0E8595" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
             </div>
           </div>
           <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
@@ -532,7 +532,7 @@
           <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
             <img src="icons/customs-3d.webp" alt="" width="64" height="64" style="width:64px;height:64px;object-fit:contain;flex:none">
             <div style="width:28px;height:28px;border-radius:999px;background:#FBEFD6;display:flex;align-items:center;justify-content:center;flex:none">
-              <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B87400" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B87400" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
             </div>
           </div>
           <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
@@ -549,7 +549,7 @@
           <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
             <img src="icons/guides-3d.webp" alt="" width="64" height="64" style="width:64px;height:64px;object-fit:contain;flex:none">
             <div style="width:28px;height:28px;border-radius:999px;background:#DEF2E7;display:flex;align-items:center;justify-content:center;flex:none">
-              <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#12874A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#12874A" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
             </div>
           </div>
           <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
@@ -569,7 +569,7 @@
           <span style="font-size:15px;font-weight:800;color:#151329;letter-spacing:-.2px">Mutaxassis yordami</span>
           <span style="font-size:13px;color:#6C6B85;font-weight:600;line-height:1.4">Bojxona konsultatsiyasi · kuryerlarga yuridik va texnik yordam</span>
         </div>
-        <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
+        <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
       </button>
 
       <sc-if value="{{ wizardSmall }}" hint-placeholder-val="{{ false }}">
@@ -579,7 +579,7 @@
             <div style="font-size:17px;font-weight:700;color:#151329">Reja tuzish</div>
             <div style="font-size:13px;color:#6C6B85;font-weight:500">Do'kon, kuryer va boj — birdaniga</div>
           </div>
-          <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
         </button>
       </sc-if>
 
@@ -597,7 +597,7 @@
               </sc-if>
             </div>
             <button sc-camel-on-click="{{ nextTip }}" aria-label="Keyingi maslahat" style-after="content:'';position:absolute;inset:-6px" style="position:relative;width:40px;height:40px;border:none;background:#F1F1F8;border-radius:20px;box-shadow:inset 0 0 0 1px #E6E6EF;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#EBE8FE">
-              <svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"></path><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"></path><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"></path></svg>
             </button>
           </div>
           <div style="font-size:15px;color:#333350;line-height:1.5;text-wrap:pretty">{{ tipText }}</div>
@@ -700,11 +700,11 @@
 
           <button sc-camel-on-click="{{ openAllStores }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:14px 15px;cursor:pointer;text-align:left;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
             <div style="width:40px;height:40px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#EBE8FE">
-              <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+              <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </div>
             <span style="flex:1;font-size:15px;font-weight:800;color:#151329">Barcha do'konlar</span>
             <span style="flex:none;font-size:11px;font-weight:500;color:#6C6B85;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ allStoresCount }}</span>
-            <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
           </button>
         </div>
       </sc-if>
@@ -717,7 +717,7 @@
           <button sc-camel-on-click="{{ c.toggle }}" style="flex:none;height:38px;padding:0 16px;border-radius:999px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;background:{{ c.bg }};color:{{ c.fg }};border:1.5px solid {{ c.bd }};box-shadow:{{ c.sh }}">{{ c.label }}</button>
         </sc-for>
         <button sc-camel-on-click="{{ openSheet }}" style="flex:none;height:38px;padding:0 16px;border-radius:999px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;background:#FFFFFF;color:#3B2CC9;border:1.5px solid #FFFFFF;display:flex;align-items:center;gap:8px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
-          <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>
+          <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>
           Filtr
         </button>
       </div>
@@ -789,7 +789,7 @@
               </div>
             </div>
             <div style="width:30px;height:30px;border-radius:14px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;flex:none">
-              <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
             </div>
           </button>
               </sc-for>
@@ -818,14 +818,14 @@
         <!-- Sevimliga belgilash: belgilangani bosh sahifada alohida tasmada
              chiqadi va qidirib o'tirish shart bo'lmaydi. -->
         <button sc-camel-on-click="{{ storeFav }}" aria-label="{{ storeFavLabel }}" style="flex:none;width:44px;height:44px;border:none;border-radius:999px;background:{{ storeFavBg }};cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#F2F1FA">
-          <svg width="21" height="21" sc-camel-view-box="0 0 24 24" fill="{{ storeFavFill }}" stroke="{{ storeFavStroke }}" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.75L12 16.9l-5.2 2.7 1-5.75-4.2-4.1 5.8-.85z"></path></svg>
+          <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="{{ storeFavFill }}" stroke="{{ storeFavStroke }}" stroke-width="1.75" stroke-linejoin="round"><path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.75L12 16.9l-5.2 2.7 1-5.75-4.2-4.1 5.8-.85z"></path></svg>
         </button>
       </div>
 
       <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
         <div style="display:flex;align-items:center;gap:10px">
           <div style="width:26px;height:26px;border-radius:12px;background:#E8EEFE;display:flex;align-items:center;justify-content:center;flex:none">
-            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#2456C8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h13v11H1z"></path><path d="M14 7h4l3 3v4h-7z"></path><circle cx="5" cy="17" r="2"></circle><circle cx="17" cy="17" r="2"></circle></svg>
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#2456C8" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h13v11H1z"></path><path d="M14 7h4l3 3v4h-7z"></path><circle cx="5" cy="17" r="2"></circle><circle cx="17" cy="17" r="2"></circle></svg>
           </div>
           <span style="font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px">Bu do'kondan qanday keltirish</span>
         </div>
@@ -849,13 +849,13 @@
                   <span style="font-size:13px;color:#6C6B85;font-weight:600">{{ k.days }}</span>
                 </div>
                 <span style="flex:none;font-size:13px;font-weight:800;color:#3B2CC9;font-variant-numeric:tabular-nums">{{ k.rate }}</span>
-                <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
+                <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
               </button>
             </sc-for>
             <!-- Ilgari bu oddiy matn edi va bosilishi bilinmasdi — endi o'z yuzasi bor. -->
             <button sc-camel-on-click="{{ store.allCouriers }}" style="align-self:flex-start;display:flex;align-items:center;gap:8px;background:#F0EDFE;border:none;border-radius:14px;font-family:inherit;font-size:13px;font-weight:800;color:#3B2CC9;cursor:pointer;padding:9px 14px;text-align:left;min-height:38px" style-hover="background:#E1DBFB">
               Shu yo'nalishdagi {{ store.courierCount }} kuryerni ko'rish
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 12h13M13 7l5 5-5 5"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 12h13M13 7l5 5-5 5"></path></svg>
             </button>
           </div>
         </sc-if>
@@ -864,7 +864,7 @@
       <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
         <div style="display:flex;align-items:center;gap:10px">
           <div style="width:26px;height:26px;border-radius:12px;background:#E9F8EF;display:flex;align-items:center;justify-content:center;flex:none">
-            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#0F7B3E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#0F7B3E" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
           </div>
           <span style="font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px">Kuchli tomonlari</span>
         </div>
@@ -879,7 +879,7 @@
       <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
         <div style="display:flex;align-items:center;gap:10px">
           <div style="width:26px;height:26px;border-radius:12px;background:#FDF3E3;display:flex;align-items:center;justify-content:center;flex:none">
-            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 17h.01"></path></svg>
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 17h.01"></path></svg>
           </div>
           <span style="font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px">E'tibor bering</span>
         </div>
@@ -907,7 +907,7 @@
             <!-- Qaytarish o'qi: ilgari o'q uchi "L" bo'lib alohida turardi va yoy
                    unga yetib bormasdi — 14 px da "t" harfiga o'xshab qolgandi.
                    Endi yoy o'q uchida tugaydi. -->
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#2456C8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5v6h6"></path><path d="M5.51 16a9 9 0 1 0 2.13-9.36L3 11"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#2456C8" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5v6h6"></path><path d="M5.51 16a9 9 0 1 0 2.13-9.36L3 11"></path></svg>
           </div>
           <span style="font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px">Qaytarish siyosati</span>
         </div>
@@ -922,10 +922,10 @@
       <div style="display:flex;flex-direction:column;gap:10px">
         <a class="xy-tap" href="{{ store.url }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:24px;padding:14px 16px;text-decoration:none;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
           <div style="width:32px;height:32px;border-radius:12px;background:linear-gradient(150deg,#F0EDFE,#E1DBFB);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:inset 0 0 0 1px rgba(59,44,201,.09)">
-            <svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"></path></svg>
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"></path></svg>
           </div>
           <span style="flex:1;font-size:15px;font-weight:700;color:#151329">{{ store.domain }}</span>
-          <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg>
+          <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg>
         </a>
         <sc-if value="{{ store.hasApps }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;gap:10px">
@@ -941,13 +941,13 @@
       <sc-if value="{{ store.hasFullGuide }}" hint-placeholder-val="{{ false }}">
       <button sc-camel-on-click="{{ store.openFullGuide }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:16px 18px;cursor:pointer;text-align:left;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
         <div style="width:34px;height:34px;border-radius:20px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;flex:none">
-          <svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"></path><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"></path></svg>
+          <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"></path><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"></path></svg>
         </div>
         <div style="flex:1;display:flex;flex-direction:column;gap:4px">
           <span style="font-size:15px;font-weight:700;color:#151329;line-height:1.35">To'liq qo'llanma</span>
           <span style="font-size:13px;font-weight:600;color:#6C6B85">{{ store.fullGuideSections }} bo'lim · kalkulyator · lug'at · FAQ</span>
         </div>
-        <svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+        <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
       </button>
       </sc-if>
 
@@ -997,7 +997,7 @@
                 <span style="font-size:11px;font-weight:500;color:#6C6B85;line-height:1.4;overflow-wrap:anywhere">{{ courierTop.title }} · {{ courierTop.sub }}</span>
               </div>
               <div style="width:30px;height:30px;border-radius:14px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;flex:none">
-                <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#0E8595" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+                <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#0E8595" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
               </div>
             </button>
           </sc-if>
@@ -1024,11 +1024,11 @@
 
           <button sc-camel-on-click="{{ openAllCouriers }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:14px 15px;cursor:pointer;text-align:left;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
             <div style="width:40px;height:40px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#EBE8FE">
-              <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+              <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </div>
             <span style="flex:1;font-size:15px;font-weight:800;color:#151329">Barcha kuryerlar</span>
             <span style="flex:none;font-size:11px;font-weight:500;color:#6C6B85;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ allCouriersCount }}</span>
-            <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
           </button>
         </div>
       </sc-if>
@@ -1060,7 +1060,7 @@
           <div style="display:flex;align-items:center;gap:12px;content-visibility:auto;contain-intrinsic-size:auto 150px">
             <sc-if value="{{ compareMode }}" hint-placeholder-val="{{ false }}">
               <button sc-camel-on-click="{{ c.toggleSel }}" style="width:26px;height:26px;border-radius:12px;flex:none;cursor:pointer;background:{{ c.selBg }};border:2px solid {{ c.selBd }};display:flex;align-items:center;justify-content:center">
-                <svg width="13" height="13" sc-camel-view-box="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+                <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
               </button>
             </sc-if>
             <button sc-camel-on-click="{{ c.open }}" style="flex:1;background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;min-width:0;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
@@ -1083,14 +1083,14 @@
               </div>
               <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                 <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#4E4E6B;background:#F1F1F8;padding:5px 10px;border-radius:999px">
-                  <svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3.5 2"></path></svg>{{ c.days }}</span>
+                  <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3.5 2"></path></svg>{{ c.days }}</span>
                 <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#4E4E6B;background:#F1F1F8;padding:5px 10px;border-radius:999px">
-                  <svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5a2.1 2.1 0 00-3-3L13 8 4.8 6.2a.5.5 0 00-.5.8l3.6 3.6-2.1 2.1-2.1-.5-1 1 3 1.8 1.8 3 1-1-.5-2.1 2.1-2.1 3.6 3.6a.5.5 0 00.8-.5z"></path></svg>{{ c.mode }}</span>
+                  <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5a2.1 2.1 0 00-3-3L13 8 4.8 6.2a.5.5 0 00-.5.8l3.6 3.6-2.1 2.1-2.1-.5-1 1 3 1.8 1.8 3 1-1-.5-2.1 2.1-2.1 3.6 3.6a.5.5 0 00.8-.5z"></path></svg>{{ c.mode }}</span>
                 <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#4E4E6B;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">
-                  <svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a15 15 0 010 18 15 15 0 010-18"></path></svg>{{ c.nRoutes }} davlat</span>
+                  <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a15 15 0 010 18 15 15 0 010-18"></path></svg>{{ c.nRoutes }} davlat</span>
                 <sc-if value="{{ c.tracking }}" hint-placeholder-val="{{ true }}">
                   <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#0F7B3E;background:#E9F8EF;padding:5px 10px;border-radius:999px">
-                    <svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="#0F7B3E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>Tracking</span>
+                    <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#0F7B3E" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>Tracking</span>
                 </sc-if>
               </div>
               <sc-if value="{{ c.hasFeat }}" hint-placeholder-val="{{ false }}">
@@ -1151,7 +1151,7 @@
             </div>
           </div>
           <button sc-camel-on-click="{{ courierFav }}" aria-label="{{ courierFavLabel }}" style="flex:none;width:44px;height:44px;border:none;border-radius:999px;background:{{ courierFavBg }};cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#F2F1FA">
-          <svg width="21" height="21" sc-camel-view-box="0 0 24 24" fill="{{ courierFavFill }}" stroke="{{ courierFavStroke }}" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.75L12 16.9l-5.2 2.7 1-5.75-4.2-4.1 5.8-.85z"></path></svg>
+          <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="{{ courierFavFill }}" stroke="{{ courierFavStroke }}" stroke-width="1.75" stroke-linejoin="round"><path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.75L12 16.9l-5.2 2.7 1-5.75-4.2-4.1 5.8-.85z"></path></svg>
         </button>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none">
             <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;font-weight:800;color:#151329;letter-spacing:-.6px;font-variant-numeric:tabular-nums">{{ courier.priceLabel }}</span>
@@ -1232,7 +1232,7 @@
         <div style="background:#FFFFFF;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;align-items:center;gap:10px">
             <div style="width:26px;height:26px;border-radius:12px;background:#FCEAEA;display:flex;align-items:center;justify-content:center;flex:none">
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#9B1C1C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M6 6l12 12"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#9B1C1C" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M6 6l12 12"></path></svg>
             </div>
             <span style="font-size:17px;font-weight:700;color:#151329;letter-spacing:-.2px">Cheklovlar</span>
           </div>
@@ -1246,7 +1246,7 @@
       </sc-if>
 
       <div style="display:flex;gap:12px;background:#FDF3E3;border-radius:20px;padding:13px 15px">
-        <svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+        <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
         <span style="font-size:13px;color:#B45309;line-height:1.5;font-weight:500">Tariflar kuryerlarning rasmiy manbalaridan {{ courier.updated }} holatiga ko'ra olingan. Yakuniy narx vazn, hajm va yo'nalishga qarab o'zgaradi.</span>
       </div>
     </div>
@@ -1281,7 +1281,7 @@
                 <span style="font-size:13px;font-weight:800;color:#151329;font-variant-numeric:tabular-nums;flex:none">{{ m.usd }}</span>
                 <span style="flex:1;min-width:0;font-size:13px;font-weight:500;color:#6C6B85">{{ m.meta }}</span>
                 <button sc-camel-on-click="{{ m.del }}" aria-label="Jo'natmani o'chirish" style="width:44px;height:44px;margin:-11px -9px -11px 0;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none">
-                  <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+                  <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.7" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
                 </button>
               </div>
             </sc-for>
@@ -1311,7 +1311,7 @@
           <span style="font-size:13px;color:#6C6B85;font-weight:600;line-height:1.5">boj va yig'imni hisoblang · hozir {{ calcTotal }} so'm</span>
         </div>
         <div style="width:30px;height:30px;border-radius:14px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;flex:none">
-          <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+          <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
         </div>
       </button>
 
@@ -1331,7 +1331,7 @@
             <span style="font-size:11px;font-weight:500;color:#6C6B85;line-height:1.4">oyiga · notijorat maqsad · miqdoriy normalar</span>
           </div>
           <div style="width:30px;height:30px;border-radius:14px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;flex:none">
-            <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
           </div>
         </button>
         <!-- Qolgan to'rttasi 2x2 plitka: mavzu bo'yicha rangi bor, shu bilan
@@ -1341,7 +1341,7 @@
           <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%">
             <img src="icons/boj-tolov.webp" alt="" width="44" height="44" style="width:44px;height:44px;object-fit:contain;flex:none" decoding="async">
             <div style="width:26px;height:26px;border-radius:999px;background:#FAECD8;display:flex;align-items:center;justify-content:center;flex:none">
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
             </div>
           </div>
           <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
@@ -1353,7 +1353,7 @@
           <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%">
             <img src="icons/boj-taqiq.webp" alt="" width="44" height="44" style="width:44px;height:44px;object-fit:contain;flex:none" decoding="async">
             <div style="width:26px;height:26px;border-radius:999px;background:#F9E3E3;display:flex;align-items:center;justify-content:center;flex:none">
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#9B1C1C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#9B1C1C" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
             </div>
           </div>
           <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
@@ -1365,7 +1365,7 @@
           <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%">
             <img src="icons/boj-tartib.webp" alt="" width="44" height="44" style="width:44px;height:44px;object-fit:contain;flex:none" decoding="async">
             <div style="width:26px;height:26px;border-radius:999px;background:#DDF1F4;display:flex;align-items:center;justify-content:center;flex:none">
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#0E8595" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#0E8595" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
             </div>
           </div>
           <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
@@ -1377,7 +1377,7 @@
           <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%">
             <img src="icons/boj-aloqa.webp" alt="" width="44" height="44" style="width:44px;height:44px;object-fit:contain;flex:none" decoding="async">
             <div style="width:26px;height:26px;border-radius:999px;background:#EBE8FE;display:flex;align-items:center;justify-content:center;flex:none">
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
             </div>
           </div>
           <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
@@ -1396,12 +1396,12 @@
           <span style="font-size:13px;color:#6C6B85;font-weight:600;line-height:1.5">ushlangan jo'natma · boj hisobi · hujjatlar</span>
         </div>
         <div style="width:30px;height:30px;border-radius:14px;background:#EBE8FE;display:flex;align-items:center;justify-content:center;flex:none">
-          <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+          <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
         </div>
       </button>
 
       <div style="display:flex;gap:12px;background:#FDF3E3;border-radius:20px;padding:14px 16px">
-        <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+        <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
         <span style="font-size:13px;color:#B45309;line-height:1.5;font-weight:500">Ma'lumotlar amaldagi qonunchilik hujjatlaridan olingan. Yakuniy qaror bojxona organi tomonidan qabul qilinadi.</span>
       </div>
     </div>
@@ -1422,7 +1422,7 @@
         </div>
         <a class="xy-tap" href="https://my.gov.uz/uz/service/717" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);border-radius:20px;padding:14px 15px;text-decoration:none">
           <div style="width:34px;height:34px;border-radius:20px;background:linear-gradient(150deg,#F0EDFE,#E1DBFB);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:inset 0 0 0 1px rgba(59,44,201,.09)">
-            <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"></path><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"></path></svg>
+            <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"></path><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"></path></svg>
           </div>
           <div style="flex:1;display:flex;flex-direction:column;gap:4px">
             <span style="font-size:15px;font-weight:700;color:#151329">Oyda nechta jo'natma keldi?</span>
@@ -1447,7 +1447,7 @@
             </div>
           </sc-for>
           <div style="display:flex;gap:10px;background:#FCEAEA;border-radius:20px;padding:12px 14px">
-            <svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#9B1C1C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M4.9 4.9l14.2 14.2"></path></svg>
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#9B1C1C" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M4.9 4.9l14.2 14.2"></path></svg>
             <span style="font-size:13px;color:#9B1C1C;line-height:1.5;font-weight:500">Alkogol va tamaki mahsulotlarini xalqaro pochta va kuryerlik jo'natmalari orqali olib kirish taqiqlanadi.</span>
           </div>
         </div>
@@ -1518,7 +1518,7 @@
                   <span style="font-size:15px;font-weight:700;color:#151329;line-height:1.35">{{ b.name }}</span>
                   <span style="font-size:11px;font-weight:500;letter-spacing:.5px;color:{{ b.fg }}">{{ b.label }}</span>
                 </div>
-                <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transform:rotate({{ b.rot }})"><path d="M6 9l6 6 6-6"></path></svg>
+                <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transform:rotate({{ b.rot }})"><path d="M6 9l6 6 6-6"></path></svg>
               </button>
               <sc-if value="{{ b.open }}" hint-placeholder-val="{{ false }}">
                 <div style="display:flex;flex-direction:column;gap:10px;padding:0 15px 15px 65px">
@@ -1552,7 +1552,7 @@
             </div>
           </sc-for>
           <div style="display:flex;gap:12px;background:#FDF3E3;border-radius:20px;padding:12px 14px">
-            <svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
             <span style="font-size:13px;color:#B45309;line-height:1.5;font-weight:500">Tasdiqlash yoki rad etish past va o'rta xavfli jo'natmalar uchun ixtiyoriy, yuqori xavflilar uchun majburiy.</span>
           </div>
           <a href="https://my.gov.uz/uz/service/1364" target="_blank" rel="noopener noreferrer" style="font-size:13px;font-weight:700;color:#3B2CC9;text-decoration:none">YIDXP orqali xabarnomani tasdiqlash →</a>
@@ -1579,7 +1579,7 @@
           <div style="display:flex;align-items:center;gap:6px;background:#FFFFFF;border:1.5px solid #DFDCF5;border-radius:20px;padding:9px 12px;box-shadow:none">
             <input size="6" value="{{ calcPrice }}" sc-camel-on-change="{{ onCalcPrice }}" placeholder="masalan 320" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Kalendar oydagi umumiy summa, AQSh dollarida" style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;flex:1;min-width:0;border:none;outline:none;font-size:22px;font-weight:800;color:#151329;background:transparent;font-variant-numeric:tabular-nums;letter-spacing:-.4px;caret-color:#3B2CC9">
             <span style="font-size:13px;font-weight:700;color:#6C6B85;flex:none">USD</span>
-            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#7E71E0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"></path></svg>
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#7E71E0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"></path></svg>
           </div>
           <span style="font-size:11px;color:#6C6B85;line-height:1.5">Shu oyda kelgan barcha jo'natmalar qiymatini qo'shib yozing</span>
         </div>
@@ -1589,7 +1589,7 @@
             <div style="display:flex;align-items:center;gap:6px;background:#FFFFFF;border:1.5px solid #DFDCF5;border-radius:20px;padding:9px 12px;box-shadow:none;gap:4px;padding:9px 10px">
               <input size="3" value="{{ calcWeight }}" sc-camel-on-change="{{ onCalcWeight }}" placeholder="2.5" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Umumiy vazn, kilogrammda" style="flex:1;width:100%;min-width:0;border:none;outline:none;font-size:17px;font-weight:800;color:#151329;background:transparent;font-variant-numeric:tabular-nums;letter-spacing:-.3px;caret-color:#3B2CC9">
               <span style="font-size:13px;font-weight:700;color:#6C6B85;flex:none">kg</span>
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#7E71E0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#7E71E0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"></path></svg>
             </div>
           </div>
           <div style="flex:1.15;min-width:0;background:#FFFFFF;border-radius:20px;padding:13px 14px;display:flex;flex-direction:column;gap:6px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
@@ -1597,7 +1597,7 @@
             <div style="display:flex;align-items:center;gap:6px;background:#FFFFFF;border:1.5px solid #DFDCF5;border-radius:20px;padding:9px 12px;box-shadow:none;gap:4px;padding:9px 10px">
               <input size="3" value="{{ calcShip }}" sc-camel-on-change="{{ onCalcShip }}" placeholder="9" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Yetkazish narxi, 1 kilogramm uchun dollarda" style="flex:1;width:100%;min-width:0;border:none;outline:none;font-size:17px;font-weight:800;color:#151329;background:transparent;font-variant-numeric:tabular-nums;letter-spacing:-.3px;caret-color:#3B2CC9">
               <span style="font-size:13px;font-weight:700;color:#6C6B85;flex:none">$</span>
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#7E71E0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#7E71E0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"></path></svg>
             </div>
           </div>
         </div>
@@ -1620,7 +1620,7 @@
               <span style="font-size:15px;font-weight:600;color:#BDB2FA">so'm</span>
             </div>
             <div style="width:46px;height:46px;border-radius:20px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;flex:none">
-              <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="3"></rect><path d="M8 6h8M8 11h2M12 11h2M16 11h.01M8 15h2M12 15h2M16 15h.01M8 19h6"></path></svg>
+              <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="3"></rect><path d="M8 6h8M8 11h2M12 11h2M16 11h.01M8 15h2M12 15h2M16 15h.01M8 19h6"></path></svg>
             </div>
           </div>
           <div style="height:1px;background:rgba(255,255,255,.16)"></div>
@@ -1654,7 +1654,7 @@
 
         <a class="xy-tap" href="https://my.gov.uz/uz/service/717" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:14px 15px;text-decoration:none;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
           <div style="width:34px;height:34px;border-radius:20px;background:linear-gradient(150deg,#F0EDFE,#E1DBFB);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:inset 0 0 0 1px rgba(59,44,201,.09)">
-            <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"></path><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"></path></svg>
+            <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"></path><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"></path></svg>
           </div>
           <div style="flex:1;display:flex;flex-direction:column;gap:4px">
             <span style="font-size:15px;font-weight:700;color:#151329">Oyda nechta jo'natma keldi?</span>
@@ -1663,7 +1663,7 @@
         </a>
 
         <div style="display:flex;gap:12px;background:#FDF3E3;border-radius:20px;padding:14px 16px">
-          <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
           <span style="font-size:13px;color:#B45309;line-height:1.5;font-weight:500">Bu hisob taxminiy. Yakuniy summa bojxona organi aniqlagan bojxona qiymati va to'lov kunidagi kurs bo'yicha belgilanadi.</span>
         </div>
       
@@ -1679,7 +1679,7 @@
                      yozish xatoga olib keladi. -->
                 <button sc-camel-on-click="{{ o.copyAddr }}" aria-label="Manzilni nusxalash" style="display:flex;align-items:flex-start;gap:8px;background:none;border:none;padding:6px 0;margin:-6px 0;text-align:left;cursor:pointer;font-family:inherit">
                   <span style="flex:1;font-size:13px;color:#6C6B85;line-height:1.5">{{ o.addr }}</span>
-                  <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="9" y="9" width="12" height="12" rx="2.5"></rect><path d="M5 15V5.5A2.5 2.5 0 0 1 7.5 3H15"></path></svg>
+                  <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="9" y="9" width="12" height="12" rx="2.5"></rect><path d="M5 15V5.5A2.5 2.5 0 0 1 7.5 3H15"></path></svg>
                 </button>
               </div>
               <div style="display:flex;flex-direction:column;gap:8px">
@@ -1688,7 +1688,7 @@
                     <span style="font-size:13px;font-weight:600;color:#6C6B85">{{ r.k }}</span>
                     <span style="display:flex;align-items:center;gap:7px;min-width:0">
                       <span style="font-size:13px;font-weight:700;color:#151329;font-variant-numeric:tabular-nums;text-align:right">{{ r.v }}</span>
-                      <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="9" y="9" width="12" height="12" rx="2.5"></rect><path d="M5 15V5.5A2.5 2.5 0 0 1 7.5 3H15"></path></svg>
+                      <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="9" y="9" width="12" height="12" rx="2.5"></rect><path d="M5 15V5.5A2.5 2.5 0 0 1 7.5 3H15"></path></svg>
                     </span>
                   </button>
                 </sc-for>
@@ -1706,19 +1706,19 @@
                   <!-- Qo'ng'iroq tugmasi qo'ng'iroq qiladi; raqamni boshqa
                        joyga yozib olish uchun yonida nusxalash tugmasi. -->
                   <button sc-camel-on-click="{{ t.copy }}" aria-label="{{ t.copyLabel }}" style="flex:none;width:48px;border:none;border-radius:14px;background:#EBE8FE;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#E1DBFB">
-                    <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"></rect><path d="M5 15V5.5A2.5 2.5 0 0 1 7.5 3H15"></path></svg>
+                    <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"></rect><path d="M5 15V5.5A2.5 2.5 0 0 1 7.5 3H15"></path></svg>
                   </button>
                   </div>
                 </sc-for>
               </sc-if>
               <div style="display:flex;gap:8px">
                 <a class="xy-tap" href="{{ o.map }}" target="_blank" rel="noopener noreferrer" style="flex:1;min-height:38px;border-radius:20px;background:#EBE8FE;color:#3B2CC9;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none">
-                  <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 10.5c0 5.2-8 12-8 12s-8-6.8-8-12a8 8 0 0 1 16 0z"></path><circle cx="12" cy="10.3" r="2.9"></circle></svg>
+                  <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 10.5c0 5.2-8 12-8 12s-8-6.8-8-12a8 8 0 0 1 16 0z"></path><circle cx="12" cy="10.3" r="2.9"></circle></svg>
                   Xaritada
                 </a>
                 <sc-if value="{{ o.tg }}" hint-placeholder-val="{{ false }}">
                   <a class="xy-tap" href="{{ o.tg }}" target="_blank" rel="noopener noreferrer" style="flex:1;min-height:38px;border-radius:20px;background:#F1F1F8;color:#151329;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none">
-                    <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="#3B2CC9" style="flex:none"><path d="M21.5 4.3 2.9 11.5c-1 .4-1 1.8 0 2.2l4.6 1.6 1.8 5.5c.3.9 1.4 1.1 2 .4l2.5-2.6 4.6 3.4c.7.5 1.7.1 1.9-.7l3.1-15c.2-.9-.7-1.6-1.5-1.3z"></path></svg>
+                    <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="#3B2CC9" style="flex:none"><path d="M21.5 4.3 2.9 11.5c-1 .4-1 1.8 0 2.2l4.6 1.6 1.8 5.5c.3.9 1.4 1.1 2 .4l2.5-2.6 4.6 3.4c.7.5 1.7.1 1.9-.7l3.1-15c.2-.9-.7-1.6-1.5-1.3z"></path></svg>
                     Telegram
                   </a>
                 </sc-if>
@@ -1791,7 +1791,7 @@
             </div>
           </div>
           <div style="width:30px;height:30px;border-radius:14px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;flex:none">
-            <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
           </div>
         </button>
             </sc-for>
@@ -1855,7 +1855,7 @@
       </sc-if>
 
       <div style="display:flex;gap:12px;background:#FDF3E3;border-radius:20px;padding:14px 16px">
-        <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+        <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
         <span style="font-size:13px;color:#B45309;line-height:1.5;font-weight:500;text-wrap:pretty">Holatni o'zingiz belgilaysiz — ilova kuryer tizimlariga ulanmagan. Rasmiy holatni kuryerning o'z sayti yoki botida ko'ring.</span>
       </div>
 
@@ -1891,7 +1891,7 @@
                 <!-- Faqat belgidan iborat havola: ekran o'quvchi uchun nom
                      kerak, aks holda u manzilni o'qib beradi. -->
                 <a class="xy-tap" href="{{ t.tg }}" target="_blank" rel="noopener noreferrer" aria-label="{{ t.tgLabel }}" style="height:44px;width:44px;border-radius:14px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;text-decoration:none">
-                  <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#4E4E6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 3.5L2.8 10.6l5.4 1.9 1.9 5.6 2.6-3.3 4.4 3.2z"></path><path d="M8.2 12.5l9.5-6"></path></svg>
+                  <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#4E4E6B" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 3.5L2.8 10.6l5.4 1.9 1.9 5.6 2.6-3.3 4.4 3.2z"></path><path d="M8.2 12.5l9.5-6"></path></svg>
                 </a>
               </sc-if>
             </div>
@@ -1901,7 +1901,7 @@
 
       <a class="xy-tap" href="https://my.gov.uz/uz/service/1364" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:14px 15px;text-decoration:none;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
         <div style="width:34px;height:34px;border-radius:20px;background:linear-gradient(150deg,#F0EDFE,#E1DBFB);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:inset 0 0 0 1px rgba(59,44,201,.09)">
-          <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 01-3.4 0"></path></svg>
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 01-3.4 0"></path></svg>
         </div>
         <div style="flex:1;display:flex;flex-direction:column;gap:4px">
           <span style="font-size:15px;font-weight:700;color:#151329">Bojxona xabarnomasi</span>
@@ -1941,7 +1941,7 @@
         <div style="display:flex;flex-direction:column;gap:8px">
           <sc-if value="{{ wizCanBack }}" hint-placeholder-val="{{ false }}">
             <button sc-camel-on-click="{{ wizBack }}" style="align-self:flex-start;display:flex;align-items:center;gap:6px;background:none;border:none;padding:4px 0;margin-bottom:-2px;font-family:inherit;font-size:13px;font-weight:700;color:#3B2CC9;cursor:pointer" style-hover="opacity:.75">
-              <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
               {{ wizBackLabel }}
             </button>
           </sc-if>
@@ -1976,7 +1976,7 @@
                 <span style="font-size:17px;font-weight:800;color:#151329;flex:none;letter-spacing:-.4px;font-variant-numeric:tabular-nums">{{ o.price }}</span>
               </sc-if>
               <sc-if value="{{ o.plain }}" hint-placeholder-val="{{ true }}">
-                <svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
+                <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
               </sc-if>
             </button>
           </sc-for>
@@ -2023,7 +2023,7 @@
 
             <button sc-camel-on-click="{{ wizGo }}" style="height:54px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 14px 32px -16px rgba(45,30,150,.52)" style-hover="filter:brightness(1.06)">
               Rejani ko'rish
-              <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+              <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
             </button>
           </div>
         </sc-if>
@@ -2052,7 +2052,7 @@
           </div>
         </div>
         <button sc-camel-on-click="{{ wizEdit }}" style="align-self:flex-start;display:flex;align-items:center;gap:6px;background:none;border:none;padding:2px 0;font-family:inherit;font-size:13px;font-weight:700;color:#3B2CC9;cursor:pointer" style-hover="opacity:.75">
-          <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+          <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
           Narx yoki og'irlikni o'zgartirish
         </button>
         <div style="display:flex;gap:12px">
@@ -2060,7 +2060,7 @@
           <button sc-camel-on-click="{{ wizSave }}" style="flex:1.5;height:52px;border-radius:20px;background:linear-gradient(155deg,#5A46EC,#3423B3);border:none;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 14px 32px -16px rgba(45,30,150,.52)">Rejani saqlash</button>
         </div>
         <div style="display:flex;gap:12px;background:#FDF3E3;border-radius:20px;padding:14px 16px">
-          <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
           <span style="font-size:13px;color:#B45309;line-height:1.5;font-weight:500">Boj hisobi taxminiy. Yakuniy qaror bojxona organi tomonidan qabul qilinadi.</span>
         </div>
       </sc-if>
@@ -2074,7 +2074,7 @@
       <sc-if value="{{ planJustSaved }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;align-items:center;gap:12px;background:linear-gradient(150deg,#EAF9F0 0%,#DEF3E7 100%);border-radius:20px;padding:15px;box-shadow:inset 0 0 0 1px rgba(15,123,62,.13)">
           <div style="width:38px;height:38px;border-radius:999px;flex:none;background:#0F7B3E;display:flex;align-items:center;justify-content:center">
-            <svg width="19" height="19" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.2 5.2L20 7"></path></svg>
+            <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.2 5.2L20 7"></path></svg>
           </div>
           <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
             <span style="font-size:15px;font-weight:800;color:#0B5B2E;letter-spacing:-.2px">Rejangiz tayyor</span>
@@ -2186,7 +2186,7 @@
           <div style="display:flex;flex-direction:column;gap:6px">
             <sc-for list="{{ sv.items }}" as="qq" hint-placeholder-count="2">
               <div style="display:flex;gap:10px;align-items:flex-start">
-                <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#12874A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:3px"><path d="M4 12.5l5.2 5.2L20 7"></path></svg>
+                <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#12874A" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:3px"><path d="M4 12.5l5.2 5.2L20 7"></path></svg>
                 <span style="font-size:13px;color:#4E4E6B;font-weight:500;line-height:1.5">{{ qq.t }}</span>
               </div>
             </sc-for>
@@ -2209,12 +2209,12 @@
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button sc-camel-on-click="{{ svcTg }}" style="flex:1 1 130px;height:48px;border:none;border-radius:14px;background:#FFFFFF;color:#2E1FA8;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
-            <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="currentColor" style="flex:none"><path d="M21.5 4.3 2.9 11.5c-1 .4-1 1.8 0 2.2l4.6 1.6 1.8 5.5c.3.9 1.4 1.1 2 .4l2.5-2.6 4.6 3.4c.7.5 1.7.1 1.9-.7l3.1-15c.2-.9-.7-1.6-1.5-1.3z"></path></svg>
+            <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="currentColor" style="flex:none"><path d="M21.5 4.3 2.9 11.5c-1 .4-1 1.8 0 2.2l4.6 1.6 1.8 5.5c.3.9 1.4 1.1 2 .4l2.5-2.6 4.6 3.4c.7.5 1.7.1 1.9-.7l3.1-15c.2-.9-.7-1.6-1.5-1.3z"></path></svg>
             Telegram
           </button>
           <sc-if value="{{ svcHasPhone }}" hint-placeholder-val="{{ false }}">
             <button sc-camel-on-click="{{ svcCall }}" style="flex:1 1 130px;height:48px;border:none;border-radius:14px;background:rgba(255,255,255,.18);color:#fff;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
-              <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"></path></svg>
+              <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"></path></svg>
               Qo'ng'iroq
             </button>
           </sc-if>
@@ -2222,7 +2222,7 @@
       </div>
 
       <div style="display:flex;gap:12px;background:#FDF3E3;border-radius:20px;padding:14px 16px">
-        <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+        <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
         <span style="font-size:13px;color:#B45309;line-height:1.5;font-weight:500;text-wrap:pretty">Konsultatsiya — hujjat tayyorlash va tartibni tushuntirish. Bojxona bo'yicha yakuniy qarorni faqat bojxona organi qabul qiladi; xizmat natijani kafolatlamaydi.</span>
       </div>
 
@@ -2277,13 +2277,13 @@
       <sc-if value="{{ canInstall }}" hint-placeholder-val="{{ true }}">
         <button sc-camel-on-click="{{ installApp }}" style="display:flex;align-items:center;gap:12px;background:linear-gradient(155deg,#5A46EC,#3423B3);border:none;border-radius:20px;padding:16px 18px;cursor:pointer;width:100%;text-align:left;box-shadow:0 14px 32px -18px rgba(45,30,150,.52)">
           <span style="flex:1;font-size:15px;font-weight:700;color:#FFFFFF">Ilovani telefonga o'rnatish</span>
-          <svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 21h14"></path></svg>
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 21h14"></path></svg>
         </button>
       </sc-if>
 
       <button sc-camel-on-click="{{ reportInfo }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:16px 18px;cursor:pointer;width:100%;text-align:left;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
         <span style="flex:1;font-size:15px;font-weight:600;color:#151329">Ma'lumot noto'g'ri — xabar berish</span>
-        <svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+        <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
       </button>
 
       <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
@@ -2326,10 +2326,10 @@
         <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(155deg,#5A46EC,#3423B3);display:flex;align-items:center;justify-content:center;margin-top:-28px;transition:box-shadow .24s ease,transform .3s cubic-bezier(.34,1.5,.5,1);box-shadow:{{ tb.wizard.fabSh }};transform:{{ tb.wizard.fabTf }}">
           <!-- Reja: belgilangan ro'yxat. Bojxonaning qalqonidan ham,
                Qo'llanmalarning kitobidan ham aniq farq qiladi. -->
-          <svg width="27" height="27" sc-camel-view-box="0 0 24 24" fill="none" style="flex:none">
-            <path d="M4.4 7h8.4M4.4 12h8.4M4.4 17h5.2" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"></path>
+          <svg width="28" height="28" sc-camel-view-box="0 0 24 24" fill="none" style="flex:none">
+            <path d="M4.4 7h8.4M4.4 12h8.4M4.4 17h5.2" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"></path>
             <circle cx="17.3" cy="15.6" r="5.4" fill="#FFFFFF" opacity=".26"></circle>
-            <path d="M14.9 15.6l1.8 1.8 3.4-3.7" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M14.9 15.6l1.8 1.8 3.4-3.7" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>
         </div>
         <span style="font-size:11px;letter-spacing:-.1px;font-weight:{{ tb.wizard.w }};color:{{ tb.wizard.lbl }}">Reja</span>
@@ -4149,18 +4149,22 @@ class Component extends DCLogic {
       cHome: tabColor('home'), cStores: tabColor('stores'), cWizard: tabColor('wizard'), cShip: tabColor('shipments'), cSet: tabColor('settings'),
       fHome: cur === 'home' ? '#DEDAFD' : 'none',
       tb: (() => {
+        /* Faol tab rang (#3B2CC9), yozuv qalinligi (800) va ohang
+           bilan ajraladi. Chiziq qalinligi ikkalasida bir xil: u
+           ikonka o'lchamiga bog'langan tizim qiymati (22px -> 1.75),
+           holatga emas. */
         const on = k => ({
           chip: '#EBE8FE', sh: 'none',
           tf: 'translateY(0)',
           isOn: true, isOff: false, cur: 'page',
-          lbl: '#3B2CC9', w: '800', sw: '2.3',
+          lbl: '#3B2CC9', w: '800', sw: '1.75',
           fabSh: '0 8px 20px rgba(59,44,201,.34),0 0 0 6px rgba(59,44,201,.08)',
           fabTf: 'translateY(-3px) scale(1.06)'
         });
         const off = k => ({
           chip: 'transparent', sh: 'none', tf: 'translateY(0)',
           isOn: false, isOff: true, cur: '',
-          lbl: '#6C6B85', w: '600', sw: '1.9',
+          lbl: '#6C6B85', w: '600', sw: '1.75',
           fabSh: '0 6px 16px rgba(59,44,201,.26)',
           fabTf: 'translateY(0) scale(1)'
         });

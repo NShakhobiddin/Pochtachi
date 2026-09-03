@@ -592,6 +592,23 @@ try {
   const egri = [...src.matchAll(/[\u2018\u2019\u02BB\u02BC]/g)].length;
   check('apostrof bir xil', egri === 0, egri ? egri + ' ta egri apostrof' : '');
 
+  /* Ikonka shkalasi: to'rt o'lcham, har birida chiziq ekranda ~1.6px.
+     viewBox hamma joyda 24, ya'ni ko'rinadigan qalinlik = sw * o'lcham / 24.
+     Ilgari 9 o'lcham va 6 qalinlik bor edi, chiziq 1.28-2.66px orasida edi. */
+  const IKON = { 14: '2.7', 18: '2.1', 22: '1.75', 28: '1.4' };
+  const yomonIkon = [];
+  for (const m of src.matchAll(/<svg\s[^>]*width="(\d+)"[^>]*>/g)) {
+    const w = +m[1];
+    if (!IKON[w]) { yomonIkon.push(w + 'px o\'lcham'); continue; }
+    const sw = /stroke-width="([0-9.]+)"/.exec(m[0]);
+    if (sw && sw[1] !== IKON[w]) yomonIkon.push(`${w}px -> sw ${sw[1]}, kerak ${IKON[w]}`);
+  }
+  /* Tab ikonkalari qalinlikni JS dan oladi. */
+  for (const m of src.matchAll(/sw: '([0-9.]+)'/g))
+    if (m[1] !== '1.75') yomonIkon.push('tab sw ' + m[1]);
+  check('chiziqli ikonkalar bitta shkalada', yomonIkon.length === 0,
+    [...new Set(yomonIkon)].slice(0, 5).join(' | '));
+
   /* Kulrang shkala uch pog'onadan iborat: kuchli, passiv, bezak. */
   const kulrang = [...new Set((src.match(/#[0-9A-F]{6}/gi) || []).map(h => h.toUpperCase()))]
     .filter(h => {
