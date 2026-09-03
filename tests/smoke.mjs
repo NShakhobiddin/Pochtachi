@@ -265,8 +265,9 @@ try {
     quti.every(q => q.fon === 'rgba(0, 0, 0, 0)'),
     `${quti.length} ta quti, rasmli ${quti.filter(q => q.rasm).length}`);
 
-  /* Yettita qo'llanma endi davlat bo'yicha guruhlangan va har bir kartochka
-     o'z brend ohangida — ilgari hammasi bir xil oq qator edi. */
+  /* Yettita qo'llanma davlat bo'yicha guruhlangan. Kartochka oq: rang
+     do'konning kvadrat logotipida turadi, kartaning o'zi bo'yalmaydi —
+     aks holda yuza kir bo'lib ko'rinadi. */
   const grp = await page.evaluate(() => {
     /* Dvigatel {{ }} ni yana bitta span ichiga o'raydi, shuning uchun
        tashqi o'ram ham mos keladi — ichkarisini olamiz. */
@@ -275,12 +276,12 @@ try {
         /^(Xitoy|Turkiya|AQSh|Global|Buyuk Britaniya|BAA)$/.test((x.textContent || '').trim()));
     const kart = [...document.querySelectorAll('main button')]
       .filter(x => /BO'LIM/.test(x.innerText));
-    const fon = new Set(kart.map(x => getComputedStyle(x).backgroundImage));
-    return { guruh: bosh.map(x => x.textContent.trim()), kart: kart.length, ohang: fon.size };
+    const oq = kart.every(x => getComputedStyle(x).backgroundColor === 'rgb(255, 255, 255)');
+    return { guruh: bosh.map(x => x.textContent.trim()), kart: kart.length, oq };
   });
   check("qo'llanmalar davlat bo'yicha guruhlangan",
-    grp.guruh.length === 3 && grp.guruh[0] === 'Xitoy' && grp.kart === 7 && grp.ohang >= 5,
-    `${grp.guruh.join(' / ')} · ${grp.kart} kartochka, ${grp.ohang} xil ohang`);
+    grp.guruh.length === 3 && grp.guruh[0] === 'Xitoy' && grp.kart === 7 && grp.oq,
+    `${grp.guruh.join(' / ')} · ${grp.kart} kartochka, oq fon ${grp.oq}`);
 
   /* Ekran almashganda kirish animatsiyasi qayta ishga tushadi. */
   await page.locator('nav button', { hasText: 'Bojxona' }).first().click();
@@ -901,7 +902,7 @@ try {
     tap.yalang.length === 0 && tap.qoida, tap.yalang.join(' | ') || (tap.qoida ? '' : 'bosish effekti yo\'q'));
 
   /* Bojxona ma'lumotnomasi bir xil oq qatorlar emas: bitta katta kartochka
-     (bojsiz me'yor, raqami yirik) va mavzu rangiga bo'yalgan 2x2 plitka. */
+     (bojsiz me'yor, raqami yirik) va mavzu ohangi bilan ajratilgan 2x2 plitka. */
   await page.locator('nav button', { hasText: 'Bojxona' }).first().click();
   await page.waitForTimeout(700);
   const ritm = await page.evaluate(() => {
@@ -911,7 +912,13 @@ try {
       .find(d => /repeat\(2|1fr\) minmax/.test(d.style.gridTemplateColumns || '') &&
                  d.querySelectorAll(':scope > button').length === 4);
     const plita = grid ? [...grid.querySelectorAll(':scope > button')] : [];
-    const fon = plita.map(b => getComputedStyle(b).backgroundImage);
+    /* Kartochka oq: ohang faqat ikonka ostidagi kvadratda turadi,
+       shuning uchun rang-baranglikni shu kvadratlardan o'lchaymiz. */
+    const fon = plita.map(b => {
+      const plate = [...b.querySelectorAll('div')]
+        .find(d => /^4[0-9]px$/.test(d.style.width) && d.querySelector('img'));
+      return plate ? getComputedStyle(plate).backgroundColor : getComputedStyle(b).backgroundImage;
+    });
     const katta = hero ? [...hero.querySelectorAll('span')]
       .some(x => parseFloat(getComputedStyle(x).fontSize) >= 30 && /^\$\d/.test(x.textContent.trim())) : false;
     return {
@@ -1158,7 +1165,8 @@ try {
     JSON.stringify(bayroq));
 
   /* Yo'nalishlar bir xil oq plitka emas: ustida eng ko'p kuryerli yo'nalish
-     katta kartochkada, qolganlari mintaqa ohangida bo'yalgan. */
+     katta kartochkada, qolganlarida mintaqa ohangi bayroq yonidagi
+     hisob yorlig'ida turadi (kartaning o'zi oq). */
   const yoRitm = await page.evaluate(() => {
     const btns = [...document.querySelectorAll('main button')];
     const hero = btns.find(x => /ENG KO'P KURYER/.test(x.innerText));
@@ -1166,7 +1174,13 @@ try {
       .find(d => /repeat\(2/.test(d.style.gridTemplateColumns || '') &&
                  d.querySelectorAll(':scope > button').length >= 6);
     const plita = grid ? [...grid.querySelectorAll(':scope > button')] : [];
-    const fon = new Set(plita.map(x => getComputedStyle(x).backgroundImage));
+    const fon = new Set(plita.map(x => {
+      const yorliq = [...x.querySelectorAll('span,div')]
+        .find(d => /ta$/.test((d.textContent || '').trim()) &&
+                   getComputedStyle(d).backgroundColor !== 'rgba(0, 0, 0, 0)');
+      return yorliq ? getComputedStyle(yorliq).backgroundColor
+        : getComputedStyle(x).backgroundImage;
+    }));
     const katta = hero ? [...hero.querySelectorAll('span')]
       .some(x => parseFloat(getComputedStyle(x).fontSize) >= 26 && /^\d+$/.test(x.textContent.trim())) : false;
     return { hero: !!hero, katta, plita: plita.length, ohang: fon.size,

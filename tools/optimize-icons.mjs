@@ -37,9 +37,11 @@ const target = name =>
    `svc-` — bir rangli tekis gliflar: canvas orqali yo'qotishli siqilsa
    chekkalari kirlanadi va hajmi ham kattaroq chiqadi, shuning uchun ular
    tools/flatten-glyphs.py da yo'qotishsiz tayyorlanadi. Ikkalasi ham bu
-   yerda chetlab o'tiladi. */
+   yerda chetlab o'tiladi. `brand` — logotip lokapi: uni tools/brand-logo.py
+   ikki xil kesim va ikkita PNG ikonkaga aylantiradi. */
 const sources = readdirSync(SRC)
-  .filter(f => f.endsWith('.webp') && !f.startsWith('raw-') && !f.startsWith('svc-')).sort();
+  .filter(f => f.endsWith('.webp') && !f.startsWith('raw-') && !f.startsWith('svc-')
+    && !f.startsWith('brand')).sort();
 
 if (process.argv.includes('--check')) {
   const missing = sources.filter(f => !existsSync(join(OUT, f)));
