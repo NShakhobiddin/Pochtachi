@@ -628,6 +628,33 @@ try {
   check('matn shkalasi bir xil', yomonMatn.length === 0,
     [...new Set(yomonMatn)].slice(0, 6).join(' | '));
 
+  /* Masofa shkalasi: padding/gap/margin faqat juft qadamlarda.
+     Ilgari 88 xil padding bor edi, ichida 5, 7, 9, 11, 13, 15, 17px. */
+  const QADAM = new Set([0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32]);
+  const yomonMasofa = new Set();
+  for (const m of src.matchAll(/[^-](?:padding|gap|margin):\s*([^;"']+)/g)) {
+    const v = m[1].trim();
+    if (/calc|var|%|em|!important/.test(v)) continue;
+    for (const t of v.split(/\s+/)) {
+      const mm = /^(\d+)px$|^(0)$/.exec(t);
+      if (!mm) continue;
+      const n = +(mm[1] ?? mm[2]);
+      if (n <= 32 && !QADAM.has(n)) yomonMasofa.add(n + 'px');
+    }
+  }
+  check('masofa shkalasi juft qadamlarda', yomonMasofa.size === 0, [...yomonMasofa].join(' '));
+
+  /* Soya: bir nechta tayyor qatlamdan yig'iladi. Ilgari 41 xil e'lon,
+     ko'pi bir martadan farq qiladigan qiymatlar edi. */
+  const qatlam = new Set();
+  for (const m of src.matchAll(/box-shadow:\s*([^;"']+)/g)) {
+    const v = m[1].trim();
+    if (v === 'none' || v.includes('{{')) continue;
+    for (const l of v.replace('!important', '').split(/,(?![^()]*\))/))
+      if (l.trim()) qatlam.add(l.trim());
+  }
+  check('soya qatlamlari sanoqli', qatlam.size <= 18, qatlam.size + ' xil');
+
   /* Kulrang shkala uch pog'onadan iborat: kuchli, passiv, bezak. */
   const kulrang = [...new Set((src.match(/#[0-9A-F]{6}/gi) || []).map(h => h.toUpperCase()))]
     .filter(h => {

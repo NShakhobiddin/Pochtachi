@@ -203,7 +203,7 @@
     .app-shell {
       height: min(940px, calc(100dvh - 52px)) !important;
       border-radius: 36px !important;
-      box-shadow: 0 2px 6px rgba(20,19,43,.06), 0 34px 80px -32px rgba(20,19,43,.5) !important;
+      box-shadow: 0 2px 6px rgba(20,19,43,.06),0 34px 80px -32px rgba(20,19,43,.5) !important;
     }
   }
   ::-webkit-scrollbar { width:0; height:0; }
@@ -239,7 +239,7 @@
   button:active, .xy-tap:active { transform:scale(.965); filter:brightness(.955) }
   /* Kartochkalar bosilganda "yerga yaqinlashadi": soya ham qisqaradi. */
   button[style*="box-shadow"]:active, .xy-tap[style*="box-shadow"]:active {
-    box-shadow:0 1px 2px rgba(20,19,43,.06) !important;
+    box-shadow:0 1px 2px rgba(20,19,43,.04) !important;
   }
   nav button:active { transform:scale(.92); filter:none }
   /* Barmoq ostidagi element bosilib turganda ko'rinib tursin. */
@@ -354,15 +354,15 @@
 
         <sc-if value="{{ hqOn }}" hint-placeholder-val="{{ false }}">
           <div style="background:#FFFFFF;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 15px 11px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px 10px">
               <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6C6B85">Natijalar</span>
               <span style="font-size:11px;font-weight:600;color:#6C6B85;font-variant-numeric:tabular-nums">{{ hqCount }}</span>
             </div>
             <sc-if value="{{ hqEmpty }}" hint-placeholder-val="{{ false }}">
-              <div style="padding:4px 15px 17px;font-size:13px;font-weight:500;color:#6C6B85;line-height:1.5">Hech narsa topilmadi. Do'kon nomi, kuryer nomi yoki kategoriya bilan urinib ko'ring.</div>
+              <div style="padding:4px 14px 16px;font-size:13px;font-weight:500;color:#6C6B85;line-height:1.5">Hech narsa topilmadi. Do'kon nomi, kuryer nomi yoki kategoriya bilan urinib ko'ring.</div>
             </sc-if>
             <sc-for list="{{ hqResults }}" as="r" hint-placeholder-count="3">
-              <button sc-camel-on-click="{{ r.open }}" style="display:flex;align-items:center;gap:12px;width:100%;border:none;background:#FFFFFF;padding:11px 15px;cursor:pointer;text-align:left;font-family:inherit;border-top:1px solid #F2F2F7" style-hover="background:#FBFAFF">
+              <button sc-camel-on-click="{{ r.open }}" style="display:flex;align-items:center;gap:12px;width:100%;border:none;background:#FFFFFF;padding:10px 14px;cursor:pointer;text-align:left;font-family:inherit;border-top:1px solid #F2F2F7" style-hover="background:#FBFAFF">
                 <div style="width:36px;height:36px;border-radius:12px;flex:none;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:{{ r.bg }}">
                   <sc-if value="{{ r.logoOff }}" hint-placeholder-val="{{ false }}">
                     <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:{{ r.ink }}">{{ r.mono }}</span>
@@ -373,7 +373,7 @@
                   <span style="font-size:15px;font-weight:700;color:#151329">{{ r.name }}</span>
                   <span style="font-size:11px;font-weight:600;color:#6C6B85">{{ r.sub }}</span>
                 </div>
-                <span style="flex:none;font-size:11px;font-weight:600;color:#3B2CC9;background:#EBE8FE;padding:5px 9px;border-radius:999px">{{ r.kind }}</span>
+                <span style="flex:none;font-size:11px;font-weight:600;color:#3B2CC9;background:#EBE8FE;padding:4px 8px;border-radius:999px">{{ r.kind }}</span>
               </button>
             </sc-for>
           </div>
@@ -386,7 +386,7 @@
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 2px">
             <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6C6B85;flex:none">Oxirgi qidiruvlar</span>
             <sc-for list="{{ searchChips }}" as="sq" hint-placeholder-count="3">
-              <button sc-camel-on-click="{{ sq.run }}" style="flex:none;height:36px;padding:0 13px;border:none;border-radius:999px;background:#FFFFFF;color:#4E4E6B;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">{{ sq.t }}</button>
+              <button sc-camel-on-click="{{ sq.run }}" style="flex:none;height:36px;padding:0 12px;border:none;border-radius:999px;background:#FFFFFF;color:#4E4E6B;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">{{ sq.t }}</button>
             </sc-for>
             <button sc-camel-on-click="{{ clearSearches }}" aria-label="Qidiruv tarixini tozalash" style="flex:none;width:36px;height:36px;border:none;border-radius:999px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#EFEEF6">
               <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.7" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
@@ -398,7 +398,7 @@
       <!-- Ilovadagi yagona har kuni o'zgaradigan raqam. Bosh sahifada
            turgani uchun ilova "tirik" ko'rinadi va so'mdagi hisob-kitob
            qaysi kursga tayanayotgani darrov ma'lum bo'ladi. -->
-      <button sc-camel-on-click="{{ goSettings }}" style="display:flex;align-items:center;gap:12px;background:linear-gradient(150deg,#FFFFFF 0%,#F6F5FF 100%);border:none;border-radius:20px;padding:13px 15px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+      <button sc-camel-on-click="{{ goSettings }}" style="display:flex;align-items:center;gap:12px;background:linear-gradient(150deg,#FFFFFF 0%,#F6F5FF 100%);border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
         <div style="width:34px;height:34px;border-radius:12px;flex:none;background:#EBE8FE;display:flex;align-items:center;justify-content:center">
           <span style="font-size:15px;font-weight:700;color:#3B2CC9;line-height:1.5">$</span>
         </div>
@@ -407,7 +407,7 @@
             <span style="font-family:'Onest','XY Flags',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329;font-variant-numeric:tabular-nums">{{ rateValue }}</span>
             <span style="font-size:11px;font-weight:600;color:#6C6B85">so'm / 1 USD</span>
             <sc-if value="{{ rateHasDiff }}" hint-placeholder-val="{{ false }}">
-              <span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:999px;font-variant-numeric:tabular-nums;color:{{ rateDiffFg }};background:{{ rateDiffBg }}">{{ rateDiffLabel }}</span>
+              <span style="font-size:11px;font-weight:600;padding:2px 6px;border-radius:999px;font-variant-numeric:tabular-nums;color:{{ rateDiffFg }};background:{{ rateDiffBg }}">{{ rateDiffLabel }}</span>
             </sc-if>
           </div>
           <span style="font-size:11px;font-weight:600;color:#6C6B85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ rateSrcLabel }}</span>
@@ -423,11 +423,11 @@
             <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="#F5B301" stroke="#F5B301" stroke-width="2.7" stroke-linejoin="round" style="flex:none"><path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.75L12 16.9l-5.2 2.7 1-5.75-4.2-4.1 5.8-.85z"></path></svg>
             <h2 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329">Sevimlilar</h2>
             <div style="flex:1"></div>
-            <span style="flex:none;font-size:11px;font-weight:600;color:#6C6B85;background:#FFFFFF;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ favCount }}</span>
+            <span style="flex:none;font-size:11px;font-weight:600;color:#6C6B85;background:#FFFFFF;padding:4px 10px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ favCount }}</span>
           </div>
           <div style="display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;margin:0 -18px;padding:2px 18px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 30px),transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 30px),transparent 100%)">
             <sc-for list="{{ favRow }}" as="fv" hint-placeholder-count="3">
-              <button sc-camel-on-click="{{ fv.open }}" style="flex:none;width:138px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;background:#FFFFFF;border:none;border-radius:20px;padding:13px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+              <button sc-camel-on-click="{{ fv.open }}" style="flex:none;width:138px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;background:#FFFFFF;border:none;border-radius:20px;padding:12px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
                 <div style="width:44px;height:44px;border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:{{ fv.tint }}">
                   <sc-if value="{{ fv.showMono }}" hint-placeholder-val="{{ true }}">
                     <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:15px;font-weight:700;color:{{ fv.color }}">{{ fv.mono }}</span>
@@ -448,7 +448,7 @@
         <div style="display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
             <h2 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329">Mening rejalarim</h2>
-            <span style="font-size:11px;font-weight:600;color:#6C6B85;background:#FFFFFF;padding:6px 11px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ planCount }}</span>
+            <span style="font-size:11px;font-weight:600;color:#6C6B85;background:#FFFFFF;padding:6px 10px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ planCount }}</span>
           </div>
           <sc-for list="{{ myPlans }}" as="p" hint-placeholder-count="1">
             <button sc-camel-on-click="{{ p.open }}" style="background:#FFFFFF;border:none;border-radius:20px;padding:16px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:12px;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
@@ -462,7 +462,7 @@
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none">
                   <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#3B2CC9;font-variant-numeric:tabular-nums">{{ p.total }}</span>
-                  <span style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;white-space:nowrap;color:{{ p.stFg }};background:{{ p.stBg }}">{{ p.stLabel }}</span>
+                  <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap;color:{{ p.stFg }};background:{{ p.stBg }}">{{ p.stLabel }}</span>
                 </div>
               </div>
               <div style="height:5px;border-radius:999px;background:#EFEEF6;overflow:hidden">
@@ -476,20 +476,20 @@
       <sc-if value="{{ wizardBig }}" hint-placeholder-val="{{ true }}">
         <button sc-camel-on-click="{{ goWizard }}" style="border:none;border-radius:24px;overflow:hidden;background:linear-gradient(148deg,#6152F5 0%,#3B2CC9 48%,#251A8C 100%);cursor:pointer;padding:0;text-align:left;display:block;width:100%;position:relative;box-shadow:0 14px 32px -16px rgba(45,30,150,.52)" style-hover="box-shadow:0 14px 32px -16px rgba(45,30,150,.52)">
           <div style="position:absolute;top:-58px;right:-40px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.20),rgba(255,255,255,0) 70%)"></div>
-          <div style="padding:22px 20px;display:flex;flex-direction:column;gap:16px;position:relative">
+          <div style="padding:20px 20px;display:flex;flex-direction:column;gap:16px;position:relative">
             <div style="display:flex;align-items:flex-start;gap:14px">
               <div style="flex:1;display:flex;flex-direction:column;gap:8px">
                 <div style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;letter-spacing:-.025em;font-weight:800;color:#FFFFFF;line-height:1.2;text-wrap:pretty">Birinchi marta buyurtma qilyapsizmi?</div>
                 <div style="font-size:15px;color:rgba(255,255,255,.93);line-height:1.5">5 qadamda yo'lni ko'rsataman — do'kondan bojgacha.</div>
               </div>
-              <div style="width:44px;height:44px;border-radius:20px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 8px 18px -8px rgba(45,30,150,.40)">
+              <div style="width:44px;height:44px;border-radius:20px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 14px 32px -16px rgba(45,30,150,.52)">
                 <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
               </div>
             </div>
             <div style="display:flex;gap:8px;align-items:center">
-              <span style="font-size:13px;font-weight:700;color:#3B2CB8;background:#FFFFFF;padding:6px 11px;border-radius:999px">1 · Mahsulot</span>
-              <span style="font-size:13px;font-weight:700;color:#FFFFFF;background:rgba(255,255,255,.26);padding:6px 11px;border-radius:999px">2 · Davlat</span>
-              <span style="font-size:13px;font-weight:700;color:#FFFFFF;background:rgba(255,255,255,.26);padding:6px 11px;border-radius:999px">+3</span>
+              <span style="font-size:13px;font-weight:700;color:#3B2CB8;background:#FFFFFF;padding:6px 10px;border-radius:999px">1 · Mahsulot</span>
+              <span style="font-size:13px;font-weight:700;color:#FFFFFF;background:rgba(255,255,255,.26);padding:6px 10px;border-radius:999px">2 · Davlat</span>
+              <span style="font-size:13px;font-weight:700;color:#FFFFFF;background:rgba(255,255,255,.26);padding:6px 10px;border-radius:999px">+3</span>
             </div>
           </div>
         </button>
@@ -592,7 +592,7 @@
         <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
             <div style="display:flex;align-items:center;gap:8px;min-width:0">
-              <span style="font-size:11px;font-weight:600;color:#B45309;background:#FDF3E3;padding:6px 11px;border-radius:999px;white-space:nowrap">{{ tipCat }}</span>
+              <span style="font-size:11px;font-weight:600;color:#B45309;background:#FDF3E3;padding:6px 10px;border-radius:999px;white-space:nowrap">{{ tipCat }}</span>
               <sc-if value="{{ tipToday }}" hint-placeholder-val="{{ true }}">
                 <span style="font-size:11px;font-weight:700;color:#6C6B85;white-space:nowrap">Bugungi</span>
               </sc-if>
@@ -600,7 +600,7 @@
                 <span style="font-size:11px;font-weight:700;color:#6C6B85;white-space:nowrap;font-variant-numeric:tabular-nums">{{ tipNo }} / {{ tipTotal }}</span>
               </sc-if>
             </div>
-            <button sc-camel-on-click="{{ nextTip }}" aria-label="Keyingi maslahat" style-after="content:'';position:absolute;inset:-6px" style="position:relative;width:40px;height:40px;border:none;background:#F1F1F8;border-radius:20px;box-shadow:inset 0 0 0 1px #E6E6EF;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#EBE8FE">
+            <button sc-camel-on-click="{{ nextTip }}" aria-label="Keyingi maslahat" style-after="content:'';position:absolute;inset:-6px" style="position:relative;width:40px;height:40px;border:none;background:#F1F1F8;border-radius:20px;box-shadow:inset 0 0 0 1px #E4E3EE;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#EBE8FE">
               <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"></path><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"></path></svg>
             </button>
           </div>
@@ -612,14 +612,14 @@
 
   <sc-if value="{{ sStoresArea }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:16px">
-      <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:0 15px;height:50px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+      <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:0 14px;height:50px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
         <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
         <input value="{{ storeQuery }}" sc-camel-on-change="{{ onStoreQuery }}" placeholder="{{ storeSearchHint }}" type="search" enterkeyhint="search" aria-label="Do'kon nomi yoki kategoriya" style="flex:1;border:none;outline:none;font-size:15px;font-weight:500;color:#151329;background:transparent">
       </div>
 
       <!-- Papka ichida turganda: qaysi papka ekani va nechta do'kon borligi -->
       <sc-if value="{{ sInFolder }}" hint-placeholder-val="{{ false }}">
-        <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:13px 15px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+        <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:12px 14px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
           <div style="width:52px;height:52px;flex:none;display:flex;align-items:center;justify-content:center">
             <sc-if value="{{ folderIsPic }}" hint-placeholder-val="{{ true }}">
               <div style="width:52px;height:52px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ folderPic }}"></div>
@@ -632,7 +632,7 @@
             <span style="font-size:15px;font-weight:700;color:#151329">{{ folderName }}</span>
             <span style="font-size:13px;color:#6C6B85;font-weight:500">{{ folderSub }}</span>
           </div>
-          <span style="flex:none;font-size:11px;font-weight:600;color:#6C6B85;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ storeCount }} ta</span>
+          <span style="flex:none;font-size:11px;font-weight:600;color:#6C6B85;background:#F1F1F8;padding:4px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ storeCount }} ta</span>
         </div>
       </sc-if>
 
@@ -671,15 +671,15 @@
         <div style="display:flex;flex-direction:column;gap:14px">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
             <div style="font-size:13px;font-weight:700;color:#6C6B85">Bo'lim tanlang</div>
-            <div style="display:flex;gap:4px;background:#EAE9F3;border-radius:999px;padding:3px;flex:none">
-              <button sc-camel-on-click="{{ setFolderByCat }}" style="height:36px;padding:0 13px;border:none;border-radius:999px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;background:{{ fbCatBg }};color:{{ fbCatFg }};box-shadow:{{ fbCatSh }}">Tovar turi</button>
-              <button sc-camel-on-click="{{ setFolderByCountry }}" style="height:36px;padding:0 13px;border:none;border-radius:999px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;background:{{ fbCountryBg }};color:{{ fbCountryFg }};box-shadow:{{ fbCountrySh }}">Davlat</button>
+            <div style="display:flex;gap:4px;background:#EAE9F3;border-radius:999px;padding:2px;flex:none">
+              <button sc-camel-on-click="{{ setFolderByCat }}" style="height:36px;padding:0 12px;border:none;border-radius:999px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;background:{{ fbCatBg }};color:{{ fbCatFg }};box-shadow:{{ fbCatSh }}">Tovar turi</button>
+              <button sc-camel-on-click="{{ setFolderByCountry }}" style="height:36px;padding:0 12px;border:none;border-radius:999px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;background:{{ fbCountryBg }};color:{{ fbCountryFg }};box-shadow:{{ fbCountrySh }}">Davlat</button>
             </div>
           </div>
 
           <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
             <sc-for list="{{ storeFolders }}" as="f" hint-placeholder-count="6">
-              <button sc-camel-on-click="{{ f.open }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;background:#FFFFFF;border:none;border-radius:20px;padding:16px 15px;cursor:pointer;text-align:left;width:100%;min-width:0;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+              <button sc-camel-on-click="{{ f.open }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;background:#FFFFFF;border:none;border-radius:20px;padding:16px 14px;cursor:pointer;text-align:left;width:100%;min-width:0;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%">
                   <div style="width:58px;height:58px;flex:none;display:flex;align-items:center;justify-content:center">
                     <sc-if value="{{ f.isPic }}" hint-placeholder-val="{{ true }}">
@@ -692,7 +692,7 @@
                       <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:44px;line-height:1;filter:drop-shadow(0 4px 8px rgba(20,19,43,.24))">{{ f.flag }}</span>
                     </sc-if>
                   </div>
-                  <span style="flex:none;font-size:11px;font-weight:600;color:#6C6B85;background:#F1F1F8;padding:5px 9px;border-radius:999px;font-variant-numeric:tabular-nums">{{ f.count }}</span>
+                  <span style="flex:none;font-size:11px;font-weight:600;color:#6C6B85;background:#F1F1F8;padding:4px 8px;border-radius:999px;font-variant-numeric:tabular-nums">{{ f.count }}</span>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
                   <span style="font-size:15px;font-weight:700;color:#151329;overflow-wrap:anywhere">{{ f.title }}</span>
@@ -702,12 +702,12 @@
             </sc-for>
           </div>
 
-          <button sc-camel-on-click="{{ openAllStores }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:14px 15px;cursor:pointer;text-align:left;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+          <button sc-camel-on-click="{{ openAllStores }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:14px 14px;cursor:pointer;text-align:left;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
             <div style="width:40px;height:40px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#EBE8FE">
               <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </div>
             <span style="flex:1;font-size:15px;font-weight:700;color:#151329">Barcha do'konlar</span>
-            <span style="flex:none;font-size:11px;font-weight:600;color:#6C6B85;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ allStoresCount }}</span>
+            <span style="flex:none;font-size:11px;font-weight:600;color:#6C6B85;background:#F1F1F8;padding:4px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ allStoresCount }}</span>
             <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
           </button>
         </div>
@@ -728,21 +728,21 @@
 
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
         <div style="font-size:13px;font-weight:700;color:#6C6B85;font-variant-numeric:tabular-nums">{{ storeCount }} ta do'kon topildi</div>
-        <div style="display:flex;gap:4px;background:#EAE9F3;border-radius:999px;padding:3px;flex:none">
-          <button sc-camel-on-click="{{ setGroupCat }}" style="height:36px;padding:0 13px;border:none;border-radius:999px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;background:{{ grpCatBg }};color:{{ grpCatFg }};box-shadow:{{ grpCatSh }}">Tovar turi</button>
-          <button sc-camel-on-click="{{ setGroupPrice }}" style="height:36px;padding:0 13px;border:none;border-radius:999px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;background:{{ grpPriceBg }};color:{{ grpPriceFg }};box-shadow:{{ grpPriceSh }}">Narx</button>
+        <div style="display:flex;gap:4px;background:#EAE9F3;border-radius:999px;padding:2px;flex:none">
+          <button sc-camel-on-click="{{ setGroupCat }}" style="height:36px;padding:0 12px;border:none;border-radius:999px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;background:{{ grpCatBg }};color:{{ grpCatFg }};box-shadow:{{ grpCatSh }}">Tovar turi</button>
+          <button sc-camel-on-click="{{ setGroupPrice }}" style="height:36px;padding:0 12px;border:none;border-radius:999px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;background:{{ grpPriceBg }};color:{{ grpPriceFg }};box-shadow:{{ grpPriceSh }}">Narx</button>
         </div>
       </div>
 
       <sc-if value="{{ storesEmpty }}" hint-placeholder-val="{{ false }}">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:34px 20px;text-align:center">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:32px 20px;text-align:center">
           <div style="width:130px;height:78px;border-radius:20px;background:#FFFFFF;padding:8px;display:flex;flex-direction:column;gap:8px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
             <div style="height:9px;border-radius:3px;background:repeating-linear-gradient(-45deg,#C8102E 0 7px,#FFFFFF 7px 14px,#1B4D8F 14px 21px,#FFFFFF 21px 28px)"></div>
             <div style="flex:1;border:1.5px dashed #DCDBE9;border-radius:8px"></div>
           </div>
           <div style="font-size:17px;font-weight:700;color:#151329">Bu filtrga mos do'kon topilmadi</div>
           <div style="font-size:15px;color:#6C6B85;line-height:1.5;font-weight:500">Filtrni kengaytiring yoki qidiruvni qisqartiring.</div>
-          <button sc-camel-on-click="{{ resetStoreFilters }}" style="height:46px;padding:0 22px;border-radius:20px;background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;border:none;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 14px 30px -16px rgba(45,30,150,.50)">Filtrni tozalash</button>
+          <button sc-camel-on-click="{{ resetStoreFilters }}" style="height:46px;padding:0 20px;border-radius:20px;background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;border:none;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 14px 32px -16px rgba(45,30,150,.52)">Filtrni tozalash</button>
         </div>
       </sc-if>
 
@@ -758,7 +758,7 @@
                 <h2 style="margin:0;font-family:'Onest','XY Flags',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329">{{ g.title }}</h2>
                 <span style="font-size:13px;color:#6C6B85;font-weight:500">{{ g.sub }}</span>
               </div>
-              <span style="flex:none;font-size:11px;font-weight:600;color:#6C6B85;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ g.count }}</span>
+              <span style="flex:none;font-size:11px;font-weight:600;color:#6C6B85;background:#F1F1F8;padding:4px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ g.count }}</span>
             </div>
             </sc-if>
             <div style="display:flex;flex-direction:column;gap:12px">
@@ -788,7 +788,7 @@
                    ko'rinmasdi. Sig'magani keyingi qatorga tushadi. -->
               <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
                 <sc-for list="{{ s.chips }}" as="t" hint-placeholder-count="3">
-                  <span style="flex:none;font-size:11px;font-weight:700;white-space:nowrap;color:{{ t.fg }};background:{{ t.bg }};padding:4px 9px;border-radius:999px">{{ t.t }}</span>
+                  <span style="flex:none;font-size:11px;font-weight:700;white-space:nowrap;color:{{ t.fg }};background:{{ t.bg }};padding:4px 8px;border-radius:999px">{{ t.t }}</span>
                 </sc-for>
               </div>
             </div>
@@ -833,7 +833,7 @@
           </div>
           <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329">Bu do'kondan qanday keltirish</span>
         </div>
-        <div style="display:flex;gap:12px;border-radius:14px;padding:13px 14px;background:{{ store.routeBg }}">
+        <div style="display:flex;gap:12px;border-radius:14px;padding:12px 14px;background:{{ store.routeBg }}">
           <div style="width:7px;height:7px;border-radius:50%;flex:none;margin-top:6px;background:{{ store.routeFg }}"></div>
           <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
             <span style="font-size:13px;font-weight:700;color:{{ store.routeFg }}">{{ store.routeTitle }}</span>
@@ -844,7 +844,7 @@
           <div style="display:flex;flex-direction:column;gap:10px">
             <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6C6B85">Eng arzon uchta kuryer</div>
             <sc-for list="{{ store.topCouriers }}" as="k" hint-placeholder-count="3">
-              <button sc-camel-on-click="{{ k.open }}" style="display:flex;align-items:center;gap:12px;background:#F5F5FA;border:none;border-radius:14px;padding:11px 12px;cursor:pointer;text-align:left;width:100%;box-shadow:inset 0 0 0 1px #EDECF4" style-hover="background:#F1F0FA">
+              <button sc-camel-on-click="{{ k.open }}" style="display:flex;align-items:center;gap:12px;background:#F5F5FA;border:none;border-radius:14px;padding:10px 12px;cursor:pointer;text-align:left;width:100%;box-shadow:inset 0 0 0 1px #E4E3EE" style-hover="background:#F1F0FA">
                 <div style="width:34px;height:34px;border-radius:12px;flex:none;position:relative;overflow:hidden;background:{{ k.logoBg }}">
                   <div style="position:absolute;inset:5px;background-size:{{ k.logoFit }};background-repeat:no-repeat;background-position:center;background-image:{{ k.logoCss }}"></div>
                 </div>
@@ -857,7 +857,7 @@
               </button>
             </sc-for>
             <!-- Ilgari bu oddiy matn edi va bosilishi bilinmasdi — endi o'z yuzasi bor. -->
-            <button sc-camel-on-click="{{ store.allCouriers }}" style="align-self:flex-start;display:flex;align-items:center;gap:8px;background:#F0EDFE;border:none;border-radius:14px;font-family:inherit;font-size:13px;font-weight:700;color:#3B2CC9;cursor:pointer;padding:9px 14px;text-align:left;min-height:38px" style-hover="background:#E1DBFB">
+            <button sc-camel-on-click="{{ store.allCouriers }}" style="align-self:flex-start;display:flex;align-items:center;gap:8px;background:#F0EDFE;border:none;border-radius:14px;font-family:inherit;font-size:13px;font-weight:700;color:#3B2CC9;cursor:pointer;padding:8px 14px;text-align:left;min-height:38px" style-hover="background:#E1DBFB">
               Shu yo'nalishdagi {{ store.courierCount }} kuryerni ko'rish
               <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 12h13M13 7l5 5-5 5"></path></svg>
             </button>
@@ -934,7 +934,7 @@
         <sc-if value="{{ store.hasApps }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;gap:10px">
             <sc-for list="{{ store.apps }}" as="a" hint-placeholder-count="2">
-              <a class="xy-tap" href="{{ a.href }}" target="_blank" rel="noopener noreferrer" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#FFFFFF;border-radius:20px;padding:13px 10px;text-decoration:none;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+              <a class="xy-tap" href="{{ a.href }}" target="_blank" rel="noopener noreferrer" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#FFFFFF;border-radius:20px;padding:12px 10px;text-decoration:none;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
                 <div style="width:19px;height:19px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ a.pic }}"></div>
                 <span style="font-size:13px;font-weight:700;color:#3B2CC9">{{ a.label }}</span>
               </a>
@@ -956,8 +956,8 @@
       </sc-if>
 
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-        <span style="font-size:11px;font-weight:600;color:#6C6B85;background:#FFFFFF;padding:7px 12px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">YANGILANDI {{ store.updated }}</span>
-        <button sc-camel-on-click="{{ reportInfo }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#3B2CC9;cursor:pointer;padding:13px 10px;margin:-13px -10px">Ma'lumot noto'g'rimi?</button>
+        <span style="font-size:11px;font-weight:600;color:#6C6B85;background:#FFFFFF;padding:6px 12px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">YANGILANDI {{ store.updated }}</span>
+        <button sc-camel-on-click="{{ reportInfo }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#3B2CC9;cursor:pointer;padding:12px 10px;margin:-13px -10px">Ma'lumot noto'g'rimi?</button>
       </div>
     </div>
   </sc-if>
@@ -967,13 +967,13 @@
 
       <!-- Papka ichida: qaysi yo'nalish va nechta kuryer bor -->
       <sc-if value="{{ sInCourierFolder }}" hint-placeholder-val="{{ false }}">
-        <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:13px 15px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+        <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:12px 14px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
           <div style="width:44px;height:44px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#F1F1F8;font-size:22px;line-height:1.2">{{ courierFolderFlag }}</div>
           <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
             <span style="font-size:15px;font-weight:700;color:#151329">{{ courierFolderName }}</span>
             <span style="font-size:13px;color:#6C6B85;font-weight:500">{{ courierFolderSub }}</span>
           </div>
-          <span style="flex:none;font-size:11px;font-weight:600;color:#6C6B85;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ courierListCount }} ta</span>
+          <span style="flex:none;font-size:11px;font-weight:600;color:#6C6B85;background:#F1F1F8;padding:4px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ courierListCount }} ta</span>
         </div>
       </sc-if>
 
@@ -984,7 +984,7 @@
 
           <!-- Eng ko'p kuryerli yo'nalish: kengi to'liq, soni yirik raqamda. -->
           <sc-if value="{{ hasCourierTop }}" hint-placeholder-val="{{ true }}">
-            <button sc-camel-on-click="{{ courierTop.open }}" style="display:flex;align-items:center;gap:14px;background:linear-gradient(150deg,#F1F8F9 0%,#E3F2F4 100%);border:none;border-radius:20px;padding:17px 16px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:inset 0 0 0 1px rgba(14,133,149,.12),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+            <button sc-camel-on-click="{{ courierTop.open }}" style="display:flex;align-items:center;gap:14px;background:linear-gradient(150deg,#F1F8F9 0%,#E3F2F4 100%);border:none;border-radius:20px;padding:16px 16px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:inset 0 0 0 1px rgba(14,133,149,.12),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
               <!-- Manzil doim O'zbekiston, shuning uchun ikkinchi bayroq
                    va strelka har qatorda bir xil ma'lumotni takrorlardi.
                    Ular olib tashlandi, bo'shagan joy chetdagi davlat
@@ -1008,7 +1008,7 @@
 
           <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
             <sc-for list="{{ courierFolders }}" as="f" hint-placeholder-count="8">
-              <button sc-camel-on-click="{{ f.open }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;background:radial-gradient(125% 82% at 100% 0%, {{ f.tintBg }} 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:16px 15px;cursor:pointer;text-align:left;width:100%;min-width:0;font-family:inherit;box-shadow:inset 0 0 0 1px {{ f.tintRing }},0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+              <button sc-camel-on-click="{{ f.open }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;background:radial-gradient(125% 82% at 100% 0%, {{ f.tintBg }} 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:16px 14px;cursor:pointer;text-align:left;width:100%;min-width:0;font-family:inherit;box-shadow:inset 0 0 0 1px {{ f.tintRing }},0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%">
                   <!-- Chetdagi davlat bayrog'i. O'zbekiston bayrog'i har
                        plitkada takrorlanardi — bo'lim allaqachon "qayerdan
@@ -1016,7 +1016,7 @@
                   <div style="display:flex;align-items:center;flex:none">
                     <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:44px;line-height:1;filter:drop-shadow(0 4px 8px rgba(20,19,43,.24))">{{ f.flag }}</span>
                   </div>
-                  <span style="flex:none;font-size:11px;font-weight:600;color:{{ f.tintFg }};background:{{ f.tintChip }};padding:5px 9px;border-radius:999px;font-variant-numeric:tabular-nums">{{ f.count }}</span>
+                  <span style="flex:none;font-size:11px;font-weight:600;color:{{ f.tintFg }};background:{{ f.tintChip }};padding:4px 8px;border-radius:999px;font-variant-numeric:tabular-nums">{{ f.count }}</span>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
                   <span style="font-size:15px;font-weight:700;color:#151329;overflow-wrap:anywhere">{{ f.title }}</span>
@@ -1026,12 +1026,12 @@
             </sc-for>
           </div>
 
-          <button sc-camel-on-click="{{ openAllCouriers }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:14px 15px;cursor:pointer;text-align:left;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+          <button sc-camel-on-click="{{ openAllCouriers }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:14px 14px;cursor:pointer;text-align:left;width:100%;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
             <div style="width:40px;height:40px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#EBE8FE">
               <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </div>
             <span style="flex:1;font-size:15px;font-weight:700;color:#151329">Barcha kuryerlar</span>
-            <span style="flex:none;font-size:11px;font-weight:600;color:#6C6B85;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ allCouriersCount }}</span>
+            <span style="flex:none;font-size:11px;font-weight:600;color:#6C6B85;background:#F1F1F8;padding:4px 10px;border-radius:999px;font-variant-numeric:tabular-nums">{{ allCouriersCount }}</span>
             <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
           </button>
         </div>
@@ -1069,7 +1069,7 @@
             </sc-if>
             <button sc-camel-on-click="{{ c.open }}" style="flex:1;background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;min-width:0;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
               <sc-if value="{{ c.hasBadge }}" hint-placeholder-val="{{ false }}">
-                <span style="align-self:flex-start;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:5px 11px;border-radius:999px;background:{{ c.badgeBg }};color:{{ c.badgeFg }}">{{ c.badge }}</span>
+                <span style="align-self:flex-start;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;background:{{ c.badgeBg }};color:{{ c.badgeFg }}">{{ c.badge }}</span>
               </sc-if>
               <div style="display:flex;align-items:center;gap:12px">
                 <div style="width:52px;height:52px;border-radius:20px;flex:none;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;text-align:center;line-height:1.5;background:{{ c.color }}">{{ c.mono }}
@@ -1086,21 +1086,21 @@
                 </div>
               </div>
               <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-                <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#4E4E6B;background:#F1F1F8;padding:5px 10px;border-radius:999px">
+                <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#4E4E6B;background:#F1F1F8;padding:4px 10px;border-radius:999px">
                   <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3.5 2"></path></svg>{{ c.days }}</span>
-                <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#4E4E6B;background:#F1F1F8;padding:5px 10px;border-radius:999px">
+                <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#4E4E6B;background:#F1F1F8;padding:4px 10px;border-radius:999px">
                   <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5a2.1 2.1 0 00-3-3L13 8 4.8 6.2a.5.5 0 00-.5.8l3.6 3.6-2.1 2.1-2.1-.5-1 1 3 1.8 1.8 3 1-1-.5-2.1 2.1-2.1 3.6 3.6a.5.5 0 00.8-.5z"></path></svg>{{ c.mode }}</span>
-                <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#4E4E6B;background:#F1F1F8;padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums">
+                <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#4E4E6B;background:#F1F1F8;padding:4px 10px;border-radius:999px;font-variant-numeric:tabular-nums">
                   <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6C6B85" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a15 15 0 010 18 15 15 0 010-18"></path></svg>{{ c.nRoutes }} davlat</span>
                 <sc-if value="{{ c.tracking }}" hint-placeholder-val="{{ true }}">
-                  <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#0F7B3E;background:#E9F8EF;padding:5px 10px;border-radius:999px">
+                  <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#0F7B3E;background:#E9F8EF;padding:4px 10px;border-radius:999px">
                     <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#0F7B3E" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>Tracking</span>
                 </sc-if>
               </div>
               <sc-if value="{{ c.hasFeat }}" hint-placeholder-val="{{ false }}">
                 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-top:1px solid #F2F2F7;padding-top:11px">
                   <sc-for list="{{ c.feat }}" as="h" hint-placeholder-count="3">
-                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#3B2CC9;background:#EBE8FE;padding:5px 10px;border-radius:999px">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#3B2CC9;background:#EBE8FE;padding:4px 10px;border-radius:999px">
                       <div style="width:12px;height:12px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ h.pic }}"></div>{{ h.k }}</span>
                   </sc-for>
                 </div>
@@ -1122,16 +1122,16 @@
     <div style="display:flex;flex-direction:column;gap:14px">
       <div style="background:#FFFFFF;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
         <div style="display:flex;background:#FAFAFD">
-          <div style="width:92px;flex:none;padding:15px 14px;font-size:13px;font-weight:700;color:#6C6B85">Kuryer</div>
+          <div style="width:92px;flex:none;padding:14px 14px;font-size:13px;font-weight:700;color:#6C6B85">Kuryer</div>
           <sc-for list="{{ compareList }}" as="c" hint-placeholder-count="2">
-            <div style="flex:1;padding:15px 10px;font-size:15px;font-weight:700;color:#151329;line-height:1.5">{{ c.name }}</div>
+            <div style="flex:1;padding:14px 10px;font-size:15px;font-weight:700;color:#151329;line-height:1.5">{{ c.name }}</div>
           </sc-for>
         </div>
         <sc-for list="{{ compareRows }}" as="r" hint-placeholder-count="5">
           <div style="display:flex;border-top:1px solid #F2F2F7">
-            <div style="width:92px;flex:none;padding:13px 14px;font-size:13px;color:#6C6B85;font-weight:500">{{ r.k }}</div>
+            <div style="width:92px;flex:none;padding:12px 14px;font-size:13px;color:#6C6B85;font-weight:500">{{ r.k }}</div>
             <sc-for list="{{ r.vals }}" as="v" hint-placeholder-count="2">
-              <div style="flex:1;padding:13px 10px;font-size:13px;font-weight:700;color:#151329;font-variant-numeric:tabular-nums">{{ v }}</div>
+              <div style="flex:1;padding:12px 10px;font-size:13px;font-weight:700;color:#151329;font-variant-numeric:tabular-nums">{{ v }}</div>
             </sc-for>
           </div>
         </sc-for>
@@ -1150,8 +1150,8 @@
           <div style="flex:1;display:flex;flex-direction:column;gap:6px;min-width:0">
             <div style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;letter-spacing:-.025em;font-weight:800;color:#151329;line-height:1.2">{{ courier.name }}</div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-              <span style="font-size:11px;font-weight:700;color:#3B2CC9;background:#EBE8FE;padding:5px 10px;border-radius:999px">{{ courier.days }}</span>
-              <span style="font-size:11px;font-weight:700;color:#4E4E6B;background:#F1F1F8;padding:5px 10px;border-radius:999px">{{ courier.mode }}</span>
+              <span style="font-size:11px;font-weight:700;color:#3B2CC9;background:#EBE8FE;padding:4px 10px;border-radius:999px">{{ courier.days }}</span>
+              <span style="font-size:11px;font-weight:700;color:#4E4E6B;background:#F1F1F8;padding:4px 10px;border-radius:999px">{{ courier.mode }}</span>
             </div>
           </div>
           <button sc-camel-on-click="{{ courierFav }}" aria-label="{{ courierFavLabel }}" style="flex:none;width:44px;height:44px;border:none;border-radius:999px;background:{{ courierFavBg }};cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#F2F1FA">
@@ -1167,7 +1167,7 @@
         </sc-if>
         <div style="display:flex;flex-wrap:wrap;gap:8px">
           <sc-for list="{{ courier.links }}" as="l" hint-placeholder-count="3">
-            <a class="xy-tap" href="{{ l.u }}" target="_blank" rel="noopener noreferrer" style="height:34px;padding:0 13px;border-radius:12px;background:#EBE8FE;color:#3B2CC9;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;text-decoration:none">
+            <a class="xy-tap" href="{{ l.u }}" target="_blank" rel="noopener noreferrer" style="height:34px;padding:0 12px;border-radius:12px;background:#EBE8FE;color:#3B2CC9;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;text-decoration:none">
               <sc-if value="{{ l.hasD }}" hint-placeholder-val="{{ true }}">
                 <div style="width:15px;height:15px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ l.linePic }}"></div>
               </sc-if>
@@ -1193,12 +1193,12 @@
       <div style="display:flex;flex-direction:column;gap:12px">
         <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329;padding:2px 4px">Tariflar · {{ courier.nRoutes }} davlat</span>
         <sc-for list="{{ courier.tariffs }}" as="t" hint-placeholder-count="3">
-          <div style="background:#FFFFFF;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);border-radius:20px;padding:15px 16px;display:flex;flex-direction:column;gap:10px">
+          <div style="background:#FFFFFF;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
             <div style="display:flex;align-items:center;gap:10px">
               <span style="font-size:17px">{{ t.f }}</span>
               <span style="font-size:15px;font-weight:700;color:#151329;flex:1">{{ t.c }}</span>
               <sc-if value="{{ t.hasT }}" hint-placeholder-val="{{ false }}">
-                <span style="font-size:11px;font-weight:600;color:#3B2CC9;background:#EBE8FE;padding:5px 10px;border-radius:999px;flex:none">{{ t.t }}</span>
+                <span style="font-size:11px;font-weight:600;color:#3B2CC9;background:#EBE8FE;padding:4px 10px;border-radius:999px;flex:none">{{ t.t }}</span>
               </sc-if>
             </div>
             <span style="font-size:13px;font-weight:500;color:#151329;line-height:1.5;text-wrap:pretty">{{ t.v }}</span>
@@ -1249,7 +1249,7 @@
         </div>
       </sc-if>
 
-      <div style="display:flex;gap:12px;background:#FDF3E3;border-radius:20px;padding:13px 15px">
+      <div style="display:flex;gap:12px;background:#FDF3E3;border-radius:20px;padding:12px 14px">
         <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
         <span style="font-size:13px;color:#B45309;line-height:1.5;font-weight:500">Tariflar kuryerlarning rasmiy manbalaridan {{ courier.updated }} holatiga ko'ra olingan. Yakuniy narx vazn, hajm va yo'nalishga qarab o'zgaradi.</span>
       </div>
@@ -1258,7 +1258,7 @@
 
   <sc-if value="{{ sCustoms }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:16px">
-      <div style="background:#FFFFFF;border-radius:20px;padding:16px 16px 15px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+      <div style="background:#FFFFFF;border-radius:20px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
         <div style="display:flex;align-items:flex-start;gap:12px">
           <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
             <h2 style="margin:0;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329">Bu oyda</h2>
@@ -1281,7 +1281,7 @@
         <sc-if value="{{ hasMonth }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;flex-direction:column;gap:8px">
             <sc-for list="{{ monthRows }}" as="m" hint-placeholder-count="2">
-              <div style="display:flex;align-items:center;gap:10px;background:#F5F5FA;border-radius:14px;padding:9px 11px">
+              <div style="display:flex;align-items:center;gap:10px;background:#F5F5FA;border-radius:14px;padding:8px 10px">
                 <span style="font-size:13px;font-weight:700;color:#151329;font-variant-numeric:tabular-nums;flex:none">{{ m.usd }}</span>
                 <span style="flex:1;min-width:0;font-size:13px;font-weight:500;color:#6C6B85">{{ m.meta }}</span>
                 <button sc-camel-on-click="{{ m.del }}" aria-label="Jo'natmani o'chirish" style="width:44px;height:44px;margin:-11px -9px -11px 0;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none">
@@ -1308,7 +1308,7 @@
       <!-- Bojxona kalkulyatori — alohida, ajratilgan qator. Ilgari butun
            kalkulyator shu yerda ochiq turardi va ma'lumotnoma bo'limlarini
            pastga surib yuborardi; endi bosilganda to'liq ekranda ochiladi. -->
-      <button sc-camel-on-click="{{ goCalcSec }}" style="display:flex;align-items:center;gap:14px;background:linear-gradient(160deg,#F6F4FF,#EBE7FE);border:none;border-radius:20px;padding:16px;cursor:pointer;text-align:left;width:100%;box-shadow:inset 0 0 0 1px rgba(59,44,201,.09),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:inset 0 0 0 1px rgba(59,44,201,.18),0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+      <button sc-camel-on-click="{{ goCalcSec }}" style="display:flex;align-items:center;gap:14px;background:linear-gradient(160deg,#F6F4FF,#EBE7FE);border:none;border-radius:20px;padding:16px;cursor:pointer;text-align:left;width:100%;box-shadow:inset 0 0 0 1px rgba(59,44,201,.09),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:inset 0 0 0 1px rgba(59,44,201,.09),0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
         <img src="icons/boj-kalkulyator.webp" alt="" width="46" height="46" style="width:46px;height:46px;object-fit:contain;flex:none" decoding="async">
         <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
           <h2 style="margin:0;display:block;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329">Bojxona kalkulyatori</h2>
@@ -1327,7 +1327,7 @@
         <!-- Bojsiz me'yor — bo'limning eng ko'p so'raladigan raqami, shuning
              uchun u qolgan to'rttasidan katta va raqami yirik yoziladi.
              Ilgari beshovi ham bir xil qator edi va ekran monoton ko'rinardi. -->
-        <button sc-camel-on-click="{{ sec1 }}" style="display:flex;align-items:center;gap:16px;background:linear-gradient(150deg,#F4F2FF 0%,#E9E5FD 100%);border:none;border-radius:20px;padding:17px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:inset 0 0 0 1px rgba(59,44,201,.10),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+        <button sc-camel-on-click="{{ sec1 }}" style="display:flex;align-items:center;gap:16px;background:linear-gradient(150deg,#F4F2FF 0%,#E9E5FD 100%);border:none;border-radius:20px;padding:16px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:inset 0 0 0 1px rgba(59,44,201,.09),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
           <img src="icons/boj-meyor.webp" alt="" width="62" height="62" style="width:62px;height:62px;object-fit:contain;flex:none" decoding="async">
           <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
             <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6A61B6">Bojsiz olib kirish me'yori</span>
@@ -1341,7 +1341,7 @@
         <!-- Qolgan to'rttasi 2x2 plitka: mavzu bo'yicha rangi bor, shu bilan
              bir xil oq qatorlar ketma-ketligi uziladi. -->
         <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
-        <button sc-camel-on-click="{{ sec2 }}" style="background:radial-gradient(125% 82% at 100% 0%, rgba(180,83,9,.17) 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:15px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:152px;box-shadow:inset 0 0 0 1px rgba(180,83,9,.10),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+        <button sc-camel-on-click="{{ sec2 }}" style="background:radial-gradient(125% 82% at 100% 0%, rgba(180,83,9,.17) 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:152px;box-shadow:inset 0 0 0 1px rgba(180,83,9,.12),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%">
             <img src="icons/boj-tolov.webp" alt="" width="44" height="44" style="width:44px;height:44px;object-fit:contain;flex:none" decoding="async">
             <div style="width:26px;height:26px;border-radius:999px;background:#FAECD8;display:flex;align-items:center;justify-content:center;flex:none">
@@ -1353,7 +1353,7 @@
             <div style="font-size:11px;font-weight:600;color:#6C6B85;line-height:1.4">ortiqcha qismga {{ dutyPctLabel }}</div>
           </div>
         </button>
-        <button sc-camel-on-click="{{ sec3 }}" style="background:radial-gradient(125% 82% at 100% 0%, rgba(155,28,28,.15) 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:15px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:152px;box-shadow:inset 0 0 0 1px rgba(155,28,28,.10),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+        <button sc-camel-on-click="{{ sec3 }}" style="background:radial-gradient(125% 82% at 100% 0%, rgba(155,28,28,.15) 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:152px;box-shadow:inset 0 0 0 1px rgba(155,28,28,.12),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%">
             <img src="icons/boj-taqiq.webp" alt="" width="44" height="44" style="width:44px;height:44px;object-fit:contain;flex:none" decoding="async">
             <div style="width:26px;height:26px;border-radius:999px;background:#F9E3E3;display:flex;align-items:center;justify-content:center;flex:none">
@@ -1365,7 +1365,7 @@
             <div style="font-size:11px;font-weight:600;color:#6C6B85;line-height:1.4">{{ banCount }} pozitsiya · manba bilan</div>
           </div>
         </button>
-        <button sc-camel-on-click="{{ sec4 }}" style="background:radial-gradient(125% 82% at 100% 0%, rgba(14,133,149,.20) 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:15px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:152px;box-shadow:inset 0 0 0 1px rgba(14,133,149,.11),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+        <button sc-camel-on-click="{{ sec4 }}" style="background:radial-gradient(125% 82% at 100% 0%, rgba(14,133,149,.20) 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:152px;box-shadow:inset 0 0 0 1px rgba(14,133,149,.12),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%">
             <img src="icons/boj-tartib.webp" alt="" width="44" height="44" style="width:44px;height:44px;object-fit:contain;flex:none" decoding="async">
             <div style="width:26px;height:26px;border-radius:999px;background:#DDF1F4;display:flex;align-items:center;justify-content:center;flex:none">
@@ -1377,7 +1377,7 @@
             <div style="font-size:11px;font-weight:600;color:#6C6B85;line-height:1.4">xabarnoma · tasdiqlash · saqlov</div>
           </div>
         </button>
-        <button sc-camel-on-click="{{ sec6 }}" style="background:radial-gradient(125% 82% at 100% 0%, rgba(59,44,201,.17) 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:15px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:152px;box-shadow:inset 0 0 0 1px rgba(59,44,201,.10),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+        <button sc-camel-on-click="{{ sec6 }}" style="background:radial-gradient(125% 82% at 100% 0%, rgba(59,44,201,.17) 0%, #FFFFFF 68%);border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:152px;box-shadow:inset 0 0 0 1px rgba(59,44,201,.09),0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%">
             <img src="icons/boj-aloqa.webp" alt="" width="44" height="44" style="width:44px;height:44px;object-fit:contain;flex:none" decoding="async">
             <div style="width:26px;height:26px;border-radius:999px;background:#EBE8FE;display:flex;align-items:center;justify-content:center;flex:none">
@@ -1393,7 +1393,7 @@
       </div>
 
       <!-- Ma'lumotnoma yetmasa: mutaxassis bilan ishlash (pullik) -->
-      <button sc-camel-on-click="{{ goServices }}" style="display:flex;align-items:center;gap:14px;background:radial-gradient(120% 90% at 100% 0%, rgba(59,44,201,.14) 0%, #FFFFFF 66%);border:none;border-radius:20px;padding:15px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+      <button sc-camel-on-click="{{ goServices }}" style="display:flex;align-items:center;gap:14px;background:radial-gradient(120% 90% at 100% 0%, rgba(59,44,201,.14) 0%, #FFFFFF 66%);border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
         <div style="width:44px;height:44px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:url('icons/svc-savol.webp')"></div>
         <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
           <h2 style="margin:0;display:block;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329;line-height:1.3">Mutaxassis konsultatsiyasi</h2>
@@ -1424,7 +1424,7 @@
           </div>
           <span style="font-size:13px;color:#6C6B85;line-height:1.5;text-wrap:pretty">Bir kalendar oy uchun. Kalendar oy — oyning 1-sanasidan so'nggi sanasigacha bo'lgan uzluksiz davr, masalan 1-yanvardan 31-yanvargacha.</span>
         </div>
-        <a class="xy-tap" href="https://my.gov.uz/uz/service/717" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);border-radius:20px;padding:14px 15px;text-decoration:none">
+        <a class="xy-tap" href="https://my.gov.uz/uz/service/717" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);border-radius:20px;padding:14px 14px;text-decoration:none">
           <div style="width:34px;height:34px;border-radius:20px;background:linear-gradient(150deg,#F0EDFE,#E1DBFB);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:inset 0 0 0 1px rgba(59,44,201,.09)">
             <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"></path><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"></path></svg>
           </div>
@@ -1433,13 +1433,13 @@
             <span style="font-size:13px;color:#6C6B85;line-height:1.5">my.gov.uz orqali nomingizga kelgan jo'natmalarni tekshiring</span>
           </div>
         </a>
-        <div style="background:#FFFFFF;border-radius:20px;padding:17px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+        <div style="background:#FFFFFF;border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
           <div style="display:flex;flex-direction:column;gap:4px">
             <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329">Miqdoriy me'yorlar</span>
             <span style="font-size:13px;color:#6C6B85;line-height:1.5">Bojsiz olib kiriladigan ayrim tovarlar uchun alohida chegara</span>
           </div>
           <sc-for list="{{ qtyNorms }}" as="q" hint-placeholder-count="2">
-            <div style="display:flex;flex-direction:column;gap:6px;background:#F5F4FC;border-radius:20px;padding:13px 14px">
+            <div style="display:flex;flex-direction:column;gap:6px;background:#F5F4FC;border-radius:20px;padding:12px 14px">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
                 <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
                   <div style="width:32px;height:32px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ q.pic }}"></div>
@@ -1456,7 +1456,7 @@
           </div>
         </div>
 
-        <div style="background:#FFFFFF;border-radius:20px;padding:17px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+        <div style="background:#FFFFFF;border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
           <div style="display:flex;flex-direction:column;gap:6px">
             <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329">Notijorat maqsad deb topilishi</span>
             <span style="font-size:13px;color:#6C6B85;line-height:1.5;text-wrap:pretty">Imtiyoz faqat shaxsiy va oilaviy ehtiyoj uchun tovarlarga beriladi. Bojxona xodimi quyidagilarga qarab aniqlaydi:</span>
@@ -1496,13 +1496,13 @@
             </div>
           </sc-for>
           <span style="font-size:13px;color:#6C6B85;line-height:1.5;text-wrap:pretty">Yagona bojxona to'lovi bojxona to'lovlari undirilmaydigan tovarlarni olib kirishning cheklangan me'yorlaridan ortgan taqdirda, faqat ortiqcha qismga nisbatan undiriladi.</span>
-          <button sc-camel-on-click="{{ goCalcSec }}" style="height:46px;border-radius:20px;border:none;cursor:pointer;font-family:inherit;font-size:15px;font-weight:700;color:#fff;background:linear-gradient(155deg,#5A46EC,#3423B3);box-shadow:0 8px 18px -8px rgba(45,30,150,.40)">Kalkulyatorda hisoblash</button>
+          <button sc-camel-on-click="{{ goCalcSec }}" style="height:46px;border-radius:20px;border:none;cursor:pointer;font-family:inherit;font-size:15px;font-weight:700;color:#fff;background:linear-gradient(155deg,#5A46EC,#3423B3);box-shadow:0 14px 32px -16px rgba(45,30,150,.52)">Kalkulyatorda hisoblash</button>
         </div>
       </sc-if>
 
       <sc-if value="{{ cs3 }}" hint-placeholder-val="{{ false }}">
 
-        <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:0 15px;height:50px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+        <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:0 14px;height:50px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
           <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
           <input value="{{ banQuery }}" sc-camel-on-change="{{ onBanQuery }}" placeholder="Tovar nomini yozing" type="search" enterkeyhint="search" aria-label="Taqiqlangan tovar nomi" style="flex:1;border:none;outline:none;font-size:15px;font-weight:500;color:#151329;background:transparent">
         </div>
@@ -1514,7 +1514,7 @@
         <div style="display:flex;flex-direction:column;gap:10px">
           <sc-for list="{{ banList }}" as="b" hint-placeholder-count="6">
             <div style="background:#FFFFFF;border-radius:20px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24);content-visibility:auto;contain-intrinsic-size:auto 62px">
-              <button sc-camel-on-click="{{ b.toggle }}" style="display:flex;align-items:center;gap:12px;background:transparent;border:none;width:100%;text-align:left;padding:14px 15px;cursor:pointer;font-family:inherit">
+              <button sc-camel-on-click="{{ b.toggle }}" style="display:flex;align-items:center;gap:12px;background:transparent;border:none;width:100%;text-align:left;padding:14px 14px;cursor:pointer;font-family:inherit">
                 <div style="width:38px;height:38px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:{{ b.bg }}">
                   <div style="width:22px;height:22px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ b.pic }}"></div>
                 </div>
@@ -1525,7 +1525,7 @@
                 <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transform:rotate({{ b.rot }})"><path d="M6 9l6 6 6-6"></path></svg>
               </button>
               <sc-if value="{{ b.open }}" hint-placeholder-val="{{ false }}">
-                <div style="display:flex;flex-direction:column;gap:10px;padding:0 15px 15px 65px">
+                <div style="display:flex;flex-direction:column;gap:10px;padding:0 14px 14px 65px">
                   <span style="font-size:13px;color:#4E4E6B;line-height:1.5;text-wrap:pretty">{{ b.note }}</span>
                   <div style="display:flex;flex-direction:column;gap:4px;background:#F5F4FC;border-radius:20px;padding:10px 12px">
                     <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6C6B85">Huquqiy manba</span>
@@ -1578,9 +1578,9 @@
 
       <sc-if value="{{ cs5 }}" hint-placeholder-val="{{ false }}">
 
-        <div style="background:#FFFFFF;border-radius:20px;padding:13px 16px;display:flex;flex-direction:column;gap:6px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+        <div style="background:#FFFFFF;border-radius:20px;padding:12px 16px;display:flex;flex-direction:column;gap:6px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
           <span style="font-size:13px;font-weight:700;color:#3B2CC9">Kalendar oydagi umumiy summani yozing</span>
-          <div style="display:flex;align-items:center;gap:6px;background:#FFFFFF;border:1.5px solid #DFDCF5;border-radius:20px;padding:9px 12px;box-shadow:none">
+          <div style="display:flex;align-items:center;gap:6px;background:#FFFFFF;border:1.5px solid #DFDCF5;border-radius:20px;padding:8px 12px;box-shadow:none">
             <input size="6" value="{{ calcPrice }}" sc-camel-on-change="{{ onCalcPrice }}" placeholder="masalan 320" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Kalendar oydagi umumiy summa, AQSh dollarida" style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;flex:1;min-width:0;border:none;outline:none;font-size:22px;letter-spacing:-.025em;font-weight:800;color:#151329;background:transparent;font-variant-numeric:tabular-nums;caret-color:#3B2CC9">
             <span style="font-size:13px;font-weight:700;color:#6C6B85;flex:none">USD</span>
             <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#7E71E0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"></path></svg>
@@ -1588,17 +1588,17 @@
           <span style="font-size:11px;color:#6C6B85;line-height:1.4">Shu oyda kelgan barcha jo'natmalar qiymatini qo'shib yozing</span>
         </div>
         <div style="display:flex;gap:10px">
-          <div style="flex:1;min-width:0;background:#FFFFFF;border-radius:20px;padding:13px 14px;display:flex;flex-direction:column;gap:6px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+          <div style="flex:1;min-width:0;background:#FFFFFF;border-radius:20px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
             <span style="font-size:13px;font-weight:700;color:#3B2CC9">Umumiy vaznni yozing</span>
-            <div style="display:flex;align-items:center;gap:6px;background:#FFFFFF;border:1.5px solid #DFDCF5;border-radius:20px;padding:9px 12px;box-shadow:none;gap:4px;padding:9px 10px">
+            <div style="display:flex;align-items:center;gap:6px;background:#FFFFFF;border:1.5px solid #DFDCF5;border-radius:20px;padding:8px 12px;box-shadow:none;gap:4px;padding:8px 10px">
               <input size="3" value="{{ calcWeight }}" sc-camel-on-change="{{ onCalcWeight }}" placeholder="2.5" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Umumiy vazn, kilogrammda" style="flex:1;width:100%;min-width:0;border:none;outline:none;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329;background:transparent;font-variant-numeric:tabular-nums;caret-color:#3B2CC9">
               <span style="font-size:13px;font-weight:700;color:#6C6B85;flex:none">kg</span>
               <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#7E71E0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"></path></svg>
             </div>
           </div>
-          <div style="flex:1.15;min-width:0;background:#FFFFFF;border-radius:20px;padding:13px 14px;display:flex;flex-direction:column;gap:6px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+          <div style="flex:1.15;min-width:0;background:#FFFFFF;border-radius:20px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
             <span style="font-size:13px;font-weight:700;color:#3B2CC9">Yetkazish, 1 kg</span>
-            <div style="display:flex;align-items:center;gap:6px;background:#FFFFFF;border:1.5px solid #DFDCF5;border-radius:20px;padding:9px 12px;box-shadow:none;gap:4px;padding:9px 10px">
+            <div style="display:flex;align-items:center;gap:6px;background:#FFFFFF;border:1.5px solid #DFDCF5;border-radius:20px;padding:8px 12px;box-shadow:none;gap:4px;padding:8px 10px">
               <input size="3" value="{{ calcShip }}" sc-camel-on-change="{{ onCalcShip }}" placeholder="9" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Yetkazish narxi, 1 kilogramm uchun dollarda" style="flex:1;width:100%;min-width:0;border:none;outline:none;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329;background:transparent;font-variant-numeric:tabular-nums;caret-color:#3B2CC9">
               <span style="font-size:13px;font-weight:700;color:#6C6B85;flex:none">$</span>
               <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#7E71E0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"></path></svg>
@@ -1641,7 +1641,7 @@
           </div>
         </div>
 
-        <div style="display:flex;flex-direction:column;gap:10px;background:#FFFFFF;border-radius:20px;padding:15px 16px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+        <div style="display:flex;flex-direction:column;gap:10px;background:#FFFFFF;border-radius:20px;padding:14px 16px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
           <span style="font-size:13px;font-weight:700;color:#151329">Hisob bosqichlari</span>
           <sc-for list="{{ calcSteps }}" as="s" hint-placeholder-count="4">
             <div style="display:flex;gap:10px;align-items:baseline">
@@ -1656,7 +1656,7 @@
           </div>
         </div>
 
-        <a class="xy-tap" href="https://my.gov.uz/uz/service/717" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:14px 15px;text-decoration:none;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+        <a class="xy-tap" href="https://my.gov.uz/uz/service/717" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:14px 14px;text-decoration:none;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
           <div style="width:34px;height:34px;border-radius:20px;background:linear-gradient(150deg,#F0EDFE,#E1DBFB);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:inset 0 0 0 1px rgba(59,44,201,.09)">
             <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"></path><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"></path></svg>
           </div>
@@ -1676,7 +1676,7 @@
       <sc-if value="{{ cs6 }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;flex-direction:column;gap:12px">
                     <sc-for list="{{ offices }}" as="o" hint-placeholder-count="3">
-            <div style="background:#FFFFFF;border-radius:20px;padding:17px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+            <div style="background:#FFFFFF;border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
               <div style="display:flex;flex-direction:column;gap:4px">
                 <span style="font-size:15px;font-weight:700;color:#151329;line-height:1.5">{{ o.name }}</span>
                 <!-- Manzil bosilganda buferga tushadi: uni qo'lda ko'chirib
@@ -1688,9 +1688,9 @@
               </div>
               <div style="display:flex;flex-direction:column;gap:8px">
                 <sc-for list="{{ o.rows }}" as="r" hint-placeholder-count="2">
-                  <button sc-camel-on-click="{{ r.copy }}" aria-label="{{ r.k }} — nusxalash" style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:none;border:none;padding:5px 0;margin:-5px 0;width:100%;text-align:left;cursor:pointer;font-family:inherit">
+                  <button sc-camel-on-click="{{ r.copy }}" aria-label="{{ r.k }} — nusxalash" style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:none;border:none;padding:4px 0;margin:-5px 0;width:100%;text-align:left;cursor:pointer;font-family:inherit">
                     <span style="font-size:13px;font-weight:500;color:#6C6B85">{{ r.k }}</span>
-                    <span style="display:flex;align-items:center;gap:7px;min-width:0">
+                    <span style="display:flex;align-items:center;gap:6px;min-width:0">
                       <span style="font-size:13px;font-weight:700;color:#151329;font-variant-numeric:tabular-nums;text-align:right">{{ r.v }}</span>
                       <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A6BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="9" y="9" width="12" height="12" rx="2.5"></rect><path d="M5 15V5.5A2.5 2.5 0 0 1 7.5 3H15"></path></svg>
                     </span>
@@ -1700,7 +1700,7 @@
               <sc-if value="{{ o.hasTel }}" hint-placeholder-val="{{ false }}">
                 <sc-for list="{{ o.tels }}" as="t" hint-placeholder-count="1">
                   <div style="display:flex;gap:8px;align-items:stretch">
-                  <a class="xy-tap" href="{{ t.href }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:12px;background:linear-gradient(155deg,#5A46EC,#3423B3);border-radius:14px;padding:11px 14px;text-decoration:none;box-shadow:0 10px 24px -16px rgba(45,30,150,.8)">
+                  <a class="xy-tap" href="{{ t.href }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:12px;background:linear-gradient(155deg,#5A46EC,#3423B3);border-radius:14px;padding:10px 14px;text-decoration:none;box-shadow:0 14px 32px -16px rgba(45,30,150,.52)">
                     <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"></path></svg>
                     <span style="display:flex;flex-direction:column;gap:2px;min-width:0">
                       <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.72)">Qo'ng'iroq qilish</span>
@@ -1769,7 +1769,7 @@
             <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:17px;line-height:1;flex:none">{{ gr.flag }}</span>
             <span style="font-size:11px;font-weight:600;color:#6C6B85;flex:none">{{ gr.country }}</span>
             <div style="flex:1;height:1px;background:#E4E3EE"></div>
-            <span style="flex:none;font-size:11px;font-weight:600;color:#6C6B85;background:#F1F1F8;padding:4px 9px;border-radius:999px;font-variant-numeric:tabular-nums">{{ gr.count }}</span>
+            <span style="flex:none;font-size:11px;font-weight:600;color:#6C6B85;background:#F1F1F8;padding:4px 8px;border-radius:999px;font-variant-numeric:tabular-nums">{{ gr.count }}</span>
           </div>
           <div style="display:flex;flex-direction:column;gap:12px">
             <sc-for list="{{ gr.items }}" as="f" hint-placeholder-count="3">
@@ -1790,8 +1790,8 @@
             </div>
             <span style="font-size:13px;font-weight:500;color:#6C6B85;line-height:1.5">{{ f.desc }}</span>
             <div style="display:flex;gap:6px;margin-top:2px">
-              <span style="font-size:11px;font-weight:600;color:#3B2CC9;background:#EBE8FE;padding:3px 8px;border-radius:12px">{{ f.sections }} BO'LIM</span>
-              <span style="font-size:11px;font-weight:600;color:#0F7B3E;background:#E9F8EF;padding:3px 8px;border-radius:12px">{{ f.tag }}</span>
+              <span style="font-size:11px;font-weight:600;color:#3B2CC9;background:#EBE8FE;padding:2px 8px;border-radius:12px">{{ f.sections }} BO'LIM</span>
+              <span style="font-size:11px;font-weight:600;color:#0F7B3E;background:#E9F8EF;padding:2px 8px;border-radius:12px">{{ f.tag }}</span>
             </div>
           </div>
           <div style="width:30px;height:30px;border-radius:14px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;flex:none">
@@ -1812,7 +1812,7 @@
       <sc-if value="{{ hasTracked }}" hint-placeholder-val="{{ true }}">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 2px">
           <h2 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329">Mening jo'natmalarim</h2>
-          <span style="font-size:11px;font-weight:600;color:#6C6B85;background:#FFFFFF;padding:6px 11px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ trackedCount }}</span>
+          <span style="font-size:11px;font-weight:600;color:#6C6B85;background:#FFFFFF;padding:6px 10px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ trackedCount }}</span>
         </div>
         <sc-for list="{{ trackedList }}" as="t" hint-placeholder-count="2">
           <div style="background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
@@ -1824,12 +1824,12 @@
                 <span style="font-size:15px;font-weight:700;color:#151329;line-height:1.5">{{ t.title }}</span>
                 <span style="font-size:13px;font-weight:500;color:#6C6B85">{{ t.courier }}</span>
               </div>
-              <span style="flex:none;font-size:11px;font-weight:600;padding:5px 10px;border-radius:999px;background:{{ t.stBg }};color:{{ t.stFg }}">{{ t.stLabel }}</span>
+              <span style="flex:none;font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;background:{{ t.stBg }};color:{{ t.stFg }}">{{ t.stLabel }}</span>
             </button>
             <div style="height:5px;border-radius:999px;background:#EFEEF7;overflow:hidden">
               <div style="height:100%;border-radius:999px;background:linear-gradient(90deg,#5A46EC,#3423B3);width:{{ t.pct }};transition:width .4s cubic-bezier(.22,.9,.3,1)"></div>
             </div>
-            <div style="display:flex;align-items:center;gap:8px;background:#FFFFFF;border:1.5px solid #E4E3EE;border-radius:14px;padding:9px 12px">
+            <div style="display:flex;align-items:center;gap:8px;background:#FFFFFF;border:1.5px solid #E4E3EE;border-radius:14px;padding:8px 12px">
               <input size="10" value="{{ t.track }}" sc-camel-on-change="{{ t.onTrack }}" placeholder="Trek raqamini yozing" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Trek raqam" style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;flex:1;min-width:0;border:none;outline:none;font-size:15px;font-weight:700;color:#151329;background:transparent;font-variant-numeric:tabular-nums;caret-color:#3B2CC9">
               <sc-if value="{{ t.hasTrack }}" hint-placeholder-val="{{ false }}">
                 <button sc-camel-on-click="{{ t.copy }}" style="flex:none;height:30px;padding:0 12px;border-radius:12px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:#3B2CC9;background:#F0EDFE" style-hover="background:#E1DBFB">Nusxa</button>
@@ -1837,7 +1837,7 @@
             </div>
             <div style="display:flex;gap:10px">
               <sc-if value="{{ t.canNext }}" hint-placeholder-val="{{ true }}">
-                <button sc-camel-on-click="{{ t.next }}" style="flex:1;min-height:44px;border-radius:14px;border:none;background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 10px 24px -16px rgba(45,30,150,.8)">{{ t.nextLabel }}</button>
+                <button sc-camel-on-click="{{ t.next }}" style="flex:1;min-height:44px;border-radius:14px;border:none;background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 14px 32px -16px rgba(45,30,150,.52)">{{ t.nextLabel }}</button>
               </sc-if>
               <sc-if value="{{ t.hasSite }}" hint-placeholder-val="{{ false }}">
                 <a class="xy-tap" href="{{ t.site }}" target="_blank" rel="noopener noreferrer" style="flex:none;min-height:44px;padding:0 16px;border-radius:14px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#4E4E6B;text-decoration:none">Kuryer sayti</a>
@@ -1848,13 +1848,13 @@
       </sc-if>
 
       <sc-if value="{{ noTracked }}" hint-placeholder-val="{{ false }}">
-        <div style="background:#FFFFFF;border-radius:20px;padding:22px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+        <div style="background:#FFFFFF;border-radius:20px;padding:20px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
           <div style="width:52px;height:52px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:url('icons/courier-3d.webp')"></div>
           <div style="display:flex;flex-direction:column;gap:6px">
             <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329">Hali kuzatiladigan jo'natma yo'q</span>
             <span style="font-size:13px;color:#6C6B85;line-height:1.5;font-weight:500;text-wrap:pretty">Reja tuzsangiz, u shu yerda jo'natmaga aylanadi: holatini belgilab borasiz va trek raqamini saqlaysiz.</span>
           </div>
-          <button sc-camel-on-click="{{ tWizard }}" style="min-height:46px;padding:0 22px;border-radius:14px;border:none;background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 12px 28px -16px rgba(45,30,150,.75)">Reja tuzish</button>
+          <button sc-camel-on-click="{{ tWizard }}" style="min-height:46px;padding:0 20px;border-radius:14px;border:none;background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 14px 32px -16px rgba(45,30,150,.52)">Reja tuzish</button>
         </div>
       </sc-if>
 
@@ -1865,9 +1865,9 @@
 
       <div style="background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
         <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#3B2CC9">Boshqa jo'natma raqami</span>
-        <div style="display:flex;align-items:center;gap:8px;background:#FFFFFF;border:1.5px solid #DFDCF5;border-radius:20px;padding:11px 13px">
+        <div style="display:flex;align-items:center;gap:8px;background:#FFFFFF;border:1.5px solid #DFDCF5;border-radius:20px;padding:10px 12px">
           <input size="12" value="{{ trackNo }}" sc-camel-on-change="{{ onTrackNo }}" sc-camel-on-blur="{{ onTrackBlur }}" placeholder="Masalan: RB123456789CN" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" enterkeyhint="done" aria-label="Trek raqam" style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;flex:1;min-width:0;border:none;outline:none;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329;background:transparent;font-variant-numeric:tabular-nums;caret-color:#3B2CC9">
-          <button sc-camel-on-click="{{ copyTrack }}" style="flex:none;height:32px;padding:0 13px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:#3B2CC9;background:#F0EDFE" style-hover="background:#E1DBFB">Nusxa</button>
+          <button sc-camel-on-click="{{ copyTrack }}" style="flex:none;height:32px;padding:0 12px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:#3B2CC9;background:#F0EDFE" style-hover="background:#E1DBFB">Nusxa</button>
         </div>
         <span style="font-size:13px;color:#6C6B85;line-height:1.5">Rejasiz jo'natma raqamini shu yerda saqlab, quyidagi kuryer saytiga qo'ying.</span>
       </div>
@@ -1879,7 +1879,7 @@
 
       <div style="display:flex;flex-direction:column;gap:10px">
         <sc-for list="{{ trackCouriers }}" as="t" hint-placeholder-count="6">
-          <div style="background:#FFFFFF;border-radius:20px;padding:13px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+          <div style="background:#FFFFFF;border-radius:20px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
             <div style="width:38px;height:38px;border-radius:12px;flex:none;position:relative;overflow:hidden;background:{{ t.logoBg }}">
               <div style="position:absolute;inset:0;background-image:{{ t.logoCss }};background-size:{{ t.logoFit }};background-repeat:no-repeat;background-position:center"></div>
             </div>
@@ -1903,7 +1903,7 @@
         </sc-for>
       </div>
 
-      <a class="xy-tap" href="https://my.gov.uz/uz/service/1364" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:14px 15px;text-decoration:none;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
+      <a class="xy-tap" href="https://my.gov.uz/uz/service/1364" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:14px 14px;text-decoration:none;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
         <div style="width:34px;height:34px;border-radius:20px;background:linear-gradient(150deg,#F0EDFE,#E1DBFB);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:inset 0 0 0 1px rgba(59,44,201,.09)">
           <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#3B2CC9" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 01-3.4 0"></path></svg>
         </div>
@@ -1926,14 +1926,14 @@
               <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.60)">Xarid rejasi</span>
               <span style="font-family:'Onest','XY Flags',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#FFFFFF;line-height:1.3">{{ wizStepName }}</span>
             </div>
-            <span style="flex:none;font-size:13px;font-weight:700;color:#FFFFFF;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);padding:7px 12px;border-radius:999px;font-variant-numeric:tabular-nums">{{ wizStepNo }}<span style="opacity:.6"> / 5</span></span>
+            <span style="flex:none;font-size:13px;font-weight:700;color:#FFFFFF;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);padding:6px 12px;border-radius:999px;font-variant-numeric:tabular-nums">{{ wizStepNo }}<span style="opacity:.6"> / 5</span></span>
           </div>
           <!-- O'tilgan qadamlar bosiladi: tanlovni o'zgartirish uchun
                boshidan boshlash shart emas. Yozuvda esa bo'lim nomi emas,
                o'sha qadamda nima tanlangani ko'rinadi. -->
           <div style="display:flex;gap:6px;align-items:flex-end">
             <sc-for list="{{ wizDots }}" as="d" hint-placeholder-count="5">
-              <button sc-camel-on-click="{{ d.jump }}" aria-label="{{ d.aria }}" style="flex:{{ d.flex }};display:flex;flex-direction:column;gap:8px;min-width:0;background:none;border:none;padding:9px 0;margin:-9px 0;font-family:inherit;text-align:left;cursor:{{ d.cursor }}">
+              <button sc-camel-on-click="{{ d.jump }}" aria-label="{{ d.aria }}" style="flex:{{ d.flex }};display:flex;flex-direction:column;gap:8px;min-width:0;background:none;border:none;padding:8px 0;margin:-9px 0;font-family:inherit;text-align:left;cursor:{{ d.cursor }}">
                 <div style="width:100%;height:{{ d.h }};border-radius:999px;background:{{ d.bg }};box-shadow:{{ d.glow }}"></div>
                 <span style="font-size:11px;font-weight:{{ d.w }};color:{{ d.fg2 }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">{{ d.label }}</span>
               </button>
@@ -1955,7 +1955,7 @@
         <sc-if value="{{ wizHasOpts }}" hint-placeholder-val="{{ true }}">
         <div style="display:flex;flex-direction:column;gap:12px">
           <sc-for list="{{ wizOptions }}" as="o" hint-placeholder-count="4">
-            <button sc-camel-on-click="{{ o.pick }}" style="display:flex;align-items:center;gap:14px;padding:17px;border-radius:20px;cursor:pointer;text-align:left;width:100%;background:#FFFFFF;border:none;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
+            <button sc-camel-on-click="{{ o.pick }}" style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:20px;cursor:pointer;text-align:left;width:100%;background:#FFFFFF;border:none;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)" style-hover="box-shadow:0 2px 6px rgba(59,44,201,.09),0 12px 26px -14px rgba(59,44,201,.34)">
               <sc-if value="{{ o.hasPic }}" hint-placeholder-val="{{ false }}">
                 <div style="width:44px;height:44px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ o.pic }}"></div>
               </sc-if>
@@ -1992,14 +1992,14 @@
             <div style="display:flex;gap:12px">
               <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
                 <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6C6B85">Mahsulot narxi</span>
-                <div style="display:flex;align-items:center;gap:8px;background:#F5F4FA;border-radius:20px;padding:0 14px;height:56px;box-shadow:inset 0 0 0 1.5px #E4E2F2">
+                <div style="display:flex;align-items:center;gap:8px;background:#F5F4FA;border-radius:20px;padding:0 14px;height:56px;box-shadow:inset 0 0 0 1px #E4E3EE">
                   <span style="font-size:26px;font-weight:800;color:#6C6B85">$</span>
                   <input value="{{ wizPrice }}" sc-camel-on-input="{{ onWizPrice }}" inputmode="decimal" size="1" style="flex:1;min-width:0;width:100%;border:none;background:transparent;outline:none;font-size:26px;letter-spacing:-.03em;font-weight:800;color:#151329;font-variant-numeric:tabular-nums">
                 </div>
               </div>
               <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
                 <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6C6B85">Og'irligi</span>
-                <div style="display:flex;align-items:center;gap:8px;background:#F5F4FA;border-radius:20px;padding:0 14px;height:56px;box-shadow:inset 0 0 0 1.5px #E4E2F2">
+                <div style="display:flex;align-items:center;gap:8px;background:#F5F4FA;border-radius:20px;padding:0 14px;height:56px;box-shadow:inset 0 0 0 1px #E4E3EE">
                   <input value="{{ wizWeight }}" sc-camel-on-input="{{ onWizWeight }}" inputmode="decimal" size="1" style="flex:1;min-width:0;width:100%;border:none;background:transparent;outline:none;font-size:26px;letter-spacing:-.03em;font-weight:800;color:#151329;font-variant-numeric:tabular-nums">
                   <span style="font-size:15px;font-weight:700;color:#6C6B85">kg</span>
                 </div>
@@ -2045,12 +2045,12 @@
             </div>
           </div>
           <sc-for list="{{ planRows }}" as="r" hint-placeholder-count="5">
-            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:13px 20px;border-bottom:1px solid #F2F2F7">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:12px 20px;border-bottom:1px solid #F2F2F7">
               <span style="font-size:13px;color:#6C6B85;flex:none;font-weight:500">{{ r.k }}</span>
               <span style="font-size:15px;font-weight:700;color:#151329;text-align:right;font-variant-numeric:tabular-nums">{{ r.v }}</span>
             </div>
           </sc-for>
-          <div style="padding:17px 20px;display:flex;align-items:baseline;justify-content:space-between;background:#F5F5FA">
+          <div style="padding:16px 20px;display:flex;align-items:baseline;justify-content:space-between;background:#F5F5FA">
             <span style="font-size:15px;font-weight:700;color:#151329">Jami (taxminiy)</span>
             <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;letter-spacing:-.025em;font-weight:800;color:#3B2CC9;font-variant-numeric:tabular-nums">{{ planTotal }}</span>
           </div>
@@ -2076,7 +2076,7 @@
       <!-- Sehrgar endigina tugagan bo'lsa: nima chiqqanini bitta qatorda
            ko'rsatadigan yakun. Boshqa paytda bu banner chizilmaydi. -->
       <sc-if value="{{ planJustSaved }}" hint-placeholder-val="{{ false }}">
-        <div style="display:flex;align-items:center;gap:12px;background:linear-gradient(150deg,#EAF9F0 0%,#DEF3E7 100%);border-radius:20px;padding:15px;box-shadow:inset 0 0 0 1px rgba(15,123,62,.13)">
+        <div style="display:flex;align-items:center;gap:12px;background:linear-gradient(150deg,#EAF9F0 0%,#DEF3E7 100%);border-radius:20px;padding:14px;box-shadow:inset 0 0 0 1px rgba(15,123,62,.12)">
           <div style="width:38px;height:38px;border-radius:999px;flex:none;background:#0F7B3E;display:flex;align-items:center;justify-content:center">
             <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.2 5.2L20 7"></path></svg>
           </div>
@@ -2106,7 +2106,7 @@
             <span style="font-family:'Onest','XY Flags',system-ui,sans-serif;font-size:26px;letter-spacing:-.03em;font-weight:800;color:#FFFFFF;line-height:1;font-variant-numeric:tabular-nums">{{ planTotalBig }}</span>
             <span style="font-size:13px;font-weight:500;color:rgba(255,255,255,.78);font-variant-numeric:tabular-nums">{{ planTotalUzs }}</span>
           </div>
-          <span style="flex:none;font-size:11px;font-weight:600;color:#FFFFFF;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);padding:6px 11px;border-radius:999px;white-space:nowrap">{{ planStatusLabel }}</span>
+          <span style="flex:none;font-size:11px;font-weight:600;color:#FFFFFF;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);padding:6px 10px;border-radius:999px;white-space:nowrap">{{ planStatusLabel }}</span>
         </div>
         <div style="position:relative;height:6px;border-radius:999px;background:rgba(255,255,255,.20);overflow:hidden">
           <div style="height:100%;border-radius:999px;background:#FFFFFF;box-shadow:0 2px 10px rgba(255,255,255,.5);width:{{ planPct }}"></div>
@@ -2114,7 +2114,7 @@
       </div>
 
       <div style="background:#FFFFFF;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
-        <div style="padding:17px 18px 11px;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329">Bosqichlar</div>
+        <div style="padding:16px 18px 10px;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329">Bosqichlar</div>
         <sc-for list="{{ planStepsList }}" as="s" hint-placeholder-count="5">
           <div style="display:flex;gap:12px;padding:12px 18px;border-top:1px solid #F2F2F7;align-items:flex-start">
             <div style="width:24px;height:24px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;margin-top:1px;background:{{ s.dotBg }};box-shadow:inset 0 0 0 2px {{ s.dotBd }}">
@@ -2133,14 +2133,14 @@
       </sc-if>
 
       <div style="background:#FFFFFF;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">
-        <div style="padding:17px 18px 11px;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329">Hisob-kitob</div>
+        <div style="padding:16px 18px 10px;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#151329">Hisob-kitob</div>
         <sc-for list="{{ planCostRows }}" as="r" hint-placeholder-count="5">
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:12px 18px;border-top:1px solid #F2F2F7">
             <span style="flex:1;font-size:13px;color:#6C6B85;font-weight:500;min-width:0">{{ r.k }}</span>
             <span style="flex:none;font-size:15px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;color:{{ r.c }}">{{ r.v }}</span>
           </div>
         </sc-for>
-        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:15px 18px;border-top:2px solid #EDECF4;background:#F5F5FA">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:14px 18px;border-top:2px solid #EDECF4;background:#F5F5FA">
           <span style="flex:1;font-size:15px;font-weight:700;color:#151329">Jami (taxminiy)</span>
           <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;flex:none;font-size:22px;letter-spacing:-.025em;font-weight:800;color:#3B2CC9;font-variant-numeric:tabular-nums">{{ planTotalBig }}</span>
         </div>
@@ -2152,7 +2152,7 @@
       </div>
 
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-        <span style="font-size:11px;font-weight:600;color:#6C6B85;background:#FFFFFF;padding:7px 12px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ planNum }}</span>
+        <span style="font-size:11px;font-weight:600;color:#6C6B85;background:#FFFFFF;padding:6px 12px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(20,19,43,.04),0 8px 20px -12px rgba(20,19,43,.24)">{{ planNum }}</span>
         <button sc-camel-on-click="{{ planDelete }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#C0392B;cursor:pointer;padding:0">Rejani o'chirish</button>
       </div>
     </div>
@@ -2166,7 +2166,7 @@
       </div>
 
       <!-- Kim uchun: jismoniy shaxs yoki kuryerlik tashkiloti -->
-      <div style="display:flex;gap:4px;background:#EAE9F3;border-radius:999px;padding:3px">
+      <div style="display:flex;gap:4px;background:#EAE9F3;border-radius:999px;padding:2px">
         <button sc-camel-on-click="{{ svcPickShaxs }}" aria-pressed="{{ svcShaxsOn }}" style="flex:1;height:38px;border:none;border-radius:999px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;background:{{ svcShaxsBg }};color:{{ svcShaxsFg }};box-shadow:{{ svcShaxsSh }}">Men xaridorman</button>
         <button sc-camel-on-click="{{ svcPickTashkilot }}" aria-pressed="{{ svcTashkilotOn }}" style="flex:1;height:38px;border:none;border-radius:999px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;background:{{ svcTashkilotBg }};color:{{ svcTashkilotFg }};box-shadow:{{ svcTashkilotSh }}">Kuryer tashkilotiman</button>
       </div>
@@ -2181,7 +2181,7 @@
               <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                 <span style="font-size:15px;font-weight:700;color:#151329">{{ sv.title }}</span>
                 <sc-if value="{{ sv.hasTag }}" hint-placeholder-val="{{ false }}">
-                  <span style="font-size:11px;font-weight:600;color:#3B2CC9;background:#EBE8FE;padding:3px 7px;border-radius:8px">{{ sv.tag }}</span>
+                  <span style="font-size:11px;font-weight:600;color:#3B2CC9;background:#EBE8FE;padding:2px 6px;border-radius:8px">{{ sv.tag }}</span>
                 </sc-if>
               </div>
               <span style="font-size:13px;color:#6C6B85;font-weight:500;line-height:1.5;text-wrap:pretty">{{ sv.sub }}</span>
@@ -2200,7 +2200,7 @@
               <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6C6B85">Narx</span>
               <span style="font-size:15px;font-weight:700;color:#151329">{{ sv.price }}</span>
             </div>
-            <button sc-camel-on-click="{{ sv.ask }}" style="flex:none;height:42px;padding:0 20px;border:none;border-radius:14px;background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 10px 24px -14px rgba(45,30,150,.7)">Bog'lanish</button>
+            <button sc-camel-on-click="{{ sv.ask }}" style="flex:none;height:42px;padding:0 20px;border:none;border-radius:14px;background:linear-gradient(155deg,#5A46EC,#3423B3);color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 14px 32px -16px rgba(45,30,150,.52)">Bog'lanish</button>
           </div>
         </div>
       </sc-for>
@@ -2243,12 +2243,12 @@
               <span style="font-family:'Onest','XY Flags',system-ui,sans-serif;font-size:22px;letter-spacing:-.025em;font-weight:800;color:#151329;font-variant-numeric:tabular-nums">{{ rateValue }}</span>
               <span style="font-size:13px;font-weight:700;color:#6C6B85">so'm</span>
               <sc-if value="{{ rateHasDiff }}" hint-placeholder-val="{{ false }}">
-                <span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;font-variant-numeric:tabular-nums;color:{{ rateDiffFg }};background:{{ rateDiffBg }}">{{ rateDiffLabel }}</span>
+                <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;font-variant-numeric:tabular-nums;color:{{ rateDiffFg }};background:{{ rateDiffBg }}">{{ rateDiffLabel }}</span>
               </sc-if>
             </div>
             <span style="font-size:13px;font-weight:500;color:#6C6B85">{{ rateSrcLabel }}</span>
           </div>
-          <button sc-camel-on-click="{{ refreshRate }}" aria-label="Valyuta kursini yangilash" style="flex:none;height:44px;padding:0 15px;border-radius:20px;border:none;cursor:pointer;background:#EBE8FE;color:#3B2CC9;font-family:inherit;font-size:13px;font-weight:700" style-hover="background:#E1DBFB">{{ rateBtnLabel }}</button>
+          <button sc-camel-on-click="{{ refreshRate }}" aria-label="Valyuta kursini yangilash" style="flex:none;height:44px;padding:0 14px;border-radius:20px;border:none;cursor:pointer;background:#EBE8FE;color:#3B2CC9;font-family:inherit;font-size:13px;font-weight:700" style-hover="background:#E1DBFB">{{ rateBtnLabel }}</button>
         </div>
         <div style="font-size:13px;color:#6C6B85;line-height:1.5;font-weight:500;text-wrap:pretty">Kurs Markaziy bank ochiq ma'lumotlaridan (cbu.uz) avtomatik olinadi va 6 soatda bir yangilanadi. Barcha so'mdagi hisob-kitob shu kursga asoslanadi.</div>
         <div style="font-size:13px;color:#6C6B85;line-height:1.5;font-weight:500;text-wrap:pretty">Bojxona me'yorlari: {{ normsSrc }} · oxirgi tekshiruv {{ normsChecked }}.</div>
@@ -2274,12 +2274,12 @@
         <div style="display:flex;align-items:center;gap:12px;padding:16px 18px;border-top:1px solid #F2F2F7">
           <span style="flex:1;font-size:15px;font-weight:500;color:#151329">Foydalanuvchi turi</span>
           <span style="font-size:15px;font-weight:500;color:#6C6B85">{{ userTypeLabel }}</span>
-          <button sc-camel-on-click="{{ switchUserType }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#3B2CC9;cursor:pointer;padding:13px 10px;margin:-13px -10px">O'zgartirish</button>
+          <button sc-camel-on-click="{{ switchUserType }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#3B2CC9;cursor:pointer;padding:12px 10px;margin:-13px -10px">O'zgartirish</button>
         </div>
       </div>
 
       <sc-if value="{{ canInstall }}" hint-placeholder-val="{{ true }}">
-        <button sc-camel-on-click="{{ installApp }}" style="display:flex;align-items:center;gap:12px;background:linear-gradient(155deg,#5A46EC,#3423B3);border:none;border-radius:20px;padding:16px 18px;cursor:pointer;width:100%;text-align:left;box-shadow:0 14px 32px -18px rgba(45,30,150,.52)">
+        <button sc-camel-on-click="{{ installApp }}" style="display:flex;align-items:center;gap:12px;background:linear-gradient(155deg,#5A46EC,#3423B3);border:none;border-radius:20px;padding:16px 18px;cursor:pointer;width:100%;text-align:left;box-shadow:0 14px 32px -16px rgba(45,30,150,.52)">
           <span style="flex:1;font-size:15px;font-weight:700;color:#FFFFFF">Ilovani telefonga o'rnatish</span>
           <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 21h14"></path></svg>
         </button>
@@ -2304,7 +2304,7 @@
     <!-- Pastdagi asosiy tugmalar. O'rtadagi dumaloq tugma menyudan 28px
            yuqoriga chiqadi, shuning uchun bu qator undan ham baland turadi —
            ilgari ular ustma-ust tushib qolardi. -->
-      <div style="position:absolute;left:0;right:0;bottom:0;padding:34px 18px 118px;display:flex;gap:10px;background:linear-gradient(to top,#F2F1F8 86%,rgba(242,241,248,0));pointer-events:none">
+      <div style="position:absolute;left:0;right:0;bottom:0;padding:32px 18px 118px;display:flex;gap:10px;background:linear-gradient(to top,#F2F1F8 86%,rgba(242,241,248,0));pointer-events:none">
       <sc-if value="{{ hasAltAction }}" hint-placeholder-val="{{ false }}">
         <button sc-camel-on-click="{{ altAction }}" style="pointer-events:auto;flex:1;height:54px;border-radius:24px;background:#FFFFFF;border:1.5px solid #DCD8F7;color:#3B2CC9;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer" style-hover="background:#F7F5FF">{{ altLabel }}</button>
       </sc-if>
@@ -2355,7 +2355,7 @@
 
   <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
     <div sc-camel-on-click="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(20,20,43,.45);display:flex;align-items:flex-end;z-index:20">
-      <div sc-camel-on-click="{{ stop }}" style="width:100%;background:#FFFFFF;border-radius:24px 26px 0 0;padding:10px 18px 22px;display:flex;flex-direction:column;gap:20px;max-height:78%;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch">
+      <div sc-camel-on-click="{{ stop }}" style="width:100%;background:#FFFFFF;border-radius:24px 26px 0 0;padding:10px 18px 20px;display:flex;flex-direction:column;gap:20px;max-height:78%;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch">
         <div style="width:40px;height:5px;border-radius:3px;background:#E1E0EE;align-self:center;margin:4px 0"></div>
         <div style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;letter-spacing:-.025em;font-weight:800;color:#151329">Filtr</div>
         <sc-for list="{{ sheetGroups }}" as="g" hint-placeholder-count="3">
@@ -2377,7 +2377,7 @@
   </sc-if>
 
   <sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}">
-    <div style="position:absolute;left:18px;right:18px;bottom:96px;background:#151329;color:#fff;border-radius:20px;padding:14px 17px;font-size:15px;font-weight:500;line-height:1.5;z-index:30;box-shadow:0 -2px 24px rgba(25,20,80,.14)">{{ toastText }}</div>
+    <div style="position:absolute;left:18px;right:18px;bottom:96px;background:#151329;color:#fff;border-radius:20px;padding:14px 16px;font-size:15px;font-weight:500;line-height:1.5;z-index:30;box-shadow:0 -2px 24px rgba(25,20,80,.14)">{{ toastText }}</div>
   </sc-if>
 
 </div>
@@ -3024,10 +3024,10 @@ const COURIER_ORIGINS = [
   ['Malayziya',  'Malayziya',  'Janubi-sharqiy Osiyo',         '🇲🇾', 'osiyo']
 ];
 const ORIGIN_TINT = {
-  osiyo:  { bg:'rgba(14,133,149,.18)',  ring:'rgba(14,133,149,.10)',  chip:'#DDF1F4', fg:'#0E8595' },
-  garb:   { bg:'rgba(59,44,201,.16)',   ring:'rgba(59,44,201,.10)',   chip:'#EBE8FE', fg:'#3B2CC9' },
-  yaqin:  { bg:'rgba(180,83,9,.17)',    ring:'rgba(180,83,9,.10)',    chip:'#FAECD8', fg:'#B45309' },
-  shimol: { bg:'rgba(155,28,28,.14)',   ring:'rgba(155,28,28,.09)',   chip:'#F9E3E3', fg:'#9B1C1C' }
+  osiyo:  { bg:'rgba(14,133,149,.18)',  ring:'rgba(14,133,149,.12)',  chip:'#DDF1F4', fg:'#0E8595' },
+  garb:   { bg:'rgba(59,44,201,.16)',   ring:'rgba(59,44,201,.09)',   chip:'#EBE8FE', fg:'#3B2CC9' },
+  yaqin:  { bg:'rgba(180,83,9,.17)',    ring:'rgba(180,83,9,.12)',    chip:'#FAECD8', fg:'#B45309' },
+  shimol: { bg:'rgba(155,28,28,.14)',   ring:'rgba(155,28,28,.12)',   chip:'#F9E3E3', fg:'#9B1C1C' }
 };
 
 const LOGO_DOMAIN = {
