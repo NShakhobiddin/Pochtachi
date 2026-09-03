@@ -1,4 +1,4 @@
-# Xarid Yordamchisi
+# Pochtam
 
 Chet el do'konlari, kuryerlar, bojxona kalkulyatori va bosqichma-bosqich qo'llanmalar — O'zbekiston uchun mo'ljallangan mobil web-ilova.
 
@@ -85,7 +85,7 @@ Ilova Telegram Mini App sifatida to'liq ekranda ochiladi. Botga ulash:
 
 1. [@BotFather](https://t.me/BotFather) da botni tanlang.
 2. **Bot Settings → Menu Button → Configure menu button** ni bosing va manzil sifatida
-   `https://nshakhobiddin.github.io/Pochtachi/` ni kiriting (tugma nomi, masalan, "Xarid Yordamchisi").
+   `https://nshakhobiddin.github.io/Pochtachi/` ni kiriting (tugma nomi, masalan, "Pochtam").
 3. Yoki `/newapp` orqali alohida Mini App yarating va shu manzilni bering.
 
 Telegram ichida ilova o'zi:

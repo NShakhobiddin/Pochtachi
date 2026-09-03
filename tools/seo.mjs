@@ -49,7 +49,7 @@ function guideMeta(g) {
     `<meta name="description" content="${esc(desc)}">`,
     `<link rel="canonical" href="${url}">`,
     `<meta property="og:type" content="article">`,
-    `<meta property="og:site_name" content="Xarid Yordamchisi">`,
+    `<meta property="og:site_name" content="Pochtam">`,
     `<meta property="og:locale" content="uz_UZ">`,
     `<meta property="og:url" content="${url}">`,
     `<meta property="og:title" content="${esc(title)}">`,
@@ -70,7 +70,7 @@ function guideMeta(g) {
 function siteBar(g) {
   return `${MARK_START}
 <nav id="site-bar" hidden aria-label="Sayt">
-  <a href="../../">Xarid Yordamchisi</a>
+  <a href="../../">Pochtam</a>
   <span aria-hidden="true">·</span>
   <a href="../">Barcha qo'llanmalar</a>
   <span aria-hidden="true">·</span>
@@ -111,11 +111,11 @@ const hub = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Chetdan buyurtma berish qo'llanmalari · Xarid Yordamchisi</title>
+<title>Chetdan buyurtma berish qo'llanmalari · Pochtam</title>
 <meta name="description" content="${esc(hubDesc)}">
 <link rel="canonical" href="${SITE}guides/">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Xarid Yordamchisi">
+<meta property="og:site_name" content="Pochtam">
 <meta property="og:locale" content="uz_UZ">
 <meta property="og:url" content="${SITE}guides/">
 <meta property="og:title" content="Chetdan buyurtma berish qo'llanmalari">
@@ -153,7 +153,7 @@ ${fontLinks('../').join('\n')}
     <ul>
 ${cards}
     </ul>
-    <a class="back" href="../">← Xarid Yordamchisi ilovasiga qaytish</a>
+    <a class="back" href="../">← Pochtam ilovasiga qaytish</a>
   </main>
 </body>
 </html>

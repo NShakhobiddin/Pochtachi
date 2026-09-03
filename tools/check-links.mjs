@@ -43,7 +43,7 @@ async function head(url) {
   const opts = {
     redirect: 'follow',
     signal: ctrl.signal,
-    headers: { 'user-agent': 'Mozilla/5.0 (compatible; XaridYordamchisiLinkCheck/1.0)' }
+    headers: { 'user-agent': 'Mozilla/5.0 (compatible; PochtamLinkCheck/1.0)' }
   };
   try {
     let res = await fetch(url, { ...opts, method: 'HEAD' });
