@@ -609,6 +609,25 @@ try {
   check('chiziqli ikonkalar bitta shkalada', yomonIkon.length === 0,
     [...new Set(yomonIkon)].slice(0, 5).join(' | '));
 
+  /* Matn tizimi: kegl shkalasi 11/13/15/17/22/26/34 (44 va 52 — bayroq
+     glifi), har bir keglda ko'pi bilan ikki qalinlik, harf oralig'i esa
+     px emas em (11-15px uchun body dagi umumiy qoida yetadi). Ilgari
+     brauzerda 52 xil kombinatsiya chiqar edi, ularning 22 tasi bir martalik. */
+  const KEGL = { 11: [600, 700], 13: [500, 700], 15: [500, 700], 17: [700],
+    22: [800], 26: [800], 34: [800] };
+  const yomonMatn = [];
+  for (const m of src.matchAll(/style="([^"]*font-size:(\d+)px[^"]*)"/g)) {
+    const [style, fs] = [m[1], +m[2]];
+    if (fs === 44 || fs === 52) continue;          // bayroq glifi
+    if (!KEGL[fs]) { yomonMatn.push(fs + 'px kegl shkalada yo\'q'); continue; }
+    const w = /font-weight:(\d+)/.exec(style);
+    if (w && !KEGL[fs].includes(+w[1])) yomonMatn.push(`${fs}px/${w[1]}`);
+    const ls = /letter-spacing:(-?[\d.]+)px/.exec(style);
+    if (ls && ls[1] !== '2') yomonMatn.push(`${fs}px letter-spacing ${ls[1]}px`);
+  }
+  check('matn shkalasi bir xil', yomonMatn.length === 0,
+    [...new Set(yomonMatn)].slice(0, 6).join(' | '));
+
   /* Kulrang shkala uch pog'onadan iborat: kuchli, passiv, bezak. */
   const kulrang = [...new Set((src.match(/#[0-9A-F]{6}/gi) || []).map(h => h.toUpperCase()))]
     .filter(h => {
