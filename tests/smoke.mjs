@@ -567,6 +567,41 @@ try {
   });
   check('matn kontrasti AA darajasida', kontrast.length === 0, kontrast.slice(0, 4).join(' | '));
 
+  /* Pastki menyu `main` dan tashqarida, shuning uchun yuqoridagi tekshiruv
+     uni ko'rmaydi. Nofaol yozuvlar #8E8DA8 da 3.22:1 edi. */
+  const menyuKontrast = await page.evaluate(() => {
+    const lin = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+    const lum = c => 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]);
+    const rgb = t => (t.match(/rgba?\(([^)]+)\)/) || [0, '255,255,255'])[1].split(',').map(Number);
+    const yomon = [];
+    for (const b of document.querySelectorAll('nav button')) {
+      for (const el of b.querySelectorAll('*')) {
+        const t = (el.textContent || '').trim();
+        if (!t || el.children.length) continue;
+        const L1 = lum(rgb(getComputedStyle(el).color)), L2 = lum([255, 255, 255]);
+        const r = (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05);
+        if (r < 4.5) yomon.push(t + ' ' + r.toFixed(2));
+      }
+    }
+    return yomon;
+  });
+  check('pastki menyu kontrasti AA', menyuKontrast.length === 0, menyuKontrast.join(', '));
+
+  /* Manbadagi apostrof bitta xil bo'lsin (ASCII '). Ilgari o'/g' uchun
+     ‘ (U+2018) ham ishlatilgan edi — qidiruv va tarjimaga xalaqit beradi. */
+  const egri = [...src.matchAll(/[\u2018\u2019\u02BB\u02BC]/g)].length;
+  check('apostrof bir xil', egri === 0, egri ? egri + ' ta egri apostrof' : '');
+
+  /* Kulrang shkala uch pog'onadan iborat: kuchli, passiv, bezak. */
+  const kulrang = [...new Set((src.match(/#[0-9A-F]{6}/gi) || []).map(h => h.toUpperCase()))]
+    .filter(h => {
+      const [r, g, b] = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+      const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+      return mx > 90 && mx < 200 && mx - mn < 40;
+    });
+  /* Uch pog'ona: #4E4E6B kuchli, #6C6B85 passiv (AA), #A6A6BC bezak. */
+  check('kulrang shkalasi uch pog\'ona', kulrang.length <= 3, kulrang.join(' '));
+
   /* Teginish maydonlari: matn havolalari 17px balandlikda edi. */
   const mayda = await page.evaluate(() => {
     const out = [];
@@ -933,7 +968,7 @@ try {
   await page.waitForTimeout(700);
   const tasma = await page.evaluate(() => {
     const bosh = [...document.querySelectorAll('main span')]
-      .find(x => /BOSQICHMA-BOSQICH/.test(x.textContent || ''));
+      .find(x => /BOSQICHMA-BOSQICH/i.test(x.textContent || ''));
     const el = bosh && [...bosh.closest('div').parentElement.children]
       .find(d => d.style && d.style.overflowX === 'auto');
     if (!el) return null;
