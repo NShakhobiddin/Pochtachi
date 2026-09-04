@@ -1,21 +1,16 @@
 #!/usr/bin/env python3
 """Pochtam logotipidan ilova uchun kerakli o'lchamlarni tayyorlaydi.
 
-Manba: icons/src/brand.webp — to'liq lokap (belgi + so'z-belgi + shior),
-shaffof fonda, 2000px kenglikda.
+Manba: icons/src/intro/*.png — logotipning vektor eksporti bo'lakma-bo'lak
+(olti burchak, ichidagi yashil `p`, so'ng `Pochtam.` harflari). O'sha
+bo'laklardan brend introsi ham yig'iladi, ya'ni logotip va animatsiya bitta
+manbadan chiqadi va hech qachon bir-biridan uzoqlashmaydi.
 
 Natija:
-  icons/brand.webp          belgi + so'z-belgi (shiorsiz) — sarlavha uchun
-  icons/brand-full.webp     to'liq lokap — tanishuv ekrani uchun
+  icons/brand.webp          lokap — sarlavha uchun (96 px balandlikda)
+  icons/brand-full.webp     lokap — tanishuv ekrani uchun (560 px kenglikda)
   icons/icon-192.png        ilova ikonkasi (PWA)
   icons/apple-touch-icon.png iOS uchun
-
-Nima uchun ikkita lokap: sarlavhada balandlik 32px, shu o'lchamda shior
-harflari 4px ga tushib o'qilmay qoladi — shuning uchun u yerda shior
-kesiladi. Tanishuv ekranida joy yetarli, shior to'liq ko'rinadi.
-
-Shior qatorini qo'lda emas, matn qismidagi bo'sh qatorlar bo'yicha
-topamiz — logotip qayta chizilsa ham skript ishlayveradi.
 
 Ishlatish: python3 tools/brand-logo.py [--check]
 """
@@ -26,85 +21,54 @@ from pathlib import Path
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC = ROOT / 'icons' / 'src' / 'brand.webp'
+SRC = ROOT / 'icons' / 'src' / 'intro'
 OUT = ROOT / 'icons'
 
-ALPHA = 8          # shundan past alfa — bo'sh joy
-WORD_H = 96        # sarlavha lokapi: 32px ekranda, 3x zichlikda
+# Olti burchak ichida yashil `p` shu nuqtada turadi (bo'laklarning asl
+# koordinatalari — introdagi choreografiya ham shundan hisoblaydi).
+P_AT = (410, 274)
+
+# So'z-belgi harflari: (fayl, asl x, kengligi). Balandligi hammasida 288.
+GLYPHS = [('P', 897, 206), ('o', 1123, 214), ('c', 1361, 198), ('h', 1585, 194),
+          ('t', 1804, 134), ('a', 1966, 218), ('m', 2228, 303), ('dot', 2567, 52)]
+WORD_X0, WORD_X1, WORD_H = 897, 2619, 288
+
+# Lokapning nisbatlari — berilgan logotipdan o'lchab olingan.
+WORD_SHARE = 0.543  # so'z-belgi balandligi belgi balandligiga nisbatan
+GAP_SHARE = 0.243   # belgi bilan so'z orasi belgi kengligiga nisbatan
+
+WORD_PX = 96       # sarlavha lokapi: 36px ekranda, ~2.7x zichlikda
 FULL_W = 560       # to'liq lokap: 240px ekranda, ~2.3x zichlikda
 ICON = 192         # PWA ikonkasi
 APPLE = 180        # iOS ikonkasi
 MARK_SHARE = 0.76  # ikonka kvadratining qancha qismini belgi egallaydi
 
 
-def cols_rows(im):
-    """Har bir ustun va qatordagi noshaffof piksellar soni."""
-    a = im.split()[3].load()
-    w, h = im.size
-    cols = [0] * w
-    rows = [0] * h
-    for y in range(h):
-        for x in range(w):
-            if a[x, y] > ALPHA:
-                cols[x] += 1
-                rows[y] += 1
-    return cols, rows
+def mark():
+    """Olti burchak + ichidagi yashil `p`."""
+    im = Image.open(SRC / 'hex.png').convert('RGBA')
+    im.alpha_composite(Image.open(SRC / 'p.png').convert('RGBA'), P_AT)
+    return im
 
 
-def trim(im):
-    """Shaffof chekkalarni kesadi.
-
-    Image.getbbox() barcha kanallarni hisobga oladi, manbada esa ba'zi
-    ko'rinmas piksellar (255,255,255,0) bo'lib saqlangan — shuning uchun
-    faqat alfa bo'yicha o'lchaymiz.
-    """
-    a = im.split()[3].point(lambda v: 255 if v > ALPHA else 0)
-    box = a.getbbox()
-    return im.crop(box) if box else im
+def word():
+    """`Pochtam.` — harflar asl oraliqlari bilan."""
+    im = Image.new('RGBA', (WORD_X1 - WORD_X0, WORD_H), (0, 0, 0, 0))
+    for name, x, _ in GLYPHS:
+        im.alpha_composite(Image.open(SRC / f'{name}.png').convert('RGBA'), (x - WORD_X0, 0))
+    return im
 
 
-def bands(counts, gap):
-    """Ketma-ket to'ldirilgan bo'laklar: [(boshi, oxiri), ...]."""
-    out = []
-    start = None
-    empty = 0
-    for i, n in enumerate(counts):
-        if n:
-            if start is None:
-                start = i
-            empty = 0
-        elif start is not None:
-            empty += 1
-            if empty > gap:
-                out.append((start, i - empty))
-                start = None
-    if start is not None:
-        out.append((start, len(counts) - 1))
-    return out
-
-
-def parts(im):
-    """Belgi va matn qismlarining chegaralarini qaytaradi."""
-    cols, _ = cols_rows(im)
-    cb = bands(cols, gap=im.width // 100)
-    if len(cb) < 2:
-        raise SystemExit(' XATO  brand.webp: belgi va matn ajralmadi')
-    return cb[0], cb[-1]
-
-
-def drop_tagline(im, text_x):
-    """Matn qismining eng pastki qatorini (shiorni) o'chiradi."""
-    x0, x1 = text_x
-    strip = im.crop((x0, 0, x1 + 1, im.height))
-    _, rows = cols_rows(strip)
-    rb = bands(rows, gap=im.height // 60)
-    if len(rb) < 2:
-        raise SystemExit(' XATO  brand.webp: shior qatori topilmadi')
-    y0, y1 = rb[-1]
-    out = im.copy()
-    pad = 2
-    out.paste((0, 0, 0, 0), (x0, max(0, y0 - pad), x1 + 1, min(im.height, y1 + 1 + pad)))
-    return out
+def lockup():
+    """Belgi va so'z-belgi — yonma-yon, markazi bir chiziqda."""
+    m, w = mark(), word()
+    wh = round(m.height * WORD_SHARE)
+    w = w.resize((round(w.width * wh / w.height), wh), Image.LANCZOS)
+    gap = round(m.width * GAP_SHARE)
+    im = Image.new('RGBA', (m.width + gap + w.width, m.height), (0, 0, 0, 0))
+    im.alpha_composite(m, (0, 0))
+    im.alpha_composite(w, (m.width + gap, (m.height - w.height) // 2))
+    return im
 
 
 def to_h(im, h):
@@ -115,39 +79,34 @@ def to_w(im, w):
     return im.resize((w, max(1, round(im.height * w / im.width))), Image.LANCZOS)
 
 
-def icon(mark, size):
+def icon(m, size):
     """Belgini oq kvadrat ustiga markazlashtiradi.
 
     Oq fon: ikonka telefonda va Telegram ro'yxatida shaffof bo'lsa,
     tizim uni qora bilan to'ldiradi va ko'k belgi yo'qoladi.
     """
     inner = round(size * MARK_SHARE)
-    m = mark.copy()
-    m.thumbnail((inner, inner), Image.LANCZOS)
+    im = m.copy()
+    im.thumbnail((inner, inner), Image.LANCZOS)
     canvas = Image.new('RGBA', (size, size), (255, 255, 255, 255))
-    canvas.paste(m, ((size - m.width) // 2, (size - m.height) // 2), m)
+    canvas.paste(im, ((size - im.width) // 2, (size - im.height) // 2), im)
     return canvas.convert('RGB')
 
 
 def main():
     check = '--check' in sys.argv
-    if not SRC.exists():
-        print(f' XATO  {SRC} topilmadi')
+    missing = [n for n in ['hex.png', 'p.png'] + [f'{g[0]}.png' for g in GLYPHS]
+               if not (SRC / n).exists()]
+    if missing:
+        print(f' XATO  {SRC} da yo\'q: {", ".join(missing)}')
         return 1
-    im = Image.open(SRC).convert('RGBA')
-    mark_x, text_x = parts(im)
 
-    full = trim(im)
-    word = drop_tagline(im, text_x)
-    word = trim(word)
-    mark = im.crop((mark_x[0], 0, mark_x[1] + 1, im.height))
-    mark = trim(mark)
-
+    lock = lockup()
     made = [
-        ('brand.webp', to_h(word, WORD_H)),
-        ('brand-full.webp', to_w(full, FULL_W)),
-        ('icon-192.png', icon(mark, ICON)),
-        ('apple-touch-icon.png', icon(mark, APPLE)),
+        ('brand.webp', to_h(lock, WORD_PX)),
+        ('brand-full.webp', to_w(lock, FULL_W)),
+        ('icon-192.png', icon(mark(), ICON)),
+        ('apple-touch-icon.png', icon(mark(), APPLE)),
     ]
     total = 0
     for name, img in made:

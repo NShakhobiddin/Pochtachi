@@ -57,7 +57,7 @@ npm run logos            # logos/src/*.png -> logos/*.webp qayta yasash
 npm run icons            # icons/src/*.webp -> icons/*.webp (ekran o'lchamiga moslash)
 npm run mockups          # qadamlardagi telefon maketlarini bir me'yorga keltirish
 npm run store-logos      # do'kon logotiplari (--from DIR bilan tayyor rasmlardan)
-npm run brand            # icons/src/brand.webp -> logotip va ilova ikonkalari
+npm run brand            # icons/src/intro/*.png -> logotip va ilova ikonkalari
 npm run tint             # ikonka manbalarini brend toniga (238) keltirish
 npm run intro            # icons/src/intro/*.png -> intro logotip bo'laklari
 npm run glyphs           # icons/glyphs/*.png -> tekis svc-* belgilar
@@ -102,19 +102,25 @@ Oddiy brauzerda bu kodning ta'siri yo'q — sayt avvalgidek ishlayveradi.
 
 ## Brend logotipi
 
-Yagona manba — `icons/src/brand.webp` (to'liq lokap: belgi + `Pochtam.` +
-shior, shaffof fonda, 2000 px). `npm run brand` undan to'rt faylni yasaydi:
+Yagona manba — `icons/src/intro/*.png`: logotipning vektor eksporti
+bo'lakma-bo'lak (olti burchak, ichidagi yashil `p`, `Pochtam.` harflari).
+Brend introsi ham shu bo'laklardan yig'iladi, ya'ni logotip va animatsiya
+hech qachon bir-biridan uzoqlashmaydi. `npm run brand` ulardan lokapni
+yig'ib to'rt faylni yasaydi:
 
 | Fayl | Qayerda |
 | --- | --- |
-| `icons/brand.webp` | bosh ekran sarlavhasi — 36 px balandlikda, shiorsiz |
-| `icons/brand-full.webp` | tanishuv ekrani — 240 px kenglikda, shior bilan |
+| `icons/brand.webp` | bosh ekran sarlavhasi — 36 px balandlikda |
+| `icons/brand-full.webp` | tanishuv ekrani — 240 px kenglikda |
 | `icons/icon-192.png` | PWA ikonkasi |
 | `icons/apple-touch-icon.png` | iOS ikonkasi |
 
-Sarlavhada shior kesiladi: 36 px balandlikda uning harflari 4 px ga
-tushib o'qilmay qoladi. Ikonkalar oq fonda — shaffof bo'lsa tizim ularni
-qora bilan to'ldiradi va ko'k belgi yo'qoladi.
+Lokapda shior yo'q: 36 px balandlikda uning harflari 4 px ga tushib
+o'qilmay qolardi, tanishuv ekranida esa u pastdagi sarlavhani takrorlaydi.
+Nisbatlar `WORD_SHARE` va `GAP_SHARE` da — belgi balandligi va kengligiga
+bog'langan, shuning uchun o'lcham o'zgarsa ham lokap buzilmaydi. Ikonkalar
+oq fonda — shaffof bo'lsa tizim ularni qora bilan to'ldiradi va ko'k belgi
+yo'qoladi.
 
 ## Dizayn tizimi
 
