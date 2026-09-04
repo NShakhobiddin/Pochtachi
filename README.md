@@ -110,17 +110,18 @@ yig'ib to'rt faylni yasaydi:
 
 | Fayl | Qayerda |
 | --- | --- |
-| `icons/brand.webp` | bosh ekran sarlavhasi — 36 px balandlikda |
-| `icons/brand-full.webp` | tanishuv ekrani — 240 px kenglikda |
+| `icons/brand.webp` | bosh ekran sarlavhasi — 36 px balandlikda, shiorsiz |
+| `icons/brand-full.webp` | tanishuv ekrani — 240 px kenglikda, shior bilan |
 | `icons/icon-192.png` | PWA ikonkasi |
 | `icons/apple-touch-icon.png` | iOS ikonkasi |
 
-Lokapda shior yo'q: 36 px balandlikda uning harflari 4 px ga tushib
-o'qilmay qolardi, tanishuv ekranida esa u pastdagi sarlavhani takrorlaydi.
-Nisbatlar `WORD_SHARE` va `GAP_SHARE` da — belgi balandligi va kengligiga
-bog'langan, shuning uchun o'lcham o'zgarsa ham lokap buzilmaydi. Ikonkalar
-oq fonda — shaffof bo'lsa tizim ularni qora bilan to'ldiradi va ko'k belgi
-yo'qoladi.
+Sarlavhada shior yo'q: 36 px balandlikdagi lokapda uning harflari 4 px ga
+tushib o'qilmay qolardi. Tanishuv ekranida joy yetarli — shior so'z ostida
+turadi va belgi butun ustunning markaziga tenglashadi. Nisbatlar
+`WORD_SHARE`, `GAP_SHARE` va `TAG_GAP_SHARE` da — belgi va so'z o'lchamiga
+bog'langan, shuning uchun lokap qaysi o'lchamda chiqsa ham buzilmaydi.
+Ikonkalar oq fonda — shaffof bo'lsa tizim ularni qora bilan to'ldiradi va
+ko'k belgi yo'qoladi.
 
 ## Dizayn tizimi
 

@@ -7,8 +7,8 @@ bo'laklardan brend introsi ham yig'iladi, ya'ni logotip va animatsiya bitta
 manbadan chiqadi va hech qachon bir-biridan uzoqlashmaydi.
 
 Natija:
-  icons/brand.webp          lokap — sarlavha uchun (96 px balandlikda)
-  icons/brand-full.webp     lokap — tanishuv ekrani uchun (560 px kenglikda)
+  icons/brand.webp          lokap — sarlavha uchun (96 px balandlikda, shiorsiz)
+  icons/brand-full.webp     to'liq lokap — tanishuv ekrani uchun (560 px kenglikda)
   icons/icon-192.png        ilova ikonkasi (PWA)
   icons/apple-touch-icon.png iOS uchun
 
@@ -36,6 +36,7 @@ WORD_X0, WORD_X1, WORD_H = 897, 2619, 288
 # Lokapning nisbatlari — berilgan logotipdan o'lchab olingan.
 WORD_SHARE = 0.543  # so'z-belgi balandligi belgi balandligiga nisbatan
 GAP_SHARE = 0.243   # belgi bilan so'z orasi belgi kengligiga nisbatan
+TAG_GAP_SHARE = 0.199  # so'z bilan shior orasi so'z balandligiga nisbatan
 
 WORD_PX = 96       # sarlavha lokapi: 36px ekranda, ~2.7x zichlikda
 FULL_W = 560       # to'liq lokap: 240px ekranda, ~2.3x zichlikda
@@ -59,15 +60,31 @@ def word():
     return im
 
 
-def lockup():
-    """Belgi va so'z-belgi — yonma-yon, markazi bir chiziqda."""
+def lockup(tagline=False):
+    """Belgi va so'z-belgi — yonma-yon, markazi bir chiziqda.
+
+    tagline=True bo'lsa so'z ostiga shior qo'shiladi va belgi butun
+    ustunning (so'z + shior) markaziga tenglashadi. Sarlavhada shior yo'q:
+    36 px balandlikdagi lokapda uning harflari 4 px ga tushib qolardi.
+    """
     m, w = mark(), word()
     wh = round(m.height * WORD_SHARE)
-    w = w.resize((round(w.width * wh / w.height), wh), Image.LANCZOS)
+    k = wh / w.height
+    w = w.resize((round(w.width * k), wh), Image.LANCZOS)
+
+    text = w
+    if tagline:
+        t = Image.open(SRC / 'tagline.png').convert('RGBA')
+        t = t.resize((round(t.width * k), round(t.height * k)), Image.LANCZOS)
+        gap = round(wh * TAG_GAP_SHARE)
+        text = Image.new('RGBA', (max(w.width, t.width), wh + gap + t.height), (0, 0, 0, 0))
+        text.alpha_composite(w, (0, 0))
+        text.alpha_composite(t, (0, wh + gap))
+
     gap = round(m.width * GAP_SHARE)
-    im = Image.new('RGBA', (m.width + gap + w.width, m.height), (0, 0, 0, 0))
+    im = Image.new('RGBA', (m.width + gap + text.width, m.height), (0, 0, 0, 0))
     im.alpha_composite(m, (0, 0))
-    im.alpha_composite(w, (m.width + gap, (m.height - w.height) // 2))
+    im.alpha_composite(text, (m.width + gap, (m.height - text.height) // 2))
     return im
 
 
@@ -95,16 +112,15 @@ def icon(m, size):
 
 def main():
     check = '--check' in sys.argv
-    missing = [n for n in ['hex.png', 'p.png'] + [f'{g[0]}.png' for g in GLYPHS]
-               if not (SRC / n).exists()]
+    missing = [n for n in ['hex.png', 'p.png', 'tagline.png']
+               + [f'{g[0]}.png' for g in GLYPHS] if not (SRC / n).exists()]
     if missing:
         print(f' XATO  {SRC} da yo\'q: {", ".join(missing)}')
         return 1
 
-    lock = lockup()
     made = [
-        ('brand.webp', to_h(lock, WORD_PX)),
-        ('brand-full.webp', to_w(lock, FULL_W)),
+        ('brand.webp', to_h(lockup(), WORD_PX)),
+        ('brand-full.webp', to_w(lockup(tagline=True), FULL_W)),
         ('icon-192.png', icon(mark(), ICON)),
         ('apple-touch-icon.png', icon(mark(), APPLE)),
     ]

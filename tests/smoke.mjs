@@ -115,9 +115,9 @@ try {
   await page.goto(base + '/', { waitUntil: 'load' });
   await page.waitForTimeout(1500);
   check('ilova ko\'tariladi', await page.evaluate(() => !!document.querySelector('#dc-root')?.firstChild));
-  /* Brend logotipi: bitta lokap ikki o'lchamda — tanishuv ekranida
-     kengroq, sarlavhada ixchamroq. naturalWidth 0 bo'lsa rasm yuklanmagan —
-     404 yoki noto'g'ri yo'l shu yerda ko'rinadi. */
+  /* Brend logotipi: tanishuv ekranida shior bilan, sarlavhada shiorsiz.
+     naturalWidth 0 bo'lsa rasm yuklanmagan — 404 yoki noto'g'ri yo'l shu
+     yerda ko'rinadi. */
   const onbLogo = await page.evaluate(() => {
     const im = [...document.images].find(i => /brand-full\.webp/.test(i.currentSrc || i.src));
     return im ? { w: Math.round(im.getBoundingClientRect().width), nat: im.naturalWidth } : null;
