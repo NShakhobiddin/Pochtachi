@@ -35,8 +35,11 @@ WORD_X0, WORD_X1, WORD_H = 897, 2619, 288
 
 # Yashil `m` ortidagi ko'k to'rtburchak: harfning to'liq kengligi, x-balandlik
 # ustidan tayanch chizig'igacha. Rang — so'z-belgidagi ko'kning o'zi.
+# Quti harfdan har tomondan BOX_PAD ga kattaroq, shuning uchun so'z-belgi
+# rasmi ham shuncha hoshiya bilan chiziladi.
 BOX_GLYPH = 'm'
 BOX_TOP, BOX_BOTTOM = 74, 282
+BOX_PAD = 16
 BOX_FILL = (11, 15, 154, 255)
 
 # Lokapning nisbatlari — berilgan logotipdan o'lchab olingan.
@@ -59,13 +62,19 @@ def mark():
 
 
 def word():
-    """`Pochtam.` — harflar asl oraliqlari bilan, `m` ortida ko'k quti."""
-    im = Image.new('RGBA', (WORD_X1 - WORD_X0, WORD_H), (0, 0, 0, 0))
+    """`Pochtam.` — harflar asl oraliqlari bilan, `m` ortida ko'k quti.
+
+    Qaytadigan rasm har tomondan BOX_PAD ga kengroq: quti harfdan chiqib
+    turadi. Harflar maydonining o'zi avvalgidek WORD_H balandlikda.
+    """
+    p = BOX_PAD
+    im = Image.new('RGBA', (WORD_X1 - WORD_X0 + 2 * p, WORD_H + 2 * p), (0, 0, 0, 0))
     for name, x, w in GLYPHS:
+        gx = x - WORD_X0 + p
         if name == BOX_GLYPH:
-            box = Image.new('RGBA', (w, BOX_BOTTOM - BOX_TOP), BOX_FILL)
-            im.alpha_composite(box, (x - WORD_X0, BOX_TOP))
-        im.alpha_composite(Image.open(SRC / f'{name}.png').convert('RGBA'), (x - WORD_X0, 0))
+            box = Image.new('RGBA', (w + 2 * p, BOX_BOTTOM - BOX_TOP + 2 * p), BOX_FILL)
+            im.alpha_composite(box, (gx - p, BOX_TOP))
+        im.alpha_composite(Image.open(SRC / f'{name}.png').convert('RGBA'), (gx, p))
     return im
 
 
@@ -77,20 +86,21 @@ def lockup(tagline=False):
     36 px balandlikdagi lokapda uning harflari 4 px ga tushib qolardi.
     """
     m, w = mark(), word()
-    wh = round(m.height * WORD_SHARE)
-    k = wh / w.height
-    w = w.resize((round(w.width * k), wh), Image.LANCZOS)
+    wh = round(m.height * WORD_SHARE)       # harflar maydonining balandligi
+    k = wh / WORD_H                         # hoshiya emas, harflar bo'yicha
+    p = round(BOX_PAD * k)                  # hoshiya — masofalarni shunga tuzatamiz
+    w = w.resize((round(w.width * k), round(w.height * k)), Image.LANCZOS)
 
     text = w
     if tagline:
         t = Image.open(SRC / 'tagline.png').convert('RGBA')
         t = t.resize((round(t.width * k), round(t.height * k)), Image.LANCZOS)
-        gap = round(wh * TAG_GAP_SHARE)
-        text = Image.new('RGBA', (max(w.width, t.width), wh + gap + t.height), (0, 0, 0, 0))
+        top = p + wh + round(wh * TAG_GAP_SHARE)
+        text = Image.new('RGBA', (max(w.width, p + t.width), top + t.height), (0, 0, 0, 0))
         text.alpha_composite(w, (0, 0))
-        text.alpha_composite(t, (0, wh + gap))
+        text.alpha_composite(t, (p, top))
 
-    gap = round(m.width * GAP_SHARE)
+    gap = round(m.width * GAP_SHARE) - p
     im = Image.new('RGBA', (m.width + gap + text.width, m.height), (0, 0, 0, 0))
     im.alpha_composite(m, (0, 0))
     im.alpha_composite(text, (m.width + gap, (m.height - text.height) // 2))
