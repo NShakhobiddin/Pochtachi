@@ -725,6 +725,49 @@ try {
   check('ruscha rejimda tarjimasiz matn yo\'q', uzYomon.length === 0, uzYomon.slice(0, 4).join(' | '));
   await ruContext.close();
 
+  /* Bosh sahifadagi mini-kalkulyator to'liq kalkulyator bilan bir xil
+     holatni ishlatadi va me'yordan past summada "to'lov yo'q" deydi. */
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
+  await page.waitForTimeout(600);
+  const miniNarx = page.locator('main input[aria-label*="Mahsulot narxi"]').first();
+  await miniNarx.fill('150'); await miniNarx.press('Enter');
+  await page.waitForTimeout(400);
+  const miniPast = await page.evaluate(() => document.querySelector('main').innerText);
+  await miniNarx.fill('900'); await miniNarx.press('Enter');
+  await page.waitForTimeout(400);
+  const miniYuqori = await page.evaluate(() => document.querySelector('main').innerText);
+  check('bosh sahifadagi kalkulyator hisoblaydi',
+    /To'lov yo'q/.test(miniPast) && /so'm/.test(miniYuqori) && /me'yordan ortiq/.test(miniYuqori),
+    miniPast.includes("To'lov yo'q") ? 'past ok' : 'past yiqildi');
+
+  /* Do'kon ro'yxatidagi yorliqlar faqat ogohlantirish bo'lib qolmasin:
+     qo'llanmasi bor do'konlarda ijobiy belgi turadi. */
+  await page.locator('main button', { hasText: "Do'konlar" }).first().click();
+  await page.waitForTimeout(600);
+  await page.locator('main button', { hasText: 'Universal' }).first().click();
+  await page.waitForTimeout(700);
+  const qollanmaBelgi = await page.evaluate(() => {
+    const kart = [...document.querySelectorAll('main button')].filter(b => /Sotuvchiga|Original|Buyurtma|VPN/.test(b.innerText));
+    return { jami: kart.length, belgili: kart.filter(b => /Qo'llanma bor/.test(b.innerText)).length };
+  });
+  check("do'kon ro'yxatida qo'llanma belgisi",
+    qollanmaBelgi.belgili >= 3 && qollanmaBelgi.belgili < qollanmaBelgi.jami,
+    `${qollanmaBelgi.belgili}/${qollanmaBelgi.jami} do'konda`);
+
+  /* Taqqoslash rejimi yoqilganda nima qilish kerakligi yozilib turadi. */
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
+  await page.waitForTimeout(500);
+  await page.locator('main button', { hasText: 'Kuryerlar' }).first().click();
+  await page.waitForTimeout(700);
+  await page.locator('main button', { hasText: 'AQSh' }).first().click();
+  await page.waitForTimeout(700);
+  const cmpOldin = await page.evaluate(() => /belgilang/.test(document.querySelector('main').innerText));
+  await page.locator('main button', { hasText: 'Taqqoslash' }).first().click();
+  await page.waitForTimeout(500);
+  const cmpKeyin = await page.evaluate(() => /belgilang/.test(document.querySelector('main').innerText));
+  check('taqqoslash rejimida yo\'riqnoma chiqadi', !cmpOldin && cmpKeyin,
+    `oldin ${cmpOldin}, keyin ${cmpKeyin}`);
+
   /* Kulrang shkala uch pog'onadan iborat: kuchli, passiv, bezak. */
   const kulrang = [...new Set((src.match(/#[0-9A-F]{6}/gi) || []).map(h => h.toUpperCase()))]
     .filter(h => {

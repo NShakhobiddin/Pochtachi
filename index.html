@@ -465,6 +465,32 @@
         </button>
       </sc-if>
 
+
+      <!-- Ilovani ochgan odamning birinchi savoli — "menga qancha tushadi".
+           Javob ilgari Bojxona > Kalkulyator, uch tegish narida edi. Bu
+           yerdagi ikki maydon to'liq kalkulyator bilan bir xil holatni
+           ishlatadi: bu yerda yozganingiz u yerda ham turadi. -->
+      <div style="background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <h2 style="margin:0;flex:1;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Bojxonaga qancha to'laysiz?</h2>
+          <button sc-camel-on-click="{{ goCalcSec }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:10px 8px;margin:-10px -8px;flex:none">To'liq hisob</button>
+        </div>
+        <div style="display:flex;gap:10px">
+          <label style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;background:#F1F1F8;border-radius:16px;padding:10px 12px;cursor:text">
+            <span style="font-size:15px;font-weight:700;color:#6B6C85;flex:none">$</span>
+            <input size="4" value="{{ calcPrice }}" sc-camel-on-change="{{ onCalcPrice }}" placeholder="320" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Mahsulot narxi, dollarda" style="flex:1;min-width:0;width:100%;border:none;outline:none;background:transparent;font-family:inherit;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429;font-variant-numeric:tabular-nums;caret-color:#1A1FB0">
+          </label>
+          <label style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;background:#F1F1F8;border-radius:16px;padding:10px 12px;cursor:text">
+            <input size="3" value="{{ calcWeight }}" sc-camel-on-change="{{ onCalcWeight }}" placeholder="2.5" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Og'irligi, kilogrammda" style="flex:1;min-width:0;width:100%;border:none;outline:none;background:transparent;font-family:inherit;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429;font-variant-numeric:tabular-nums;caret-color:#1A1FB0">
+            <span style="font-size:15px;font-weight:700;color:#6B6C85;flex:none">kg</span>
+          </label>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <span style="font-family:'Onest','XY Flags',system-ui,sans-serif;font-size:22px;letter-spacing:-.025em;font-weight:800;color:{{ miniFg }};line-height:1.2;font-variant-numeric:tabular-nums">{{ miniTotal }}</span>
+          <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5;font-variant-numeric:tabular-nums">{{ miniOver }}</span>
+          <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">{{ miniHint }}</span>
+        </div>
+      </div>
       <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
         <button sc-camel-on-click="{{ goStores }}" style="background:#FFFFFF;border:none;border-radius:20px;padding:18px;cursor:pointer;text-align:left;display:flex;flex-direction:column;justify-content:space-between;gap:14px;min-height:164px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
           <!-- Ikonka tepada, matn ostida: ilgari ular yonma-yon turib,
@@ -1046,8 +1072,20 @@
             <button sc-camel-on-click="{{ s.pick }}" style="border:none;padding:0 12px;height:32px;border-radius:14px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;background:{{ s.bg }};color:{{ s.fg }}">{{ s.label }}</button>
           </sc-for>
         </div>
-        <button sc-camel-on-click="{{ toggleCompare }}" style="border:1.5px solid {{ cmpBd }};background:{{ cmpBg }};color:{{ cmpFg }};border-radius:999px;height:32px;padding:0 14px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700">Taqqoslash</button>
+        <button sc-camel-on-click="{{ toggleCompare }}" style="display:flex;align-items:center;gap:6px;border:1.5px solid {{ cmpBd }};background:{{ cmpBg }};color:{{ cmpFg }};border-radius:999px;height:32px;padding:0 14px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700">
+          <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="{{ cmpFg }}" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 4v16M15 4v16M4 9h16M4 15h16"></path></svg>
+          Taqqoslash
+        </button>
       </div>
+
+      <!-- Rejim yoqilganda kartochkalar yonida doiracha paydo bo'ladi, lekin
+           nima qilish kerakligi hech qayerda yozilmagan edi. -->
+      <sc-if value="{{ cmpOn }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:8px;background:#E9EAFD;border-radius:16px;padding:10px 12px">
+          <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="9"></circle><path d="M12 16v-5M12 8h.01"></path></svg>
+          <span style="font-size:13px;font-weight:500;color:#13189D;line-height:1.5">Solishtirish uchun 2-3 kuryerni belgilang</span>
+        </div>
+      </sc-if>
 
       <div style="display:flex;flex-direction:column;gap:12px">
         <sc-for list="{{ filteredCouriers }}" as="c" hint-placeholder-count="6">
@@ -1055,8 +1093,13 @@
                ro'yxatidagi kabi). -->
           <div style="display:flex;align-items:center;gap:12px;content-visibility:auto;contain-intrinsic-size:auto 150px">
             <sc-if value="{{ compareMode }}" hint-placeholder-val="{{ false }}">
-              <button sc-camel-on-click="{{ c.toggleSel }}" style="width:26px;height:26px;border-radius:12px;flex:none;cursor:pointer;background:{{ c.selBg }};border:2px solid {{ c.selBd }};display:flex;align-items:center;justify-content:center">
-                <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+              <!-- Doiracha 26px bo'lib ko'rinadi, teginish maydoni esa
+                   padding hisobiga 44px: barmoq uchun 26px juda kichik edi.
+                   Nomsiz tugma ekran o'quvchisiga hech narsa demasdi. -->
+              <button sc-camel-on-click="{{ c.toggleSel }}" aria-label="{{ c.selLabel }}" style="padding:10px;margin:-10px;border:none;background:none;cursor:pointer;flex:none;display:flex;align-items:center;justify-content:center">
+                <span style="width:26px;height:26px;border-radius:12px;background:{{ c.selBg }};border:2px solid {{ c.selBd }};display:flex;align-items:center;justify-content:center;flex:none">
+                  <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+                </span>
               </button>
             </sc-if>
             <button sc-camel-on-click="{{ c.open }}" style="flex:1;background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;min-width:0;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
@@ -2517,6 +2560,10 @@ const RU = {
   'Poyabzal va krossovka':'Обувь и кроссовки', 'Elektronika va texnika':'Электроника и техника',
   'Kosmetika va parfyumeriya':'Косметика и парфюмерия', "Bolalar va o'yinchoq":'Детские товары и игрушки',
   'Universal marketpleys':'Универсальные маркетплейсы',
+  "Bojxonaga qancha to'laysiz?":'Сколько заплатите таможне?', "To'liq hisob":'Полный расчёт',
+  "To'lov yo'q":'Платежа нет', "me'yordan oshmadi":'не превысило лимит', "me'yordan ortiq · boj va yig'im":'сверх лимита · пошлина и сбор',
+  "Qo'llanma bor":'Есть инструкция',
+  'Solishtirish uchun 2-3 kuryerni belgilang':'Отметьте 2-3 курьера для сравнения',
   'Natijalar':'Результаты', 'Eng arzon uchta kuryer':'Три самых дешёвых курьера',
   'Kim uchun mos':'Кому подходит', 'Huquqiy manba':'Правовой источник',
   "Qo'ng'iroq qilish":'Позвонить', "Boshqa jo'natma raqami":'Другой трек-номер',
@@ -4370,6 +4417,12 @@ class Component extends DCLogic {
         const WARN = '#B45309', WARN_BG = '#FDF3E3';    // sarg'ish: e'tibor bering
         const chipsOf = s => {
           const out = [{ t: s.tier, fg: '#1A1FB0', bg: '#E9EAFD' }];
+          /* 43 do'kondan 7 tasida bosqichma-bosqich qo'llanma bor. Ro'yxatda
+             bu eng foydali ijobiy farq: ilova shu do'konda qo'lingizdan
+             yetaklaydi. Qolgan yorliqlar ko'proq ogohlantirish bo'lgani
+             uchun ro'yxat bir xil "muammoli" bo'lib ko'rinardi. */
+          if (FULL_GUIDES.some(g => g.id === s.id))
+            out.push({ t: "Qo'llanma bor", fg: '#1A1FB0', bg: '#E9EAFD' });
           /* Buyurtma qulayligi faqat e'tiborga loyiq bo'lganda chiziladi:
              43 do'kondan 30 tasi "o'rtacha" va bu hech narsa demaydi.
              Oson ekani ham, VPN kerakligi ham — qaror qildiradigan fakt. */
@@ -4629,10 +4682,12 @@ class Component extends DCLogic {
           open:() => { this.setState({ courierId:k.id }); this.push('courier'); },
           toggleSel:() => this.toggleIn('selected', k.id),
           selBg: st.selected.includes(k.id) ? PRI : '#FFFFFF',
-          selBd: st.selected.includes(k.id) ? PRI : '#D8D8E5' };
+          selBd: st.selected.includes(k.id) ? PRI : '#D8D8E5',
+          selLabel: (st.selected.includes(k.id) ? 'Taqqoslashdan olib tashlash: ' : 'Taqqoslashga qo\'shish: ') + k.name };
       }),
       compareMode: st.compareMode,
       toggleCompare: () => this.setState(x => ({ compareMode: !x.compareMode, selected: [] })),
+      cmpOn: st.compareMode,
       cmpBg: st.compareMode ? PRI : '#FFFFFF', cmpFg: st.compareMode ? '#FFFFFF' : PRI, cmpBd: st.compareMode ? PRI : '#DCDDFA',
       canCompare: st.compareMode && st.selected.length >= 2,
       selCount: st.selected.length,
@@ -4672,6 +4727,15 @@ class Component extends DCLogic {
       onCalcWeight: e => this.setState({ calcWeight: e.target.value }),
       onCalcShip: e => this.setState({ calcShip: e.target.value }),
       calcTotal: money(c.total),
+      /* Bosh sahifadagi qisqa javob. Yetkazish narxi kuryerga qarab
+         o'zgargani uchun bu yerda faqat bojxona to'lovi ko'rsatiladi —
+         ilova aynan shu raqamga javob bera oladi. */
+      miniTotal: c.total > 0 ? money(c.total) + " so'm" : "To'lov yo'q",
+      miniFg: c.total > 0 ? '#131429' : '#0F7B3E',
+      /* Raqam va ibora alohida tugunda: lug'at butun satrni qidiradi,
+         "$120 me'yordan ortiq" esa hech qachon kalit bo'la olmaydi. */
+      miniOver: '$' + (c.basis === 'none' ? c.norms.freeUsd : Math.round(c.excessGoods)),
+      miniHint: c.basis === 'none' ? "me'yordan oshmadi" : "me'yordan ortiq · boj va yig'im",
       calcRate: money(USD_RATE),
       rateValue: money(USD_RATE),
       rateSrcLabel: RATE_META.loading
