@@ -747,56 +747,35 @@ try {
   });
   check('teginish maydonlari 32px dan kichik emas', mayda.length === 0, mayda.slice(0, 4).join(' | '));
 
-  /* Pullik xizmatlar bo'limi: ikkala yo'nalish ham to'ladi va har bir
-     kartochkada ikonka, narx va "Bog'lanish" tugmasi bor. */
+  /* Pullik xizmatlar bo'limi aloqa manziliga bog'langan: CONTACT bo'sh
+     bo'lsa bo'lim butunlay ko'rsatilmaydi (aks holda 11 ta "Bog'lanish"
+     tugmasi ogohlantirishga olib borardi). To'ldirilgan bo'lsa — ichki
+     tuzilishi tekshiriladi. */
+  const aloqaBor = /const CONTACT = \{[^}]*tg:\s*'[^']+'/.test(src)
+    || /const CONTACT = \{[^}]*phone:\s*'[^']+'/.test(src);
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(500);
-  await page.getByText('Mutaxassis yordami', { exact: false }).first().click();
-  await page.waitForTimeout(700);
-  const svcShaxs = await page.evaluate(() => {
-    const b = [...document.querySelectorAll('main button')].filter(x => x.innerText.trim() === "Bog'lanish");
-    const ic = [...document.querySelectorAll('main div')]
-      .filter(d => /icons\/svc-/.test(d.style.backgroundImage)).length;
-    return { n: b.length, ic };
-  });
-  /* Yorlig'i bor xizmat ("eng ko'p so'raladi") qolganlaridan ajralib tursin:
-     foni ohangli va atrofida halqasi bor. */
-  const svcBelgi = await page.evaluate(() => {
-    const kart = [...document.querySelectorAll('main div')]
-      .filter(d => /border-radius: 20px/.test(d.style.cssText) &&
-                   /Bog'lanish/.test(d.innerText) && /NARX/.test(d.innerText));
-    const yorliq = kart.filter(d => /SO'RALADI/.test(d.innerText));
-    const oddiy = kart.filter(d => !/SO'RALADI/.test(d.innerText));
-    const fon = d => getComputedStyle(d).backgroundImage;
-    return {
-      jami: kart.length, belgili: yorliq.length,
-      ohangli: yorliq.every(d => fon(d) !== 'none'),
-      halqa: yorliq.every(d => /inset/.test(getComputedStyle(d).boxShadow)),
-      oddiyTekis: oddiy.every(d => fon(d) === 'none')
-    };
-  });
-  check("xizmatlarda ajratilgan kartochka",
-    svcBelgi.jami === 5 && svcBelgi.belgili === 1 && svcBelgi.ohangli &&
-    svcBelgi.halqa && svcBelgi.oddiyTekis,
-    `${svcBelgi.belgili}/${svcBelgi.jami} ajratilgan`);
-  await page.getByText('Kuryer tashkilotiman', { exact: false }).first().click();
-  await page.waitForTimeout(600);
-  const svcTash = await page.evaluate(() =>
-    [...document.querySelectorAll('main button')].filter(x => x.innerText.trim() === "Bog'lanish").length);
-  check('xizmatlar: xaridor yo\'nalishi', svcShaxs.n === 5 && svcShaxs.ic >= 5,
-    `${svcShaxs.n} ta karta, ${svcShaxs.ic} ta ikonka`);
-  check('xizmatlar: tashkilot yo\'nalishi', svcTash === 6, `${svcTash} ta karta`);
-
-  /* Aloqa manzili kiritilmagan bo'lsa o'lik havola ochilmasin. */
-  const svcSafe = await page.evaluate(() => {
-    const b = [...document.querySelectorAll('main button')].find(x => x.innerText.trim() === "Bog'lanish");
-    let opened = false;
-    const orig = window.open; window.open = () => { opened = true; return null; };
-    b.click(); window.open = orig;
-    return { opened, tost: document.body.innerText.includes('Aloqa manzili') };
-  });
-  check('xizmatlar: aloqasiz o\'lik havola ochilmaydi',
-    !svcSafe.opened || svcSafe.tost, JSON.stringify(svcSafe));
+  const svcKirish = await page.getByText('Mutaxassis yordami', { exact: false }).count();
+  if (!aloqaBor) {
+    check('aloqasiz pullik xizmatlar yashiriladi', svcKirish === 0,
+      svcKirish + ' ta kirish nuqtasi ko\'rinib turibdi');
+  } else {
+    await page.getByText('Mutaxassis yordami', { exact: false }).first().click();
+    await page.waitForTimeout(700);
+    const svcShaxs = await page.evaluate(() => {
+      const b = [...document.querySelectorAll('main button')].filter(x => x.innerText.trim() === "Bog'lanish");
+      const ic = [...document.querySelectorAll('main div')]
+        .filter(d => /icons\/svc-/.test(d.style.backgroundImage)).length;
+      return { n: b.length, ic };
+    });
+    await page.getByText('Kuryer tashkilotiman', { exact: false }).first().click();
+    await page.waitForTimeout(600);
+    const svcTash = await page.evaluate(() =>
+      [...document.querySelectorAll('main button')].filter(x => x.innerText.trim() === "Bog'lanish").length);
+    check('xizmatlar: xaridor yo\'nalishi', svcShaxs.n === 5 && svcShaxs.ic >= 5,
+      `${svcShaxs.n} ta karta, ${svcShaxs.ic} ta ikonka`);
+    check('xizmatlar: tashkilot yo\'nalishi', svcTash === 6, `${svcTash} ta karta`);
+  }
 
   /* Kuzatuv: saqlangan reja jo'natmaga aylanadi — trek raqami yoziladi
      va bosqichi qo'lda suriladi. Kuzatuv tugmasi bosh sahifa sarlavhasida. */
