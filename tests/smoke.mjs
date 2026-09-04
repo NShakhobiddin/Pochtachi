@@ -692,6 +692,39 @@ try {
     if (!m[1].startsWith('brand') && !UYA.has(+m[2])) yomonUya.add(m[2] + 'px');
   check('rasm uyalari shkalada', yomonUya.size === 0, [...yomonUya].join(' '));
 
+  /* Ruscha rejimda o'zbekcha matn qolib ketmasin. Interfeys satrlari
+     lug'atdan tarjima qilinadi; do'kon/kuryer nomlari, huquqiy manba va
+     til tugmasi ataylab asl holida qoladi. */
+  /* Toza kontekst: shu paytgacha localStorage da lang:'uz' saqlangan,
+     o'sha kontekstda tanishuv ekrani chiqmaydi va til tanlab bo'lmaydi. */
+  const ruContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const ruSahifa = await ruContext.newPage();
+  await ruSahifa.goto(base + '/', { waitUntil: 'load' });
+  await ruSahifa.waitForTimeout(1500);
+  const ruTanla = ruSahifa.getByText('Русский').first();
+  if (await ruTanla.count()) { await ruTanla.click(); await ruSahifa.waitForTimeout(500); }
+  for (let i = 0; i < 2; i++) {
+    const s = ruSahifa.getByRole('button', { name: /O'tkazib yuborish|Пропустить/ });
+    if (await s.count()) { await s.first().click(); await ruSahifa.waitForTimeout(350); }
+  }
+  await ruSahifa.waitForTimeout(500);
+  const ATAYLAB = /^(Taobao|Pinduoduo|Poizon|Trendyol|Amazon|eBay|SHEIN|O'zbekcha|VMQ|BHM)/;
+  const uzQoldi = await ruSahifa.evaluate(() => {
+    const out = [];
+    for (const el of document.querySelectorAll('main *, nav *')) {
+      if (el.children.length) continue;
+      const t = (el.textContent || '').trim();
+      if (t.length < 4 || t.length > 90) continue;
+      if (/[А-Яа-я]/.test(t)) continue;
+      if (!/[a-z]{3}/.test(t)) continue;
+      out.push(t);
+    }
+    return [...new Set(out)];
+  });
+  const uzYomon = uzQoldi.filter(t => !ATAYLAB.test(t));
+  check('ruscha rejimda tarjimasiz matn yo\'q', uzYomon.length === 0, uzYomon.slice(0, 4).join(' | '));
+  await ruContext.close();
+
   /* Kulrang shkala uch pog'onadan iborat: kuchli, passiv, bezak. */
   const kulrang = [...new Set((src.match(/#[0-9A-F]{6}/gi) || []).map(h => h.toUpperCase()))]
     .filter(h => {
@@ -783,7 +816,7 @@ try {
   /* Kategoriya qatorlarida emoji emas, ilovaning o'z 3D ikonkalari. */
   const wizIk = await page.evaluate(async () => {
     const btns = [...document.querySelectorAll('main button')]
-      .filter(b => /ta do'kon mavjud/.test(b.innerText));
+      .filter(b => /ta do'kon mos keladi/.test(b.innerText));
     const pics = btns.map(b => {
       const d = [...b.querySelectorAll('div')]
         .find(x => /icons\/dok-[a-z]+\.webp/.test(x.style.backgroundImage || ''));

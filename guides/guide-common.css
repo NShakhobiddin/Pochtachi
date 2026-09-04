@@ -6,14 +6,14 @@
   --indigo-50:#ECECFC; --indigo-100:#E2E3FA; --indigo-200:#D2D3F6; --indigo-300:#AEB0F3;
   --indigo-500:#494FE9; --indigo-600:#1A1FB0; --indigo-700:#13189D; --indigo-900:#0C0F62;
   --slate-50:#F8F8FC; --slate-100:#F1F1F8; --slate-200:#E3E4EE; --slate-300:#CECEDD;
-  --slate-400:#999AAE; --slate-500:#575872; --slate-600:#585974; --slate-700:#282944;
+  --slate-400:#999AAE; --slate-500:#575872; --slate-600:#575872; --slate-700:#282944;
   --slate-800:#1A1A32; --slate-900:#131429;
   --green:#0F7B3E; --green-bg:#E9F8EF; --amber:#B45309; --amber-bg:#FDF3E3;
-  --red:#C8102E; --red-bg:#FDECEE; --sky:#2456C8; --sky-bg:#E9EAFD;
+  --red:#9B1C1C; --red-bg:#FCEAEA; --sky:#2456C8; --sky-bg:#E9EAFD;
   --radius:22px; --radius-sm:14px;
-  --shadow-sm:0 1px 2px rgba(20,19,43,.045),0 6px 16px -10px rgba(20,19,43,.24);
-  --shadow:0 1px 2px rgba(20,19,43,.05),0 10px 26px -14px rgba(20,19,43,.30);
-  --shadow-lg:0 18px 38px -18px rgba(17,21,132,.65);
+  --shadow-sm:0 1px 4px -2px rgba(16,18,45,.08);
+  --shadow:0 2px 8px -4px rgba(16,18,45,.10);
+  --shadow-lg:0 8px 20px -10px rgba(17,21,132,.34);
   --font:'Onest','XY Flags','Noto Color Emoji',system-ui,-apple-system,sans-serif;
   /* Sahifaning yon bo'shlig'i. Chetgacha cho'ziladigan bloklar (bo'lim
      tasmasi) shu qiymatdan foydalanadi — ikki joyda ikki xil son yozilib
@@ -25,7 +25,7 @@
    sahifa yon tomonga surilmaydi (clip — hidden'dan farqli, sticky'ni buzmaydi). */
 html{overflow-x:clip}
 
-body{background:#F1F1F8;color:#1A1A32;font-size:14.5px;letter-spacing:-.012em}
+body{background:#F6F7FB;color:#1A1A32;font-size:14.5px;letter-spacing:-.012em}
 .wrap{max-width:100%;padding:0 var(--xy-pad) 40px}
 ::-webkit-scrollbar{width:0;height:0}
 *{scrollbar-width:none}
@@ -36,31 +36,31 @@ header.hero::before,header.hero::after{display:none}
 .hero-in{padding:0 16px}
 .badge-top{background:#F1F1F8;border:none;color:#575872;font-size:10.5px;font-weight:800;letter-spacing:.4px;padding:5px 11px 5px 8px;backdrop-filter:none}
 h1{font-family:'Onest',system-ui,sans-serif;font-size:23px;font-weight:800;letter-spacing:-.7px;margin:12px 0 6px;color:#131429}
-.hero p{color:#585974;font-size:13.5px;opacity:1;line-height:1.55;text-wrap:pretty}
+.hero p{color:#575872;font-size:13.5px;opacity:1;line-height:1.55;text-wrap:pretty}
 .hero-stats{gap:7px;margin-top:14px}
 .hstat{background:#F1F1F8;border:none;border-radius:14px;padding:9px 12px;backdrop-filter:none}
 .hstat b{font-family:'Onest',system-ui,sans-serif;font-size:15px;font-weight:800;color:#1A1FB0;letter-spacing:-.3px}
 .hstat span{font-size:10.5px;color:#575872;font-weight:600}
 
 /* Tab qatori — ilovadagi chip uslubi */
-nav.tabs{margin-top:0;border-radius:0;box-shadow:none;background:#F1F1F8;border-bottom:1px solid #F1F1F8;backdrop-filter:none}
+nav.tabs{margin-top:0;border-radius:0;box-shadow:none;background:#F6F7FB;border-bottom:1px solid #F1F1F8;backdrop-filter:none}
 .tabs-scroll{padding:9px 12px;gap:6px}
 .tab{background:#FFFFFF;border-radius:999px;font-size:12.5px;font-weight:700;color:#131429;padding:8px 14px;box-shadow:var(--shadow-sm)}
 .tab:hover{background:#F1F1F8;color:#131429}
-.tab.active{background:linear-gradient(155deg,#494FE9,#13189D);color:#fff;box-shadow:0 12px 26px -14px rgba(17,21,132,.7)}
+.tab.active{background:linear-gradient(155deg,#494FE9,#13189D);color:#fff;box-shadow:0 4px 14px -6px rgba(26,31,176,.26)}
 .tab .n{display:none}
 
 /* Sarlavhalar */
 section.panel{padding-top:20px}
 h2{font-family:'Onest',system-ui,sans-serif;font-size:21px;font-weight:800;letter-spacing:-.6px;padding-left:0;color:#131429}
 h2::before{display:none}
-.sub{padding-left:0;font-size:13.5px;color:#585974;line-height:1.55;margin-bottom:18px}
+.sub{padding-left:0;font-size:13.5px;color:#575872;line-height:1.55;margin-bottom:18px}
 h3{font-family:'Onest',system-ui,sans-serif;font-size:16px;font-weight:800;letter-spacing:-.3px;margin:24px 0 10px}
 h4{font-weight:800;letter-spacing:-.2px}
 
 /* Kartalar */
 .card,.method{border:none;border-radius:var(--radius);box-shadow:var(--shadow);background:#FFFFFF}
-.method:hover{border:none;box-shadow:0 2px 4px rgba(26,31,176,.10),0 14px 30px -14px rgba(26,31,176,.42);transform:none}
+.method:hover{border:none;box-shadow:0 4px 14px -6px rgba(26,31,176,.26);transform:none}
 .method .tag{border-radius:0 var(--radius) 0 14px;background:#1A1FB0;font-size:10px;letter-spacing:.4px}
 .method .who{background:#ECECFC;color:#1A1FB0;border-radius:8px;font-size:11.5px;font-weight:700}
 
@@ -75,7 +75,7 @@ h4{font-weight:800;letter-spacing:-.2px}
 .wiz-progress i{height:6px;background:#E3E4EE}
 .wiz-progress i.done{background:#AEB0F3}
 .wiz-progress i.now{background:#1A1FB0}
-.step-num{border-radius:14px;background:linear-gradient(155deg,#494FE9,#13189D);box-shadow:0 12px 24px -14px rgba(17,21,132,.8)}
+.step-num{border-radius:14px;background:linear-gradient(155deg,#494FE9,#13189D);box-shadow:0 4px 14px -6px rgba(26,31,176,.26)}
 .step-title{font-family:'Onest',system-ui,sans-serif;font-size:17px;font-weight:800;letter-spacing:-.4px}
 .step-meta{font-size:11.5px;color:#575872;font-weight:700}
 .step-body{font-size:14px;color:#282944}
@@ -143,15 +143,15 @@ tbody tr:hover{background:#F8F8FC}
 .item.a{border-left:4px solid #B45309}
 .item.g{border-left:4px solid #0F7B3E}
 .item .nm{font-size:14px;font-weight:700;color:#131429}
-.item .ds{font-size:12.5px;color:#585974}
+.item .ds{font-size:12.5px;color:#575872}
 .empty{color:#999AAE;font-size:13px}
 
 /* Akkordeon, checklist, lug'at */
 .acc{border:none;border-radius:18px;box-shadow:var(--shadow)}
 .acc button{font-size:14px;font-weight:700;color:#131429;padding:15px 44px 15px 16px}
 .acc button::after{color:#1A1FB0}
-.acc.open{border:none;box-shadow:0 2px 4px rgba(26,31,176,.10),0 14px 30px -14px rgba(26,31,176,.42)}
-.acc .ans{font-size:13.5px;color:#585974;line-height:1.6}
+.acc.open{border:none;box-shadow:0 4px 14px -6px rgba(26,31,176,.26)}
+.acc .ans{font-size:13.5px;color:#575872;line-height:1.6}
 .chk{border:none;border-radius:18px;box-shadow:var(--shadow-sm);padding:13px 15px}
 .chk:hover{background:#FBFBFE}
 .chk.done{background:#E9F8EF;box-shadow:none}
