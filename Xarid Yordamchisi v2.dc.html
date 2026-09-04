@@ -124,6 +124,9 @@
       { k: 'h', x: 1585, w: 194 }, { k: 't', x: 1804, w: 134 }, { k: 'a', x: 1966, w: 218 },
       { k: 'm', x: 2228, w: 303 }, { k: 'dot', x: 2567, w: 52 }
     ];
+    // Yashil `m` ortidagi ko'k quti — logotipdagi bilan bir xil o'lchov
+    // (tools/brand-logo.py dagi BOX_TOP/BOX_BOTTOM).
+    var BOX_TOP = 74, BOX_H = 208, INK = '#0B0F9A';
     var WORD_W = (2619 - 897) * WS, WORD_X = (1080 - WORD_W) / 2;
     var WORD_Y = MARK.y + MH + 96, WORD_H = 288 * WS;
     var TAG = { x: WORD_X, y: WORD_Y + WORD_H + 34, w: WORD_W, h: 96 * WS };
@@ -208,9 +211,16 @@
       glintBox.appendChild(glint);
 
       cam.appendChild(grid); cam.appendChild(glow); cam.appendChild(svg); cam.appendChild(hex);
+      var mBox = null;
       GLYPHS.forEach(function (g) {
+        var x = WORD_X + (g.x - 897) * WS;
+        if (g.k === 'm') {
+          mBox = el('div', 'position:absolute;background:' + INK + ';left:' + x + 'px;top:' +
+            (WORD_Y + BOX_TOP * WS) + 'px;width:' + (g.w * WS) + 'px;height:' + (BOX_H * WS) + 'px');
+          cam.appendChild(mBox);
+        }
         var im = IM[g.k]; im.alt = '';
-        im.setAttribute('style', 'position:absolute;display:block;left:' + (WORD_X + (g.x - 897) * WS) + 'px;top:' + WORD_Y + 'px;width:' + (g.w * WS) + 'px;height:' + WORD_H + 'px');
+        im.setAttribute('style', 'position:absolute;display:block;left:' + x + 'px;top:' + WORD_Y + 'px;width:' + (g.w * WS) + 'px;height:' + WORD_H + 'px');
         cam.appendChild(im);
       });
       cam.appendChild(glintBox); cam.appendChild(tag); cam.appendChild(cursor); cam.appendChild(pp);
@@ -247,6 +257,7 @@
         var st = WORD_CUE + i * 0.05;
         return {
           im: IM[g.k],
+          box: g.k === 'm' ? mBox : null,
           dy: an({ from: 60, to: 0, start: st, end: st + (g.k === 'dot' ? 0.8 : 0.5), ease: g.k === 'dot' ? E.outElastic : E.outBack }),
           op: an({ from: 0, to: 1, start: st, end: st + 0.15 })
         };
@@ -273,7 +284,11 @@
         hex.style.opacity = hexOpA(T); hex.style.transform = 'scale(' + hexSA(T) + ')';
         glow.style.opacity = glowA(T) * glowB(T); glow.style.transform = 'scale(' + glowSA(T) + ')';
         grid.style.opacity = lerp([land, WORD_CUE + 0.6], [1, 0.35], T);
-        gl.forEach(function (it) { it.im.style.opacity = it.op(T); it.im.style.transform = 'translateY(' + it.dy(T) + 'px)'; });
+        gl.forEach(function (it) {
+          var op = it.op(T), tr = 'translateY(' + it.dy(T) + 'px)';
+          it.im.style.opacity = op; it.im.style.transform = tr;
+          if (it.box) { it.box.style.opacity = op; it.box.style.transform = tr; }
+        });
         glintBox.style.opacity = gOpA(T) * gOpB(T); glint.style.left = gXA(T) + 'px';
         var cut = tagCutA(T);
         tag.style.opacity = tagOpA(T);

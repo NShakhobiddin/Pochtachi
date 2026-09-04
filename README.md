@@ -115,6 +115,11 @@ yig'ib to'rt faylni yasaydi:
 | `icons/icon-192.png` | PWA ikonkasi |
 | `icons/apple-touch-icon.png` | iOS ikonkasi |
 
+Yashil `m` ortidagi ko'k quti — harfning to'liq kengligi, x-balandlikdan
+tayanch chizig'igacha (`BOX_TOP`/`BOX_BOTTOM`). U introda ham bor: o'sha
+o'lchov `<head>` dagi intro kodida takrorlanadi, shuning uchun animatsiya
+oxiridagi so'z-belgi sarlavhadagisi bilan bir xil chiqadi.
+
 Sarlavhada shior yo'q: 36 px balandlikdagi lokapda uning harflari 4 px ga
 tushib o'qilmay qolardi. Tanishuv ekranida joy yetarli — shior so'z ostida
 turadi va belgi butun ustunning markaziga tenglashadi. Nisbatlar

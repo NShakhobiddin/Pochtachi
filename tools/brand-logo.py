@@ -33,6 +33,12 @@ GLYPHS = [('P', 897, 206), ('o', 1123, 214), ('c', 1361, 198), ('h', 1585, 194),
           ('t', 1804, 134), ('a', 1966, 218), ('m', 2228, 303), ('dot', 2567, 52)]
 WORD_X0, WORD_X1, WORD_H = 897, 2619, 288
 
+# Yashil `m` ortidagi ko'k to'rtburchak: harfning to'liq kengligi, x-balandlik
+# ustidan tayanch chizig'igacha. Rang — so'z-belgidagi ko'kning o'zi.
+BOX_GLYPH = 'm'
+BOX_TOP, BOX_BOTTOM = 74, 282
+BOX_FILL = (11, 15, 154, 255)
+
 # Lokapning nisbatlari — berilgan logotipdan o'lchab olingan.
 WORD_SHARE = 0.543  # so'z-belgi balandligi belgi balandligiga nisbatan
 GAP_SHARE = 0.243   # belgi bilan so'z orasi belgi kengligiga nisbatan
@@ -53,9 +59,12 @@ def mark():
 
 
 def word():
-    """`Pochtam.` — harflar asl oraliqlari bilan."""
+    """`Pochtam.` — harflar asl oraliqlari bilan, `m` ortida ko'k quti."""
     im = Image.new('RGBA', (WORD_X1 - WORD_X0, WORD_H), (0, 0, 0, 0))
-    for name, x, _ in GLYPHS:
+    for name, x, w in GLYPHS:
+        if name == BOX_GLYPH:
+            box = Image.new('RGBA', (w, BOX_BOTTOM - BOX_TOP), BOX_FILL)
+            im.alpha_composite(box, (x - WORD_X0, BOX_TOP))
         im.alpha_composite(Image.open(SRC / f'{name}.png').convert('RGBA'), (x - WORD_X0, 0))
     return im
 

@@ -8,7 +8,7 @@
  *     qat'i nazar saqlanadigan keshda qoladi.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
  */
-const VERSION = '423130fd7177';
+const VERSION = '8421f08eceff';
 const CACHE = 'xarid-' + VERSION;
 /* Logotiplar keshi ilova versiyasiga bog'lanmaydi: yangilanish chiqqanda
    ular qaytadan yuklanmaydi. */
