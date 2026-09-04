@@ -75,6 +75,10 @@ const browser = await chromium.launch();
    navigator.clipboard yozish/o'qish ruxsatsiz rad etiladi. */
 const context = await browser.newContext({ viewport: { width: 430, height: 880 },
   permissions: ['clipboard-read', 'clipboard-write'] });
+/* Brend introsi birinchi ochilishda 3 soniya o'ynaydi va ekranni to'sadi.
+   Qolgan tekshiruvlar uni kutib o'tirmasin — belgini oldindan qo'yamiz;
+   introning o'zi pastda alohida tekshiriladi. */
+await context.addInitScript(() => { try { localStorage.setItem('xy_intro_v1', '1'); } catch (e) {} });
 // Har bir hujjatda tartib siljishini (CLS) o'lchab boramiz
 await context.addInitScript(() => {
   window.__cls = 0;
@@ -698,6 +702,7 @@ try {
   /* Toza kontekst: shu paytgacha localStorage da lang:'uz' saqlangan,
      o'sha kontekstda tanishuv ekrani chiqmaydi va til tanlab bo'lmaydi. */
   const ruContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  await ruContext.addInitScript(() => { try { localStorage.setItem('xy_intro_v1', '1'); } catch (e) {} });
   const ruSahifa = await ruContext.newPage();
   await ruSahifa.goto(base + '/', { waitUntil: 'load' });
   await ruSahifa.waitForTimeout(1500);
@@ -767,6 +772,40 @@ try {
   const cmpKeyin = await page.evaluate(() => /belgilang/.test(document.querySelector('main').innerText));
   check('taqqoslash rejimida yo\'riqnoma chiqadi', !cmpOldin && cmpKeyin,
     `oldin ${cmpOldin}, keyin ${cmpKeyin}`);
+
+  /* Brend introsi: birinchi ochilishda o'ynaydi, ilova ortda ko'tariladi,
+     ~3 soniyada o'zi ketadi va ikkinchi ochilishda boshqa chiqmaydi.
+     Harakatni kamaytirish yoqilgan bo'lsa umuman ko'rsatilmaydi. */
+  const introCtx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const introPage = await introCtx.newPage();
+  await introPage.goto(base + '/', { waitUntil: 'commit' });
+  await introPage.waitForTimeout(900);
+  const introBor = await introPage.evaluate(() => {
+    const el = document.querySelector('div[aria-hidden="true"][style*="z-index:9999"], div[aria-hidden="true"][style*="z-index: 9999"]');
+    return { bor: !!el, rasm: el ? el.querySelectorAll('img').length : 0 };
+  });
+  check('intro birinchi ochilishda chiqadi', introBor.bor && introBor.rasm === 11,
+    JSON.stringify(introBor));
+  await introPage.waitForTimeout(2800);
+  const introKetdi = await introPage.evaluate(() => ({
+    intro: !!document.querySelector('div[aria-hidden="true"][style*="9999"]'),
+    ilova: !!document.querySelector('#dc-root')?.firstChild
+  }));
+  check('intro tugaydi va ilovaga topshiradi', !introKetdi.intro && introKetdi.ilova,
+    JSON.stringify(introKetdi));
+  await introPage.reload({ waitUntil: 'commit' });
+  await introPage.waitForTimeout(800);
+  check('intro ikkinchi ochilishda chiqmaydi',
+    !(await introPage.evaluate(() => !!document.querySelector('div[aria-hidden="true"][style*="9999"]'))));
+  await introCtx.close();
+
+  const rmCtx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+  const rmPage = await rmCtx.newPage();
+  await rmPage.goto(base + '/', { waitUntil: 'commit' });
+  await rmPage.waitForTimeout(900);
+  check('harakat kamaytirilganda intro chiqmaydi',
+    !(await rmPage.evaluate(() => !!document.querySelector('div[aria-hidden="true"][style*="9999"]'))));
+  await rmCtx.close();
 
   /* Kulrang shkala uch pog'onadan iborat: kuchli, passiv, bezak. */
   const kulrang = [...new Set((src.match(/#[0-9A-F]{6}/gi) || []).map(h => h.toUpperCase()))]

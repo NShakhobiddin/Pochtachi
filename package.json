@@ -18,6 +18,7 @@
     "icons:clean": "python3 tools/clean-icon-strays.py",
     "brand": "python3 tools/brand-logo.py",
     "tint": "python3 tools/brand-tint.py",
+    "intro": "python3 tools/intro-assets.py",
     "glyphs": "python3 tools/flatten-glyphs.py",
     "mockups": "node tools/normalize-mockups.mjs",
     "flags": "python3 tools/build_flags_font.py"

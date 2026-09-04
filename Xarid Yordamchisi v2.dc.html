@@ -100,6 +100,197 @@
     'https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js': 'vendor/react-dom.production.min.js'
   };
 </script>
+<script>
+  /* Brend introsi. Claude Design'dagi "Pochtam Telegram Intro" sahnasining
+     xoreografiyasi — vaqtlar, easing'lar va o'lchamlar o'sha faylda qanday
+     bo'lsa shunday. Farqi: u yerdagi 56 KB lik kompozitsiya dvigateli
+     o'rniga shu yerda kerakli beshta funksiya yozilgan, logotip bo'laklari
+     esa base64 emas, alohida WebP fayl (216 KB -> 59 KB).
+
+     Faqat birinchi ochilishda o'ynaydi. Harakatni kamaytirish yoqilgan
+     bo'lsa yoki rasm yuklanmasa — umuman ko'rsatilmaydi. Istalgan joyga
+     tegilsa o'tkazib yuboriladi. Ilova shu vaqtda ortda ko'tarilaveradi. */
+  (function () {
+    var KEY = 'xy_intro_v1';
+    try { if (localStorage.getItem(KEY)) return; } catch (e) { return; }
+    try { if (matchMedia('(prefers-reduced-motion: reduce)').matches) { localStorage.setItem(KEY, '1'); return; } } catch (e) {}
+
+    var LIME = '#bbef45';
+    var MS = 0.68, MW = 765 * MS, MH = 835 * MS;
+    var MARK = { x: (1080 - MW) / 2, y: 560, w: MW, h: MH };
+    var PS = { w: 295 * MS, h: 482 * MS };
+    var PC = { x: MARK.x + (410 + 147.5) * MS, y: MARK.y + (274 + 241) * MS };
+    var WS = 0.40;
+    var GLYPHS = [
+      { k: 'P', x: 897, w: 206 }, { k: 'o', x: 1123, w: 214 }, { k: 'c', x: 1361, w: 198 },
+      { k: 'h', x: 1585, w: 194 }, { k: 't', x: 1804, w: 134 }, { k: 'a', x: 1966, w: 218 },
+      { k: 'm', x: 2228, w: 303 }, { k: 'dot', x: 2567, w: 52 }
+    ];
+    var WORD_W = (2619 - 897) * WS, WORD_X = (1080 - WORD_W) / 2;
+    var WORD_Y = MARK.y + MH + 96, WORD_H = 288 * WS;
+    var TAG = { x: WORD_X, y: WORD_Y + WORD_H + 34, w: WORD_W, h: 96 * WS };
+    var HEX_C = { x: MARK.x + 382.5 * MS, y: MARK.y + 417.5 * MS };
+    var LAND_CUE = 0, WORD_CUE = 1.05, DUR = 3.05;
+
+    var clamp = function (v, a, b) { return v < a ? a : v > b ? b : v; };
+    var E = {
+      outCubic: function (t) { return 1 - Math.pow(1 - t, 3); },
+      inCubic: function (t) { return t * t * t; },
+      outBack: function (t) { var c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); },
+      inOutQuart: function (t) { return t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2; },
+      outElastic: function (t) { var c4 = 2 * Math.PI / 3; return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1; }
+    };
+    /* animate({from,to,start,end,ease})(T) — manbadagi bilan bir xil */
+    function an(o) {
+      var ez = o.ease || E.outCubic;
+      return function (T) { return o.from + (o.to - o.from) * ez(clamp((T - o.start) / (o.end - o.start), 0, 1)); };
+    }
+    function lerp(r, v, T) { var u = clamp((T - r[0]) / (r[1] - r[0]), 0, 1); return v[0] + (v[1] - v[0]) * u; }
+    function pulse(T, s, d) { return Math.sin(Math.PI * clamp((T - s) / d, 0, 1)); }
+
+    function hexPath() {
+      var cx = HEX_C.x, cy = HEX_C.y, R = 431.3 * MS, k = 150 * 0.577 * MS, pts = [], i;
+      for (i = 0; i < 6; i++) { var a = -Math.PI / 2 + i * Math.PI / 3; pts.push({ x: cx + R * Math.cos(a), y: cy + R * Math.sin(a) }); }
+      var d = '';
+      for (i = 0; i < 6; i++) {
+        var p = pts[i], pr = pts[(i + 5) % 6], nx = pts[(i + 1) % 6];
+        var v1x = pr.x - p.x, v1y = pr.y - p.y, v2x = nx.x - p.x, v2y = nx.y - p.y;
+        var l1 = Math.hypot(v1x, v1y), l2 = Math.hypot(v2x, v2y);
+        d += (i ? 'L' : 'M') + (p.x + v1x / l1 * k).toFixed(1) + ',' + (p.y + v1y / l1 * k).toFixed(1) +
+          ' Q' + p.x.toFixed(1) + ',' + p.y.toFixed(1) + ' ' + (p.x + v2x / l2 * k).toFixed(1) + ',' + (p.y + v2y / l2 * k).toFixed(1) + ' ';
+      }
+      return d + 'Z';
+    }
+
+    var NAMES = ['hex', 'p', 'tagline'].concat(GLYPHS.map(function (g) { return g.k; }));
+    var IM = {}, left = NAMES.length, failed = false;
+    NAMES.forEach(function (n) {
+      var im = new Image();
+      im.onload = function () { if (--left === 0 && !failed) start(); };
+      im.onerror = function () { failed = true; };
+      im.src = 'icons/intro/' + n + '.webp';
+      IM[n] = im;
+    });
+    setTimeout(function () { if (left > 0 && !failed) { failed = true; } }, 2500);
+
+    function el(tag, css) { var e = document.createElement(tag); if (css) e.setAttribute('style', css); return e; }
+
+    function start() {
+      try { localStorage.setItem(KEY, '1'); } catch (e) {}
+      var root = el('div', 'position:fixed;inset:0;z-index:9999;background:#FFFFFF;overflow:hidden;' +
+        'transition:opacity .26s ease;touch-action:none;-webkit-tap-highlight-color:transparent');
+      root.setAttribute('aria-hidden', 'true');
+      var stage = el('div', 'position:absolute;left:50%;top:50%;width:1080px;height:1920px;transform-origin:50% 50%');
+      var cam = el('div', 'position:absolute;inset:0;transform-origin:0 0');
+      stage.appendChild(cam); root.appendChild(stage);
+
+      var grid = el('div', 'position:absolute;left:-600px;top:-1200px;width:2280px;height:4320px;' +
+        'background-image:radial-gradient(rgba(10,12,153,.11) 2px, rgba(10,12,153,0) 2.5px);' +
+        'background-size:60px 60px;background-position:30px 30px');
+      var glow = el('div', 'position:absolute;left:' + (HEX_C.x - 700) + 'px;top:' + (HEX_C.y - 700) + 'px;width:1400px;height:1400px;' +
+        'background:radial-gradient(closest-side,rgba(10,12,153,.12) 0%,rgba(10,12,153,.06) 28%,rgba(10,12,153,.015) 60%,rgba(10,12,153,0) 85%)');
+      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 1080 1920');
+      svg.setAttribute('style', 'position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:visible');
+      var ring = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      ring.setAttribute('d', hexPath()); ring.setAttribute('fill', 'none');
+      ring.setAttribute('stroke', LIME); ring.setAttribute('stroke-width', '12');
+      ring.setAttribute('stroke-linecap', 'round'); ring.setAttribute('stroke-linejoin', 'round');
+      ring.setAttribute('pathLength', '1'); ring.setAttribute('stroke-dasharray', '1');
+      svg.appendChild(ring);
+
+      var hex = IM.hex, tag = IM.tagline, pp = IM.p;
+      [hex, tag, pp].forEach(function (x) { x.alt = ''; });
+      hex.setAttribute('style', 'position:absolute;display:block;left:' + MARK.x + 'px;top:' + MARK.y + 'px;width:' + MARK.w + 'px;height:' + MARK.h + 'px');
+      tag.setAttribute('style', 'position:absolute;display:block;left:' + TAG.x + 'px;top:' + TAG.y + 'px;width:' + TAG.w + 'px;height:' + TAG.h + 'px');
+      pp.setAttribute('style', 'position:absolute;display:block;left:' + (PC.x - PS.w / 2) + 'px;top:' + (PC.y - PS.h / 2) + 'px;width:' + PS.w + 'px;height:' + PS.h + 'px');
+      var cursor = el('div', 'position:absolute;top:' + (TAG.y - 8) + 'px;width:6px;height:' + (TAG.h + 16) + 'px;border-radius:3px;background:' + LIME);
+      var glintBox = el('div', 'position:absolute;left:' + WORD_X + 'px;top:' + (WORD_Y - 12) + 'px;width:' + WORD_W + 'px;height:' + (WORD_H + 24) + 'px;overflow:hidden;pointer-events:none');
+      var glint = el('div', 'position:absolute;top:-40px;width:140px;height:' + (WORD_H + 100) + 'px;transform:skewX(-14deg);mix-blend-mode:screen;' +
+        'background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.85) 50%,rgba(255,255,255,0) 100%)');
+      glintBox.appendChild(glint);
+
+      cam.appendChild(grid); cam.appendChild(glow); cam.appendChild(svg); cam.appendChild(hex);
+      GLYPHS.forEach(function (g) {
+        var im = IM[g.k]; im.alt = '';
+        im.setAttribute('style', 'position:absolute;display:block;left:' + (WORD_X + (g.x - 897) * WS) + 'px;top:' + WORD_Y + 'px;width:' + (g.w * WS) + 'px;height:' + WORD_H + 'px');
+        cam.appendChild(im);
+      });
+      cam.appendChild(glintBox); cam.appendChild(tag); cam.appendChild(cursor); cam.appendChild(pp);
+      document.body.appendChild(root);
+
+      function fit() {
+        var s = Math.max(innerWidth / 1080, innerHeight / 1920);
+        stage.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
+      }
+      fit(); addEventListener('resize', fit);
+
+      var drop0 = LAND_CUE, land = drop0 + 0.3;
+      var uA = an({ from: 0, to: 1, start: drop0, end: land, ease: E.inCubic });
+      var landS = an({ from: 0.86, to: 1, start: land, end: land + 0.5, ease: E.outBack });
+      var pOpA = an({ from: 0, to: 1, start: drop0, end: drop0 + 0.15 });
+      var outlineA = an({ from: 0, to: 1, start: drop0, end: land, ease: E.inOutQuart });
+      var ringSA = an({ from: 1, to: 1.6, start: land, end: land + 0.8 });
+      var ringOpA = an({ from: 1, to: 0, start: land, end: land + 0.7 });
+      var hexOpA = an({ from: 0, to: 1, start: land - 0.06, end: land + 0.1 });
+      var hexSA = an({ from: 0.86, to: 1, start: land - 0.04, end: land + 0.55, ease: E.outBack });
+      var glowA = an({ from: 0, to: 0.5, start: land - 0.1, end: land + 0.25 });
+      var glowB = an({ from: 1, to: 0.55, start: land + 0.25, end: land + 1.2 });
+      var glowSA = an({ from: 0.5, to: 1, start: land - 0.1, end: land + 1.1 });
+      var gXA = an({ from: -260, to: WORD_W + 260, start: WORD_CUE + 0.45, end: WORD_CUE + 1.15, ease: E.inOutQuart });
+      var gOpA = an({ from: 0, to: 1, start: WORD_CUE + 0.45, end: WORD_CUE + 0.6 });
+      var gOpB = an({ from: 1, to: 0, start: WORD_CUE + 0.95, end: WORD_CUE + 1.2 });
+      var tg0 = WORD_CUE + 0.6;
+      var tagCutA = an({ from: 100, to: 0, start: tg0, end: tg0 + 0.6, ease: E.inOutQuart });
+      var tagOpA = an({ from: 0, to: 1, start: tg0, end: tg0 + 0.12 });
+      var curA = an({ from: 0, to: 1, start: tg0 - 0.08, end: tg0 + 0.08 });
+      var curB = an({ from: 1, to: 0, start: tg0 + 0.6, end: tg0 + 0.8 });
+      var backA = an({ from: 0, to: 1, start: land - 0.15, end: land + 0.5 });
+      var gl = GLYPHS.map(function (g, i) {
+        var st = WORD_CUE + i * 0.05;
+        return {
+          im: IM[g.k],
+          dy: an({ from: 60, to: 0, start: st, end: st + (g.k === 'dot' ? 0.8 : 0.5), ease: g.k === 'dot' ? E.outElastic : E.outBack }),
+          op: an({ from: 0, to: 1, start: st, end: st + 0.15 })
+        };
+      });
+
+      var t0 = 0, done = false;
+      function finish() {
+        if (done) return; done = true;
+        root.style.opacity = '0';
+        setTimeout(function () { if (root.parentNode) root.parentNode.removeChild(root); removeEventListener('resize', fit); }, 300);
+      }
+      root.addEventListener('pointerdown', finish, { passive: true });
+
+      function frame(ts) {
+        if (!t0) t0 = ts;
+        var T = (ts - t0) / 1000;
+        var u = uA(T), pS = u < 1 ? lerp([0, 1], [0.7, 0.86], u) : landS(T);
+        var sq = pulse(T, land, 0.34) * 0.15;
+        pp.style.opacity = pOpA(T);
+        pp.style.transform = 'translate(0px,' + (-520 * (1 - u)) + 'px) rotate(' + lerp([0, 1], [-14, 0], u) + 'deg) scale(' + (pS * (1 + sq)) + ',' + (pS * (1 - sq)) + ')';
+        ring.setAttribute('stroke-dashoffset', 1 - outlineA(T));
+        ring.setAttribute('opacity', ringOpA(T));
+        ring.setAttribute('transform', 'translate(' + HEX_C.x + ' ' + HEX_C.y + ') scale(' + ringSA(T) + ') translate(' + (-HEX_C.x) + ' ' + (-HEX_C.y) + ')');
+        hex.style.opacity = hexOpA(T); hex.style.transform = 'scale(' + hexSA(T) + ')';
+        glow.style.opacity = glowA(T) * glowB(T); glow.style.transform = 'scale(' + glowSA(T) + ')';
+        grid.style.opacity = lerp([land, WORD_CUE + 0.6], [1, 0.35], T);
+        gl.forEach(function (it) { it.im.style.opacity = it.op(T); it.im.style.transform = 'translateY(' + it.dy(T) + 'px)'; });
+        glintBox.style.opacity = gOpA(T) * gOpB(T); glint.style.left = gXA(T) + 'px';
+        var cut = tagCutA(T);
+        tag.style.opacity = tagOpA(T);
+        tag.style.clipPath = 'inset(-14% ' + cut + '% -14% 0%)';
+        cursor.style.opacity = tagOpA(T) * curA(T) * curB(T);
+        cursor.style.left = (TAG.x + TAG.w * (1 - cut / 100) - 3) + 'px';
+        var back = backA(T), zoom = 1.12 + (1 - 1.12) * back, fy = (PC.y - 60) + (960 - (PC.y - 60)) * back;
+        cam.style.transform = 'translate(540px,960px) scale(' + zoom + ') translate(-540px,' + (-fy) + 'px)';
+        if (T < DUR && !done) requestAnimationFrame(frame); else finish();
+      }
+      requestAnimationFrame(frame);
+    }
+  })();
+</script>
 <script src="support.js"></script>
 </head>
 <body>

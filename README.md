@@ -59,6 +59,7 @@ npm run mockups          # qadamlardagi telefon maketlarini bir me'yorga keltiri
 npm run store-logos      # do'kon logotiplari (--from DIR bilan tayyor rasmlardan)
 npm run brand            # icons/src/brand.webp -> logotip va ilova ikonkalari
 npm run tint             # ikonka manbalarini brend toniga (238) keltirish
+npm run intro            # icons/src/intro/*.png -> intro logotip bo'laklari
 npm run glyphs           # icons/glyphs/*.png -> tekis svc-* belgilar
 npm run cover            # icons/og-cover.png ni qayta yasash
 npm run fonts            # matn shriftlarini Google Fonts'dan qayta yuklab olish
@@ -163,6 +164,29 @@ bo'limining asosiy kartochkalarida turadi — ya'ni P3 da chizilgan
 P1/P2 roli. Ularni 3D uslubda qayta chizdirish kerak. Aksincha,
 `app-play` va `app-store` 3D, lekin mayda yordamchi belgilar — ular
 P3 ga tushishi kerak.
+
+## Brend introsi
+
+Ilova birinchi marta ochilganda ~3 soniyalik logotip animatsiyasi
+o'ynaydi: yashil P qutiga tushadi, olti burchak to'ladi, "Pochtam"
+harflari ko'tariladi va shiorni salat kursor yozib chiqadi.
+
+Manba — Claude Design'dagi "Pochtam Telegram Intro" sahnasi. Undan
+xoreografiya (vaqtlar, easing'lar, o'lchamlar) o'zgarishsiz olindi;
+56 KB lik kompozitsiya dvigateli o'rniga `<head>` da kerakli beshta
+funksiya yozilgan, logotip esa base64 (216 KB) emas, alohida WebP
+bo'lak (`icons/intro/`, 59 KB).
+
+Qoidalar: faqat birinchi ochilishda (`localStorage: xy_intro_v1`);
+harakatni kamaytirish yoqilgan bo'lsa yoki rasm yuklanmasa umuman
+ko'rsatilmaydi; istalgan joyga tegilsa o'tkazib yuboriladi; ilova shu
+vaqtda ortda ko'tariladi.
+
+Har safar ko'rsatish kerak bo'lsa — `<head>` dagi introda `KEY`
+tekshiruvini olib tashlash yetadi.
+
+Bo'laklarni qayta yasash: asl PNG larni `icons/src/intro/` ga qo'yib,
+`npm run intro`.
 
 ## Do'kon logotiplari
 

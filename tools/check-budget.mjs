@@ -22,6 +22,9 @@ const BUDGETS = [
   { name: 'ikonkalar (icons/*.webp)', dir: 'icons', ext: ['.webp'], maxTotalKb: 200, maxFileKb: 25 },
   /* Taqiqlangan tovarlar ro'yxati uchun 22 ta belgi. Faqat o'sha bo'lim
      ochilganda yuklanadi, shuning uchun alohida hisoblanadi. */
+  /* Intro logotipining bo'laklari: 11 ta fayl, faqat birinchi ochilishda
+     kerak, lekin service worker keshiga tushadi. */
+  { name: 'intro bo\'laklari (icons/intro/*.webp)', dir: 'icons/intro', ext: ['.webp'], maxTotalKb: 90, maxFileKb: 30 },
   { name: 'taqiq belgilari (icons/ban/*.webp)', dir: 'icons/ban', ext: ['.webp'], maxTotalKb: 70, maxFileKb: 8 },
   /* Bojxona me'yorlari bo'limi uchun 5 ta belgi. */
   { name: 'me\'yor belgilari (icons/norm/*.webp)', dir: 'icons/norm', ext: ['.webp'], maxTotalKb: 40, maxFileKb: 8 },
@@ -69,17 +72,18 @@ for (const b of BUDGETS) {
 }
 
 // Asosiy sahifa: gzip'siz hajm (GitHub Pages gzip beradi, lekin manba ham
-// o'smasin). Chegara 420 -> 450 -> 470 KB: birinchisi bo'limlarga qo'shilgan
+// o'smasin). Chegara 420 -> 450 -> 470 -> 480 KB: birinchisi bo'limlarga qo'shilgan
 // ohang va katta kartochkalar uchun, ikkinchisi rus tili lug'ati to'ldirilgani
-// uchun (butun qo'llanmalar ekrani tarjimasiz qolgan edi).
+// uchun (butun qo'llanmalar ekrani tarjimasiz qolgan edi), uchinchisi brend
+// introsining ~7 KB lik dvigateli uchun.
 // Foydalanuvchiga yetadigan hajm gzipdan keyingisi, shuning uchun u ham
 // chiqariladi: qaror shu raqamga qarab qabul qilinsin.
 const index = join(ROOT, 'index.html');
 if (existsSync(index)) {
   const size = kb(statSync(index).size);
   const gz = kb(gzipSync(readFileSync(index), { level: 9 }).length);
-  const ok = size <= 470;
-  console.log(`${ok ? '  ok  ' : ' XATO '} index.html: ${size} KB (chegara 470 KB), gzip ${gz} KB`);
+  const ok = size <= 480;
+  console.log(`${ok ? '  ok  ' : ' XATO '} index.html: ${size} KB (chegara 480 KB), gzip ${gz} KB`);
   if (!ok) failed = true;
 }
 

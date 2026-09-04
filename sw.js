@@ -8,7 +8,7 @@
  *     qat'i nazar saqlanadigan keshda qoladi.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
  */
-const VERSION = '51bbee1d60b6';
+const VERSION = '653cd09f35aa';
 const CACHE = 'xarid-' + VERSION;
 /* Logotiplar keshi ilova versiyasiga bog'lanmaydi: yangilanish chiqqanda
    ular qaytadan yuklanmaydi. */
@@ -74,6 +74,17 @@ const PRECACHE = [
   "icons/dok-universal.webp",
   "icons/guides-3d.webp",
   "icons/icon-192.png",
+  "icons/intro/P.webp",
+  "icons/intro/a.webp",
+  "icons/intro/c.webp",
+  "icons/intro/dot.webp",
+  "icons/intro/h.webp",
+  "icons/intro/hex.webp",
+  "icons/intro/m.webp",
+  "icons/intro/o.webp",
+  "icons/intro/p.webp",
+  "icons/intro/t.webp",
+  "icons/intro/tagline.webp",
   "icons/norm/atir.webp",
   "icons/norm/bad.webp",
   "icons/norm/meyor.webp",
