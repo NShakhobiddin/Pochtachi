@@ -158,6 +158,13 @@ jumla ko'rinishida yoziladi — shunda ruscha tarjima ham ishlaydi.
 | P3 | ro'yxat va yorliq | tekis (`svc-*`, `ban/*`, `norm/*`) | 24-40px |
 | P4 | interfeys | chiziqli SVG | 14/18/22/28px |
 
+Bosh sahifadagi to'rt kartochka ikonkasi (`stores-3d`, `courier-3d`,
+`customs-3d`, `guides-3d`) o'z plitasi bilan chizilgan — shuning uchun
+ular ilova tomonidan qo'shimcha rangli plitaga solinmaydi, 64 px da
+to'g'ridan-to'g'ri turadi. Bo'limning rangi yonidagi shevron doirasida
+qoladi: `#E9EAFD` do'konlar, `#DDF1F4` kuryerlar, `#FBEFD6` bojxona,
+`#E9F8EF` qo'llanmalar.
+
 Rasm uyalari 16 / 24 / 32 / 40 / 48 / 64 qadamlarida. Chiziqli
 ikonkalarda `viewBox` doim 24, chiziq qalinligi esa o'lchamga bog'lab
 tanlanadi (14 -> 2.7, 18 -> 2.1, 22 -> 1.75, 28 -> 1.4) — shunda ekranda
