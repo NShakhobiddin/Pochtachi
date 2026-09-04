@@ -108,13 +108,11 @@
      o'rniga shu yerda kerakli beshta funksiya yozilgan, logotip bo'laklari
      esa base64 emas, alohida WebP fayl (216 KB -> 59 KB).
 
-     Faqat birinchi ochilishda o'ynaydi. Harakatni kamaytirish yoqilgan
-     bo'lsa yoki rasm yuklanmasa — umuman ko'rsatilmaydi. Istalgan joyga
-     tegilsa o'tkazib yuboriladi. Ilova shu vaqtda ortda ko'tarilaveradi. */
+     Har ochilishda o'ynaydi. Harakatni kamaytirish yoqilgan bo'lsa yoki
+     rasm yuklanmasa — umuman ko'rsatilmaydi. Istalgan joyga tegilsa
+     o'tkazib yuboriladi. Ilova shu vaqtda ortda ko'tarilaveradi. */
   (function () {
-    var KEY = 'xy_intro_v1';
-    try { if (localStorage.getItem(KEY)) return; } catch (e) { return; }
-    try { if (matchMedia('(prefers-reduced-motion: reduce)').matches) { localStorage.setItem(KEY, '1'); return; } } catch (e) {}
+    try { if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) {}
 
     var LIME = '#bbef45';
     var MS = 0.68, MW = 765 * MS, MH = 835 * MS;
@@ -177,7 +175,6 @@
     function el(tag, css) { var e = document.createElement(tag); if (css) e.setAttribute('style', css); return e; }
 
     function start() {
-      try { localStorage.setItem(KEY, '1'); } catch (e) {}
       var root = el('div', 'position:fixed;inset:0;z-index:9999;background:#FFFFFF;overflow:hidden;' +
         'transition:opacity .26s ease;touch-action:none;-webkit-tap-highlight-color:transparent');
       root.setAttribute('aria-hidden', 'true');

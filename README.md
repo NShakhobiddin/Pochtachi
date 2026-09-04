@@ -174,9 +174,10 @@ P3 ga tushishi kerak.
 
 ## Brend introsi
 
-Ilova birinchi marta ochilganda ~3 soniyalik logotip animatsiyasi
-o'ynaydi: yashil P qutiga tushadi, olti burchak to'ladi, "Pochtam"
-harflari ko'tariladi va shiorni salat kursor yozib chiqadi.
+Ilova har ochilganda ~3 soniyalik logotip animatsiyasi o'ynaydi: yashil P
+qutiga tushadi, olti burchak to'ladi, "Pochtam" harflari ko'tariladi va
+shiorni salat kursor yozib chiqadi. Ekranga tegilsa darhol o'tkazib
+yuboriladi; harakatni kamaytirish yoqilgan bo'lsa umuman chiqmaydi.
 
 Manba — Claude Design'dagi "Pochtam Telegram Intro" sahnasi. Undan
 xoreografiya (vaqtlar, easing'lar, o'lchamlar) o'zgarishsiz olindi;
@@ -184,13 +185,13 @@ xoreografiya (vaqtlar, easing'lar, o'lchamlar) o'zgarishsiz olindi;
 funksiya yozilgan, logotip esa base64 (216 KB) emas, alohida WebP
 bo'lak (`icons/intro/`, 59 KB).
 
-Qoidalar: faqat birinchi ochilishda (`localStorage: xy_intro_v1`);
-harakatni kamaytirish yoqilgan bo'lsa yoki rasm yuklanmasa umuman
-ko'rsatilmaydi; istalgan joyga tegilsa o'tkazib yuboriladi; ilova shu
-vaqtda ortda ko'tariladi.
+Qoidalar: har ochilishda; harakatni kamaytirish yoqilgan bo'lsa yoki rasm
+yuklanmasa umuman ko'rsatilmaydi; istalgan joyga tegilsa o'tkazib
+yuboriladi; ilova shu vaqtda ortda ko'tariladi.
 
-Har safar ko'rsatish kerak bo'lsa — `<head>` dagi introda `KEY`
-tekshiruvini olib tashlash yetadi.
+Intro hech qanday holat saqlamaydi. Testlar uni kutib o'tirmasligi uchun
+`reducedMotion: 'reduce'` bilan ochiladi — bu ilovaning o'z qoidasi,
+test uchun alohida kod emas.
 
 Bo'laklarni qayta yasash: asl PNG larni `icons/src/intro/` ga qo'yib,
 `npm run intro`.

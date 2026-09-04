@@ -73,12 +73,12 @@ const base = `http://localhost:${PORT}`;
 const browser = await chromium.launch();
 /* Buferga nusxalash tekshiruvi uchun ruxsat kerak: Chromium'da
    navigator.clipboard yozish/o'qish ruxsatsiz rad etiladi. */
+/* Brend introsi har ochilishda 3 soniya o'ynaydi va ekranni to'sadi.
+   Qolgan tekshiruvlar uni kutib o'tirmasin — reducedMotion bilan ochamiz,
+   intro o'sha holatda o'zini ko'rsatmaydi; introning o'zi pastda alohida
+   tekshiriladi. */
 const context = await browser.newContext({ viewport: { width: 430, height: 880 },
-  permissions: ['clipboard-read', 'clipboard-write'] });
-/* Brend introsi birinchi ochilishda 3 soniya o'ynaydi va ekranni to'sadi.
-   Qolgan tekshiruvlar uni kutib o'tirmasin — belgini oldindan qo'yamiz;
-   introning o'zi pastda alohida tekshiriladi. */
-await context.addInitScript(() => { try { localStorage.setItem('xy_intro_v1', '1'); } catch (e) {} });
+  permissions: ['clipboard-read', 'clipboard-write'], reducedMotion: 'reduce' });
 // Har bir hujjatda tartib siljishini (CLS) o'lchab boramiz
 await context.addInitScript(() => {
   window.__cls = 0;
@@ -701,8 +701,8 @@ try {
      til tugmasi ataylab asl holida qoladi. */
   /* Toza kontekst: shu paytgacha localStorage da lang:'uz' saqlangan,
      o'sha kontekstda tanishuv ekrani chiqmaydi va til tanlab bo'lmaydi. */
-  const ruContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
-  await ruContext.addInitScript(() => { try { localStorage.setItem('xy_intro_v1', '1'); } catch (e) {} });
+  const ruContext = await browser.newContext({ viewport: { width: 390, height: 844 },
+    reducedMotion: 'reduce' });
   const ruSahifa = await ruContext.newPage();
   await ruSahifa.goto(base + '/', { waitUntil: 'load' });
   await ruSahifa.waitForTimeout(1500);
@@ -773,9 +773,9 @@ try {
   check('taqqoslash rejimida yo\'riqnoma chiqadi', !cmpOldin && cmpKeyin,
     `oldin ${cmpOldin}, keyin ${cmpKeyin}`);
 
-  /* Brend introsi: birinchi ochilishda o'ynaydi, ilova ortda ko'tariladi,
-     ~3 soniyada o'zi ketadi va ikkinchi ochilishda boshqa chiqmaydi.
-     Harakatni kamaytirish yoqilgan bo'lsa umuman ko'rsatilmaydi. */
+  /* Brend introsi: har ochilishda o'ynaydi, ilova ortda ko'tariladi,
+     ~3 soniyada o'zi ketadi. Harakatni kamaytirish yoqilgan bo'lsa
+     umuman ko'rsatilmaydi. */
   const introCtx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const introPage = await introCtx.newPage();
   await introPage.goto(base + '/', { waitUntil: 'commit' });
@@ -784,7 +784,7 @@ try {
     const el = document.querySelector('div[aria-hidden="true"][style*="z-index:9999"], div[aria-hidden="true"][style*="z-index: 9999"]');
     return { bor: !!el, rasm: el ? el.querySelectorAll('img').length : 0 };
   });
-  check('intro birinchi ochilishda chiqadi', introBor.bor && introBor.rasm === 11,
+  check('intro ochilishda chiqadi', introBor.bor && introBor.rasm === 11,
     JSON.stringify(introBor));
   await introPage.waitForTimeout(2800);
   const introKetdi = await introPage.evaluate(() => ({
@@ -794,9 +794,9 @@ try {
   check('intro tugaydi va ilovaga topshiradi', !introKetdi.intro && introKetdi.ilova,
     JSON.stringify(introKetdi));
   await introPage.reload({ waitUntil: 'commit' });
-  await introPage.waitForTimeout(800);
-  check('intro ikkinchi ochilishda chiqmaydi',
-    !(await introPage.evaluate(() => !!document.querySelector('div[aria-hidden="true"][style*="9999"]'))));
+  await introPage.waitForTimeout(900);
+  check('intro ikkinchi ochilishda ham chiqadi',
+    await introPage.evaluate(() => !!document.querySelector('div[aria-hidden="true"][style*="9999"]')));
   await introCtx.close();
 
   const rmCtx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
