@@ -232,14 +232,20 @@ try {
     wizLogo.bor && wizLogo.w === wizLogo.h && wizLogo.fit === 'contain',
     wizLogo.bor ? `${wizLogo.w}x${wizLogo.h}, ${wizLogo.fit}` : 'topilmadi');
 
-  // 4. Qidiruv kirillcha so'rovni tushunadi
+  /* 4. Qidiruv o'z ekranida: sarlavhadagi lupa tugmasi ochadi. Bosh
+     sahifada maydon yo'q, shuning uchun yozganda sahifa qimirlamaydi. */
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(500);
-  const input = page.locator('input').first();
+  check('bosh sahifada qidiruv maydoni yo\'q',
+    await page.evaluate(() => document.querySelectorAll('main input').length === 0));
+  await page.locator('button[aria-label="Qidirish"]').first().click();
+  await page.waitForTimeout(600);
+  const input = page.locator('main input[type=search]').first();
   await input.fill('Али');
   await page.waitForTimeout(400);
   check('kirillcha qidiruv ishlaydi', /AliExpress/i.test(await page.evaluate(() => document.body.innerText)));
-  await input.fill('');
+  await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
+  await page.waitForTimeout(500);
 
   // 5. Qo'llanma iframe'da ochiladi
   await page.locator('nav button', { hasText: "Qo'llanmalar" }).first().click();
@@ -421,12 +427,11 @@ try {
     const saq = JSON.parse(localStorage.getItem('xy_state_v1') || '{}');
     return {
       favs: (saq.favs || []).length, searches: (saq.searches || []).length,
-      favBlok: /Sevimlilar/.test(document.body.innerText),
-      tarixBlok: /OXIRGI QIDIRUVLAR/.test(document.body.innerText)
+      favBlok: /Sevimlilar/.test(document.body.innerText)
     };
   });
   check('bo\'sh shaxsiy bloklar chizilmaydi',
-    bosh0.favs === 0 && bosh0.searches === 0 && !bosh0.favBlok && !bosh0.tarixBlok,
+    bosh0.favs === 0 && bosh0.searches === 0 && !bosh0.favBlok,
     JSON.stringify(bosh0));
 
   /* Kurs bloki: har kirganda o'zgaradigan yagona raqam. */
@@ -459,7 +464,9 @@ try {
     yirikSon.map(x => x.nom + ':' + x.son).join(' · '));
 
   /* Qidiruv orqali do'kon ochilsa: so'rov tarixga, do'kon "yaqinda"ga tushadi. */
-  await page.locator('main input').first().fill('taobao');
+  await page.locator('button[aria-label="Qidirish"]').first().click();
+  await page.waitForTimeout(600);
+  await page.locator('main input[type=search]').first().fill('taobao');
   await page.waitForTimeout(600);
   await page.locator('main button').filter({ hasText: 'Taobao' }).first().click();
   await page.waitForTimeout(900);
@@ -473,7 +480,7 @@ try {
     const t = document.body.innerText;
     return {
       favs: saqlangan.favs || [], searches: saqlangan.searches || [], recent: saqlangan.recent || [],
-      favBlok: /Sevimlilar/.test(t), tarixBlok: /OXIRGI QIDIRUVLAR/.test(t),
+      favBlok: /Sevimlilar/.test(t),
       /* Sevimlida turgani "yaqinda" tasmasida takrorlanmasin — shuning
          uchun butun sahifa matniga emas, aynan tasmalar ichiga qaraymiz. */
       ...(() => {
@@ -490,7 +497,7 @@ try {
   });
   check('sevimli va qidiruv tarixi yoziladi',
     yulduzBor === 1 && iz.favs.includes('store:taobao') && iz.searches.includes('taobao') &&
-    iz.favBlok && iz.tarixBlok && iz.favNom.some(x => /^Taobao \| Do'kon/.test(x)),
+    iz.favBlok && iz.favNom.some(x => /^Taobao \| Do'kon/.test(x)),
     `sevimli [${iz.favNom.join()}] · tarix ${iz.searches.join()}`);
 
   /* Yulduzchani qayta bosganda sevimlidan chiqadi va blok yo'qoladi.
@@ -823,6 +830,8 @@ try {
      bo'lmaydi. Uchala qidiruvda ham qatorning tepasiga bosib tekshiramiz. */
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(500);
+  await page.locator('button[aria-label="Qidirish"]').first().click();
+  await page.waitForTimeout(600);
   const qidiruvFokus = await page.evaluate(() => {
     const inp = document.querySelector('main input[type="search"]');
     if (!inp) return 'maydon yo\'q';
@@ -833,6 +842,8 @@ try {
   });
   check('qidiruv qatorining bo\'sh joyi ham maydonni fokuslaydi',
     String(qidiruvFokus).startsWith('ok'), qidiruvFokus);
+  await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
+  await page.waitForTimeout(500);
 
   /* Kulrang shkala uch pog'onadan iborat: kuchli, passiv, bezak. */
   const kulrang = [...new Set((src.match(/#[0-9A-F]{6}/gi) || []).map(h => h.toUpperCase()))]

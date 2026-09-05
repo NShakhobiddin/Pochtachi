@@ -374,6 +374,10 @@
      :focus-visible sichqoncha bosishida chiqmaydi, faqat klaviatura/AT uchun. */
   :focus-visible { outline:3px solid #1A1FB0; outline-offset:2px; border-radius:12px; }
   input:focus-visible, textarea:focus-visible { outline-offset:0; }
+  /* Brauzerning o'z tozalash krestchasi bizning tugmamiz yonida ikkinchi
+     bo'lib turardi — o'chiramiz, tozalash faqat bitta joyda. */
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-decoration { -webkit-appearance:none; appearance:none; }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration:.01ms !important; animation-iteration-count:1 !important;
@@ -472,6 +476,9 @@
     <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
       <div style="flex:1"></div>
       <div style="display:flex;gap:10px">
+        <button sc-camel-on-click="{{ goSearch }}" aria-label="Qidirish" style="width:44px;height:44px;border:none;background:#FFFFFF;border-radius:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="background:#F1F1F8">
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+        </button>
         <button sc-camel-on-click="{{ goShipments }}" aria-label="Jo'natmalarni kuzatish" style="width:44px;height:44px;border:none;background:#FFFFFF;border-radius:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="background:#F1F1F8">
           <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"></path></svg>
         </button>
@@ -515,59 +522,6 @@
            rangida — logotipdagi yashil `m` bilan bir xil vazifa. -->
       <h2 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.1;color:#131429;text-wrap:balance">Global xaridlar <span style="color:#1A1FB0">biz bilan oson.</span></h2>
 
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <label style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:0 16px;height:52px;width:100%;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);cursor:text">
-          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
-          <input value="{{ hq }}" sc-camel-on-input="{{ onHq }}" placeholder="Do'kon, kuryer yoki mahsulot" type="search" enterkeyhint="search" aria-label="Do'kon, kuryer yoki mahsulot izlash" style="flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;font-weight:500;color:#131429">
-          <sc-if value="{{ hqOn }}" hint-placeholder-val="{{ false }}">
-            <button sc-camel-on-click="{{ clearHq }}" style="width:28px;height:28px;border-radius:999px;border:none;background:#F1F1F8;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none" style-hover="background:#F1F1F8">
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6B6C85" stroke-width="2.7" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
-            </button>
-          </sc-if>
-       </label>
-
-        <sc-if value="{{ hqOn }}" hint-placeholder-val="{{ false }}">
-          <div style="background:#FFFFFF;border-radius:20px;overflow:hidden;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px 10px">
-              <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85">Natijalar</span>
-              <span style="font-size:11px;font-weight:600;color:#6B6C85;font-variant-numeric:tabular-nums">{{ hqCount }}</span>
-            </div>
-            <sc-if value="{{ hqEmpty }}" hint-placeholder-val="{{ false }}">
-              <div style="padding:4px 14px 16px;font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">Hech narsa topilmadi. Do'kon nomi, kuryer nomi yoki kategoriya bilan urinib ko'ring.</div>
-            </sc-if>
-            <sc-for list="{{ hqResults }}" as="r" hint-placeholder-count="3">
-              <button sc-camel-on-click="{{ r.open }}" style="display:flex;align-items:center;gap:12px;width:100%;border:none;background:#FFFFFF;padding:10px 14px;cursor:pointer;text-align:left;font-family:inherit;border-top:1px solid #F1F1F8" style-hover="background:#FFFFFF">
-                <div style="width:36px;height:36px;border-radius:12px;flex:none;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:{{ r.bg }}">
-                  <sc-if value="{{ r.logoOff }}" hint-placeholder-val="{{ false }}">
-                    <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:{{ r.ink }}">{{ r.mono }}</span>
-                  </sc-if>
-                  <div style="position:absolute;inset:0;background-size:{{ r.fit }};background-repeat:no-repeat;background-position:center;background-image:{{ r.logoCss }}"></div>
-                </div>
-                <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
-                  <span style="font-size:15px;font-weight:700;color:#131429">{{ r.name }}</span>
-                  <span style="font-size:11px;font-weight:600;color:#6B6C85">{{ r.sub }}</span>
-                </div>
-                <span style="flex:none;font-size:11px;font-weight:600;color:#1A1FB0;background:#E9EAFD;padding:4px 8px;border-radius:999px">{{ r.kind }}</span>
-              </button>
-            </sc-for>
-          </div>
-        </sc-if>
-
-        <!-- Qidiruv bo'sh turganda: oxirgi ishlagan so'rovlar. Tarixga
-             faqat natijasi ochilgan so'rov tushadi, shuning uchun bu yerda
-             yarim yozilgan so'zlar qolmaydi. -->
-        <sc-if value="{{ hasSearches }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 2px">
-            <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85;flex:none">Oxirgi qidiruvlar</span>
-            <sc-for list="{{ searchChips }}" as="sq" hint-placeholder-count="3">
-              <button sc-camel-on-click="{{ sq.run }}" style="flex:none;height:36px;padding:0 12px;border:none;border-radius:999px;background:#FFFFFF;color:#4E4F6B;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">{{ sq.t }}</button>
-            </sc-for>
-            <button sc-camel-on-click="{{ clearSearches }}" aria-label="Qidiruv tarixini tozalash" style="flex:none;width:36px;height:36px;border:none;border-radius:999px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#F1F1F8">
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6B6C85" stroke-width="2.7" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
-            </button>
-          </div>
-        </sc-if>
-      </div>
 
 
       <!-- Sevimlilar: foydalanuvchi o'zi belgilagan do'kon, kuryer va
@@ -786,6 +740,64 @@
       </div>
     </div>
   </sc-if>
+  <sc-if value="{{ sSearch }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:16px;padding-top:2px">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <label style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:0 16px;height:52px;width:100%;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);cursor:text">
+            <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+            <input value="{{ hq }}" sc-camel-on-input="{{ onHq }}" placeholder="Do'kon, kuryer yoki mahsulot" type="search" enterkeyhint="search" aria-label="Do'kon, kuryer yoki mahsulot izlash" style="flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;font-weight:500;color:#131429">
+            <sc-if value="{{ hqOn }}" hint-placeholder-val="{{ false }}">
+              <button sc-camel-on-click="{{ clearHq }}" style="width:28px;height:28px;border-radius:999px;border:none;background:#F1F1F8;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none" style-hover="background:#F1F1F8">
+                <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6B6C85" stroke-width="2.7" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+              </button>
+            </sc-if>
+         </label>
+
+          <sc-if value="{{ hqOn }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#FFFFFF;border-radius:20px;overflow:hidden;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px 10px">
+                <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85">Natijalar</span>
+                <span style="font-size:11px;font-weight:600;color:#6B6C85;font-variant-numeric:tabular-nums">{{ hqCount }}</span>
+              </div>
+              <sc-if value="{{ hqEmpty }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:4px 14px 16px;font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">Hech narsa topilmadi. Do'kon nomi, kuryer nomi yoki kategoriya bilan urinib ko'ring.</div>
+              </sc-if>
+              <sc-for list="{{ hqResults }}" as="r" hint-placeholder-count="3">
+                <button sc-camel-on-click="{{ r.open }}" style="display:flex;align-items:center;gap:12px;width:100%;border:none;background:#FFFFFF;padding:10px 14px;cursor:pointer;text-align:left;font-family:inherit;border-top:1px solid #F1F1F8" style-hover="background:#FFFFFF">
+                  <div style="width:36px;height:36px;border-radius:12px;flex:none;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:{{ r.bg }}">
+                    <sc-if value="{{ r.logoOff }}" hint-placeholder-val="{{ false }}">
+                      <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:{{ r.ink }}">{{ r.mono }}</span>
+                    </sc-if>
+                    <div style="position:absolute;inset:0;background-size:{{ r.fit }};background-repeat:no-repeat;background-position:center;background-image:{{ r.logoCss }}"></div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
+                    <span style="font-size:15px;font-weight:700;color:#131429">{{ r.name }}</span>
+                    <span style="font-size:11px;font-weight:600;color:#6B6C85">{{ r.sub }}</span>
+                  </div>
+                  <span style="flex:none;font-size:11px;font-weight:600;color:#1A1FB0;background:#E9EAFD;padding:4px 8px;border-radius:999px">{{ r.kind }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <!-- Qidiruv bo'sh turganda: oxirgi ishlagan so'rovlar. Tarixga
+               faqat natijasi ochilgan so'rov tushadi, shuning uchun bu yerda
+               yarim yozilgan so'zlar qolmaydi. -->
+          <sc-if value="{{ hasSearches }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 2px">
+              <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85;flex:none">Oxirgi qidiruvlar</span>
+              <sc-for list="{{ searchChips }}" as="sq" hint-placeholder-count="3">
+                <button sc-camel-on-click="{{ sq.run }}" style="flex:none;height:36px;padding:0 12px;border:none;border-radius:999px;background:#FFFFFF;color:#4E4F6B;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">{{ sq.t }}</button>
+              </sc-for>
+              <button sc-camel-on-click="{{ clearSearches }}" aria-label="Qidiruv tarixini tozalash" style="flex:none;width:36px;height:36px;border:none;border-radius:999px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#F1F1F8">
+                <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6B6C85" stroke-width="2.7" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+              </button>
+            </div>
+          </sc-if>
+        </div>
+    </div>
+  </sc-if>
+
 
   <sc-if value="{{ sStoresArea }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:16px">
@@ -4167,7 +4179,7 @@ class Component extends DCLogic {
       return f.indexOf('from:') === 0
         ? (COURIER_ORIGINS.find(d => d[0] === f.slice(5)) || null) : null;
     })();
-    const titles = { plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? courierFolderDef[1] + ' yo\'nalishi' : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', wizard:'Reja tuzish', settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
+    const titles = { plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? courierFolderDef[1] + ' yo\'nalishi' : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', search:'Qidiruv', wizard:'Reja tuzish', settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
     /* Saralash tugmasi faqat ro'yxat ko'rinib turganda kerak: papkalar
        ekranida saralanadigan narsa yo'q. */
     const showSortBtn = cur === 'courierfolder' ||
@@ -4332,7 +4344,7 @@ class Component extends DCLogic {
         };
       })(),
 
-      sOnboard: cur === 'onboard', sHome: cur === 'home', sStores: cur === 'stores', sStore: cur === 'store',
+      sOnboard: cur === 'onboard', sHome: cur === 'home', sSearch: cur === 'search', sStores: cur === 'stores', sStore: cur === 'store',
       /* Do'konlar bo'limi ikki ekranda: papkalar ro'yxati va papka ichi.
          Qidiruv maydoni ikkalasida ham bir xil joyda turadi. */
       sStoresArea: cur === 'stores' || cur === 'storefolder',
@@ -4453,6 +4465,9 @@ class Component extends DCLogic {
       goStores: () => this.push('stores'), goCouriers: () => this.push('couriers'),
       goCustoms: () => this.push('customs'), goGuides: () => this.push('guides'),
       goShipments: () => this.push('shipments'),
+      /* Qidiruv o'z ekranida: bosh sahifada maydon bo'lganda har bosishda
+         natijalar paneli chiqib, sahifa qimirlab ketardi. */
+      goSearch: () => { this.setState({ homeQuery: '' }); this.push('search'); },
       goSettings: () => this.push('settings'),
       goWizard: () => { this.setState({ wizStep: 0 }); this.push('wizard'); },
 
