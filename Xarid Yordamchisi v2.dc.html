@@ -812,35 +812,6 @@
         </div>
       </sc-if>
 
-      <!-- Bosqichma-bosqich qo'llanmasi bor do'konlar: yon tomonga suriladigan
-           tasma. Papkadagi vertikal ustunni uzadi va qo'llanmalar bo'limiga
-           o'tmasdan turib ochish yo'lini beradi. -->
-      <sc-if value="{{ sFolderGuides }}" hint-placeholder-val="{{ false }}">
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div style="display:flex;align-items:center;gap:10px;padding:0 2px">
-            <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85">Bosqichma-bosqich qo'llanma</span>
-            <div style="flex:1;height:1px;background:#E3E4EE"></div>
-          </div>
-          <div style="display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;margin:0 -18px;padding:2px 18px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 30px),transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 30px),transparent 100%)">
-            <sc-for list="{{ folderGuides }}" as="g" hint-placeholder-count="3">
-              <button sc-camel-on-click="{{ g.open }}" sc-camel-on-pointer-enter="{{ g.warm }}" style="flex:none;width:152px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
-                <!-- Logotip loyihada saqlangan bo'lsa o'sha, aks holda
-                     brendning so'z-belgisi. -->
-                <div style="width:44px;height:44px;border-radius:14px;flex:none;position:relative;display:flex;align-items:center;justify-content:center;background:{{ g.plate }}">
-                  <sc-if value="{{ g.noLogo }}" hint-placeholder-val="{{ true }}">
-                    <span style="font-size:15px;font-weight:700;color:{{ g.ink }}">{{ g.mono }}</span>
-                  </sc-if>
-                  <div style="position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ g.logoCss }}"></div>
-                </div>
-                <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
-                  <span style="font-size:15px;font-weight:700;color:#131429;overflow-wrap:anywhere">{{ g.title }}</span>
-                  <span style="font-size:11px;font-weight:600;color:#6B6C85;font-variant-numeric:tabular-nums">{{ g.sub }}</span>
-                </div>
-              </button>
-            </sc-for>
-          </div>
-        </div>
-      </sc-if>
 
       <!-- Papkalar: tovar turi yoki davlat kesimida -->
       <sc-if value="{{ sFolders }}" hint-placeholder-val="{{ true }}">
@@ -3305,7 +3276,7 @@ const RATE_META = { date:'', diff:0, live:false, loading:false, at:0 };
 const APP_VERSION = 'v1.0.0 · 19.08.2026';
 const CBU_URL = 'https://cbu.uz/uz/arkhiv-kursov-valyut/json/USD/';
 /* Eskirgan yoki noto'g'ri ma'lumot haqida xabar beriladigan manzil. */
-const REPORT_URL = 'https://github.com/NShakhobiddin/Pochtachi/issues/new';
+const REPORT_URL = 'https://t.me/shopo_manage';
 
 /* --- Pullik xizmatlar ---
    Aloqa manzillari. TG va PHONE bo'sh bo'lsa tugmalar o'lik havolaga emas,
@@ -4652,14 +4623,6 @@ class Component extends DCLogic {
           this.push('storefolder');
         };
         const inFolder = cur === 'storefolder' ? this.storesFiltered() : [];
-        const fGuides = !inFolder.length ? [] : FULL_GUIDES
-          .filter(g => inFolder.some(x => x.id === g.id))
-          .map(g => ({ id:g.id, title:g.title, tag:g.tag, mono:g.mono, color:g.color, ink:g.ink,
-            logoCss: g.logoCss, noLogo: !g.logoCss || g.logoCss === 'none',
-            plate: (g.logoCss && g.logoCss !== 'none') ? 'transparent' : g.tint,
-            sub: g.sections + ' ta bo\'lim',
-            warm: () => this.warmGuide(g.id),
-            open: () => { this.setState({ fullId: g.id }); this.push('fullguide'); } }));
         const folders = defs.map(([key, title, sub, icon]) => {
           const n = STORES.filter(x => x[field] === key).length;
           /* Toifalarda chiziqli ikonka, davlatlarda bayroq — bayroq davlat
@@ -4693,13 +4656,7 @@ class Component extends DCLogic {
              bo'lganda ko'rinadi; qolgan hollarda ro'yxatning o'zi chiqadi. */
           sFolders: cur === 'stores' && !filtersOn,
           sStoreList: cur === 'storefolder' || (cur === 'stores' && filtersOn),
-          sInFolder: cur === 'storefolder',
-          /* Papka ichida shu papkadagi do'konlarning bosqichma-bosqich
-             qo'llanmalari yon tomonga suriladigan tasmada chiqadi: vertikal
-             bir xil qatorlar ketma-ketligini uzadi va qo'llanmani alohida
-             bo'limga bormasdan ochish imkonini beradi. */
-          folderGuides: fGuides,
-          sFolderGuides: cur === 'storefolder' && fGuides.length > 0
+          sInFolder: cur === 'storefolder'
         };
       })(),
 
@@ -4742,8 +4699,8 @@ class Component extends DCLogic {
           this.push('couriers');
         } },
       /* Ilgari bu tugma hech narsa yubormasa ham "Xabaringiz yuborildi" deb
-         yozardi. Endi haqiqiy kanal ochiladi — manzilni REPORT_URL da
-         o'zgartirish mumkin (masalan Telegram havolasiga). */
+         yozardi. Endi haqiqiy kanal ochiladi — Telegramdagi @shopo_manage.
+         Manzil REPORT_URL da. */
       /* --- Pullik xizmatlar --- */
       sServices: cur === 'services' && HAS_CONTACT,
       hasContact: HAS_CONTACT,

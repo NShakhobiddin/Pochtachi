@@ -1185,53 +1185,9 @@ try {
     faktlar.narx && faktlar.original && !faktlar.yonalish && faktlar.eng <= 3,
     `originallik ${faktlar.original}, qulaylik ${faktlar.qulaylik} kartada, eng ko'pi ${faktlar.eng} ta`);
 
-  /* Papka ichida bosqichma-bosqich qo'llanmalar yon tomonga suriladigan
-     tasmada chiqadi — vertikal bir xil qatorlar ketma-ketligini uzadi.
-     Elektronikada qo'llanmali do'kon yo'q, shuning uchun Universalga
-     o'tamiz. */
+  /* Papkadan chiqib, bo'lim tanlash ekraniga qaytiladi. */
   await page.goBack();
   await page.waitForTimeout(600);
-  await page.getByText('Universal', { exact: true }).first().click();
-  await page.waitForTimeout(700);
-  const tasma = await page.evaluate(() => {
-    const bosh = [...document.querySelectorAll('main span')]
-      .find(x => /BOSQICHMA-BOSQICH/i.test(x.textContent || ''));
-    const el = bosh && [...bosh.closest('div').parentElement.children]
-      .find(d => d.style && d.style.overflowX === 'auto');
-    if (!el) return null;
-    const kartalar = [...el.children];
-    const chap = kartalar[0].getBoundingClientRect().left;
-    const qidiruv = document.querySelector('main input').closest('div').getBoundingClientRect().left;
-    return { soni: kartalar.length, chetga: Math.round(chap - qidiruv),
-      /* Kartochkaning birinchi qatori — so'z-belgi (淘), do'kon nomi esa
-         "N ta bo'lim" satridan bittagina yuqorida turadi. */
-      sarlavha: kartalar.map(b => {
-        const L = b.innerText.trim().split('\n').map(x => x.trim()).filter(Boolean);
-        const i = L.findIndex(x => /ta bo'lim/.test(x));
-        return i > 0 ? L[i - 1] : L[L.length - 1];
-      }),
-      bolim: kartalar.every(b => /\d+ ta bo'lim/.test(b.innerText)) };
-  });
-  check("papkada qo'llanma tasmasi suriladi",
-    tasma && tasma.soni >= 2 && tasma.bolim && Math.abs(tasma.chetga) <= 1,
-    tasma ? `${tasma.soni} ta: ${tasma.sarlavha.join(', ')}` : 'tasma topilmadi');
-
-  /* Tasmadagi kartochka o'sha do'konning qo'llanmasini ochsin. */
-  const tasmaNom = tasma ? tasma.sarlavha[0] : '';
-  await page.locator('main div[style*="mask-image"] > button').first().click();
-  await page.waitForTimeout(900);
-  const ochildi = await page.evaluate(() => ({
-    iframe: !!document.querySelector('iframe'),
-    matn: document.body.innerText.slice(0, 400)
-  }));
-  check("tasmadagi qo'llanma ochiladi",
-    ochildi.iframe && ochildi.matn.includes(tasmaNom),
-    `${tasmaNom} — iframe ${ochildi.iframe ? 'bor' : "yo'q"}`);
-  await page.goBack();
-  await page.waitForTimeout(700);
-
-  await page.goBack();
-  await page.waitForTimeout(500);
   check('papkadan orqaga qaytiladi',
     await page.evaluate(() => /Bo'lim tanlang/.test(document.body.innerText)));
 
