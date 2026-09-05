@@ -939,6 +939,10 @@
                 <span style="font-size:17px;font-weight:700;color:#131429">{{ s.name }}</span>
                 <span style="font-size:15px">{{ s.flag }}</span>
               </div>
+              <!-- Do'konning o'z xususiyati: nomdan keyingi birinchi qator.
+                   Yorliq emas, oddiy matn — u yorliqlar qatoriga sig'masdi
+                   va kartochkani ikki qatorga cho'zardi. -->
+              <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.4;overflow-wrap:anywhere;text-wrap:pretty">{{ s.usp }}</span>
               <!-- Bitta qator. Ilgari to'rt yorliq uch qatorga yoyilib,
                    kartochkani 135px ga cho'zardi. To'liq ro'yxat do'kon
                    ekranida turadi, bu yerda esa sanoq ko'rsatiladi. -->
@@ -2691,6 +2695,50 @@ const RU = {
   "ta do'kon":'магазинов', 'ta kuryer':'курьеров', "ta qo'llanma":'инструкций',
   "me'yor":'лимит', "so'm / 1 USD":'сум / 1 USD',
   'Sevimlilar':'Избранное',
+  /* Do'konlarning xususiyat qatorlari. */
+  "Xitoy ichki bozori — eng arzon":'Внутренний рынок Китая — самое дешёвое',
+  'Dunyodagi eng katta tanlov':'Самый большой выбор в мире',
+  'Xitoyda eng arzon narxlar':'Самые низкие цены в Китае',
+  "Turkiyaning eng katta do'koni":'Крупнейший магазин Турции',
+  'Arzon trend kiyim, har kuni yangilanadi':'Дешёвая трендовая одежда, обновляется каждый день',
+  'Faqat chaqaloq va bolalar kiyimi':'Только детская и младенческая одежда',
+  'Dizayner brendlar — lyuks moda':'Дизайнерские бренды — люкс',
+  'Taobaoning rasmiy brendlar qismi':'Раздел официальных брендов Taobao',
+  'Dunyo butiklaridan dizayner moda':'Дизайнерская мода из бутиков мира',
+  'Auksion va ishlatilgan tovarlar':'Аукцион и бывшие в употреблении товары',
+  'Krossovka originalligini o\'zi tekshiradi':'Сам проверяет оригинальность кроссовок',
+  'AQShning arzon supermarketi':'Недорогой супермаркет США',
+  'Lyuks soat va sumka chegirmada':'Люксовые часы и сумки со скидкой',
+  "Xitoy do'konlari — inglizcha va oson":'Китайские магазины — на английском и просто',
+  "Zaraning rasmiy do'koni":'Официальный магазин Zara',
+  "Nike rasmiy do'koni":'Официальный магазин Nike',
+  'H&M — arzon kundalik kiyim':'H&M — недорогая повседневная одежда',
+  'Dubay orqali — yetkazish tez':'Через Дубай — доставка быстрая',
+  "Adidas rasmiy do'koni":'Официальный магазин Adidas',
+  "Puma rasmiy do'koni":'Официальный магазин Puma',
+  'Yaponcha sodda va sifatli basic kiyim':'Японская простая и качественная базовая одежда',
+  "New Balance rasmiy do'koni":'Официальный магазин New Balance',
+  'Sneaker brendlari bir joyda':'Сникер-бренды в одном месте',
+  "Britaniyaning sneaker do'koni":'Британский сникер-магазин',
+  "AQShning elektronika do'koni":'Магазин электроники США',
+  'Kompyuter va komplektlovchilar':'Компьютеры и комплектующие',
+  'Kamera va professional texnika':'Камеры и профессиональная техника',
+  'Yoshlar modasi — juda katta tanlov':'Молодёжная мода — очень большой выбор',
+  "PC yig'ish uchun komponentlar":'Комплектующие для сборки ПК',
+  "Apple rasmiy do'koni":'Официальный магазин Apple',
+  "Samsung rasmiy do'koni":'Официальный магазин Samsung',
+  "Xiaomi rasmiy do'koni":'Официальный магазин Xiaomi',
+  "Lenovo rasmiy do'koni":'Официальный магазин Lenovo',
+  'Premium kosmetika va parfyumeriya':'Премиальная косметика и парфюмерия',
+  'Arzondan qimmatgacha — barcha kosmetika':'От дешёвой до дорогой — вся косметика',
+  'Britaniyadan kosmetika, keng tanlov':'Косметика из Британии, широкий выбор',
+  "LEGO rasmiy do'koni":'Официальный магазин LEGO',
+  "Londonning mashhur o'yinchoq do'koni":'Знаменитый магазин игрушек Лондона',
+  'Ichki kiyim va lingerie':'Нижнее бельё и lingerie',
+  "O'yinchoqlarning katta do'koni":'Большой магазин игрушек',
+  "Britaniyadan o'yinchoq va gaming":'Игрушки и гейминг из Британии',
+  "Nyu-Yorkning premium o'yinchoq do'koni":'Премиальный магазин игрушек Нью-Йорка',
+  'Barbie va Hot Wheels kolleksiyalari':'Коллекции Barbie и Hot Wheels',
   'TAQIQ':'ЗАПРЕТ', "BO'LIM":'РАЗДЕЛ',
   "Bojxona me'yorlari:":'Таможенные нормы:', '\u00b7 oxirgi tekshiruv':'\u00b7 последняя проверка',
   "boj va yig'imni hisoblang \u00b7 hozir":'рассчитайте пошлину и сбор \u00b7 сейчас',
@@ -2891,6 +2939,56 @@ const tintOf = o => {
   o.tint = rgba(o.color, (.15 * k).toFixed(3));
   o.ink = readableInk(o.color);
   return o;
+};
+
+/* Har bir do'konning bitta ajratib turadigan xususiyati. Ro'yxatda birinchi
+   yorliq bo'lib turadi: birinchi marta o'qigan odam shu qatordan do'kon nima
+   bilan qolganlaridan farq qilishini bilib olsin. Ilgari u yerda "$" turardi
+   — bu 43 do'konning yarmida bir xil edi va hech narsa demasdi. */
+const STORE_USP = {
+  taobao: "Xitoy ichki bozori — eng arzon",
+  amazon: "Dunyodagi eng katta tanlov",
+  pinduoduo: "Xitoyda eng arzon narxlar",
+  trendyol: "Turkiyaning eng katta do'koni",
+  shein: "Arzon trend kiyim, har kuni yangilanadi",
+  carters: "Faqat chaqaloq va bolalar kiyimi",
+  mytheresa: "Dizayner brendlar — lyuks moda",
+  tmall: "Taobaoning rasmiy brendlar qismi",
+  farfetch: "Dunyo butiklaridan dizayner moda",
+  ebay: "Auksion va ishlatilgan tovarlar",
+  poizon: "Krossovka originalligini o'zi tekshiradi",
+  walmart: "AQShning arzon supermarketi",
+  jomashop: "Lyuks soat va sumka chegirmada",
+  aliexpress: "Xitoy do'konlari — inglizcha va oson",
+  zara: "Zaraning rasmiy do'koni",
+  nike: "Nike rasmiy do'koni",
+  hm: "H&M — arzon kundalik kiyim",
+  noon: "Dubay orqali — yetkazish tez",
+  adidas: "Adidas rasmiy do'koni",
+  puma: "Puma rasmiy do'koni",
+  uniqlo: "Yaponcha sodda va sifatli basic kiyim",
+  newbalance: "New Balance rasmiy do'koni",
+  footlocker: "Sneaker brendlari bir joyda",
+  jdsports: "Britaniyaning sneaker do'koni",
+  bestbuy: "AQShning elektronika do'koni",
+  newegg: "Kompyuter va komplektlovchilar",
+  bhphoto: "Kamera va professional texnika",
+  asos: "Yoshlar modasi — juda katta tanlov",
+  microcenter: "PC yig'ish uchun komponentlar",
+  apple: "Apple rasmiy do'koni",
+  samsung: "Samsung rasmiy do'koni",
+  xiaomi: "Xiaomi rasmiy do'koni",
+  lenovo: "Lenovo rasmiy do'koni",
+  sephora: "Premium kosmetika va parfyumeriya",
+  ulta: "Arzondan qimmatgacha — barcha kosmetika",
+  beautybay: "Britaniyadan kosmetika, keng tanlov",
+  lego: "LEGO rasmiy do'koni",
+  hamleys: "Londonning mashhur o'yinchoq do'koni",
+  victoriassecret: "Ichki kiyim va lingerie",
+  toysrus: "O'yinchoqlarning katta do'koni",
+  smythstoys: "Britaniyadan o'yinchoq va gaming",
+  faoschwarz: "Nyu-Yorkning premium o'yinchoq do'koni",
+  mattel: "Barbie va Hot Wheels kolleksiyalari"
 };
 
 const STORES = [
@@ -4587,18 +4685,20 @@ class Component extends DCLogic {
              Oson ekani ham, VPN kerakligi ham — qaror qildiradigan fakt. */
           /* Yorliq nima haqida ekani o'zidan ko'rinsin: yolg'iz "oson" yoki
              "noaniq" nimaga tegishli ekani noma'lum edi. */
+          /* Qolgan joyga eng muhim bitta fakt: buyurtma qulayligi bo'lsa
+             o'sha, aks holda originallik. Uchtadan ortiq yorliq qatorni
+             ikkiga bo'lib yuboradi va o'qilmay qoladi. */
           const cx = s.complexity || '';
+          const or = s.original || '';
           if (/oson/i.test(cx)) out.push({ t: 'Buyurtma oson', fg: OK, bg: OK_BG });
           else if (/VPN/i.test(cx)) out.push({ t: 'VPN kerak', fg: WARN, bg: WARN_BG });
           else if (/murakkab/i.test(cx)) out.push({ t: 'Buyurtma murakkab', fg: WARN, bg: WARN_BG });
-          const or = s.original || '';
-          if (/yuqori/i.test(or)) out.push({ t: 'Original tovar', fg: OK, bg: OK_BG });
+          else if (/yuqori/i.test(or)) out.push({ t: 'Original tovar', fg: OK, bg: OK_BG });
           else if (/sotuvchi/i.test(or)) out.push({ t: "Sotuvchiga bog'liq", fg: WARN, bg: WARN_BG });
-          else if (or) out.push({ t: 'Originalligi ' + or.toLowerCase(), fg: '#6B6C85', bg: '#F1F1F8' });
           return out;
         };
         const plateOf = o => (o.logoCss && o.logoCss !== 'none') ? 'transparent' : o.tint;
-        const list = this.storesFiltered().map(s => ({ ...s, chips: chipsOf(s), plate: plateOf(s), open:() => { this.warmGuide(s.id); this.setState({ storeId:s.id }); this.push('store'); } }));
+        const list = this.storesFiltered().map(s => ({ ...s, usp: STORE_USP[s.id] || s.subcats, chips: chipsOf(s), plate: plateOf(s), open:() => { this.warmGuide(s.id); this.setState({ storeId:s.id }); this.push('store'); } }));
         const CATS = [
           ['universal', 'Universal', 'Hamma turdagi tovarlar'],
           ['kiyim va moda', 'Kiyim va moda', 'Kiyim, sumka, aksessuar'],

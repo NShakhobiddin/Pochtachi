@@ -1182,40 +1182,56 @@ try {
     `${inFolder.cards} ta karta · sarlavhada ${inFolder.bosh} · natijada ${inFolder.topildi}`);
 
   /* Yorliqlar bitta qatorga sig'sin: ilgari to'rttasi uch qatorga yoyilib,
-     kartochkani 135px ga cho'zardi. */
+     kartochkani 135px ga cho'zardi. Kartochkada endi nomdan keyin do'konning
+     o'z xususiyati bitta qator matn bo'lib turadi, shuning uchun balandlik
+     100 emas, 112px gacha. */
   const yorliq = await page.evaluate(() => {
     const card = [...document.querySelectorAll('main button[style*="content-visibility"]')][0];
-    const row = card.children[1].children[1];
-    const chips = [...row.children];
+    /* Yorliqlar qatorini tuzilishga emas, mazmuniga qarab topamiz. */
+    const row = [...card.querySelectorAll('div')]
+      .find(d => d.children.length > 0 && [...d.children].every(c => c.tagName === 'SPAN'
+        && /999px/.test(c.style.borderRadius || '')));
+    const chips = row ? [...row.children] : [];
     const bir = new Set(chips.map(c => Math.round(c.getBoundingClientRect().top))).size === 1;
     const kesilgan = chips.some(c => c.scrollWidth > c.clientWidth + 1);
     return { soni: chips.length, bir, kesilgan,
       matn: chips.map(c => c.textContent.trim()).join(' '),
-      qator: Math.round(row.getBoundingClientRect().height),
+      qator: row ? Math.round(row.getBoundingClientRect().height) : -1,
       karta: Math.round(card.getBoundingClientRect().height) };
   });
   check("do'kon yorliqlari bitta qatorda",
-    yorliq.bir && !yorliq.kesilgan && yorliq.soni >= 2 && yorliq.qator <= 30 && yorliq.karta <= 100,
+    yorliq.bir && !yorliq.kesilgan && yorliq.soni >= 1 && yorliq.qator <= 30 && yorliq.karta <= 112,
     `${yorliq.matn} · qator ${yorliq.qator}px, karta ${yorliq.karta}px`);
 
-  /* Yorliqlar qaror uchun muhim faktlarni ko'rsatsin: narx darajasi doim,
-     originallik doim, buyurtma qulayligi esa faqat e'tiborga loyiq
-     bo'lganda (43 do'kondan 30 tasi "o'rtacha" va bu hech narsa demaydi).
-     Yo'nalish (vositachi / to'g'ridan) bu yerdan olib tashlangan. */
+  /* Har bir kartochkada do'konning o'z xususiyati yozilgan bo'lsin —
+     birinchi marta o'qigan odam shu qatordan do'kon nima bilan farq
+     qilishini bilib olsin. Yorliqlar qatorida narx darajasi doim,
+     qolganidan esa ko'pi bilan bittasi (uchtadan ortiq yorliq qatorni
+     ikkiga bo'lib yuboradi). */
   const faktlar = await page.evaluate(() => {
     const cards = [...document.querySelectorAll('main button[style*="content-visibility"]')];
-    const rows = cards.map(c => [...c.children[1].children[1].children].map(x => x.textContent.trim()));
+    const pill = d => d.children.length > 0 && [...d.children].every(c => c.tagName === 'SPAN'
+      && /999px/.test(c.style.borderRadius || ''));
+    const rows = cards.map(c => {
+      const row = [...c.querySelectorAll('div')].find(pill);
+      return row ? [...row.children].map(x => x.textContent.trim()) : [];
+    });
+    const xususiyat = cards.map(c => {
+      const s = [...c.querySelectorAll('span')]
+        .find(x => parseFloat(getComputedStyle(x).fontSize) === 13 && x.textContent.trim().length > 6);
+      return s ? s.textContent.trim() : '';
+    });
     return {
       narx: rows.every(r => /^\$+$/.test(r[0])),
-      original: rows.every(r => r.some(x => /^(Original tovar|Sotuvchiga bog'liq|Originalligi )/.test(x))),
-      qulaylik: rows.filter(r => r.some(x => /^(Buyurtma oson|Buyurtma murakkab|VPN kerak)$/.test(x))).length,
-      yonalish: rows.some(r => r.some(x => /vositachi|to'g'ridan/.test(x))),
+      xususiyatBor: xususiyat.every(x => x.length > 6),
+      xilma: new Set(xususiyat).size,
+      jami: cards.length,
       eng: Math.max(...rows.map(r => r.length))
     };
   });
-  check("yorliqlarda narx, originallik va qulaylik",
-    faktlar.narx && faktlar.original && !faktlar.yonalish && faktlar.eng <= 3,
-    `originallik ${faktlar.original}, qulaylik ${faktlar.qulaylik} kartada, eng ko'pi ${faktlar.eng} ta`);
+  check("har bir do'konda o'z xususiyati yozilgan",
+    faktlar.narx && faktlar.xususiyatBor && faktlar.xilma === faktlar.jami && faktlar.eng <= 3,
+    `${faktlar.xilma}/${faktlar.jami} xil xususiyat, eng ko'pi ${faktlar.eng} ta yorliq`);
 
   /* Papkadan chiqib, bo'lim tanlash ekraniga qaytiladi. */
   await page.goBack();
