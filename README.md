@@ -100,6 +100,23 @@ Telegram ichida ilova o'zi:
 
 Oddiy brauzerda bu kodning ta'siri yo'q — sayt avvalgidek ishlayveradi.
 
+## Pullik xizmatlar
+
+Ilova ma'lumot xizmati sifatida bepul qoladi. Pulli qism — `SERVICES`
+massividagi 11 ta xizmat: 5 tasi jismoniy shaxslar uchun (ushlangan
+jo'natma, boj hisobini tekshirish, hujjat tayyorlash), 6 tasi kuryerlik
+tashkilotlari uchun (litsenziya, shartnoma, bojxona bahsi, sayt/bot, trek
+integratsiyasi, ilovada joylashish).
+
+Bo'lim `CONTACT` bilan boshqariladi. `tg` yoki `phone` bo'sh bo'lsa
+`HAS_CONTACT` false bo'ladi va bo'lim butunlay ko'rsatilmaydi — ochilgan
+har bir tugma ogohlantirishga olib borishi o'rniga. Narxlar `SERVICES`
+dagi `price` maydonida; boshqa joyda takrorlanmaydi.
+
+Kirish nuqtalari ikkita: bosh sahifadagi "Mutaxassis yordami" kartochkasi
+va Bojxona bo'limidagi "Mutaxassis konsultatsiyasi". Har bir xizmatning
+"Bog'lanish" tugmasi Telegramni ochadi va xabar matnini oldindan yozadi.
+
 ## Brend logotipi
 
 Yagona manba — `icons/src/intro/*.png`: logotipning vektor eksporti

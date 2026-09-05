@@ -720,7 +720,7 @@ try {
     if (await s.count()) { await s.first().click(); await ruSahifa.waitForTimeout(350); }
   }
   await ruSahifa.waitForTimeout(500);
-  const ATAYLAB = /^(Taobao|Pinduoduo|Poizon|Trendyol|Amazon|eBay|SHEIN|O'zbekcha|VMQ|BHM|SALES TAX|v\d)/;
+  const ATAYLAB = /^(Taobao|Pinduoduo|Poizon|Trendyol|Amazon|eBay|SHEIN|O'zbekcha|VMQ|BHM|SALES TAX|Telegram|v\d)/;
   /* Beshta bo'lim ham qaraladi: ilgari faqat bosh sahifa tekshirilardi va
      boshqa ekranlardagi tarjimasiz satrlar ushlanmay qolardi. Matn tugunlari
      bo'yicha yuramiz — "43 ta do'kon" kabi qo'shma yozuvlarda raqam alohida
@@ -745,6 +745,33 @@ try {
       return [...new Set(out)];
     });
     uzQoldi.push(...bu);
+  }
+  /* Pullik xizmatlar ekrani alohida: u eng uzun matnli ekran va CONTACT
+     to'ldirilgunicha yashirin turgani uchun tarjimasi tekshirilmay qolgandi. */
+  await ruSahifa.locator('nav button').first().click();
+  await ruSahifa.waitForTimeout(700);
+  const ruSvcKirish = ruSahifa.locator('main button').filter({ hasText: /Mutaxassis|Помощь|консультац/i }).first();
+  if (await ruSvcKirish.count()) {
+    await ruSvcKirish.click();
+    await ruSahifa.waitForTimeout(800);
+    for (const lane of [/Kuryer tashkilotiman|Я курьерская/, /Men xaridorman|Я покупатель/]) {
+      const t = ruSahifa.locator('main button').filter({ hasText: lane }).first();
+      if (await t.count()) { await t.click(); await ruSahifa.waitForTimeout(500); }
+      uzQoldi.push(...await ruSahifa.evaluate(() => {
+        const out = [];
+        const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        let n;
+        while ((n = w.nextNode())) {
+          const s = n.textContent.trim();
+          if (s.length < 4 || s.length > 200) continue;
+          if (!n.parentElement || !n.parentElement.getBoundingClientRect().width) continue;
+          if (/[А-Яа-яЀ-ӿ]/.test(s)) continue;
+          if (!/[a-z]{3}/.test(s)) continue;
+          out.push(s);
+        }
+        return [...new Set(out)];
+      }));
+    }
   }
   const uzYomon = [...new Set(uzQoldi)].filter(t => !ATAYLAB.test(t));
   check('ruscha rejimda tarjimasiz matn yo\'q', uzYomon.length === 0, uzYomon.slice(0, 4).join(' | '));

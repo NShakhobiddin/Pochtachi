@@ -72,18 +72,20 @@ for (const b of BUDGETS) {
 }
 
 // Asosiy sahifa: gzip'siz hajm (GitHub Pages gzip beradi, lekin manba ham
-// o'smasin). Chegara 420 -> 450 -> 470 -> 480 KB: birinchisi bo'limlarga qo'shilgan
-// ohang va katta kartochkalar uchun, ikkinchisi rus tili lug'ati to'ldirilgani
-// uchun (butun qo'llanmalar ekrani tarjimasiz qolgan edi), uchinchisi brend
-// introsining ~7 KB lik dvigateli uchun.
+// o'smasin). Chegara 420 -> 450 -> 470 -> 480 -> 520 KB: birinchisi bo'limlarga
+// qo'shilgan ohang va katta kartochkalar uchun, ikkinchisi rus tili lug'ati
+// to'ldirilgani uchun (butun qo'llanmalar ekrani tarjimasiz qolgan edi),
+// uchinchisi brend introsining ~7 KB lik dvigateli uchun, to'rtinchisi
+// 43 do'konning xususiyat qatorlari va pullik xizmatlar ekranining
+// tarjimasi uchun (u ochilgunicha butunlay tarjimasiz edi).
 // Foydalanuvchiga yetadigan hajm gzipdan keyingisi, shuning uchun u ham
 // chiqariladi: qaror shu raqamga qarab qabul qilinsin.
 const index = join(ROOT, 'index.html');
 if (existsSync(index)) {
   const size = kb(statSync(index).size);
   const gz = kb(gzipSync(readFileSync(index), { level: 9 }).length);
-  const ok = size <= 480;
-  console.log(`${ok ? '  ok  ' : ' XATO '} index.html: ${size} KB (chegara 480 KB), gzip ${gz} KB`);
+  const ok = size <= 520;
+  console.log(`${ok ? '  ok  ' : ' XATO '} index.html: ${size} KB (chegara 520 KB), gzip ${gz} KB`);
   if (!ok) failed = true;
 }
 
