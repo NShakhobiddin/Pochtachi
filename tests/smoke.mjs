@@ -866,18 +866,17 @@ try {
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(500);
 
-  /* Hamkorlik: pochta qabul qilish punktlari va kuryerlik tashkilotlari
-     ro'yxatga qo'shilish uchun shu yerdan yozadi. Ikkita tugma, ikkalasi
-     ham Telegramga oldindan yozilgan xabar bilan boradi. */
+  /* Hamkorlik: kuryerlik tashkilotlari ro'yxatga qo'shilish uchun shu
+     yerdan yozadi — Telegramga oldindan yozilgan xabar bilan. */
   await page.locator('nav button', { hasText: 'Sozlamalar' }).first().click();
   await page.waitForTimeout(800);
   const hamkor = await page.evaluate(() => {
     const b = [...document.querySelectorAll('main button')]
-      .filter(x => /punktiman|tashkilotiman/.test(x.innerText));
+      .filter(x => /tashkilotiman/.test(x.innerText));
     return { soni: b.length, baland: b.every(x => x.getBoundingClientRect().height >= 44),
       matn: b.map(x => x.innerText.trim()).join(' | ') };
   });
-  check('hamkorlik uchun ikki yo\'l bor', hamkor.soni === 2 && hamkor.baland, hamkor.matn);
+  check('hamkorlik uchun murojaat tugmasi bor', hamkor.soni === 1 && hamkor.baland, hamkor.matn);
 
   /* Kulrang shkala uch pog'onadan iborat: kuchli, passiv, bezak. */
   const kulrang = [...new Set((src.match(/#[0-9A-F]{6}/gi) || []).map(h => h.toUpperCase()))]
