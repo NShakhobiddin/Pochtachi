@@ -713,20 +713,33 @@ try {
     if (await s.count()) { await s.first().click(); await ruSahifa.waitForTimeout(350); }
   }
   await ruSahifa.waitForTimeout(500);
-  const ATAYLAB = /^(Taobao|Pinduoduo|Poizon|Trendyol|Amazon|eBay|SHEIN|O'zbekcha|VMQ|BHM)/;
-  const uzQoldi = await ruSahifa.evaluate(() => {
-    const out = [];
-    for (const el of document.querySelectorAll('main *, nav *')) {
-      if (el.children.length) continue;
-      const t = (el.textContent || '').trim();
-      if (t.length < 4 || t.length > 90) continue;
-      if (/[А-Яа-я]/.test(t)) continue;
-      if (!/[a-z]{3}/.test(t)) continue;
-      out.push(t);
-    }
-    return [...new Set(out)];
-  });
-  const uzYomon = uzQoldi.filter(t => !ATAYLAB.test(t));
+  const ATAYLAB = /^(Taobao|Pinduoduo|Poizon|Trendyol|Amazon|eBay|SHEIN|O'zbekcha|VMQ|BHM|SALES TAX|v\d)/;
+  /* Beshta bo'lim ham qaraladi: ilgari faqat bosh sahifa tekshirilardi va
+     boshqa ekranlardagi tarjimasiz satrlar ushlanmay qolardi. Matn tugunlari
+     bo'yicha yuramiz — "43 ta do'kon" kabi qo'shma yozuvlarda raqam alohida
+     tugun bo'lib, matn qismi lug'atdan chiqishi kerak. */
+  const uzQoldi = [];
+  for (const bolim of ['Bosh sahifa', "Qo'llanmalar", 'Reja', 'Bojxona', 'Sozlamalar']) {
+    const t = ruSahifa.locator('nav button').nth(['Bosh sahifa', "Qo'llanmalar", 'Reja', 'Bojxona', 'Sozlamalar'].indexOf(bolim));
+    await t.click().catch(() => {});
+    await ruSahifa.waitForTimeout(600);
+    const bu = await ruSahifa.evaluate(() => {
+      const out = [];
+      const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      let n;
+      while ((n = w.nextNode())) {
+        const s = n.textContent.trim();
+        if (s.length < 4 || s.length > 200) continue;
+        if (!n.parentElement || !n.parentElement.getBoundingClientRect().width) continue;
+        if (/[А-Яа-яЀ-ӿ]/.test(s)) continue;
+        if (!/[a-z]{3}/.test(s)) continue;
+        out.push(s);
+      }
+      return [...new Set(out)];
+    });
+    uzQoldi.push(...bu);
+  }
+  const uzYomon = [...new Set(uzQoldi)].filter(t => !ATAYLAB.test(t));
   check('ruscha rejimda tarjimasiz matn yo\'q', uzYomon.length === 0, uzYomon.slice(0, 4).join(' | '));
   await ruContext.close();
 
@@ -806,6 +819,32 @@ try {
   check('harakat kamaytirilganda intro chiqmaydi',
     !(await rmPage.evaluate(() => !!document.querySelector('div[aria-hidden="true"][style*="9999"]'))));
   await rmCtx.close();
+
+  /* Gradient ustidagi yarim shaffof oq matn. Kontrastni piksel bo'yicha
+     o'lchab chiqdik: .44 da qadam yozuvlari 3,29:1, .60 da bosh yozuv
+     4,02:1 edi — ikkalasi ham 11px matn uchun kerakli 4,5 dan past.
+     Hozirgi qiymatlarda 4,96 va 5,46. Shu sabab quyi chegara qo'yiladi. */
+  const oqAlfa = [...src.matchAll(/color:rgba\(255,255,255,\.(\d+)\)/g)].map(m => +('.' + m[1]));
+  const oqDots = [...src.matchAll(/'rgba\(255,255,255,\.(\d+)\)'/g)].map(m => +('.' + m[1]));
+  const past = [...oqAlfa, ...oqDots.filter(a => a > 0.3)].filter(a => a < 0.58);
+  check('gradient ustidagi oq matn yetarli qoramtir', past.length === 0,
+    past.length ? 'past alfa: ' + past.join(', ') : 'eng pasti ' + Math.min(...oqAlfa, ...oqDots.filter(a => a > 0.3)));
+
+  /* Qidiruv paneli — balandligi 50-52px, ichidagi maydon esa ~22px.
+     Qobiq <label> bo'lmasa, qatorning bo'sh joyiga bosilganda hech narsa
+     bo'lmaydi. Uchala qidiruvda ham qatorning tepasiga bosib tekshiramiz. */
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
+  await page.waitForTimeout(500);
+  const qidiruvFokus = await page.evaluate(() => {
+    const inp = document.querySelector('main input[type="search"]');
+    if (!inp) return 'maydon yo\'q';
+    const qator = inp.closest('label');
+    if (!qator) return 'qobiq <label> emas';
+    const r = qator.getBoundingClientRect();
+    return Math.round(r.height) >= 44 ? 'ok ' + Math.round(r.height) + 'px' : 'qator past: ' + Math.round(r.height);
+  });
+  check('qidiruv qatorining bo\'sh joyi ham maydonni fokuslaydi',
+    String(qidiruvFokus).startsWith('ok'), qidiruvFokus);
 
   /* Kulrang shkala uch pog'onadan iborat: kuchli, passiv, bezak. */
   const kulrang = [...new Set((src.match(/#[0-9A-F]{6}/gi) || []).map(h => h.toUpperCase()))]

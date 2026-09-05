@@ -124,6 +124,46 @@ for (const file of guides) {
   });
   check(`${name}: yon tomonga siljish yo'q`, over.worst <= 0, `+${over.worst}px ${over.where}`);
 
+  /* Matn kontrasti. Pastki izoh #999AAE edi — #F6F7FB fonda 2,59:1, ya'ni
+     12px matn uchun kerakli 4,5 dan ancha past. Sayt panelidagi havolalar
+     esa 27px balandlikda edi — teginish nishoni uchun kam. */
+  const oqish = await page.evaluate(() => {
+    const lin = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+    const lum = c => { const [r, g, b] = c.match(/[\d.]+/g).map(Number); return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b); };
+    const kor = el => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+    const fonOf = el => {
+      let n = el;
+      while (n && n !== document.documentElement) {
+        const cs = getComputedStyle(n);
+        if (cs.backgroundImage !== 'none') return null;
+        if (!/rgba\(0, 0, 0, 0\)|transparent/.test(cs.backgroundColor)) return cs.backgroundColor;
+        n = n.parentElement;
+      }
+      return 'rgb(255, 255, 255)';
+    };
+    const past = [], kichik = [];
+    for (const el of document.querySelectorAll('span,div,p,h1,h2,h3,li,td,th,button,a,label')) {
+      if (!kor(el)) continue;
+      const t = [...el.childNodes].filter(n => n.nodeType === 3 && n.textContent.trim())
+        .map(n => n.textContent.trim()).join(' ');
+      if (!t) continue;
+      const fon = fonOf(el); if (!fon) continue;
+      const cs = getComputedStyle(el), fs = parseFloat(cs.fontSize), fw = +cs.fontWeight || 400;
+      const a = lum(cs.color), b = lum(fon);
+      const cr = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+      const kerak = (fs >= 24 || (fs >= 18.66 && fw >= 700)) ? 3 : 4.5;
+      if (cr < kerak) past.push(`${t.slice(0, 22)} ${cr.toFixed(2)}/${kerak}`);
+    }
+    for (const el of document.querySelectorAll('a, button, input')) {
+      if (!kor(el)) continue;
+      const r = el.getBoundingClientRect();
+      if (r.height < 32 || r.width < 32) kichik.push(`${(el.innerText || el.type || '').slice(0, 16)} ${Math.round(r.width)}x${Math.round(r.height)}`);
+    }
+    return { past: [...new Set(past)], kichik: [...new Set(kichik)] };
+  });
+  check(`${name}: matn kontrasti yetarli`, oqish.past.length === 0, oqish.past.slice(0, 3).join(' | '));
+  check(`${name}: teginish nishonlari 32px dan kam emas`, oqish.kichik.length === 0, oqish.kichik.slice(0, 3).join(' | '));
+
   /* Qadamlar ichidagi ekran maketlari: har biri chizilgan bo'lsin,
      360 px kenglikda kartochkadan chiqib ketmasin va raqamli belgilar
      yuqoridan pastga qarab o'sib borsin. */

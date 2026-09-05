@@ -141,6 +141,11 @@ Kulrang uch pog'ona: `#4E4F6B` kuchli, `#6B6C85` passiv (oq bilan
 `#0F7B3E`, sariq `#B45309`, qizil `#9B1C1C`, moviy `#0E8595`.
 Do'kon va kuryerlarning o'z brend ranglari tizimga kirmaydi.
 
+Gradient ustidagi oq matn alohida hisoblanadi: uni fon rangi bilan emas,
+ekrandan o'qilgan piksel bilan o'lchash kerak. Shaffofligi `.58` dan past
+bo'lsa 11px yozuv AA dan chiqib ketadi — shuning uchun quyi chegara
+`tests/smoke.mjs` da qo'yilgan (hozirgi eng pasti `.60`).
+
 **Matn.** Kegl 11 / 13 / 15 / 17 / 22 / 26 / 34 (44 va 52 — bayroq
 glifi). Har bir keglda ko'pi bilan ikki qalinlik: 11 -> 600/700,
 13 va 15 -> 500/700, 17 -> 700, 22 va undan yuqorisi -> 800. Harf

@@ -516,7 +516,7 @@
       <h2 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.1;color:#131429;text-wrap:balance">Global xaridlar <span style="color:#1A1FB0">biz bilan oson.</span></h2>
 
       <div style="display:flex;flex-direction:column;gap:10px">
-        <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:0 16px;height:52px;width:100%;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+        <label style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:0 16px;height:52px;width:100%;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);cursor:text">
           <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
           <input value="{{ hq }}" sc-camel-on-input="{{ onHq }}" placeholder="Do'kon, kuryer yoki mahsulot" type="search" enterkeyhint="search" aria-label="Do'kon, kuryer yoki mahsulot izlash" style="flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;font-weight:500;color:#131429">
           <sc-if value="{{ hqOn }}" hint-placeholder-val="{{ false }}">
@@ -524,7 +524,7 @@
               <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6B6C85" stroke-width="2.7" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
             </button>
           </sc-if>
-        </div>
+       </label>>
 
         <sc-if value="{{ hqOn }}" hint-placeholder-val="{{ false }}">
           <div style="background:#FFFFFF;border-radius:20px;overflow:hidden;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
@@ -815,10 +815,10 @@
 
   <sc-if value="{{ sStoresArea }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:16px">
-      <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:0 14px;height:50px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+      <label style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:0 14px;height:50px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);cursor:text">
         <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
         <input value="{{ storeQuery }}" sc-camel-on-change="{{ onStoreQuery }}" placeholder="{{ storeSearchHint }}" type="search" enterkeyhint="search" aria-label="Do'kon nomi yoki kategoriya" style="flex:1;border:none;outline:none;font-size:15px;font-weight:500;color:#131429;background:transparent">
-      </div>
+     </label>>
 
       <!-- Papka ichida turganda: qaysi papka ekani va nechta do'kon borligi -->
       <sc-if value="{{ sInFolder }}" hint-placeholder-val="{{ false }}">
@@ -1724,10 +1724,10 @@
 
       <sc-if value="{{ cs3 }}" hint-placeholder-val="{{ false }}">
 
-        <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:0 14px;height:50px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+        <label style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:0 14px;height:50px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);cursor:text">
           <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
           <input value="{{ banQuery }}" sc-camel-on-change="{{ onBanQuery }}" placeholder="Tovar nomini yozing" type="search" enterkeyhint="search" aria-label="Taqiqlangan tovar nomi" style="flex:1;border:none;outline:none;font-size:15px;font-weight:500;color:#131429;background:transparent">
-        </div>
+       </label>>
         <div style="display:flex;gap:8px">
           <sc-for list="{{ banFilters }}" as="ff" hint-placeholder-count="3">
             <button sc-camel-on-click="{{ ff.pick }}" style="flex:1;height:34px;border-radius:20px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;background:{{ ff.bg }};color:{{ ff.fg }}">{{ ff.label }}</button>
@@ -2145,7 +2145,7 @@
         <div style="position:relative;display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
             <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
-              <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.60)">Xarid rejasi</span>
+              <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.78)">Xarid rejasi</span>
               <span style="font-family:'Onest','XY Flags',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#FFFFFF;line-height:1.3">{{ wizStepName }}</span>
             </div>
             <span style="flex:none;font-size:13px;font-weight:700;color:#FFFFFF;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);padding:6px 12px;border-radius:999px;font-variant-numeric:tabular-nums">{{ wizStepNo }}<span style="opacity:.6"> / 5</span></span>
@@ -2324,7 +2324,7 @@
         <div style="position:absolute;top:-70px;right:-45px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.18),rgba(255,255,255,0) 70%)"></div>
         <div style="position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
           <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
-            <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.60)">Taxminiy jami</span>
+            <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.78)">Taxminiy jami</span>
             <span style="font-family:'Onest','XY Flags',system-ui,sans-serif;font-size:26px;letter-spacing:-.03em;font-weight:800;color:#FFFFFF;line-height:1;font-variant-numeric:tabular-nums">{{ planTotalBig }}</span>
             <span style="font-size:13px;font-weight:500;color:rgba(255,255,255,.78);font-variant-numeric:tabular-nums">{{ planTotalUzs }}</span>
           </div>
@@ -2735,6 +2735,16 @@ const RU = {
   "ta do'kon":'магазинов', 'ta kuryer':'курьеров', "ta qo'llanma":'инструкций',
   "me'yor":'лимит', "so'm / 1 USD":'сум / 1 USD',
   'Sevimlilar':'Избранное',
+  'TAQIQ':'ЗАПРЕТ', "BO'LIM":'РАЗДЕЛ',
+  "Bojxona me'yorlari:":'Таможенные нормы:', '\u00b7 oxirgi tekshiruv':'\u00b7 последняя проверка',
+  "boj va yig'imni hisoblang \u00b7 hozir":'рассчитайте пошлину и сбор \u00b7 сейчас',
+  "ta platforma uchun to'liq qo'llanma \u2014 bosqichlar, kalkulyator, lug'at va FAQ bilan.":'платформ с полной инструкцией \u2014 шаги, калькулятор, словарь и FAQ.',
+  "Qo'llanmalar bu yerda ochiladi \u2192":'Инструкции откроются здесь \u2192',
+  "Brend nusxasi (replika) bojxonada olib qo'yiladi. Narx bozordan keskin past bo'lsa, bu birinchi ogohlantirish.":'Копия бренда (реплика) изымается на таможне. Если цена резко ниже рыночной \u2014 это первый тревожный знак.',
+  'Interfeys matnlari tarjima qilinadi. Do\'kon, kuryer nomlari va huquqiy manbalar asl holida qoladi.':'Переводятся тексты интерфейса. Названия магазинов, курьеров и правовые источники остаются в оригинале.',
+  "Kurs Markaziy bank ochiq ma'lumotlaridan (cbu.uz) avtomatik olinadi va 6 soatda bir yangilanadi. Barcha so'mdagi hisob-kitob shu kursga asoslanadi.":'Курс берётся из открытых данных Центрального банка (cbu.uz) и обновляется раз в 6 часов. Все расчёты в сумах опираются на него.',
+  "Ma'lumotlar amaldagi qonunchilik hujjatlaridan olingan. Yakuniy qaror bojxona organi tomonidan qabul qilinadi.":'Данные взяты из действующих нормативных актов. Окончательное решение принимает таможенный орган.',
+  "Pochtam \u2014 mustaqil ma'lumot xizmati. Bu rasmiy davlat portali emas va bojxona organlari bilan bog'liq emas. Barcha hisob-kitoblar taxminiy.":'Pochtam \u2014 независимый информационный сервис. Это не официальный государственный портал и он не связан с таможенными органами. Все расчёты приблизительные.',
   'Global xaridlar':'Глобальные покупки',
   'biz bilan oson.':'с нами — просто.', 'Boshlash':'Начать',
   'Oflayn zaxira kurs':'Офлайн резервный курс', 'Bugungi':'Сегодняшний',
@@ -3857,7 +3867,7 @@ class Component extends DCLogic {
 
   applyLang() {
     const lang = this.state.lang || 'uz';
-    try { document.documentElement.lang = lang === 'ru' ? 'ru' : 'uz'; } catch (e) {}
+    try { document.documentElement.lang = lang === 'ru' ? 'ru' : (lang === 'uzc' ? 'uz-Cyrl' : 'uz'); } catch (e) {}
     const root = this._rootRef.current;
     if (!root || typeof document.createTreeWalker !== 'function') return;
     const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
@@ -5140,7 +5150,7 @@ class Component extends DCLogic {
           bg: otilgan ? 'rgba(255,255,255,.72)' : (i === now ? '#FFFFFF' : 'rgba(255,255,255,.20)'),
           glow: i === now ? '0 3px 12px rgba(255,255,255,.45)' : 'none',
           w: i === now ? 800 : 700,
-          fg2: i === now ? '#FFFFFF' : (otilgan ? 'rgba(255,255,255,.80)' : 'rgba(255,255,255,.44)')
+          fg2: i === now ? '#FFFFFF' : (otilgan ? 'rgba(255,255,255,.80)' : 'rgba(255,255,255,.60)')
         };
       }),
       wizCanBack: st.wizStep > 0 && st.wizStep < 5,
