@@ -2459,6 +2459,33 @@
         <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
       </button>
 
+
+      <!-- Hamkorlik. Pochta qabul qilish punktlari va kuryerlik
+           tashkilotlari ro'yxatga qo'shilish uchun shu yerdan yozadi.
+           Ikkita tugma, ikkita aniq yo'l — forma ham, ro'yxatdan o'tish ham
+           yo'q: Telegram ochiladi va xabar oldindan yozib qo'yiladi. -->
+      <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Hamkorlik</div>
+          <div style="font-size:13px;color:#6B6C85;line-height:1.5;font-weight:500;text-wrap:pretty">Pochta qabul qilish punkti yoki kuryerlik tashkilotimi? Ro'yxatga qo'shilish uchun yozing — javob Telegramda keladi.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button sc-camel-on-click="{{ askPickup }}" style="display:flex;align-items:center;gap:12px;background:#F1F1F8;border:none;border-radius:16px;padding:14px;cursor:pointer;text-align:left;width:100%;font-family:inherit;min-height:44px" style-hover="background:#E9EAFD">
+            <div style="width:34px;height:34px;border-radius:12px;background:#E9EAFD;display:flex;align-items:center;justify-content:center;flex:none">
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-6 9 6v11a1 1 0 01-1 1H4a1 1 0 01-1-1z"></path><path d="M9 21V12h6v9"></path></svg>
+            </div>
+            <span style="flex:1;font-size:15px;font-weight:700;color:#131429">Pochta qabul qilish punktiman</span>
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
+          </button>
+          <button sc-camel-on-click="{{ askCourier }}" style="display:flex;align-items:center;gap:12px;background:#F1F1F8;border:none;border-radius:16px;padding:14px;cursor:pointer;text-align:left;width:100%;font-family:inherit;min-height:44px" style-hover="background:#E9EAFD">
+            <div style="width:34px;height:34px;border-radius:12px;background:#DDF1F4;display:flex;align-items:center;justify-content:center;flex:none">
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#0E8595" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3z"></path><path d="M14 10h4l3 3v3h-7z"></path><circle cx="7" cy="18" r="1.6"></circle><circle cx="17" cy="18" r="1.6"></circle></svg>
+            </div>
+            <span style="flex:1;font-size:15px;font-weight:700;color:#131429">Kuryerlik tashkilotiman</span>
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
+          </button>
+        </div>
+      </div>
       <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
         <div style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Ilova haqida</div>
         <div style="font-size:13px;color:#6B6C85;line-height:1.5;text-wrap:pretty">Pochtam — mustaqil ma'lumot xizmati. Bu rasmiy davlat portali emas va bojxona organlari bilan bog'liq emas. Barcha hisob-kitoblar taxminiy.</div>
@@ -2695,6 +2722,11 @@ const RU = {
   "ta do'kon":'магазинов', 'ta kuryer':'курьеров', "ta qo'llanma":'инструкций',
   "me'yor":'лимит', "so'm / 1 USD":'сум / 1 USD',
   'Sevimlilar':'Избранное',
+  'Hamkorlik':'Партнёрство',
+  "Pochta qabul qilish punkti yoki kuryerlik tashkilotimi? Ro'yxatga qo'shilish uchun yozing — javob Telegramda keladi.":'Пункт выдачи почты или курьерская компания? Напишите, чтобы попасть в список — ответ придёт в Telegram.',
+  'Pochta qabul qilish punktiman':'Я пункт выдачи почты',
+  'Kuryerlik tashkilotiman':'Я курьерская компания',
+  'Telegram ochildi':'Telegram открыт',
   /* Do'konlarning xususiyat qatorlari. */
   "Xitoy ichki bozori — eng arzon":'Внутренний рынок Китая — самое дешёвое',
   'Dunyodagi eng katta tanlov':'Самый большой выбор в мире',
@@ -3864,6 +3896,16 @@ class Component extends DCLogic {
     this.toast(ok ? what + ' nusxalandi' : 'Nusxalab bo\'lmadi — matnni qo\'lda belgilang');
   }
 
+  /* Hamkorlik so'rovi Telegramda ochiladi va matn oldindan yoziladi.
+     Telegram ilovasi bo'lmasa ham havola brauzerda ochiladi; u ham
+     bo'lmasa manzil toast bo'lib ko'rinadi va nusxalash mumkin qoladi. */
+  askPartner(text) {
+    const url = REPORT_URL + '?text=' + encodeURIComponent(text);
+    let opened = null;
+    try { opened = window.open(url, '_blank', 'noopener,noreferrer'); } catch (e) {}
+    this.toast(opened ? 'Telegram ochildi' : REPORT_URL);
+  }
+
   isFav(key) { return (this.state.favs || []).includes(key); }
 
   toggleFav(key) {
@@ -4870,6 +4912,12 @@ class Component extends DCLogic {
         try { opened = window.open(REPORT_URL, '_blank', 'noopener,noreferrer'); } catch (e) {}
         this.toast(opened ? 'Xabar berish sahifasi ochildi' : 'Xabar berish: ' + REPORT_URL);
       },
+
+      /* Hamkorlik so'rovi: Telegram xabari oldindan yozib qo'yiladi, ya'ni
+         yozadigan odam nima deyishni o'ylab o'tirmaydi. Ikkalasi bitta
+         kanalga boradi — REPORT_URL dagi hisob. */
+      askPickup: () => this.askPartner('Assalomu alaykum! Pochta qabul qilish punktimiz Pochtam ro\'yxatiga qo\'shilishini so\'raymiz.'),
+      askCourier: () => this.askPartner('Assalomu alaykum! Kuryerlik tashkilotimiz Pochtam ro\'yxatiga qo\'shilishini so\'raymiz.'),
 
       /* --- Kuryer papkalari (yo'nalish bo'yicha) --- */
       ...(() => {
