@@ -100,6 +100,65 @@ Telegram ichida ilova o'zi:
 
 Oddiy brauzerda bu kodning ta'siri yo'q — sayt avvalgidek ishlayveradi.
 
+## O'lchash
+
+Hamkorlikni va ilovada joylashishni sotish uchun bitta savolga javob kerak:
+qaysi ekran ochiladi va qaysi do'kon/kuryerga o'tiladi. Shusiz hamkorga
+aytadigan raqam bo'lmaydi.
+
+Uchinchi tomon xizmati yo'q. Manzil `METRICS_URL` da va u **bo'sh** — shu
+holatda hech qanday so'rov ketmaydi va ilovaning "cbu.uz dan boshqa tashqi
+so'rov yo'q" qoidasi buzilmaydi (`tests/smoke.mjs` ikkalasini ham
+tekshiradi). Yoqish uchun `METRICS_URL` ga **o'zingizning** hisoblagichingiz
+manzilini yozing.
+
+**Nima yuboriladi.** Hodisa nomi, qo'pol kalit, ilova versiyasi va til:
+
+```json
+{ "v": "v1.0.0 · 19.08.2026", "l": "uz",
+  "e": [{ "n": "screen", "k": "stores", "t": 1788521904608 },
+        { "n": "store",  "k": "taobao", "t": 1788521912345 }] }
+```
+
+Hodisalar: `screen` (ekran ochildi), `store` va `courier` (tashqi saytga
+o'tildi), `guide` (qo'llanma ochildi), `wizard` (reja yakunlandi), `svcAsk`
+(pullik xizmat bo'yicha murojaat), `hamkor` (hamkorlik so'rovi).
+
+**Nima yuborilmaydi.** Foydalanuvchi identifikatori, qidiruv matni, saqlangan
+reja, sevimlilar — hech qachon. Brauzerda "Do Not Track" yoqilgan bo'lsa
+umuman hech narsa yuborilmaydi.
+
+**Qanday yuboriladi.** Hodisalar xotirada to'planadi va sahifa fonga
+o'tganda yoki yopilganda bitta `sendBeacon` bilan ketadi (20 ta to'plansa
+ham). Ya'ni har bosishda so'rov qilinmaydi.
+
+**Server tomoni.** Eng arzon yo'l — Cloudflare Worker (bepul tarif yetadi).
+Minimal ko'rinishi:
+
+```js
+export default {
+  async fetch(req, env) {
+    const cors = { 'Access-Control-Allow-Origin': 'https://nshakhobiddin.github.io',
+                   'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                   'Access-Control-Allow-Headers': 'content-type' };
+    if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
+    if (req.method !== 'POST') return new Response('', { status: 405, headers: cors });
+    const { e = [] } = await req.json().catch(() => ({}));
+    const kun = new Date().toISOString().slice(0, 10);
+    for (const x of e.slice(0, 60)) {
+      const kalit = `${kun}|${x.n}|${String(x.k).slice(0, 40)}`;
+      const bor = Number(await env.HISOB.get(kalit)) || 0;
+      await env.HISOB.put(kalit, String(bor + 1));
+    }
+    return new Response(null, { status: 204, headers: cors });
+  }
+};
+```
+
+`HISOB` — Workers KV ombori. Faqat sanoq saqlanadi, IP ham, xom hodisa ham
+yozilmaydi. `Access-Control-Allow-Origin` ni o'z domeningizga qo'ying, aks
+holda boshqa saytlar ham sanoqni shishira oladi.
+
 ## Pullik xizmatlar
 
 Ilova ma'lumot xizmati sifatida bepul qoladi. Pulli qism — `SERVICES`

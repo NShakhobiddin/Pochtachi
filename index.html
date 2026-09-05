@@ -3467,6 +3467,67 @@ const NORMS_META = { checked: '', live: false };
 const RATE_META = { date:'', diff:0, live:false, loading:false, at:0 };
 /* Ilova versiyasi — sozlamalar ekranida ko'rsatiladi. */
 const APP_VERSION = 'v1.0.0 · 19.08.2026';
+
+/* --- O'lchash ---
+   Hamkorlik va ilovada joylashishni sotish uchun bitta savolga javob kerak:
+   qaysi ekran ochiladi va qaysi do'kon/kuryerga o'tiladi. Shusiz hamkorga
+   aytadigan raqam yo'q.
+
+   Uchinchi tomon xizmati ishlatilmaydi. Manzil METRICS_URL da: bo'sh bo'lsa
+   umuman so'rov ketmaydi, ya'ni ilovaning "cbu.uz dan boshqa tashqi so'rov
+   yo'q" qoidasi buzilmaydi (tests/smoke.mjs shuni qo'riqlaydi). Manzilni
+   to'ldirsangiz — u o'zingizning hisoblagichingiz bo'lishi kerak.
+
+   Yuboriladigan narsa: hodisa nomi, qo'pol kalit (masalan do'kon id si),
+   ilova versiyasi va til. Foydalanuvchi identifikatori, qidiruv matni,
+   saqlangan reja va boshqa shaxsiy narsa hech qachon yuborilmaydi.
+   Brauzerda "Do Not Track" yoqilgan bo'lsa hech narsa yuborilmaydi. */
+const METRICS_URL = '';
+
+const metrics = (() => {
+  let queue = [];
+  let armed = false;
+  const off = () => {
+    if (!METRICS_URL) return true;
+    try { return navigator.doNotTrack === '1' || window.doNotTrack === '1'; } catch (e) { return false; }
+  };
+  const send = () => {
+    if (off() || !queue.length) return;
+    /* Til — RU va UZ ulushini bilish uchun; u shaxsiy ma'lumot emas. */
+    let til = '';
+    try { til = document.documentElement.lang || ''; } catch (e) {}
+    const body = JSON.stringify({ v: APP_VERSION, l: til, e: queue });
+    queue = [];
+    try {
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(METRICS_URL, new Blob([body], { type: 'application/json' }));
+        return;
+      }
+      fetch(METRICS_URL, { method: 'POST', body, keepalive: true, mode: 'no-cors' }).catch(() => {});
+    } catch (e) {}
+  };
+  const arm = () => {
+    if (armed || off()) return;
+    armed = true;
+    /* Sahifa yopilishida yoki fonga o'tishida yuboriladi: har hodisada
+       alohida so'rov qilish batareyani ham, tarmoqni ham behuda yeydi. */
+    try {
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') send(); });
+      addEventListener('pagehide', send);
+    } catch (e) {}
+  };
+  return {
+    hit(name, key) {
+      if (off()) return;
+      arm();
+      /* Navbat cheklangan: uzoq seansda xotira o'smasin. */
+      if (queue.length >= 60) return;
+      queue.push({ n: name, k: String(key || '').slice(0, 40), t: Date.now() });
+      if (queue.length >= 20) send();
+    },
+    flush: send
+  };
+})();
 const CBU_URL = 'https://cbu.uz/uz/arkhiv-kursov-valyut/json/USD/';
 /* Eskirgan yoki noto'g'ri ma'lumot haqida xabar beriladigan manzil. */
 const REPORT_URL = 'https://t.me/shopo_manage';
@@ -3777,7 +3838,10 @@ class Component extends DCLogic {
      yuboradi. Shuning uchun faqat "Qo'llanmalar" bo'limi ochilganda
      boshlaymiz — foydalanuvchi ro'yxatni ko'rib turgan bir-ikki soniya
      kifoya qiladi. */
-  onScreenChange(s) { if (s === 'guides') this.prefetchGuides(); }
+  onScreenChange(s) {
+    metrics.hit('screen', s);
+    if (s === 'guides') this.prefetchGuides();
+  }
 
   push(s) {
     haptic('light');
@@ -3806,7 +3870,8 @@ class Component extends DCLogic {
 
   /* Xizmat bo'yicha yozish. Manzil kiritilmagan bo'lsa o'lik havolani
      ochmaymiz — foydalanuvchiga ochiq aytamiz. */
-  contactAbout(title) {
+  contactAbout(title, key) {
+    metrics.hit('svcAsk', key || 'umumiy');
     const url = tgLink(title ? 'Assalomu alaykum! «' + title + '» xizmati bo\'yicha yozmoqchiman.' : '');
     if (!url) { this.toast('Aloqa manzili hali kiritilmagan'); return; }
     let opened = null;
@@ -3951,6 +4016,7 @@ class Component extends DCLogic {
      Telegram ilovasi bo'lmasa ham havola brauzerda ochiladi; u ham
      bo'lmasa manzil toast bo'lib ko'rinadi va nusxalash mumkin qoladi. */
   askPartner(text) {
+    metrics.hit('hamkor', 'kuryer');
     const url = REPORT_URL + '?text=' + encodeURIComponent(text);
     let opened = null;
     try { opened = window.open(url, '_blank', 'noopener,noreferrer'); } catch (e) {}
@@ -4452,13 +4518,14 @@ class Component extends DCLogic {
     const tabColor = k => cur === k ? PRI : '#6B6C85';
     const mainMap = {
       store: {
-        label:'Saytga o\'tish', action:() => window.open(store.url, '_blank', 'noopener'),
+        label:'Saytga o\'tish',
+        action:() => { metrics.hit('store', store.id); window.open(store.url, '_blank', 'noopener'); },
         altLabel: FULL_GUIDES.some(f => f.id === store.id) ? 'Qo\'llanma' : 'Kuryerlar',
         altAction: () => FULL_GUIDES.some(f => f.id === store.id)
           ? (this.setState({ fullId: store.id }), this.push('fullguide'))
           : this.go('couriers')
       },
-      courier: (() => { const tg = (courier.links.find(l => l.l === 'Telegram') || courier.links.find(l => l.l === 'Sayt') || {}).u; return { label: tg && /t\.me/.test(tg) ? 'Telegram\'da yozish' : 'Saytga o\'tish', action: () => tg ? window.open(tg, '_blank', 'noopener') : this.toast('Havola e\'lon qilinmagan'), altLabel:'Taqqoslash', altAction: () => this.go('compare') }; })(),
+      courier: (() => { const tg = (courier.links.find(l => l.l === 'Telegram') || courier.links.find(l => l.l === 'Sayt') || {}).u; return { label: tg && /t\.me/.test(tg) ? 'Telegram\'da yozish' : 'Saytga o\'tish', action: () => { metrics.hit('courier', courier.id); return tg ? window.open(tg, '_blank', 'noopener') : this.toast('Havola e\'lon qilinmagan'); }, altLabel:'Taqqoslash', altAction: () => this.go('compare') }; })(),
     };
     const mb = mainMap[cur];
     const dayOfs = Math.floor(Date.now() / 86400000);
@@ -4893,7 +4960,7 @@ class Component extends DCLogic {
         plate: (store.logoCss && store.logoCss !== 'none') ? 'transparent' : store.tint,
         hasFullGuide: !!storeFull,
         fullGuideSections: storeFull ? storeFull.sections : 0,
-        openFullGuide: () => { if (storeFull) { this.setState({ fullId: storeFull.id }); this.push('fullguide'); } },
+        openFullGuide: () => { if (storeFull) { metrics.hit('guide', storeFull.id); this.setState({ fullId: storeFull.id }); this.push('fullguide'); } },
         routeBg: store.direct ? '#E9F8EF' : '#FDF3E3',
         routeFg: store.direct ? '#0F7B3E' : '#B45309',
         routeTitle: store.direct ? 'O\'zbekistonga to\'g\'ridan-to\'g\'ri yuboradi' : 'Vositachi (kuryer) kerak',
@@ -4948,7 +5015,7 @@ class Component extends DCLogic {
             cardRing: v.tag ? 'inset 0 0 0 1.5px rgba(26,31,176,.16),' : '',
             lineColor: v.tag ? 'rgba(26,31,176,.14)' : '#F1F1F8',
             items: v.items.map(t => ({ t })),
-            ask: () => this.contactAbout(v.title)
+            ask: () => this.contactAbout(v.title, v.icon)
           }))
         };
       })(),
@@ -5271,7 +5338,7 @@ class Component extends DCLogic {
       wizDutyNote: wz.dutyUsd > 0
         ? 'Narx $' + FREE_USD + ' me\'yordan oshgani uchun ortiqcha qiymatdan boj hisoblandi. Yakuniy summani bojxona organi belgilaydi.'
         : '$' + FREE_USD + ' gacha bo\'lgan jo\'natmada boj ham, yig\'im ham undirilmaydi.',
-      wizGo: () => this.setState({ wizStep: 5 }),
+      wizGo: () => { metrics.hit('wizard', 'yakun'); this.setState({ wizStep: 5 }); },
       wizTitle: wizTitles[Math.min(st.wizStep, 4)], wizSub: wizSubs[Math.min(st.wizStep, 4)],
       wizOptions: wizOpts(),
       wizStepNo: Math.min(st.wizStep, 4) + 1,

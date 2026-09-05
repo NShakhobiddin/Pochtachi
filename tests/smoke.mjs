@@ -905,6 +905,25 @@ try {
   });
   check('hamkorlik uchun murojaat tugmasi bor', hamkor.soni === 1 && hamkor.baland, hamkor.matn);
 
+  /* O'lchash sukut bo'yicha o'chiq: METRICS_URL bo'sh bo'lsa hodisalar
+     to'planmaydi ham, yuborilmaydi ham. Shu sabab "cbu.uz dan boshqa tashqi
+     so'rov yo'q" qoidasi buzilmaydi. Manzil to'ldirilsa — u loyihaning o'z
+     hisoblagichi bo'lishi kerak, README da yozilgan. */
+  check('o\'lchash sukut bo\'yicha o\'chiq', /const METRICS_URL = '';/.test(src));
+  /* Modul ichkarida, global emas — shuning uchun uni chaqirib emas,
+     natijasi bo'yicha tekshiramiz: bir necha ekran aylanib, sahifa fonga
+     o'tganda ham hech qanday beacon jo'natilmasin. */
+  const beacon = await page.evaluate(async () => {
+    let n = 0;
+    const asl = navigator.sendBeacon;
+    navigator.sendBeacon = function () { n++; return true; };
+    document.dispatchEvent(new Event('visibilitychange', { bubbles: true }));
+    await new Promise(r => setTimeout(r, 300));
+    navigator.sendBeacon = asl;
+    return n;
+  });
+  check('o\'chiq holatda hech narsa jo\'natilmaydi', beacon === 0, beacon + ' ta beacon');
+
   /* Kulrang shkala uch pog'onadan iborat: kuchli, passiv, bezak. */
   const kulrang = [...new Set((src.match(/#[0-9A-F]{6}/gi) || []).map(h => h.toUpperCase()))]
     .filter(h => {
