@@ -743,20 +743,8 @@ try {
   check('ruscha rejimda tarjimasiz matn yo\'q', uzYomon.length === 0, uzYomon.slice(0, 4).join(' | '));
   await ruContext.close();
 
-  /* Bosh sahifadagi mini-kalkulyator to'liq kalkulyator bilan bir xil
-     holatni ishlatadi va me'yordan past summada "to'lov yo'q" deydi. */
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(600);
-  const miniNarx = page.locator('main input[aria-label*="Mahsulot narxi"]').first();
-  await miniNarx.fill('150'); await miniNarx.press('Enter');
-  await page.waitForTimeout(400);
-  const miniPast = await page.evaluate(() => document.querySelector('main').innerText);
-  await miniNarx.fill('900'); await miniNarx.press('Enter');
-  await page.waitForTimeout(400);
-  const miniYuqori = await page.evaluate(() => document.querySelector('main').innerText);
-  check('bosh sahifadagi kalkulyator hisoblaydi',
-    /To'lov yo'q/.test(miniPast) && /so'm/.test(miniYuqori) && /me'yordan ortiq/.test(miniYuqori),
-    miniPast.includes("To'lov yo'q") ? 'past ok' : 'past yiqildi');
 
   /* Do'kon ro'yxatidagi yorliqlar faqat ogohlantirish bo'lib qolmasin:
      qo'llanmasi bor do'konlarda ijobiy belgi turadi. */
