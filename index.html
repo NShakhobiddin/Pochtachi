@@ -4198,10 +4198,13 @@ class Component extends DCLogic {
     const catKey = (WIZ_CATS.find(c => c.label === st.wizCat) || {}).key || null;
     const cKey = (WIZ_COUNTRIES.find(c => c.label === st.wizCountry) || {}).key || 'Global';
     const onWizard = cur === 'wizard';
-    const wizStores = !onWizard ? [] : STORES.filter(s =>
-      (!catKey ? true : (s.cat === catKey || (catKey !== 'universal' && s.cat === 'universal'))) &&
-      (cKey === 'Global' ? true : (s.country === cKey || s.country === 'Global'))
-    );
+    /* Davlat tanlansa, faqat o'sha davlatning do'konlari qoladi: "Global"
+       deb belgilanganlar (Amazon, Nike, Zara...) endi qo'shilmaydi —
+       foydalanuvchi aynan o'sha yo'nalishni so'ragan. */
+    const wizInCountry = !onWizard ? []
+      : (cKey === 'Global' ? STORES : STORES.filter(s => s.country === cKey));
+    const wizStores = wizInCountry.filter(s =>
+      !catKey ? true : (s.cat === catKey || (catKey !== 'universal' && s.cat === 'universal')));
     const wizCouriers = !onWizard ? [] : [...COURIERS].filter(k =>
       cKey === 'Global' ? true : (CUR_MATCH[cKey].test(k.countries || '') || (k.from || []).some(x => CUR_MATCH[cKey].test(x)))
     ).sort((a, b) => a.price - b.price);
@@ -4223,7 +4226,8 @@ class Component extends DCLogic {
       if (st.wizStep === 1) return WIZ_COUNTRIES.map(o => ({
         label:o.label, note:o.note,
         pick:() => this.setState({ wizCountry:o.label, wizStep:2 }), ...plain }));
-      if (st.wizStep === 2) return (wizStores.length ? wizStores : STORES).map(s => ({
+      if (st.wizStep === 2) return (wizStores.length ? wizStores
+        : (wizInCountry.length ? wizInCountry : STORES)).map(s => ({
         label:s.name, note:s.type + ' · ' + s.country + (s.direct ? ' · to\'g\'ridan-to\'g\'ri' : ' · vositachi kerak'),
         pick:() => this.setState({ wizStore:s.name, wizStep:3 }),
         hasMono:true, hasPrice:true, plain:false, color:s.color, ink:s.ink, mono:s.mono,
@@ -4246,7 +4250,9 @@ class Component extends DCLogic {
       'Yo\'nalish narx va muddatni belgilaydi.',
       wizStores.length
         ? 'Tanlovingizga mos ' + wizStores.length + ' ta do\'kon.'
-        : 'Bu kategoriya va davlatga mos do\'kon topilmadi — barchasi ko\'rsatilmoqda.',
+        : (wizInCountry.length
+          ? 'Bu kategoriyada mos do\'kon yo\'q — shu yo\'nalishdagi qolganlari.'
+          : 'Bu yo\'nalishda do\'kon topilmadi — barchasi ko\'rsatilmoqda.'),
       wizCouriers.length
         ? 'Shu yo\'nalishda ishlaydigan ' + wizCouriers.length + ' ta kuryer, arzonidan boshlab.'
         : 'Bu yo\'nalishda kuryer topilmadi — barchasi ko\'rsatilmoqda.',

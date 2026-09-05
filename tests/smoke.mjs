@@ -845,6 +845,27 @@ try {
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(500);
 
+  /* Sehrgarda davlat tanlansa, "Global" deb belgilangan do'konlar (Amazon,
+     Nike, Zara...) qo'shilmaydi — foydalanuvchi aynan o'sha yo'nalishni
+     so'ragan. Xitoyni tanlab, ro'yxatda faqat Xitoy chiqishini qaraymiz. */
+  await page.locator('nav button', { hasText: 'Reja' }).first().click();
+  await page.waitForTimeout(700);
+  await page.locator('main button').filter({ hasText: 'Elektronika' }).first().click();
+  await page.waitForTimeout(600);
+  await page.locator('main button').filter({ hasText: 'Xitoy' }).first().click();
+  await page.waitForTimeout(700);
+  const wizDav = await page.evaluate(() => {
+    const kart = [...document.querySelectorAll('main button')]
+      .map(b => b.innerText.trim().split('\n').map(x => x.trim()).filter(Boolean))
+      .filter(L => L.length >= 2 && /·/.test(L[1]));
+    return kart.map(L => L[1].split('·')[1].trim());
+  });
+  check('sehrgarda davlat tanlansa Global do\'konlar qo\'shilmaydi',
+    wizDav.length > 0 && wizDav.every(x => x === 'Xitoy'),
+    wizDav.join(', ') || 'do\'kon topilmadi');
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
+  await page.waitForTimeout(500);
+
   /* Kulrang shkala uch pog'onadan iborat: kuchli, passiv, bezak. */
   const kulrang = [...new Set((src.match(/#[0-9A-F]{6}/gi) || []).map(h => h.toUpperCase()))]
     .filter(h => {
