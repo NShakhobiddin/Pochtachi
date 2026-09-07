@@ -1,12 +1,13 @@
 # Do'kon logotiplari
 
-`<do'kon-id>.webp` — 43 ta do'konning logotipi, 224x112 px WebP (jami ~178 KB).
-Logotiplar so'z-belgi (wordmark) ko'rinishida, shaffof fonli — shuning uchun
-ilovada kvadrat emas, cho'ziq qutida ko'rsatiladi.
+`<do'kon-id>.webp` — 43 ta do'konning logotipi, 128x128 px WebP (jami ~230 KB).
+Logotiplar kvadrat 3D ilova ikonkasi ko'rinishida (burchaklari yumaloqlangan
+squircle), shuning uchun ilovada boshqa 3D ikonkalar bilan bir xil kvadrat
+uyada chiziladi. Ekranda eng katta 54 px chiziladi — do'kon kartochkasida —
+shuning uchun 128 px zich ekranlar uchun ham yetadi.
 
-`src/` — asl 320x160 PNG nusxalar (saytga chiqmaydi) va `stores-sprite.json`
-(nom, tur va brend rangi). Ular saqlanadi, chunki dizayn o'lchami o'zgarsa
-qayta yasash kerak bo'ladi.
+`src/` — asl 512x512 PNG nusxalar (saytga chiqmaydi). Ular saqlanadi, chunki
+dizayn o'lchami o'zgarsa qayta yasash kerak bo'ladi.
 
 ## Qayta yasash
 
@@ -16,11 +17,11 @@ npm run build                                      # service worker ro'yxati
 ```
 
 Tarmoqdan (favicon xizmatlaridan) yuklash rejimi ham bor — `npm run store-logos`
-— ammo u past sifatli kvadrat favicon beradi, shuning uchun faqat zaxira yo'l.
+— ammo u past sifatli kichik favicon beradi, shuning uchun faqat zaxira yo'l.
 
 `--from` rejimida fayllar do'konlarga moslanadi: yonida `logo_manifest.csv`
 bo'lsa `domain` ustuni bo'yicha, bo'lmasa fayl nomidan (`taobao.png` ->
-`taobao`).
+`taobao`, so'ng do'kon nomidan). Mos kelmagan fayl haqida skript ogohlantiradi.
 
 ## Ilova qanday ishlatadi
 

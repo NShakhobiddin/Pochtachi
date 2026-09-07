@@ -28,7 +28,10 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'stores');
 /* Logotiplar so'z-belgi (wordmark) ko'rinishida — kvadrat emas, cho'ziq.
    Shuning uchun uzun tomoni shu qiymatga keltiriladi, nisbat saqlanadi. */
-const SIZE = 224;
+/* Ekranda logotip eng katta 54px chiziladi (do'kon kartochkasi), shuning
+   uchun 128px zich ekranlar uchun ham yetadi. 224px da 43 ta fayl 424 KB
+   bo'lib byudjetdan (260 KB) chiqib ketardi. */
+const SIZE = 128;
 const QUALITY = 0.85;
 const FORCE = process.argv.includes('--force');
 const fromIdx = process.argv.indexOf('--from');
