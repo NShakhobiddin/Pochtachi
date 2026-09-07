@@ -55,7 +55,6 @@ npm test                 # smoke test + 7 ta qo'llanmaning tekshiruvi
 npm run links            # tashqi havolalarni tekshirish (haftalik CI ham qiladi)
 npm run logos            # logos/src/*.png -> logos/*.webp qayta yasash
 npm run icons            # icons/src/*.webp -> icons/*.webp (ekran o'lchamiga moslash)
-npm run icons:svg        # icons/src/*.svg -> icons/src/*.webp (qo'lda yozilgan ikonkalar)
 npm run mockups          # qadamlardagi telefon maketlarini bir me'yorga keltirish
 npm run store-logos      # do'kon logotiplari (--from DIR bilan tayyor rasmlardan)
 npm run brand            # icons/src/intro/*.png -> logotip va ilova ikonkalari
@@ -266,11 +265,10 @@ brend, yorug'lik (`0 14px 32px -16px rgba(17,21,132,.52)`), ramka
 
 **Mutaxassis yordami kartochkasi.** Bosh sahifa va Bojxona ekranidagi
 kirish kartochkasi brend gradienti ustida turadi, ikonkasi esa oq 64 px
-plita ichida 48 px da chiziladi: `icons/mutaxassis-3d.webp`. Manbasi —
-`icons/src/mutaxassis-3d.svg` (qo'lda yozilgan SVG). `npm run icons:svg`
-uni 512 px ga chizib `icons/src/mutaxassis-3d.webp` ga saqlaydi, so'ng
-`npm run icons` 144 px ga (48 px x3) keltiradi. `npm run check` ikkalasini
-ham tekshiradi, ya'ni SVG o'zgarib WebP qayta chizilmasa CI yiqiladi.
+plita ichida 48 px da chiziladi: `icons/mutaxassis-3d.webp` (144 px =
+48 px x3). Asl rasm cho'ziq (297x264) edi — `background-size: 48px 48px`
+uni cho'zib yuborardi, shuning uchun manba shaffof chekka bilan kvadratga
+keltirilgan.
 
 **Qolgan ish.** `svc-*` (11 ta) tekis uslubda, lekin ular Xizmatlar
 bo'limining ichki kartochkalarida turadi — ya'ni P3 da chizilgan
