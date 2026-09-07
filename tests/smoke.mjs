@@ -1397,6 +1397,29 @@ try {
   await page.waitForTimeout(600);
   check('barcha kuryerlar papkasi to\'liq ro\'yxat beradi',
     await page.evaluate(() => document.querySelectorAll('div[style*="content-visibility"]').length) === 20);
+
+  /* Kuryer logotiplari — do'konnikiga o'xshash 3D kvadrat ikonkalar:
+     burchaklari shaffof va o'z soyasi bor. Shuning uchun uya kesilmasligi
+     (overflow: visible) va ostida rangli plita qolmasligi kerak — aks holda
+     ikonka burchaklari qirqiladi yoki atrofida rangli halqa ko'rinadi. */
+  const kUya = await page.evaluate(() => {
+    const rasm = [...document.querySelectorAll('div')]
+      .filter(d => /logos\//.test(getComputedStyle(d).backgroundImage));
+    const nat = { soni: rasm.length, kesilgan: 0, halqa: 0, cover: 0 };
+    for (const d of rasm) {
+      const u = d.parentElement;
+      if (!u) continue;
+      if (getComputedStyle(u).overflow !== 'visible') nat.kesilgan++;
+      const fon = getComputedStyle(u).backgroundColor;
+      if (fon !== 'rgba(0, 0, 0, 0)' && fon !== 'transparent') nat.halqa++;
+      if (getComputedStyle(d).backgroundSize === 'cover') nat.cover++;
+    }
+    return nat;
+  });
+  check('kuryer logotipi uyasi kesmaydi va rangsiz',
+    kUya.soni >= 20 && kUya.kesilgan === 0 && kUya.halqa === 0 && kUya.cover === 0,
+    `${kUya.soni} ta logotip, kesilgan ${kUya.kesilgan}, rangli plita ${kUya.halqa}, cover ${kUya.cover}`);
+
   await page.goBack();
   await page.waitForTimeout(400);
 

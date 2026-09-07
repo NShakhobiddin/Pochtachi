@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // Kuryer logotiplarini veb uchun tayyorlaydi: logos/src/*.png -> logos/*.webp
 //
-// Asl PNG'lar o'rtacha 440x440 va 1,6 MB, ekranda esa 56 px aylanada ko'rsatiladi.
-// 128 px (2x retina uchun yetarli) WebP jami ~50 KB ni tashkil qiladi.
+// Asl PNG'lar 512x512 (3D kvadrat ikonka, burchaklari shaffof), ekranda esa
+// eng katta 58 px kvadratda ko'rsatiladi — kuryer sahifasi sarlavhasida.
+// 128 px (2x retina uchun yetarli) WebP jami ~100 KB ni tashkil qiladi.
 //
 // Ishlatish: node tools/optimize-logos.mjs [--check]
 //   --check  har bir src/*.png uchun mos .webp borligini tekshiradi (CI uchun).

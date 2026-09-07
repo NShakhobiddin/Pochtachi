@@ -536,7 +536,7 @@
           <div style="display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;margin:0 -18px;padding:2px 18px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 30px),transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 30px),transparent 100%)">
             <sc-for list="{{ favRow }}" as="fv" hint-placeholder-count="3">
               <button sc-camel-on-click="{{ fv.open }}" style="flex:none;width:138px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;background:#FFFFFF;border:none;border-radius:20px;padding:12px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
-                <div style="width:44px;height:44px;border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:{{ fv.tint }}">
+                <div style="width:44px;height:44px;border-radius:12px;position:relative;display:flex;align-items:center;justify-content:center;background:{{ fv.tint }}">
                   <sc-if value="{{ fv.showMono }}" hint-placeholder-val="{{ true }}">
                     <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:15px;font-weight:700;color:{{ fv.color }}">{{ fv.mono }}</span>
                   </sc-if>
@@ -767,7 +767,7 @@
               </sc-if>
               <sc-for list="{{ hqResults }}" as="r" hint-placeholder-count="3">
                 <button sc-camel-on-click="{{ r.open }}" style="display:flex;align-items:center;gap:12px;width:100%;border:none;background:#FFFFFF;padding:10px 14px;cursor:pointer;text-align:left;font-family:inherit;border-top:1px solid #F1F1F8" style-hover="background:#FFFFFF">
-                  <div style="width:36px;height:36px;border-radius:12px;flex:none;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:{{ r.bg }}">
+                  <div style="width:36px;height:36px;border-radius:12px;flex:none;position:relative;display:flex;align-items:center;justify-content:center;background:{{ r.bg }}">
                     <sc-if value="{{ r.logoOff }}" hint-placeholder-val="{{ false }}">
                       <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:{{ r.ink }}">{{ r.mono }}</span>
                     </sc-if>
@@ -931,7 +931,9 @@
                sezilarli farq beradi; contain-intrinsic-size joyini band qilib
                turadi, shuning uchun aylantirish "sakramaydi". -->
           <button sc-camel-on-click="{{ s.open }}" style="display:flex;align-items:center;gap:14px;background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;width:100%;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);content-visibility:auto;contain-intrinsic-size:auto 82px" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
-            <!-- Logotiplar so'z-belgi (2:1), shuning uchun quti kvadrat emas. -->
+            <!-- Logotiplar — burchaklari shaffof 3D kvadrat ikonkalar, o'z
+                 soyasi bilan. Shuning uchun uya kesilmaydi (overflow yo'q) va
+                 logotip bor bo'lsa plita shaffof qoladi. -->
             <div style="width:54px;height:54px;border-radius:14px;flex:none;position:relative;display:flex;align-items:center;justify-content:center;background:{{ s.plate }}">
               <sc-if value="{{ s.logoOff }}" hint-placeholder-val="{{ false }}">
                 <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:17px;letter-spacing:-.02em;font-weight:700;color:{{ s.ink }}">{{ s.mono }}</span>
@@ -1012,8 +1014,8 @@
             <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85">Eng arzon uchta kuryer</div>
             <sc-for list="{{ store.topCouriers }}" as="k" hint-placeholder-count="3">
               <button sc-camel-on-click="{{ k.open }}" style="display:flex;align-items:center;gap:12px;background:#F1F1F8;border:none;border-radius:14px;padding:10px 12px;cursor:pointer;text-align:left;width:100%;box-shadow:inset 0 0 0 1px #E3E4EE" style-hover="background:#F1F1F8">
-                <div style="width:34px;height:34px;border-radius:12px;flex:none;position:relative;overflow:hidden;background:{{ k.logoBg }}">
-                  <div style="position:absolute;inset:5px;background-size:{{ k.logoFit }};background-repeat:no-repeat;background-position:center;background-image:{{ k.logoCss }}"></div>
+                <div style="width:34px;height:34px;border-radius:12px;flex:none;position:relative;background:{{ k.logoBg }}">
+                  <div style="position:absolute;inset:0;background-size:{{ k.logoFit }};background-repeat:no-repeat;background-position:center;background-image:{{ k.logoCss }}"></div>
                 </div>
                 <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
                   <span style="font-size:15px;font-weight:700;color:#131429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ k.name }}</span>
@@ -1256,8 +1258,11 @@
                 <span style="align-self:flex-start;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;background:{{ c.badgeBg }};color:{{ c.badgeFg }}">{{ c.badge }}</span>
               </sc-if>
               <div style="display:flex;align-items:center;gap:12px">
-                <div style="width:52px;height:52px;border-radius:20px;flex:none;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;text-align:center;line-height:1.5;background:{{ c.color }}">{{ c.mono }}
-                  <div style="position:absolute;inset:0;background-image:{{ c.logoCss }};background-size:{{ c.logoFit }};background-repeat:no-repeat;background-color:{{ c.logoBg }};background-position:center"></div>
+                <div style="width:52px;height:52px;border-radius:20px;flex:none;position:relative;display:flex;align-items:center;justify-content:center;background:{{ c.plate }}">
+                  <sc-if value="{{ c.logoOff }}" hint-placeholder-val="{{ false }}">
+                    <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;text-align:center;line-height:1.5">{{ c.mono }}</span>
+                  </sc-if>
+                  <div style="position:absolute;inset:0;background-image:{{ c.logoCss }};background-size:{{ c.logoFit }};background-repeat:no-repeat;background-position:center"></div>
                 </div>
                 <div style="flex:1;display:flex;flex-direction:column;gap:6px;min-width:0">
                   <div style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">{{ c.name }}</div>
@@ -1328,8 +1333,11 @@
     <div style="display:flex;flex-direction:column;gap:14px;padding-bottom:112px">
       <div style="background:#FFFFFF;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px">
         <div style="display:flex;align-items:center;gap:14px">
-          <div style="width:58px;height:58px;border-radius:20px;flex:none;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;text-align:center;line-height:1.5;background:{{ courier.color }}">{{ courier.mono }}
-            <div style="position:absolute;inset:0;background-image:{{ courier.logoCss }};background-size:{{ courier.logoFit }};background-repeat:no-repeat;background-color:{{ courier.logoBg }};background-position:center"></div>
+          <div style="width:58px;height:58px;border-radius:20px;flex:none;position:relative;display:flex;align-items:center;justify-content:center;background:{{ courier.plate }}">
+            <sc-if value="{{ courier.logoOff }}" hint-placeholder-val="{{ false }}">
+              <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;text-align:center;line-height:1.5">{{ courier.mono }}</span>
+            </sc-if>
+            <div style="position:absolute;inset:0;background-image:{{ courier.logoCss }};background-size:{{ courier.logoFit }};background-repeat:no-repeat;background-position:center"></div>
           </div>
           <div style="flex:1;display:flex;flex-direction:column;gap:6px;min-width:0">
             <div style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;letter-spacing:-.025em;font-weight:800;color:#131429;line-height:1.2">{{ courier.name }}</div>
@@ -2068,7 +2076,7 @@
       <div style="display:flex;flex-direction:column;gap:10px">
         <sc-for list="{{ trackCouriers }}" as="t" hint-placeholder-count="6">
           <div style="background:#FFFFFF;border-radius:20px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-            <div style="width:38px;height:38px;border-radius:12px;flex:none;position:relative;overflow:hidden;background:{{ t.logoBg }}">
+            <div style="width:38px;height:38px;border-radius:12px;flex:none;position:relative;background:{{ t.logoBg }}">
               <div style="position:absolute;inset:0;background-image:{{ t.logoCss }};background-size:{{ t.logoFit }};background-repeat:no-repeat;background-position:center"></div>
             </div>
             <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
@@ -2148,12 +2156,11 @@
                 <div style="width:40px;height:40px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ o.pic }}"></div>
               </sc-if>
               <sc-if value="{{ o.hasMono }}" hint-placeholder-val="{{ false }}">
-                <!-- Do'kon logotiplari so'z-belgi (2:1), kuryerlarniki esa
-                     kvadrat va butun qutini to'ldiradi — shuning uchun quti
-                     kengligi va logotip chekkasi ro'yxatdan keladi. Ilgari
-                     ikkalasi ham 48x48 kvadratda, do'konniki esa 30x30 ga
-                     cho'zib qo'yilardi va so'z-belgi qiyshayib ketardi. -->
-                <div style="width:{{ o.boxW }};height:48px;border-radius:14px;flex:none;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#F1F1F8">
+                <!-- Do'kon ham, kuryer logotipi ham 3D kvadrat ikonka:
+                     butun qutini to'ldiradi va burchaklari shaffof. Quti
+                     kengligi va logotip chekkasi baribir ro'yxatdan keladi —
+                     kelajakda boshqa nisbatli belgi qo'shilsa kerak bo'ladi. -->
+                <div style="width:{{ o.boxW }};height:48px;border-radius:14px;flex:none;position:relative;display:flex;align-items:center;justify-content:center;background:#F1F1F8">
                   <sc-if value="{{ o.logoOff }}" hint-placeholder-val="{{ true }}">
                     <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;text-align:center;line-height:1.5;color:{{ o.ink }}">{{ o.mono }}</span>
                   </sc-if>
@@ -3477,8 +3484,14 @@ COURIERS.forEach(c => {
   const R = (typeof window !== 'undefined' && window.__resources) || {};
   const url = f ? (R['logo_' + c.id] || f) : null;
   c.logoCss = url ? "url('" + url + "')" : 'none';
-  c.logoFit = 'cover';
-  c.logoBg = f ? '#FFFFFF' : 'transparent';
+  /* Logotiplar — do'konlarniki kabi 3D kvadrat ikonkalar: burchaklari shaffof
+     va o'z soyasi bor. Shuning uchun ular oq plita ustida emas, to'g'ridan-
+     to'g'ri kartaning fonida ('contain', shaffof) chiziladi; logotipi yo'q
+     kuryerda esa rangli monogramma ko'rinadi. */
+  c.logoFit = 'contain';
+  c.logoBg = 'transparent';
+  c.logoOff = !url;
+  c.plate = url ? 'transparent' : c.color;
 });
 
 const FEAT_ICONS = {
@@ -4791,8 +4804,12 @@ class Component extends DCLogic {
         const draw = k => this.refItem(k);
         const favs = (st.favs || []).map(draw).filter(Boolean).slice(0, 8);
         const kindLabel = { store:'Do\'kon', courier:'Kuryer', guide:'Qo\'llanma' };
-        const deco = r => ({ ...r, kindLabel: kindLabel[r.kind] || '',
-          hasLogo: r.logoCss && r.logoCss !== 'none', showMono: !(r.logoCss && r.logoCss !== 'none') });
+        /* Logotiplar — burchaklari shaffof 3D ikonkalar. Ostida rangli tint
+           qolsa, u ikonka atrofida halqa bo'lib ko'rinadi; shuning uchun
+           logotip bor bo'lganda plita shaffof, monogramma esa chizilmaydi. */
+        const deco = r => { const bor = !!(r.logoCss && r.logoCss !== 'none');
+          return { ...r, kindLabel: kindLabel[r.kind] || '',
+            hasLogo: bor, showMono: !bor, tint: bor ? 'transparent' : r.tint }; };
         return {
           favRow: favs.map(deco), hasFavs: favs.length > 0, favCount: favs.length + ' ta'
         };
@@ -4829,7 +4846,10 @@ class Component extends DCLogic {
           .map(c => ({
             kind: 'Kuryer', name: c.name, sub: c.days + ' · ' + c.mode,
             mono: (c.mono || '').slice(0, 4), color: '#FFFFFF', ink: '#FFFFFF',
-            bg: c.logoBg === 'transparent' ? c.color : c.logoBg, fit: c.logoFit, logoCss: c.logoCss,
+            /* Logotip bor bo'lsa plita shaffof: 3D ikonkaning burchaklari
+               shaffof, ostidagi brend rangi halqa bo'lib ko'rinib qolardi. */
+            bg: c.logoOff ? c.color : 'transparent', fit: c.logoFit, logoCss: c.logoCss,
+            logoOff: c.logoOff,
             open: () => { this.noteSearch(st.homeQuery); this.setState({ homeQuery: '' }); this.openCourierId(c.id); }
           }));
         const guides = byRank(FULL_GUIDES

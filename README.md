@@ -28,7 +28,7 @@ fonts/                         matn shriftlari (o'z domenimizda) va bayroq subse
 icons/                         3D bo'lim ikonkalari (`boj-*` — bojxona qatorlari), tab-bar,
                                brend logotipi (`brand*.webp`) va PWA ikonkalari
 icons/src/                     ikonkalarning asl (katta) nusxalari (saytga chiqmaydi)
-logos/                         kuryer logotiplari (128 px WebP)
+logos/                         kuryer logotiplari (128x128 WebP)
 logos/src/                     logotiplarning asl PNG nusxalari (saytga chiqmaydi)
 stores/                        do'kon logotiplari (128x128 WebP) va index.json
 stores/src/                    logotiplarning asl PNG nusxalari (saytga chiqmaydi)
@@ -246,7 +246,12 @@ to'g'ridan-to'g'ri turadi. Bo'limning rangi yonidagi shevron doirasida
 qoladi: `#E9EAFD` do'konlar, `#DDF1F4` kuryerlar, `#FBEFD6` bojxona,
 `#E9F8EF` qo'llanmalar.
 
-Rasm uyalari 16 / 24 / 32 / 40 / 48 / 64 qadamlarida. Chiziqli
+Rasm uyalari 16 / 24 / 32 / 40 / 48 / 64 qadamlarida. Do'kon va kuryer
+logotiplari 3D kvadrat ikonka — burchaklari shaffof, soyasi rasmning
+ichida. Ular uyaga to'liq (`contain`, `inset: 0`) chiziladi, uya esa
+kesmaydi (`overflow: visible`) va logotip bor bo'lsa rangsiz qoladi:
+kesilsa burchaklari qirqiladi, rangli qolsa atrofida halqa ko'rinadi.
+Chiziqli
 ikonkalarda `viewBox` doim 24, chiziq qalinligi esa o'lchamga bog'lab
 tanlanadi (14 -> 2.7, 18 -> 2.1, 22 -> 1.75, 28 -> 1.4) — shunda ekranda
 hamma joyda ~1.6px bo'lib chiqadi.
@@ -289,14 +294,23 @@ test uchun alohida kod emas.
 Bo'laklarni qayta yasash: asl PNG larni `icons/src/intro/` ga qo'yib,
 `npm run intro`.
 
-## Do'kon logotiplari
+## Do'kon va kuryer logotiplari
 
-43 ta do'konning hammasida logotip bor: `stores/*.webp`, 128x128 px, jami ~197 KB. Ular kvadrat ilova-ikonkasi ko'rinishida, shuning uchun ilovada kvadrat qutida, ohangsiz ko'rsatiladi. Asl PNG nusxalar `stores/src/` da (saytga chiqmaydi).
+43 ta do'konning hammasida logotip bor: `stores/*.webp`, 128x128 px, jami ~230 KB.
+20 ta kuryerning hammasida ham: `logos/*.webp`, 128x128 px, jami ~99 KB.
+Ikkalasi ham bir xil uslubda — 3D matoviy kvadrat (squircle) ilova ikonkasi,
+burchaklari shaffof va o'z soyasi bilan. Shuning uchun ular ilovada rangli
+plita ustida emas, to'g'ridan-to'g'ri kartaning fonida chiziladi (`contain`,
+shaffof plita, kesuvchi `overflow` yo'q) — plita qolsa ikonka atrofida
+rangli halqa ko'rinib qolardi. Logotipi yo'q do'kon/kuryerda esa rangli
+monogramma chiziladi. Asl PNG nusxalar `stores/src/` va `logos/src/` da,
+512x512 (saytga chiqmaydi).
 
 Qayta yasash:
 
 ```bash
-npm run store-logos -- --from stores/src --force
+npm run store-logos -- --from stores/src --force   # do'konlar
+npm run logos                                      # kuryerlar
 npm run build                       # service worker ro'yxati yangilanadi
 ```
 
