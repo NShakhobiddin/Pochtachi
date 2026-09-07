@@ -1323,29 +1323,55 @@ try {
     cFolders.chooser && cFolders.cards >= 8 && cFolders.list === 0,
     `papkalar ${cFolders.cards}, ro'yxat ${cFolders.list}`);
 
-  /* Chetdagi davlat bayrog'i yirik ko'rinadi. Manzil doim O'zbekiston
-     bo'lgani uchun ikkinchi bayroq va strelka olib tashlangan — ular har
-     qatorda bir xil ma'lumotni takrorlardi. */
+  /* Chetdagi davlat bayrog'i yirik ko'rinadi. Faqat shu ekranda u 3D rasm
+     (flags/*.webp) — qolgan joylarda emoji bo'lib qoladi. Manzil doim
+     O'zbekiston bo'lgani uchun ikkinchi bayroq va strelka olib tashlangan:
+     ular har qatorda bir xil ma'lumotni takrorlardi. */
   const bayroq = await page.evaluate(() => {
     const kart = [...document.querySelectorAll('main button')]
-      .filter(b => /\d+ ta/.test(b.innerText) && b.querySelector('span'));
-    const olcham = [];
-    let uzBor = false, strelka = false;
+      .filter(b => /\d+ ta|kuryer/.test(b.innerText));
+    const en = [];
+    let uzBor = false, strelka = false, emoji = 0, yuklanmagan = 0;
     for (const b of kart) {
+      for (const d of b.querySelectorAll('div')) {
+        const im = getComputedStyle(d).backgroundImage;
+        if (!/flags\//.test(im)) continue;
+        const r = d.getBoundingClientRect();
+        en.push(Math.round(r.width));
+        if (r.width < 1 || r.height < 1) yuklanmagan++;
+      }
       for (const sp of b.querySelectorAll('span')) {
         if (sp.children.length) continue;
         const t = sp.textContent.trim();
         if (t === '\u{1F1FA}\u{1F1FF}') uzBor = true;
-        if (/^\p{RI}\p{RI}$/u.test(t) || t === '\u{1F30D}') olcham.push(Math.round(parseFloat(getComputedStyle(sp).fontSize)));
+        if (/^\p{RI}\p{RI}$/u.test(t) || t === '\u{1F30D}') emoji++;
       }
       const box = b.querySelector('div');
       if (box && box.querySelector('svg') && box.querySelector('span')) strelka = true;
     }
-    return { eng: olcham.length ? Math.min(...olcham) : 0, soni: olcham.length, uzBor, strelka };
+    return { eng: en.length ? Math.min(...en) : 0, soni: en.length, uzBor, strelka, emoji, yuklanmagan };
   });
-  check('kuryer papkasida bayroq yirik va yagona',
-    bayroq && bayroq.soni >= 8 && bayroq.eng >= 40 && !bayroq.uzBor && !bayroq.strelka,
+  check('kuryer papkasida bayroq 3D rasm va yirik',
+    bayroq && bayroq.soni === 9 && bayroq.eng >= 44 && !bayroq.yuklanmagan
+      && bayroq.emoji === 0 && !bayroq.uzBor && !bayroq.strelka,
     JSON.stringify(bayroq));
+
+  /* Bayroq rasmlari faqat shu ekranda. Papka ichida (kuryerlar ro'yxati)
+     bayroq baribir emoji bo'lib qoladi — u yerda o'nlab marta
+     takrorlanadi va har biri alohida rasm so'rovi bo'lib ketardi. */
+  await page.getByText('Turkiya', { exact: false }).first().click();
+  await page.waitForTimeout(500);
+  const ichkari = await page.evaluate(() => ({
+    rasm: [...document.querySelectorAll('div')]
+      .filter(d => /flags\//.test(getComputedStyle(d).backgroundImage)).length,
+    emoji: [...document.querySelectorAll('span')]
+      .filter(sp => !sp.children.length && /^\p{RI}\p{RI}$/u.test(sp.textContent.trim())).length
+  }));
+  check('papka ichida bayroq emoji bo\'lib qoladi',
+    ichkari.rasm === 0 && ichkari.emoji > 0,
+    `rasm ${ichkari.rasm}, emoji ${ichkari.emoji}`);
+  await page.goBack();
+  await page.waitForTimeout(500);
 
   /* Yo'nalishlar bir xil oq plitka emas: ustida eng ko'p kuryerli yo'nalish
      katta kartochkada, qolganlarida mintaqa ohangi bayroq yonidagi

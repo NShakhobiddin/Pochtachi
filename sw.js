@@ -8,7 +8,7 @@
  *     qat'i nazar saqlanadigan keshda qoladi.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
  */
-const VERSION = '879cd7b4f269';
+const VERSION = 'fe5cd5593721';
 const CACHE = 'xarid-' + VERSION;
 /* Logotiplar keshi ilova versiyasiga bog'lanmaydi: yangilanish chiqqanda
    ular qaytadan yuklanmaydi. */
@@ -165,7 +165,16 @@ const PRECACHE = [
   "stores/victoriassecret.webp",
   "stores/walmart.webp",
   "stores/xiaomi.webp",
-  "stores/zara.webp"
+  "stores/zara.webp",
+  "flags/aqsh.webp",
+  "flags/baa.webp",
+  "flags/koreya.webp",
+  "flags/malayziya.webp",
+  "flags/mdh.webp",
+  "flags/rossiya.webp",
+  "flags/turkiya.webp",
+  "flags/xitoy.webp",
+  "flags/yevropa.webp"
 ];
 
 self.addEventListener('install', event => {

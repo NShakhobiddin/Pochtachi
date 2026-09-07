@@ -53,7 +53,7 @@ function precacheList() {
       if (/\.(webp|png)$/.test(e.name) && e.name !== 'og-cover.png') files.push(`${dir}/${e.name}`);
     }
   };
-  for (const dir of ['icons', 'logos', 'stores']) walkIcons(dir);
+  for (const dir of ['icons', 'logos', 'stores', 'flags']) walkIcons(dir);
   return files;
 }
 
@@ -63,7 +63,7 @@ function buildServiceWorker(indexHtml) {
      tomondan ham tekshiramiz: sahifa murojaat qilgan ikonka keshda
      bo'lmasa, oflaynda u bo'sh chiqadi va buni hech kim sezmaydi. */
   const runtime = indexHtml.replace(/<meta\b[^>]*>/gi, '');   // OG rasmi ilovada emas, ulashishda ishlatiladi
-  const used = new Set([...runtime.matchAll(/(?:icons|logos|stores)\/[\w./-]+\.(?:webp|png)/g)].map(m => m[0]));
+  const used = new Set([...runtime.matchAll(/(?:icons|logos|stores|flags)\/[\w./-]+\.(?:webp|png)/g)].map(m => m[0]));
   const missing = [...used].filter(u => !files.includes(u));
   if (missing.length) {
     console.error('Keshga tushmagan ikonkalar:', missing.join(', '));

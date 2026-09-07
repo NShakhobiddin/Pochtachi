@@ -28,6 +28,8 @@ fonts/                         matn shriftlari (o'z domenimizda) va bayroq subse
 icons/                         3D bo'lim ikonkalari (`boj-*` — bojxona qatorlari), tab-bar,
                                brend logotipi (`brand*.webp`) va PWA ikonkalari
 icons/src/                     ikonkalarning asl (katta) nusxalari (saytga chiqmaydi)
+flags/                         kuryerlar bosh oynasi uchun 3D bayroqlar (192 px WebP)
+flags/src/                     bayroqlarning asl PNG nusxalari (saytga chiqmaydi)
 logos/                         kuryer logotiplari (128x128 WebP)
 logos/src/                     logotiplarning asl PNG nusxalari (saytga chiqmaydi)
 stores/                        do'kon logotiplari (128x128 WebP) va index.json
@@ -54,6 +56,7 @@ npm run check            # generatsiya fayllari mos va o'lcham byudjeti joyidami
 npm test                 # smoke test + 7 ta qo'llanmaning tekshiruvi
 npm run links            # tashqi havolalarni tekshirish (haftalik CI ham qiladi)
 npm run logos            # logos/src/*.png -> logos/*.webp qayta yasash
+npm run flag-icons       # flags/src/*.png -> flags/*.webp (kuryerlar bosh oynasi)
 npm run icons            # icons/src/*.webp -> icons/*.webp (ekran o'lchamiga moslash)
 npm run mockups          # qadamlardagi telefon maketlarini bir me'yorga keltirish
 npm run store-logos      # do'kon logotiplari (--from DIR bilan tayyor rasmlardan)
@@ -333,6 +336,15 @@ Sayt tashqariga faqat bitta so'rov yuboradi — valyuta kursi uchun `cbu.uz` ga.
 Bayroqlar matn ichida turadi ("🇹🇷 Turkiya", kuryer tariflari, do'kon kartalari), shuning uchun ular rasm emas, rangli shrift (COLR/CPAL) sifatida beriladi — bitta fayl hammasini qoplaydi va Windows'da ham ko'rinadi (u yerda tizim shriftida bayroq yo'q).
 
 Manba — `fonts/flags-src/*.svg`, [flag-icons](https://github.com/lipis/flag-icons) (MIT) ning tekis bayroqlari. Yangi davlat qo'shish: SVG ni `fonts/flags-src/<iso>.svg` sifatida qo'ying va `npm run flags` ni ishlating.
+
+**3D bayroqlar — bitta ekranda.** Kuryerlar bo'limining bosh oynasida
+(yo'nalish papkalari) bayroq emoji emas, 3D rasm: `flags/*.webp`, 9 ta
+yo'nalish, jami 52 KB. U yerda bayroq yirik (64x48 va 48x36) va har
+yo'nalishda bittadan — rasm o'zini oqlaydi. Qolgan hamma joyda emoji
+qoladi: kuryer kartochkalarida, tarif jadvallarida va sehrgarda bayroq
+o'nlab marta takrorlanadi, har biri alohida rasm so'rovi bo'lib ketardi.
+Smoke test ikkalasini ham tekshiradi. Asl nusxalar `flags/src/` da
+(512x384); yangilash: `npm run flag-icons`.
 
 ## Tezlik
 

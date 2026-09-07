@@ -32,6 +32,10 @@ const BUDGETS = [
      sahifadagi belgilarga qarab faqat keraklisini oladi: odatda lotin
      (32 KB), kirillcha matn bo'lsa yana 14 KB, bayroq ko'rinsa 44 KB. */
   { name: 'shriftlar (fonts/)', dir: 'fonts', ext: ['.woff2'], maxTotalKb: 120, maxFileKb: 50 },
+  /* Kuryerlar bo'limining bosh oynasidagi 3D bayroqlar: 9 ta yo'nalish,
+     har biri 192 px kenglikda WebP. Faqat o'sha ekranda ishlatiladi —
+     qolgan joylarda bayroq emoji (fonts/flags.woff2) bo'lib qoladi. */
+  { name: 'bayroqlar (flags/*.webp)', dir: 'flags', ext: ['.webp'], maxTotalKb: 70, maxFileKb: 10 },
   /* Do'kon logotiplari: 43 ta do'kon, har biri 128 px WebP. Do'konlar
      ekrani ochilgandagina yuklanadi. */
   { name: 'do\'kon logotiplari (stores/*.webp)', dir: 'stores', ext: ['.webp'], maxTotalKb: 260, maxFileKb: 20 },

@@ -1158,9 +1158,10 @@
                    va strelka har qatorda bir xil ma'lumotni takrorlardi.
                    Ular olib tashlandi, bo'shagan joy chetdagi davlat
                    bayrog'iga berildi. -->
-              <div style="display:flex;align-items:center;flex:none">
-                <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:52px;line-height:1;filter:drop-shadow(0 4px 8px rgba(20,19,43,.24))">{{ courierTop.flag }}</span>
-              </div>
+              <!-- 3D bayroq rasmi: soyasi rasm ichida, shuning uchun CSS
+                   soyasi kerak emas. Faqat shu ekranda; qolgan joylarda
+                   bayroq emoji bo'lib qoladi. -->
+              <div style="width:64px;height:48px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ courierTop.flagPic }}" role="img" sc-camel-aria-label="{{ courierTop.title }} bayrog'i"></div>
               <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
                 <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#4F8A92">Eng ko'p kuryer</span>
                 <div style="display:flex;align-items:baseline;gap:6px">
@@ -1182,9 +1183,7 @@
                   <!-- Chetdagi davlat bayrog'i. O'zbekiston bayrog'i har
                        plitkada takrorlanardi — bo'lim allaqachon "qayerdan
                        olib keladi" haqida, shuning uchun olib tashlandi. -->
-                  <div style="display:flex;align-items:center;flex:none">
-                    <span style="font-family:'XY Flags','Noto Color Emoji',sans-serif;font-size:44px;line-height:1;filter:drop-shadow(0 4px 8px rgba(20,19,43,.24))">{{ f.flag }}</span>
-                  </div>
+                  <div style="width:48px;height:36px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ f.flagPic }}" role="img" sc-camel-aria-label="{{ f.title }} bayrog'i"></div>
                   <span style="flex:none;font-size:11px;font-weight:600;color:{{ f.tintFg }};background:{{ f.tintChip }};padding:4px 8px;border-radius:999px;font-variant-numeric:tabular-nums">{{ f.count }}</span>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
@@ -3432,16 +3431,20 @@ const LINK_ICON = {
 /* Beshinchi ustun — mintaqa. To'qqizta yo'nalishga to'qqizta rang berilsa
    ola-quroq chiqadi; mintaqa bo'yicha to'rt ohang esa oq plitkalar
    ketma-ketligini uzadi va yo'nalishlarni guruhga ajratib ko'rsatadi. */
+/* Oxirgi ustun — kuryerlar bo'limining bosh oynasidagi 3D bayroq fayli.
+   Faqat o'sha ekranda ishlatiladi; qolgan hamma joyda emoji bayroq
+   (undan oldingi ustun) qoladi, chunki u yerlarda bayroq o'nlab marta
+   takrorlanadi va har biri alohida rasm so'rovi bo'lib ketardi. */
 const COURIER_ORIGINS = [
-  ['Xitoy',      'Xitoy',      'Kuryer va konsolidatsiya',      '🇨🇳', 'osiyo'],
-  ['AQSH',       'AQSh',       'AQSh omborlari orqali',        '🇺🇸', 'garb'],
-  ['Turkiya',    'Turkiya',    'Yaqin ombor, tez yetkazish',   '🇹🇷', 'yaqin'],
-  ['Yevropa',    'Yevropa',    'Yevropa omborlari',            '🇪🇺', 'garb'],
-  ['Koreya',     'Koreya',     'Koreya yo\'nalishi',           '🇰🇷', 'osiyo'],
-  ['Rossiya',    'Rossiya',    'Rossiya orqali',               '🇷🇺', 'shimol'],
-  ['BAA',        'BAA',        'Dubay omborlari',              '🇦🇪', 'yaqin'],
-  ['MDH',        'MDH',        'Qo\'shni davlatlar',           '🇰🇿', 'shimol'],
-  ['Malayziya',  'Malayziya',  'Janubi-sharqiy Osiyo',         '🇲🇾', 'osiyo']
+  ['Xitoy',      'Xitoy',      'Kuryer va konsolidatsiya',      '🇨🇳', 'osiyo',  'xitoy'],
+  ['AQSH',       'AQSh',       'AQSh omborlari orqali',        '🇺🇸', 'garb',   'aqsh'],
+  ['Turkiya',    'Turkiya',    'Yaqin ombor, tez yetkazish',   '🇹🇷', 'yaqin',  'turkiya'],
+  ['Yevropa',    'Yevropa',    'Yevropa omborlari',            '🇪🇺', 'garb',   'yevropa'],
+  ['Koreya',     'Koreya',     'Koreya yo\'nalishi',           '🇰🇷', 'osiyo',  'koreya'],
+  ['Rossiya',    'Rossiya',    'Rossiya orqali',               '🇷🇺', 'shimol', 'rossiya'],
+  ['BAA',        'BAA',        'Dubay omborlari',              '🇦🇪', 'yaqin',  'baa'],
+  ['MDH',        'MDH',        'Qo\'shni davlatlar',           '🇰🇿', 'shimol', 'mdh'],
+  ['Malayziya',  'Malayziya',  'Janubi-sharqiy Osiyo',         '🇲🇾', 'osiyo',  'malayziya']
 ];
 const ORIGIN_TINT = {
   osiyo:  { bg:'rgba(14,133,149,.18)',  ring:'rgba(14,133,149,.12)',  chip:'#DDF1F4', fg:'#0E8595' },
@@ -5107,10 +5110,11 @@ class Component extends DCLogic {
           this.setState({ courierFolder: 'from:' + key });
           this.push('courierfolder');
         };
-        const all = COURIER_ORIGINS.map(([key, title, sub, flag, region]) => {
+        const all = COURIER_ORIGINS.map(([key, title, sub, flag, region, pic]) => {
           const n = COURIERS.filter(c => (c.from || []).includes(key)).length;
           const t = ORIGIN_TINT[region] || ORIGIN_TINT.garb;
           return { key, title, sub, flag, count: n + ' ta', n, num: String(n),
+            flagPic: "url('flags/" + pic + ".webp')",
             tintRing: t.ring, tintChip: t.chip, tintFg: t.fg,
             open: () => openFolder(key) };
         }).filter(f => f.n > 0);
