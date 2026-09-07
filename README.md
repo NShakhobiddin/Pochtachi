@@ -55,6 +55,7 @@ npm test                 # smoke test + 7 ta qo'llanmaning tekshiruvi
 npm run links            # tashqi havolalarni tekshirish (haftalik CI ham qiladi)
 npm run logos            # logos/src/*.png -> logos/*.webp qayta yasash
 npm run icons            # icons/src/*.webp -> icons/*.webp (ekran o'lchamiga moslash)
+npm run icons:svg        # icons/src/*.svg -> icons/src/*.webp (qo'lda yozilgan ikonkalar)
 npm run mockups          # qadamlardagi telefon maketlarini bir me'yorga keltirish
 npm run store-logos      # do'kon logotiplari (--from DIR bilan tayyor rasmlardan)
 npm run brand            # icons/src/intro/*.png -> logotip va ilova ikonkalari
@@ -251,8 +252,7 @@ logotiplari 3D kvadrat ikonka — burchaklari shaffof, soyasi rasmning
 ichida. Ular uyaga to'liq (`contain`, `inset: 0`) chiziladi, uya esa
 kesmaydi (`overflow: visible`) va logotip bor bo'lsa rangsiz qoladi:
 kesilsa burchaklari qirqiladi, rangli qolsa atrofida halqa ko'rinadi.
-Chiziqli
-ikonkalarda `viewBox` doim 24, chiziq qalinligi esa o'lchamga bog'lab
+Chiziqli ikonkalarda `viewBox` doim 24, chiziq qalinligi esa o'lchamga bog'lab
 tanlanadi (14 -> 2.7, 18 -> 2.1, 22 -> 1.75, 28 -> 1.4) — shunda ekranda
 hamma joyda ~1.6px bo'lib chiqadi.
 
@@ -264,8 +264,16 @@ hamma joyda ~1.6px bo'lib chiqadi.
 brend, yorug'lik (`0 14px 32px -16px rgba(17,21,132,.52)`), ramka
 (`inset 0 0 0 1px` — brend `.09`, holat `.12`, neytral `#E3E3EE`).
 
+**Mutaxassis yordami kartochkasi.** Bosh sahifa va Bojxona ekranidagi
+kirish kartochkasi brend gradienti ustida turadi, ikonkasi esa oq 64 px
+plita ichida 48 px da chiziladi: `icons/mutaxassis-3d.webp`. Manbasi —
+`icons/src/mutaxassis-3d.svg` (qo'lda yozilgan SVG). `npm run icons:svg`
+uni 512 px ga chizib `icons/src/mutaxassis-3d.webp` ga saqlaydi, so'ng
+`npm run icons` 144 px ga (48 px x3) keltiradi. `npm run check` ikkalasini
+ham tekshiradi, ya'ni SVG o'zgarib WebP qayta chizilmasa CI yiqiladi.
+
 **Qolgan ish.** `svc-*` (11 ta) tekis uslubda, lekin ular Xizmatlar
-bo'limining asosiy kartochkalarida turadi — ya'ni P3 da chizilgan
+bo'limining ichki kartochkalarida turadi — ya'ni P3 da chizilgan
 P1/P2 roli. Ularni 3D uslubda qayta chizdirish kerak. Aksincha,
 `app-play` va `app-store` 3D, lekin mayda yordamchi belgilar — ular
 P3 ga tushishi kerak.

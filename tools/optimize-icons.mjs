@@ -25,12 +25,14 @@ const QUALITY = 0.88;
    nusxalar 180 px, shuning uchun ular kichraytirilmaydi.
    `boj-` ikonkalari bojxona qatorlarida 46 px, `dok-` ikonkalari
    do'kon papkalarida 58 px, `app-` ikonkalari qo'llanmalardagi ilova
-   yuklash tugmalarida 34 px chiziladi. */
+   yuklash tugmalarida 34 px, `mutaxassis-3d` esa mutaxassis yordami
+   kartochkasidagi oq plita ichida 48 px chiziladi. */
 const target = name =>
   name.startsWith('tab-') ? 72 :
   name.startsWith('boj-') ? 144 :
   name.startsWith('dok-') ? 174 :
-  name.startsWith('app-') ? 102 : 180;
+  name.startsWith('app-') ? 102 :
+  name.startsWith('mutaxassis-') ? 144 : 180;
 
 /* `raw-` bilan boshlanadiganlar — kesib olingan to'liq o'lchamdagi asl
    nusxalar; ular faqat qayta hisoblash uchun saqlanadi va ekranga chiqmaydi.

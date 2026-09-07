@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- Mutaxassis yordami kartochkasining ikonkasi: naushnik + chat pufagi.
+       Bu yagona manba — WebP fayllar shundan chiziladi:
+         npm run icons:svg  ->  icons/src/mutaxassis-3d.webp (512 px)
+         npm run icons      ->  icons/mutaxassis-3d.webp (144 px = 48 px x3)
+       Ranglar brend palitrasidan: #1A1FB0 atrofidagi ko'k oralig'i. -->
+  <defs>
+    <linearGradient id="blu" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5155F0"/><stop offset="1" stop-color="#2226C6"/>
+    </linearGradient>
+    <linearGradient id="blu2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4A4EEE"/><stop offset="1" stop-color="#1F23BE"/>
+    </linearGradient>
+    <linearGradient id="pad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#DFE2F4"/>
+    </linearGradient>
+    <linearGradient id="wht" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E7EAF6"/>
+    </linearGradient>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#171A5A" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#sh)">
+    <!-- bosh kamari -->
+    <path d="M38 150 V116 a90 90 0 0 1 180 0 V150"
+          fill="none" stroke="url(#blu)" stroke-width="34" stroke-linecap="round"/>
+    <!-- chap quloqlik -->
+    <rect x="16" y="118" width="52" height="92" rx="26" fill="url(#blu2)"/>
+    <rect x="42" y="128" width="30" height="72" rx="15" fill="url(#pad)"/>
+    <!-- o'ng quloqlik -->
+    <rect x="188" y="118" width="52" height="92" rx="26" fill="url(#blu2)"/>
+    <rect x="184" y="128" width="30" height="72" rx="15" fill="url(#pad)"/>
+    <!-- mikrofon -->
+    <path d="M214 202 v20 a20 20 0 0 1 -20 20 h-18"
+          fill="none" stroke="url(#blu2)" stroke-width="17" stroke-linecap="round"/>
+    <!-- chat pufagi -->
+    <path d="M92 74 h72 a26 26 0 0 1 26 26 v42 a26 26 0 0 1 -26 26 h-38 l-24 22 v-22 h-10
+             a26 26 0 0 1 -26 -26 v-42 a26 26 0 0 1 26 -26 z" fill="url(#wht)"/>
+    <g fill="#2F33D6">
+      <circle cx="102" cy="121" r="11"/><circle cx="128" cy="121" r="11"/><circle cx="154" cy="121" r="11"/>
+    </g>
+  </g>
+</svg>
