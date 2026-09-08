@@ -188,6 +188,18 @@ kuryer ekranlarida kuryer filtrlarini (yuborish turi, saralash; yo'nalish
 papkasidan tashqarida davlat ham) ko'rsatadi. Escape avval ochiq varaqni
 yopadi, keyingina ekranni.
 
+## Bojxona kalkulyatori
+
+`calc()`: oylik summa − $200 = ortiqcha; ortiqcha ulushiga mos vazn
+nisbat bilan ajratiladi; bojxona qiymati = ortiqcha + shu vaznning
+yetkazish xarajati; boj = max(qiymatning 30%, ortiqcha vazn × $3);
+yig'im = BHM ning 25% (faqat ortiqcha bo'lganda). Maydonlar `num()` dan
+o'tadi: vergul kasr sifatida, harf va manfiy qiymat tashlanadi. Dollar
+summalari `usd()` bilan chiziladi: minglik ajratkich, $1 dan kichik
+ortiqcha esa tiyin bilan ("$0.01" — 200.01 dollarda ham yig'im
+undirilishi ko'rinib tursin). Bojxona tabidagi "Oy summasini qo'yish"
+summani qo'yib, kalkulyatorning o'zini ochadi.
+
 ## Kuzatuv va xizmatlar
 
 Kuzatuv ekrani saqlangan rejalarni jo'natma sifatida ko'rsatadi: trek
@@ -198,8 +210,9 @@ Rejasiz jo'natma raqami alohida maydonda saqlanadi. Pastda kuzatuv
 sahifasi bor kuryerlar ro'yxati.
 
 Xizmatlar ikki yo'lakda (`SERVICES`, `lane`): xaridor va kuryerlik
-tashkiloti. "Bog'lanish" Telegramga xizmat nomi yozilgan xabar bilan
-ochadi (`tgLink`). t.me havolalari `openTg` orqali: Telegram Mini App
+tashkiloti; tanlangan yo'lak saqlanadi. "Bog'lanish" Telegramga xizmat
+nomi yozilgan xabar bilan ochadi (`tgLink`), xabar interfeys tilida
+(ruscha, kirill yoki lotin). t.me havolalari `openTg` orqali: Telegram Mini App
 ichida `openTelegramLink`, tashqarida yangi oyna.
 
 ## Tanishuv

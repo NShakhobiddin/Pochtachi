@@ -195,7 +195,15 @@ try {
   check('manfiy og\'irlik va yetkazish bojni kamaytirmaydi',
     +oddiy > +nolVazn && manfiyVazn === nolVazn && manfiyYet === nolYet,
     `2.5 kg: ${oddiy} · 0 kg: ${nolVazn} · -2.5 kg: ${manfiyVazn} · -9 $/kg: ${manfiyYet}`);
-  await yoz(1, '2.5'); await yoz(2, '9');
+  /* Katta summa minglik ajratkich bilan, $1 dan kichik ortiqcha "$0" emas. */
+  await yoz(0, '1000000'); await yoz(1, '100'); await yoz(2, '9');
+  const katta = await page.evaluate(() => document.querySelector('main').innerText.replace(/\s+/g, ' '));
+  await yoz(0, '200.01'); await yoz(1, '1');
+  const kichik = await page.evaluate(() => document.querySelector('main').innerText.replace(/\s+/g, ' '));
+  check('kalkulyator: dollar ajratkich va tiyinli ortiqcha',
+    /me'yordan \$999 800 ortiq/.test(katta) && /\$1 000 700 × 30% = \$300 210/.test(katta) && /me'yordan \$0\.01 ortiq/.test(kichik),
+    (katta.match(/me'yordan [^o]+ortiq/) || [''])[0] + ' | ' + (kichik.match(/me'yordan [^o]+ortiq/) || [''])[0]);
+  await yoz(0, '320'); await yoz(1, '2.5'); await yoz(2, '9');
   await page.goBack();
   await page.waitForTimeout(400);
 
@@ -1214,6 +1222,19 @@ try {
   check('reja saqlangach yakun ko\'rinadi',
     yakun.tayyor && yakun.meyor && yakun.jami && yakun.yol.split('·').length >= 3,
     yakun.yol || JSON.stringify(yakun));
+
+  /* Bojxona: "Oy summasini qo'yish" summani kalkulyatorga qo'yib, uni ochadi. */
+  await page.locator('nav button', { hasText: 'Bojxona' }).first().click();
+  await page.waitForTimeout(500);
+  await page.locator('main button', { hasText: "Oy summasini qo'yish" }).first().click();
+  await page.waitForTimeout(600);
+  const oyKalk = await page.evaluate(() => ({
+    sarlavha: document.querySelector('header').innerText.replace(/\s+/g, ' ').trim(),
+    narx: (document.querySelector('main input') || {}).value
+  }));
+  check('oy summasi kalkulyatorni ochadi', /Bojxona kalkulyatori/.test(oyKalk.sarlavha) && +oyKalk.narx > 0, JSON.stringify(oyKalk));
+  await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
+  await page.waitForTimeout(400);
 
   /* Reja tabiga qaytganda saqlangan reja ko'rinib turadi — ilgari bo'sh
      sehrgar chiqar va foydalanuvchi rejasini bosh sahifadan qidirardi. */

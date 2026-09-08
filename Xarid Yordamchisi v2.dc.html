@@ -2658,6 +2658,10 @@
 <script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:430,&quot;height&quot;:880},&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;onboarding&quot;,&quot;home&quot;,&quot;stores&quot;,&quot;couriers&quot;,&quot;customs&quot;,&quot;guides&quot;,&quot;shipments&quot;,&quot;wizard&quot;,&quot;settings&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Prototip&quot;}}">
 const PRI = '#1A1FB0';
 const money = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+/* Dollar summasi: minglik ajratkich bilan ("$1 000 700"); $1 dan kichik,
+   lekin noldan katta qiymat "$0" emas, "$0.01" — 200.01 dollarda boj
+   undirilishi ko'rinib tursin. */
+const usd = n => (n > 0 && n < 1) ? '$' + n.toFixed(2) : '$' + money(n);
 const num = v => {
   if (typeof v === 'number') return isFinite(v) ? v : 0;
   const s = String(v == null ? '' : v).replace(/\s/g, '').replace(',', '.').replace(/[^\d.\-]/g, '');
@@ -2977,7 +2981,9 @@ const RU = {
   "To'lov yo'q":'Платежа нет', "me'yordan oshmadi":'не превысило лимит', "me'yordan ortiq · boj va yig'im":'сверх лимита · пошлина и сбор',
   "Qo'llanma bor":'Есть инструкция',
   'Solishtirish uchun 2-3 kuryerni belgilang':'Отметьте 2-3 курьера для сравнения',
-  'Natijalar':'Результаты', "Ko'p qidiriladi":'Часто ищут', "Toifa bo'yicha":'По категории', "Bo'lim":'Раздел',
+  'Natijalar':'Результаты',
+  "Assalomu alaykum! «{0}» xizmati bo'yicha yozmoqchiman.":'Здравствуйте! Хочу написать по услуге «{0}».',
+  "Assalomu alaykum! Kuryerlik tashkilotimiz Pochtam ro'yxatiga qo'shilishini so'raymiz.":'Здравствуйте! Просим добавить нашу курьерскую компанию в список Pochtam.', "Ko'p qidiriladi":'Часто ищут', "Toifa bo'yicha":'По категории', "Bo'lim":'Раздел',
   "{0} bo'lim · kalkulyator":'{0} разделов · калькулятор', 'krossovka':'кроссовки', 'telefon':'телефон', 'kiyim':'одежда', 'parfyum':'парфюм', "o'yinchoq":'игрушки', 'Eng arzon uchta kuryer':'Три самых дешёвых курьера',
   'Kim uchun mos':'Кому подходит', 'Huquqiy manba':'Правовой источник',
   "Qo'ng'iroq qilish":'Позвонить', "Boshqa jo'natma raqami":'Другой трек-номер',
@@ -3188,14 +3194,14 @@ const RU = {
   '"Toshkent-AERO" IBK':'СТК «Ташкент-АЭРО»', 'E-manzil':'E-mail', 'Xaritada':'На карте',
   /* --- Do'konlarning alohida xususiyati (ro'yxatdagi qator) --- */
   /* --- Raqam ichida turadigan satrlar (tx orqali, {0} o'rinbosari) --- */
-  "me'yordan ${0} ortiq":'на ${0} сверх лимита', '${0} qoldi':'осталось ${0}',
+  "me'yordan {0} ortiq":'на {0} сверх лимита', '{0} qoldi':'осталось {0}',
   "{0} ta jo'natma · {1} kg · {2}":'{0} отправл. · {1} кг · {2}',
   "Kalendar oyda kelgan barcha jo'natmalar summasi qo'shiladi, undan ${0} imtiyoz ayriladi.":'Складывается сумма всех отправлений за календарный месяц, из неё вычитается льгота ${0}.',
   "Ortiqcha qismga to'g'ri keladigan vazn nisbat bo'yicha ajratiladi: {0} kg.":'Вес, приходящийся на часть сверх лимита, выделяется пропорционально: {0} кг.',
   "{0}% va har kg uchun ${1} hisoblanadi, kattasi olinadi; ustiga BHM ning {2}% yig'imi qo'shiladi.":'Считаются {0}% и ${1} за каждый кг, берётся большее; сверху добавляется сбор {2}% БРВ.',
   "Summa ${0} me'yordan oshmadi — yagona bojxona to'lovi undirilmaydi.":'Сумма не превысила лимит ${0} — единый таможенный платёж не взимается.',
   "Vazn bo'yicha hisob ko'proq chiqdi: {0} kg × ${1} = ${2} ({3}% varianti ${4} edi).":'Расчёт по весу оказался больше: {0} кг × ${1} = ${2} (вариант {3}% давал ${4}).',
-  "Qiymat bo'yicha hisob ko'proq chiqdi: ${0} × {1}% = ${2} (vazn varianti ${3} edi).":'Расчёт по стоимости оказался больше: ${0} × {1}% = ${2} (вариант по весу давал ${3}).',
+  "Qiymat bo'yicha hisob ko'proq chiqdi: {0} × {1}% = {2} (vazn varianti {3} edi).":'Расчёт по стоимости оказался больше: {0} × {1}% = {2} (вариант по весу давал {3}).',
   "Kurs yangilandi: 1 USD = {0} so'm":'Курс обновлён: 1 USD = {0} сум',
   /* --- Toastlar --- */
   'Aloqa manzili hali kiritilmagan':'Контакт ещё не указан', "Avval jo'natma summasini yozing":'Сначала введите сумму отправления',
@@ -4329,7 +4335,9 @@ class Component extends DCLogic {
      ochmaymiz — foydalanuvchiga ochiq aytamiz. */
   contactAbout(title, key) {
     metrics.hit('svcAsk', key || 'umumiy');
-    const url = tgLink(title ? 'Assalomu alaykum! «' + title + '» xizmati bo\'yicha yozmoqchiman.' : '');
+    /* Xabar interfeys tilida: ruscha foydalanuvchiga o'zbekcha matn
+       yozib qo'yilardi. */
+    const url = tgLink(title ? tx(this.state.lang, "Assalomu alaykum! «{0}» xizmati bo'yicha yozmoqchiman.", tr(this.state.lang, title)) : '');
     if (!url) { this.toast('Aloqa manzili hali kiritilmagan'); return; }
     if (!openTg(url)) this.toast('Telegram: @' + CONTACT.tg);
   }
@@ -5660,7 +5668,7 @@ class Component extends DCLogic {
       /* Hamkorlik so'rovi: Telegram xabari oldindan yozib qo'yiladi, ya'ni
          yozadigan odam nima deyishni o'ylab o'tirmaydi. Manzil
          REPORT_URL da. */
-      askCourier: () => this.askPartner('Assalomu alaykum! Kuryerlik tashkilotimiz Pochtam ro\'yxatiga qo\'shilishini so\'raymiz.'),
+      askCourier: () => this.askPartner(tr(st.lang, "Assalomu alaykum! Kuryerlik tashkilotimiz Pochtam ro'yxatiga qo'shilishini so'raymiz.")),
 
       /* --- Kuryer papkalari (yo'nalish bo'yicha) --- */
       ...(() => {
@@ -5790,7 +5798,7 @@ class Component extends DCLogic {
       rateBtnLabel: RATE_META.loading ? 'Yuklanmoqda…' : 'Yangilash',
       refreshRate: () => this.refreshRate(false),
       usedPct: Math.min(100, Math.max(2, pctUsed / 2)) + '%',
-      freeText: c.cv > 0 ? tx(st.lang, 'me\'yordan ${0} ortiq', Math.round(c.excessGoods)) : tx(st.lang, '${0} qoldi', Math.round(NC.freeUsd - priceNum)),
+      freeText: c.cv > 0 ? tx(st.lang, 'me\'yordan {0} ortiq', usd(c.excessGoods)) : tx(st.lang, '{0} qoldi', usd(Math.max(0, NC.freeUsd - priceNum))),
       freeColor: pctUsed <= 100 ? '#0F7B3E' : (pctUsed <= 150 ? '#B45309' : '#B91C1C'),
       freeBar: pctUsed <= 100 ? 'linear-gradient(90deg,#34D399,#0F7B3E)' : (pctUsed <= 150 ? 'linear-gradient(90deg,#E0A32E,#B45309)' : 'linear-gradient(90deg,#EF6A4B,#B91C1C)'),
       bhmLabel: money(NC.bhm),
@@ -5818,7 +5826,9 @@ class Component extends DCLogic {
         this.setState(s => ({ monthly: [...(s.monthly || []), { id: 'm' + Date.now(), date: todayIso(), usd, kg }] }));
         this.toast('Jo\'natma bu oyga qo\'shildi');
       },
-      monthToCalc: () => { this.setState({ calcPrice: String(Math.round(mTot.usd)), calcWeight: mTot.kg.toFixed(1) }); this.toast('Oy summasi kalkulyatorga qo\'yildi'); },
+      /* Summa qo'yilgach kalkulyatorning o'zi ochiladi: ilgari faqat toast
+         chiqar, foydalanuvchi kalkulyatorni qo'lda qidirib topardi. */
+      monthToCalc: () => { this.setState({ calcPrice: String(Math.round(mTot.usd)), calcWeight: mTot.kg.toFixed(1) }); this.openSec(4); this.toast('Oy summasi kalkulyatorga qo\'yildi'); },
       rootRef: this._rootRef,
       langOpts: [['uz', "O'zbekcha"], ['uzc', 'Ўзбекча'], ['ru', 'Русский']].map(p => ({
         label: p[1], on: st.lang === p[0], pick: () => this.pickLang(p[0]),
@@ -5832,7 +5842,7 @@ class Component extends DCLogic {
         { key:'ru', flag:'🇷🇺', label:'Русский', sub:'Русский язык' }
       ].map(o => ({ ...o, bd: st.lang === o.key ? '#1A1FB0' : '#FFFFFF', pick: () => { this.pickLang(o.key); this.setState({ onboarded: true }); this.go('home'); } })),
       calcRows: [
-        { k:'Bojxona qiymati (ortiqcha)', v:'$' + Math.round(c.cv) },
+        { k:'Bojxona qiymati (ortiqcha)', v:usd(c.cv) },
         { k: c.basis === 'weight' ? ('Yagona boj ($' + c.norms.minPerKg + ' × kg)') : ('Yagona boj (' + Math.round(c.norms.dutyPct * 100) + '%)'), v: money(c.duty) + ' so\'m' },
         { k:'Bojxona yig\'imi (BHM ' + Math.round(c.norms.feeShare * 100) + '%)', v: money(c.fee) + ' so\'m' }
       ],
@@ -5840,7 +5850,7 @@ class Component extends DCLogic {
         ? tx(st.lang, 'Summa ${0} me\'yordan oshmadi — yagona bojxona to\'lovi undirilmaydi.', c.norms.freeUsd)
         : (c.basis === 'weight'
           ? tx(st.lang, 'Vazn bo\'yicha hisob ko\'proq chiqdi: {0} kg × ${1} = ${2} ({3}% varianti ${4} edi).', c.excessWeight.toFixed(1), c.norms.minPerKg, Math.round(c.byWeight), Math.round(c.norms.dutyPct * 100), Math.round(c.byValue))
-          : tx(st.lang, 'Qiymat bo\'yicha hisob ko\'proq chiqdi: ${0} × {1}% = ${2} (vazn varianti ${3} edi).', Math.round(c.cv), Math.round(c.norms.dutyPct * 100), Math.round(c.byValue), Math.round(c.byWeight))),
+          : tx(st.lang, 'Qiymat bo\'yicha hisob ko\'proq chiqdi: {0} × {1}% = {2} (vazn varianti {3} edi).', usd(c.cv), Math.round(c.norms.dutyPct * 100), usd(c.byValue), usd(c.byWeight))),
       calcSteps: [
         { t: tx(st.lang, 'Kalendar oyda kelgan barcha jo\'natmalar summasi qo\'shiladi, undan ${0} imtiyoz ayriladi.', c.norms.freeUsd) },
         { t: tx(st.lang, 'Ortiqcha qismga to\'g\'ri keladigan vazn nisbat bo\'yicha ajratiladi: {0} kg.', c.excessWeight.toFixed(1)) },
