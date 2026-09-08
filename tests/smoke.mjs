@@ -32,8 +32,12 @@ const MIME = {
   '.txt': 'text/plain; charset=utf-8'
 };
 
+/* Server ko'rgan so'rovlar: service worker keshi ishlayotganini shu yerdan
+   bilamiz — sahifa `request` hodisasi worker ichidagi so'rovlarni ko'rmaydi. */
+const hits = [];
 const server = createServer((req, res) => {
   let path = decodeURIComponent(req.url.split('?')[0]);
+  hits.push(path);
   if (path.endsWith('/')) path += 'index.html';
   const file = join(ROOT, normalize(path).replace(/^(\.\.[/\\])+/, ''));
   readFile(file, (err, body) => {
@@ -1646,6 +1650,81 @@ try {
   // 15. Xato va yo'qolgan fayllar
   /* Toast — jonli hudud (role=status) doim DOM da: ekran o'quvchi faqat
      oldindan bor hududdagi o'zgarishni o'qiydi. */
+  /* --- Service worker: kichik qobiq, keyin isitish, takrorda tarmoqsiz, oflayn ---
+     Ilgari 161 fayl bir yo'la yuklanardi va foydalanuvchi ochgan ekranning
+     ikonkalari bilan tarmoqni talashardi; takroriy ochilishda ham har
+     chizilgan rasm orqa fonda qayta so'ralardi. */
+  const swSrc = readFileSync(join(ROOT, 'sw.js'), 'utf8');
+  const swLists = swSrc.match(/const PRECACHE = (\[[\s\S]*?\]);\nconst LATER = (\[[\s\S]*?\]);/);
+  const qobiq = swLists ? JSON.parse(swLists[1]) : [], keyin = swLists ? JSON.parse(swLists[2]) : [];
+  check('service worker qobig\'i kichik, qolgani keyin',
+    qobiq.length > 0 && qobiq.length <= 25 && keyin.length >= 100
+      && ['icons/stores-3d.webp', 'icons/courier-3d.webp', 'fonts/onest-latin.woff2'].every(f => qobiq.includes(f))
+      && keyin.some(f => f.startsWith('stores/')) && keyin.some(f => f.startsWith('icons/ban/')),
+    `qobiq ${qobiq.length}, keyin ${keyin.length}`);
+  check('do\'kon logotiplari ro\'yxati index.html ichida',
+    /const STORE_LOGO_IDS = \["/.test(readFileSync(join(ROOT, 'index.html'), 'utf8')) && src.includes('const STORE_LOGO_IDS = [];')
+      && !hits.some(h => h.endsWith('stores/index.json')),
+    hits.some(h => h.endsWith('stores/index.json')) ? 'index.json baribir so\'raldi' : '');
+  /* Isitish: worker 'warm' ga javoban qolgan fayllarni keshlaydi va
+     'warm-done' qaytaradi. Testda uni o'zimiz so'raymiz — sahifa buni
+     tinchigach qiladi, lekin biz kutib o'tirmaymiz. */
+  const isidi = await page.evaluate(() => new Promise(resolve => {
+    if (!('serviceWorker' in navigator)) return resolve('sw yo\'q');
+    const t = setTimeout(() => resolve('vaqt tugadi'), 90000);
+    navigator.serviceWorker.ready.then(reg => {
+      navigator.serviceWorker.addEventListener('message', e => {
+        if (e.data && e.data.type === 'warm-done') { clearTimeout(t); resolve('tayyor'); }
+      });
+      const w = reg.active || navigator.serviceWorker.controller;
+      if (!w) { clearTimeout(t); resolve('faol emas'); return; }
+      w.postMessage({ type: 'warm' });
+    }).catch(e => { clearTimeout(t); resolve('xato ' + e); });
+  }));
+  const keshda = await page.evaluate(async () => {
+    const names = (await caches.keys()).filter(k => /^xarid-/.test(k) && !/logos/.test(k));
+    let n = 0;
+    for (const k of names) n += (await (await caches.open(k)).keys()).length;
+    return n;
+  });
+  check('isitishdan keyin butun ro\'yxat keshda',
+    isidi === 'tayyor' && keshda >= qobiq.length + keyin.length,
+    `${isidi} · keshda ${keshda}, kutilgan ${qobiq.length + keyin.length}`);
+
+  /* Takroriy ochilish: rasm va shriftlar faqat keshdan — serverga bironta
+     ham so'rov bormaydi. */
+  hits.length = 0;
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForTimeout(1500);
+  await page.locator('nav button').first().click();
+  await page.waitForTimeout(400);
+  await page.locator('main button').filter({ hasText: "Do'konlar" }).first().click();
+  await page.waitForTimeout(400);
+  await page.locator('main button').filter({ hasText: /Universal/ }).first().click();
+  await page.waitForTimeout(700);
+  await page.locator('nav button').first().click();
+  await page.waitForTimeout(300);
+  await page.locator('main button').filter({ hasText: 'Kuryerlar' }).first().click();
+  await page.waitForTimeout(700);
+  const tarmoqRasm = hits.filter(h => /\.(webp|png|woff2)$/.test(h));
+  check('takroriy ochilishda rasm va shrift tarmoqdan so\'ralmaydi',
+    tarmoqRasm.length === 0, tarmoqRasm.slice(0, 4).join(', '));
+
+  /* Oflayn: ilova ochiladi, do'kon logotiplari va taqiq belgilari keshdan keladi. */
+  await context.setOffline(true);
+  await page.reload({ waitUntil: 'load' }).catch(() => {});
+  await page.waitForTimeout(1500);
+  const oflayn = await page.evaluate(async () => {
+    const ok = async u => { try { const r = await fetch(u); return r.ok; } catch (e) { return false; } };
+    return { nav: !!document.querySelector('nav'), taobao: await ok('stores/taobao.webp'),
+      taqiq: await ok('icons/ban/giyohvand.webp'), bayroq: await ok('flags/xitoy.webp'), shrift: await ok('fonts/onest-latin.woff2') };
+  });
+  await context.setOffline(false);
+  check('oflayn: ilova ochiladi va rasmlar keshdan keladi',
+    oflayn.nav && oflayn.taobao && oflayn.taqiq && oflayn.bayroq && oflayn.shrift, JSON.stringify(oflayn));
+  await page.locator('nav button').first().click().catch(() => {});
+  await page.waitForTimeout(400);
+
   check('toast jonli hudud sifatida doim mavjud',
     await page.evaluate(() => { const t = document.querySelector('[role="status"][aria-live]'); return !!t && getComputedStyle(t).pointerEvents === 'none'; }));
 

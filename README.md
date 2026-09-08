@@ -417,6 +417,50 @@ Nima qilindi:
 Do'kon logotiplari ham loyihaga ko'chirildi, shuning uchun ilovada uchinchi
 tomon serveriga birorta ham so'rov qolmadi.
 
+**Ikonkalar va service worker.** Foydalanuvchi "ikonkalar sekin chiqadi"
+degan edi. Sekin tarmoq taqlidi (200 KB/s, 120 ms kechikish, worker ham
+shu kanalda) shuni ko'rsatdi: bosh sahifa ikonkalari ilova ko'tarilishidan
+oldin kelib bo'ladi, muammo boshqa joyda edi.
+
+- Worker o'rnatilganda 161 faylni bir yo'la yuklardi — foydalanuvchi shu
+  paytda ochgan do'kon papkasining logotiplari bilan tarmoqni talashardi.
+  Endi qobiq kichik (22 fayl: HTML, skript, shrift, brend va bosh sahifa
+  ikonkalari), qolgan 139 fayl sahifa tinchigach ('warm' xabari) ikki oqimda,
+  keshda yo'qlarigina yuklanadi. Ro'yxatga olish ham `load` dan 1,5 s keyin.
+- Takroriy ochilishda worker har chizilgan rasmni orqa fonda qayta
+  so'rardi (stale-while-revalidate hammasiga qo'llangan edi) — bitta
+  ochilishda ~100 so'rov. Rasm, shrift va vendor skriptlar endi faqat keshdan;
+  yangilanish chiqqanda kesh nomi o'zgaradi va hammasi qaytadan olinadi.
+- Do'kon logotiplari ro'yxati (`stores/index.json`) ilova ochilgach alohida
+  so'ralardi, logotiplar shundan keyin chizilardi. Endi ro'yxat build paytida
+  `index.html` ichiga yoziladi (`STORE_LOGO_IDS`) — birinchi chizilishdayoq
+  turadi.
+- Bosh sahifadagi to'rt kartochka va logotip `fetchpriority="high"`.
+
+O'lchov (sekin tarmoq, 3x sekin protsessor, do'kon papkasi ochilganda):
+
+| | Ilgari | Hozir |
+|---|---|---|
+| Ikkinchi ochilish, ilova ko'tarilishi | 2,8 s | 0,8 s |
+| Ikkinchi ochilish, 8 logotip | 694 ms | 200 ms (keshdan) |
+| Isitilgan ochilish, ilova ko'tarilishi | — | 0,5 s |
+| Isitilgan ochilishda server so'rovlari | ~100 | 4 (HTML, skript, JSON, sw.js) |
+
+Birinchi ochilishda do'kon papkasining 8 logotipi tarmoqdan keladi — bu
+tarmoq tezligiga bog'liq (~0,5 s). Isitish tartibi ehtimol bo'yicha: intro,
+do'kon papkalari ikonkalari, do'kon logotiplari, kuryer logotiplari va
+bayroqlar, keyin qolgani — foydalanuvchi ilovani isitish tugamay yopsa ham
+eng kerakli fayllar keshda bo'ladi.
+
+Smoke test to'rt narsani tekshiradi: qobiq kichikligi, isitishdan keyin
+butun ro'yxat keshda ekani, takroriy ochilishda rasm va shriftlar uchun
+serverga so'rov yo'qligi, oflayn ochilishi.
+
+Muhim: kechiktirilgan keshlashni `activate` ichida qilib bo'lmaydi —
+faollashuv tugamaguncha fetch hodisalari kutib turadi va ilova 10 s
+ochilmay qoldi (o'lchandi). Shuning uchun u sahifadan keladigan xabar
+bilan ishga tushadi.
+
 ## O'lcham byudjeti
 
 `npm run check` quyidagilarni tekshiradi: kuryer logotiplari ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 120 KB, do'kon logotiplari ≤ 260 KB, qo'llanmalar ≤ 470 KB, `index.html` ≤ 560 KB. Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.

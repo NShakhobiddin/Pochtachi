@@ -23,6 +23,19 @@ function build(src) {
   if (!src.includes('<link rel="canonical"')) {
     src = src.replace('<link rel="manifest"', canonical + '\n<link rel="manifest"');
   }
+  /* Do'kon logotiplari ro'yxati manbaga kiritiladi: ilgari ilova ochilgach
+     stores/index.json alohida so'ralardi va logotiplar shundan keyin
+     chizilardi — birinchi chizilishda monogramma, keyin rasm "sakrardi".
+     Manbada ro'yxat bo'sh turadi (dizayn ko'rinishida hech nima o'zgarmaydi),
+     to'ldirilgan nusxa faqat index.html ga tushadi. */
+  const idx = join(ROOT, 'stores', 'index.json');
+  if (existsSync(idx)) {
+    const ids = JSON.parse(readFileSync(idx, 'utf8'));
+    const list = Array.isArray(ids) ? ids : (ids && ids.ids) || [];
+    const marker = 'const STORE_LOGO_IDS = [];';
+    if (!src.includes(marker)) throw new Error('Manbada STORE_LOGO_IDS belgisi topilmadi');
+    src = src.replace(marker, 'const STORE_LOGO_IDS = ' + JSON.stringify(list) + ';');
+  }
   return BANNER + src;
 }
 
@@ -30,35 +43,57 @@ function build(src) {
 // ---- service worker ------------------------------------------------------
 // Offline uchun keshlanadigan qobiq ro'yxati va uning versiyasi manbadan
 // hisoblanadi, shuning uchun har o'zgarishda kesh o'zi yangilanadi.
+/* Ikki to'plam: `shell` — o'rnatishda darhol (ilova ochilishi va bosh
+   sahifa uchun kerak bo'lgani: HTML, skriptlar, shriftlar, brend va to'rt
+   kartochka ikonkasi), `later` — sahifa tinchigach ('warm' xabari) ikki
+   oqimda (qolgan ikonkalar, logotiplar, bayroqlar, do'kon logotiplari,
+   taqiq va me'yor belgilari, qo'llanma dvigateli). Ilgari 161 fayl bir
+   yo'la yuklanardi va foydalanuvchi ochgan ekranning ikonkalari bilan
+   tarmoqni talashardi. */
+const SHELL_ICONS = ['icons/brand.webp', 'icons/brand-full.webp', 'icons/stores-3d.webp', 'icons/courier-3d.webp',
+  'icons/customs-3d.webp', 'icons/guides-3d.webp', 'icons/mutaxassis-3d.webp', 'icons/icon-192.png', 'icons/apple-touch-icon.png'];
 function precacheList() {
   const files = ['./', 'support.js', 'manifest.webmanifest', 'data/norms.json',
-    'vendor/react.production.min.js', 'vendor/react-dom.production.min.js',
-    'guides/guide-base.css', 'guides/guide-common.css', 'guides/guide-engine.js', 'guides/guide.js'];
+    'vendor/react.production.min.js', 'vendor/react-dom.production.min.js'];
+  const later = ['guides/guide-base.css', 'guides/guide-common.css', 'guides/guide-engine.js', 'guides/guide.js'];
   /* Shriftlar o'z domenimizda turadi, shuning uchun ular ham qobiq bilan
      birga keshlanadi — ikkinchi ochilishda umuman tarmoq kerak emas. */
   for (const f of readdirSync(join(ROOT, 'fonts')).sort()) {
     if (/\.(woff2|css)$/.test(f)) files.push(`fonts/${f}`);
   }
-  // Do'kon logotiplari saqlangan bo'lsa, ular ham qobiq bilan birga keshlanadi.
-  if (existsSync(join(ROOT, 'stores', 'index.json'))) files.push('stores/index.json');
+  /* stores/index.json keshlanmaydi: ro'yxat index.html ichida, faylning
+     o'zi faqat dizayn ko'rinishidagi zaxira yo'l uchun. */
   /* Ichki papkalar ham kerak: taqiq va me'yor belgilari icons/ban va
-     icons/norm ichida turadi. Ilgari sikl faqat birinchi darajani
-     aylanardi va oflaynda o'sha 27 ta belgi bo'sh chiqardi.
-     icons/src va icons/glyphs — ikonka tayyorlash uchun manba (1.1 MB),
-     ishga tushmaydi: ularni keshlash oflayn yuklamani behuda oshiradi. */
+     icons/norm ichida turadi. icons/src va icons/glyphs — ikonka tayyorlash
+     uchun manba (1.1 MB), ishga tushmaydi. */
   const SRC_DIRS = new Set(['src', 'glyphs']);
   const walkIcons = dir => {
     for (const e of readdirSync(join(ROOT, dir), { withFileTypes: true }).sort((a, b) => a.name < b.name ? -1 : 1)) {
       if (e.isDirectory()) { if (!SRC_DIRS.has(e.name)) walkIcons(`${dir}/${e.name}`); continue; }
-      if (/\.(webp|png)$/.test(e.name) && e.name !== 'og-cover.png') files.push(`${dir}/${e.name}`);
+      if (!/\.(webp|png)$/.test(e.name) || e.name === 'og-cover.png') continue;
+      const path = `${dir}/${e.name}`;
+      (SHELL_ICONS.includes(path) ? files : later).push(path);
     }
   };
   for (const dir of ['icons', 'logos', 'stores', 'flags']) walkIcons(dir);
-  return files;
+  for (const p of SHELL_ICONS) if (!files.includes(p)) throw new Error('Qobiq ikonkasi topilmadi: ' + p);
+  /* Isitish tartibi — foydalanuvchi ikkinchi ochilishda avval qayerga
+     borishi ehtimoli bo'yicha: intro (har ochilishda), do'kon papkalari
+     ikonkalari, do'kon logotiplari, kuryer logotiplari va bayroqlar, keyin
+     bojxona va xizmat ikonkalari, taqiq/me'yor belgilari, qo'llanma
+     dvigateli. Isitish sekin tarmoqda o'n soniyalab davom etadi va
+     foydalanuvchi shu orada ilovani yopib qo'yishi mumkin. */
+  const rank = f =>
+    f.startsWith('icons/intro/') ? 0 : f.startsWith('icons/dok-') ? 1 : f.startsWith('stores/') ? 2 :
+    f.startsWith('logos/') ? 3 : f.startsWith('flags/') ? 4 : f.startsWith('icons/boj-') ? 5 :
+    f.startsWith('icons/svc-') ? 6 : f.startsWith('icons/ban/') ? 7 : f.startsWith('icons/norm/') ? 8 : 9;
+  later.sort((a, b) => rank(a) - rank(b) || (a < b ? -1 : 1));
+  return { shell: files, later };
 }
 
 function buildServiceWorker(indexHtml) {
-  const files = precacheList();
+  const { shell, later } = precacheList();
+  const files = [...shell, ...later];
   /* Ro'yxat qo'lda yozilgan qoidalarga tayanadi, shuning uchun teskari
      tomondan ham tekshiramiz: sahifa murojaat qilgan ikonka keshda
      bo'lmasa, oflaynda u bo'sh chiqadi va buni hech kim sezmaydi. */
@@ -78,7 +113,8 @@ function buildServiceWorker(indexHtml) {
   const version = hash.digest('hex').slice(0, 12);
   return readFileSync(join(ROOT, 'tools', 'sw.template.js'), 'utf8')
     .replace('__VERSION__', version)
-    .replace('__PRECACHE__', JSON.stringify(files, null, 2));
+    .replace('__PRECACHE__', JSON.stringify(shell, null, 2))
+    .replace('__LATER__', JSON.stringify(later, null, 2));
 }
 
 const srcPath = join(ROOT, SOURCE);
