@@ -107,6 +107,11 @@ so'zlar (`CYR_KEEP`), manzil va e-mail lotin qoladi. Undoshdan keyingi
 kirill faqat lug'at kalitlari uchun ishlar edi va chuqur ekranlar
 (bojxona bo'limlari, kuryer sahifalari) lotinchada qolib ketardi.
 
+`translate="no"` qo'yilgan element ichidagi matnga `applyLang` tegmaydi.
+Til tugmalari ("Ўзбекча") shunday belgilangan: ilgari ruscha rejimda ular
+lotinga o'girilar va DOM matni bir marta almashtirilgach React uni qayta
+chizmagani uchun qaytmay qolardi.
+
 Smoke test ikkala tilda chuqur ekranlarni ham aylanib chiqadi: qidiruv,
 kuzatuv, do'kon va kuryer papkalari, taqqoslash, bojxonaning oltita
 bo'limi, xizmatlar. Ruscha rejimda `lang="uz"` ichidagi matn, kirillda
@@ -137,6 +142,9 @@ tovarlarga havola turadi. Ilgari bu oyna bo'm-bo'sh edi.
 
 Smoke test: bo'sh holat takliflari, `krossovka`/`telefon`/`кроссовки`/
 `Турция` so'rovlari va toifa qatorining papkani ochishi.
+
+Taqiqlangan tovarlar qidiruvi ham `norm` dan o'tadi va pozitsiyalarda
+`syn` sinonim maydoni bor (vape, narkotik, tabletka, kvadrokopter, пиво…).
 
 ## Reja sehrgari
 

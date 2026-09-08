@@ -1330,6 +1330,32 @@ try {
     ban.qator === 23 && ban.xil >= 20 && ban.yuklandi === ban.xil,
     `${ban.qator} qator, ${ban.xil} xil, ${ban.yuklandi} yuklandi`);
 
+  /* Taqiq qidiruvi kirillcha so'rov va sinonimlarni tushunadi: "сигарет"
+     ilgari hech narsa topmasdi. */
+  const banQ = page.locator('main input[type=search]').first();
+  const banTop = async (q) => { await banQ.fill(q); await banQ.dispatchEvent('change'); await page.waitForTimeout(350);
+    return page.evaluate(() => document.querySelector('main').innerText.replace(/\s+/g, ' ')); };
+  const banCyr = await banTop('сигарет');
+  const banSyn = await banTop('vape');
+  check('taqiq qidiruvi: kirill va sinonim',
+    /Elektron sigaretalar/.test(banCyr) && /Alkogol va tamaki/.test(banCyr) && /Elektron sigaretalar/.test(banSyn),
+    banCyr.slice(0, 120));
+  await banTop('');
+
+  /* Til tugmalari ruscha rejimdan qaytganda ham o'z nomida qoladi: "Ўзбекча"
+     ilgari bir marta lotinga o'girilib, qaytmay qolardi. */
+  await page.locator('nav button', { hasText: 'Sozlamalar' }).first().click();
+  await page.waitForTimeout(500);
+  const tilTugma = async () => (await page.locator('main button[translate="no"]').allInnerTexts()).map(t => t.trim()).join(' | ');
+  await page.locator('main button[translate="no"]').filter({ hasText: 'Русский' }).first().click();
+  await page.waitForTimeout(500);
+  const tilRu = await tilTugma();
+  await page.locator('main button[translate="no"]').filter({ hasText: "O'zbekcha" }).first().click();
+  await page.waitForTimeout(500);
+  const tilUz = await tilTugma();
+  check('til tugmalari ruschadan qaytganda buzilmaydi',
+    tilRu === "O'zbekcha | Ўзбекча | Русский" && tilUz === "O'zbekcha | Ўзбекча | Русский", tilRu + ' / ' + tilUz);
+
   // Keyingi tekshiruvlar papkalar ekranidan davom etadi.
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(400);

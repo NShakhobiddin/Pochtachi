@@ -503,7 +503,7 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:12px">
         <sc-for list="{{ onbLangs }}" as="l" hint-placeholder-count="3">
-          <button sc-camel-on-click="{{ l.pick }}" style="display:flex;align-items:center;gap:16px;padding:18px;background:#FFFFFF;border:2px solid {{ l.bd }};border-radius:20px;cursor:pointer;text-align:left;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="border-color:#DCDDFA">
+          <button sc-camel-on-click="{{ l.pick }}" translate="no" style="display:flex;align-items:center;gap:16px;padding:18px;background:#FFFFFF;border:2px solid {{ l.bd }};border-radius:20px;cursor:pointer;text-align:left;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="border-color:#DCDDFA">
             <span style="font-size:22px">{{ l.flag }}</span>
             <span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:17px;font-weight:700;color:#131429">{{ l.label }}</span><span style="font-size:13px;color:#6B6C85;font-weight:500">{{ l.sub }}</span></span>
           </button>
@@ -2524,7 +2524,7 @@
           <span style="font-size:15px;font-weight:500;color:#131429">Interfeys tili</span>
           <div style="display:flex;gap:8px">
             <sc-for list="{{ langOpts }}" as="l" hint-placeholder-count="3">
-              <button sc-camel-on-click="{{ l.pick }}" aria-pressed="{{ l.on }}" style="flex:1;min-height:44px;padding:0 8px;border-radius:14px;border:1.5px solid {{ l.bd }};background:{{ l.bg }};color:{{ l.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ l.label }}</button>
+              <button sc-camel-on-click="{{ l.pick }}" aria-pressed="{{ l.on }}" translate="no" style="flex:1;min-height:44px;padding:0 8px;border-radius:14px;border:1.5px solid {{ l.bd }};background:{{ l.bg }};color:{{ l.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ l.label }}</button>
             </sc-for>
           </div>
           <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">Interfeys matnlari tarjima qilinadi. Do'kon, kuryer nomlari va huquqiy manbalar asl holida qoladi.</span>
@@ -2934,7 +2934,7 @@ const RU = {
   "Nyu-Yorkning premium o'yinchoq do'koni":'Премиальный магазин игрушек Нью-Йорка',
   'Barbie va Hot Wheels kolleksiyalari':'Коллекции Barbie и Hot Wheels',
   'TAQIQ':'ЗАПРЕТ', "BO'LIM":'РАЗДЕЛ',
-  "Bojxona me'yorlari:":'Таможенные нормы:', '\u00b7 oxirgi tekshiruv':'\u00b7 последняя проверка',
+  "Bojxona me'yorlari:":'Таможенные нормы:', "BHM {0} so'm":'БРВ {0} сум', '\u00b7 oxirgi tekshiruv':'\u00b7 последняя проверка',
   "boj va yig'imni hisoblang \u00b7":'рассчитайте пошлину и сбор \u00b7',
   "misol: $320 va 2,5 kg uchun {0} so'm":'пример: за $320 и 2,5 кг {0} сум', "hozir {0} so'm":'сейчас {0} сум',
   "ta platforma uchun to'liq qo'llanma \u2014 bosqichlar, kalkulyator, lug'at va FAQ bilan.":'платформ с полной инструкцией \u2014 шаги, калькулятор, словарь и FAQ.',
@@ -3843,8 +3843,14 @@ const CUSTOMS_SECTIONS = ["Bojsiz me'yor", "Yagona bojxona to'lovi", 'Taqiqlanga
 let USD_RATE = 12650;
 const NORMS = [
   { from:'2025-08-01', bhm:412000, freeUsd:200, dutyPct:0.30, minPerKg:3, feeShare:0.25, src:"VMQ 244-son, 19.04.2025" },
-  { from:'2026-09-01', bhm:440000, freeUsd:200, dutyPct:0.30, minPerKg:3, feeShare:0.25, src:"VMQ 244-son, 19.04.2025 · BHM 440 000 so'm" }
+  { from:'2026-09-01', bhm:440000, freeUsd:200, dutyPct:0.30, minPerKg:3, feeShare:0.25, src:"VMQ 244-son, 19.04.2025" }
 ];
+const BAN_HAY = new Map();
+const banHay = b => {
+  let h = BAN_HAY.get(b.name);
+  if (h === undefined) { h = norm(b.name + ' ' + b.note + ' ' + (b.syn || '')); BAN_HAY.set(b.name, h); }
+  return h;
+};
 const normsAt = (d = new Date()) => {
   const iso = new Date(d).toISOString().slice(0, 10);
   const list = NORMS.filter(n => n.from <= iso);
@@ -3988,9 +3994,9 @@ const SERVICES = [
 ];
 
 const BANNED = [
-  { icon:'giyohvand', name:'Giyohvandlik vositalari, psixotrop moddalar va prekursorlar', level:'red', src:'VMQ 330-son, 1-band, 5–7-ilovalar', note:'Bu moddalar muomalasi cheklangan, to\'liq ro\'yxatlar 5–7-ilovalarda keltirilgan. Shaxsiy tibbiy foydalanish istisnolari 191-son Nizomga muvofiq qo\'llanadi.' },
-  { icon:'qurol', name:'Fuqaroviy qurol va uning o\'q-dorilari', level:'amber', src:'O\'RQ-550, 31–32-moddalar; VMQ 366-son', note:'IIV ruxsatnomasi talab etiladi. Vaqtincha turgan chet el fuqarolari faqat ov va sport qurolini tegishli taklifnoma hamda ruxsatnoma bilan olib kirishi mumkin. Import ruxsatnomasi arizasi 10 ish kunida ko\'riladi.' },
-  { icon:'radio', name:'Radioelektron vositalar va yuqori chastotali qurilmalar', level:'amber', src:'VMQ 801-son 4-ilova; VMQ 417-son', note:'EMMM ruxsatnomasi bilan olib kiriladi. Ro\'yxatda ayrim telefoniya apparatlari, sun\'iy yo\'ldosh aloqa apparatlari, bazaviy stansiyalar, signal generatorlar va uchuvchisiz uchish apparatlari bor. REV uchun 7, YuChQ uchun 5 ish kuni; yig\'im undirilmaydi.' },
+  { icon:'giyohvand', syn:'narkotik наркотик', name:'Giyohvandlik vositalari, psixotrop moddalar va prekursorlar', level:'red', src:'VMQ 330-son, 1-band, 5–7-ilovalar', note:'Bu moddalar muomalasi cheklangan, to\'liq ro\'yxatlar 5–7-ilovalarda keltirilgan. Shaxsiy tibbiy foydalanish istisnolari 191-son Nizomga muvofiq qo\'llanadi.' },
+  { icon:'qurol', syn:'pistolet pnevmatik пистолет пневматика оружие', name:'Fuqaroviy qurol va uning o\'q-dorilari', level:'amber', src:'O\'RQ-550, 31–32-moddalar; VMQ 366-son', note:'IIV ruxsatnomasi talab etiladi. Vaqtincha turgan chet el fuqarolari faqat ov va sport qurolini tegishli taklifnoma hamda ruxsatnoma bilan olib kirishi mumkin. Import ruxsatnomasi arizasi 10 ish kunida ko\'riladi.' },
+  { icon:'radio', syn:'ratsiya walkie talkie рация', name:'Radioelektron vositalar va yuqori chastotali qurilmalar', level:'amber', src:'VMQ 801-son 4-ilova; VMQ 417-son', note:'EMMM ruxsatnomasi bilan olib kiriladi. Ro\'yxatda ayrim telefoniya apparatlari, sun\'iy yo\'ldosh aloqa apparatlari, bazaviy stansiyalar, signal generatorlar va uchuvchisiz uchish apparatlari bor. REV uchun 7, YuChQ uchun 5 ish kuni; yig\'im undirilmaydi.' },
   { icon:'diniy', name:'Diniy mazmundagi materiallar', level:'amber', src:'VMQ 180-son Nizom, 3, 9–12, 16–19, 27–30-bandlar', note:'Ijobiy dinshunoslik ekspertizasi xulosasidan keyin olib kiriladi. Jismoniy shaxs o\'z ehtiyoji va ilmiy-tadqiqot uchun har bir nomlanishdan 3 nusxadan oshmagan miqdorda olib kirishi mumkin. Ekspertiza odatda 10, zaruratda 20 ish kunigacha.' },
   { icon:'gologramma', name:'Xulosasi va gologrammasi yo\'q diniy materiallar', level:'red', src:'VMQ 180-son Nizom, 11-band', note:'Ijobiy xulosa olinmagan va gologramma bilan tamg\'alanmagan materiallarni hududga olib kirish, saqlash va realizatsiya qilish taqiqlanadi.' },
   { icon:'yovvoyi', name:'Saqlanishi taqiqlangan yovvoyi hayvonlar', level:'red', src:'VMQ 736-son 1-ilova; VMQ 821-son', note:'736-sonning 1-ilovasida zaharli va yirtqich hayvonlarning keng ro\'yxati berilgan. Ushbu ro\'yxatdagi hayvonlarni jismoniy shaxslar olib kirishi taqiqlanadi va ruxsatnoma berilmaydi.' },
@@ -3998,19 +4004,19 @@ const BANNED = [
   { icon:'kimyoviy', name:'O\'g\'it va kimyoviy vositalarni pochta orqali yuborish', level:'red', src:'VMQ 481-son pasporti, 9-band "o" kichik bandi', note:'Qo\'l yuki, bagaj, pochta jo\'natmasi yoki boshqa yuk bilan olib o\'tish taqiqlanadi. Faqat tajriba-sinov uchun ruxsatnoma asosida pochta jo\'natmasi mumkin.' },
   { icon:'madaniy', name:'Madaniy boyliklar', level:'amber', src:'"Madaniy boyliklar" Qonuni 5-modda; VMQ 131-son', note:'Import va eksport yagona davlat tartibiga, ro\'yxatga olish va ekspertizaga bo\'ysunadi. Miqdoriy limit ushbu hujjatlarda aniqlanmagan.' },
   { icon:'ozuqa', name:'Hayvonotga mansub oziq-ovqat mahsulotlari', level:'amber', src:'PQ-4508, 1-band', note:'Qo\'l yuki, kuzatib borilayotgan bagaj va pochta jo\'natmalari orqali olib kiriladigan hayvonotga mansub oziq-ovqat mahsulotlarida ishlab chiqarish o\'rovi majburiy.' },
-  { icon:'vape', name:'Elektron sigaretalar va nikotinli suyuqliklar', level:'red', src:'O\'RQ-844, 24.05.2023, 37-modda', note:'Nikotinni iste\'mol qiluvchi va oshiruvchi qo\'shimchalarli suyuqliklar hamda moslamalarni olib kirish va realizatsiya qilish taqiqlanadi.' },
+  { icon:'vape', syn:'vape veyp pod elektron sigaret sigareta вейп электронная сигарета', name:'Elektron sigaretalar va nikotinli suyuqliklar', level:'red', src:'O\'RQ-844, 24.05.2023, 37-modda', note:'Nikotinni iste\'mol qiluvchi va oshiruvchi qo\'shimchalarli suyuqliklar hamda moslamalarni olib kirish va realizatsiya qilish taqiqlanadi.' },
   { icon:'portlovchi', name:'Portlovchi materiallar va masofadan portlatish qurilmalari', level:'red', src:'VMQ 213, 06.05.2004, 2-band', note:'Jismoniy shaxslar tomonidan olib kirish qat\'iyan taqiqlangan, kuzatilmaydigan bagajda ham.' },
   { icon:'qimor', name:'Pul yutug\'i bo\'lgan o\'yin avtomatlari', level:'red', src:'VMQ 176, 16.08.2007, 1-band', note:'Umuman olib kirish taqiqlanadi, nazorat bojxona qo\'mitasi zimmasida.' },
   { icon:'portlovchi', name:'Pirotexnika vositalari (II xavflilik sinfi)', level:'red', src:'VMQ 309, 10.12.2009, 1-band', note:'Uy-ro\'zg\'or pirotexnikasini olib kirish, ishlab chiqarish, saqlash, realizatsiya va foydalanish vaqtincha taqiqlangan.' },
   { icon:'lazer', name:'Portativ lazerli nur tarqatuvchilar', level:'red', src:'VMQ 50, 20.02.2013, 1-band · TN kod 9013 20 0000', note:'2013-yil 1-martdan chetdan kirishi va savdosi taqiqlangan.' },
-  { icon:'dron', name:'Uchuvchisiz uchish apparatlari (dron)', level:'amber', src:'VMQ 658, 15.11.2022 · TN 8802200001, 8802200002, 8802200008, 8803100000, 8803200000', note:'Fuqarolik aviatsiyasi agentligi ruxsatnomasi talab qilinadi. Olib kirish bojxona nazorati ostida amalga oshiriladi, noqonuniy olib kirish taqiqlanadi.' },
+  { icon:'dron', syn:'kvadrokopter quadcopter drone квадрокоптер', name:'Uchuvchisiz uchish apparatlari (dron)', level:'amber', src:'VMQ 658, 15.11.2022 · TN 8802200001, 8802200002, 8802200008, 8803100000, 8803200000', note:'Fuqarolik aviatsiyasi agentligi ruxsatnomasi talab qilinadi. Olib kirish bojxona nazorati ostida amalga oshiriladi, noqonuniy olib kirish taqiqlanadi.' },
   { icon:'pech', name:'Ishlatilgan induksion pechlar va kameralar', level:'red', src:'VMQ 999, 14.12.2019, 1-band · TN kod 8514 20 1000', note:'2020-yil 1-martdan boshlab ishlab chiqilganiga 3 yildan oshgan uskunani shaxsiy import uchun olib kirish taqiqlanadi.' },
   { icon:'ekstremist', name:'Ekstremistik, zo\'ravonlik va pornografik materiallar', level:'red', src:'PF-5286, 15.12.2017, 2-ilova', note:'Terrorchilik, zo\'ravonlik, irqchilik, diniy nafrat va pornografiya mazmunidagi materiallar importi va tarqatilishi umuman taqiqlangan.' },
   { icon:'valyuta', name:'O\'zbekiston pul belgilari va xorijiy valyuta', level:'red', src:'AV-2219, 3-ilova, 1-band', note:'Markaziy bank va uning muassasalari tomonidan yuboriladiganlardan tashqari barcha holatlarda taqiqlanadi.' },
   { icon:'hayvon', name:'Tirik hayvonlar', level:'red', src:'AV-2219, 3-ilova, 1-band', note:'Pochta jo\'natmalari orqali yuborish taqiqlanadi.' },
   { icon:'qimmatbaho', name:'Qimmatbaho buyumlar (qiymati e\'lon qilinmagan posilkada)', level:'red', src:'AV-2219, 3-ilova, 4-band', note:'Tangalar, bank va kredit chiptalari, yo\'l cheklari, platina, oltin yoki kumushdan yasalgan buyumlar, ishlov berilmagan qimmatbaho toshlar va zargarlik buyumlarini qiymati e\'lon qilinmagan posilkada jo\'natish taqiqlanadi.' },
-  { icon:'alkogol', name:'Alkogol va tamaki mahsulotlari', level:'red', src:'VMQ-244, 1-ilova', note:'Xalqaro pochta va kuryerlik jo\'natmalari orqali olib kirilishi taqiqlanadi.' },
-  { icon:'dori', name:'Dori vositalari', level:'amber', src:'Sog\'liqni saqlash vazirligi tartibi', note:'Shaxsiy tibbiy foydalanish uchun retsept va tegishli ruxsat bilan olib kiriladi, miqdor davolash kursiga mos bo\'lishi kerak.' }
+  { icon:'alkogol', syn:'vino pivo spirt aroq sigareta tamaki вино пиво водка сигареты табак', name:'Alkogol va tamaki mahsulotlari', level:'red', src:'VMQ-244, 1-ilova', note:'Xalqaro pochta va kuryerlik jo\'natmalari orqali olib kirilishi taqiqlanadi.' },
+  { icon:'dori', syn:'tabletka vitamin dorilar лекарство таблетки витамины', name:'Dori vositalari', level:'amber', src:'Sog\'liqni saqlash vazirligi tartibi', note:'Shaxsiy tibbiy foydalanish uchun retsept va tegishli ruxsat bilan olib kiriladi, miqdor davolash kursiga mos bo\'lishi kerak.' }
 ];
 
 /* Kartochkalardagi raqamlar amaldagi me'yordan hisoblanadi: BHM o'zgarganda
@@ -4527,7 +4533,12 @@ class Component extends DCLogic {
     const root = this._rootRef.current;
     if (!root || typeof document.createTreeWalker !== 'function') return;
     const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-      acceptNode: n => (n.nodeValue && n.nodeValue.trim()) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+      /* translate="no" ichidagi matn o'z holicha qoladi: til tugmalari
+         ("Ўзбекча") ruscha rejimda lotinga o'girilib, keyin qaytmay
+         qolardi — DOM matni bir marta almashtirilgach React uni qayta
+         chizmaydi. */
+      acceptNode: n => (n.nodeValue && n.nodeValue.trim() && !(n.parentElement && n.parentElement.closest('[translate="no"]')))
+        ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
     });
     let n;
     while ((n = w.nextNode())) {
@@ -4872,14 +4883,17 @@ class Component extends DCLogic {
     const monthList = (st.monthly || []).filter(x => String(x.date).slice(0, 7) === mKey);
     const mTot = monthList.reduce((a, x) => ({ usd: a.usd + num(x.usd), kg: a.kg + num(x.kg) }), { usd: 0, kg: 0 });
     const mPct = NC.freeUsd > 0 ? mTot.usd / NC.freeUsd * 100 : 0;
-    const bq = st.banQuery.trim().toLowerCase();
+    /* Taqiq qidiruvi ham umumiy norm() dan o'tadi: "сигарет" -> "sigaret",
+       apostrof va x/ks farqlari yumshaydi. Ilgari oddiy toLowerCase edi va
+       kirillcha so'rov hech narsa topmasdi. */
+    const bq = norm(st.banQuery);
     /* Har bir setState'da butun shablon qayta hisoblanadi. Shuning uchun
        og'ir ro'yxatlar faqat o'z ekrani ochiq bo'lgandagina quriladi —
        masalan bosh sahifada qidiruv yozayotganda taqiqlar jadvali yoki
        do'konlar ro'yxati qayta yasalmaydi. */
     const banRows = cur !== 'csec' ? [] : BANNED
       .filter(b => st.banFilter === 0 || (st.banFilter === 1 ? b.level === 'red' : b.level === 'amber'))
-      .filter(b => !bq || b.name.toLowerCase().includes(bq) || b.note.toLowerCase().includes(bq))
+      .filter(b => !bq || matches(banHay(b), bq))
       .map((b, i) => ({
         ...b, ...LV[b.level],
         pic: "url('icons/ban/" + b.icon + ".webp')",
@@ -5756,7 +5770,8 @@ class Component extends DCLogic {
         this.forceUpdate();
       },
       ...(() => { const ps = planStamp(st.plans); return { planNum: ps.num, planDate: ps.date }; })(),
-      normsSrc: normsAt().src,
+      /* Manba hujjat nomi asl holida, BHM qismi esa tarjima bilan. */
+      normsSrc: normsAt().src + ' · ' + tx(st.lang, "BHM {0} so'm", money(normsAt().bhm)),
       normsChecked: NORMS_META.checked ? fmtDate(NORMS_META.checked) : 'ma\'lumot yo\'q',
       banQuery: st.banQuery,
       onBanQuery: e => this.setState({ banQuery: e.target.value, banOpen: null }),
