@@ -83,6 +83,35 @@ npm run flags        # fonts/flags-src/*.svg -> fonts/flags.woff2
 - **Valyuta kursi** — Markaziy bankdan (cbu.uz) avtomatik olinadi, 6 soatda bir marta; olinmasa oxirgi saqlangan qiymat "oflayn zaxira" deb belgilanadi.
 - **Xato haqida xabar** — ilovadagi tugma `REPORT_URL` manziliga olib boradi (hozir GitHub Issues; Telegram havolasiga almashtirish mumkin).
 
+## Tillar
+
+Ilova uch tilda: o'zbek lotin (`uz`), o'zbek kirill (`uzc`) va rus (`ru`).
+Manba faqat lotinchada yoziladi; qolgan ikkitasi `applyLang` orqali har
+chizishdan keyin DOM matn tugunlariga qo'llanadi (`aria-label` va
+`placeholder` ham).
+
+**Ruscha** — `RU` lug'ati (`dc.html` ichida), butun satr bo'yicha aniq
+moslik. "43 ta do'kon" yoki "🇨🇳 Xitoy" kabi satrlarda boshidagi raqam va
+bayroq ajratiladi, faqat qolgan qism tarjima qilinadi. Raqam ichida
+turadigan satrlar (`me'yordan $120 ortiq`) `tx(lang, shablon, ...qiymat)`
+orqali yasaladi: lug'atda `{0}` o'rinbosari bilan turadi, raqam keyin
+qo'yiladi. Ma'lumotlar bazasidan kelgan matn (kuryer izohi, tariflar,
+do'kon tavsifi) ruschaga tarjima qilinmagan — o'sha elementlar
+`lang="uz"` bilan belgilangan, ruscha sahifada ular o'zbekcha qoladi.
+
+**Kirill** — lug'atga bog'liq emas: har qanday o'zbekcha lotin satr
+`toCyrProse` bilan avtomatik o'giriladi. Brend nomlari (do'kon, kuryer,
+qo'llanma nomlari — `CYR_PHRASES`), valyuta kodlari va inglizcha
+so'zlar (`CYR_KEEP`), manzil va e-mail lotin qoladi. Undoshdan keyingi
+"ye" yumshatish belgisi bilan o'giriladi (kuryer -> курьер). Ilgari
+kirill faqat lug'at kalitlari uchun ishlar edi va chuqur ekranlar
+(bojxona bo'limlari, kuryer sahifalari) lotinchada qolib ketardi.
+
+Smoke test ikkala tilda chuqur ekranlarni ham aylanib chiqadi: qidiruv,
+kuzatuv, do'kon va kuryer papkalari, taqqoslash, bojxonaning oltita
+bo'limi, xizmatlar. Ruscha rejimda `lang="uz"` ichidagi matn, kirillda
+brend nomlari va manzillar hisobga olinmaydi.
+
 ## Telegram bot ichida ochish
 
 Ilova Telegram Mini App sifatida to'liq ekranda ochiladi. Botga ulash:
@@ -390,4 +419,4 @@ tomon serveriga birorta ham so'rov qolmadi.
 
 ## O'lcham byudjeti
 
-`npm run check` quyidagilarni tekshiradi: kuryer logotiplari ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 120 KB, do'kon logotiplari ≤ 260 KB, qo'llanmalar ≤ 470 KB, `index.html` ≤ 420 KB. Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.
+`npm run check` quyidagilarni tekshiradi: kuryer logotiplari ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 120 KB, do'kon logotiplari ≤ 260 KB, qo'llanmalar ≤ 470 KB, `index.html` ≤ 560 KB. Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.

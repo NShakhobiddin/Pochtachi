@@ -567,7 +567,7 @@
                 </div>
                 <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
                   <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.title }}</span>
-                  <span style="font-size:13px;color:#6B6C85;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.sub }}</span>
+                  <span lang="{{ dataLang }}" style="font-size:13px;color:#6B6C85;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.sub }}</span>
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none">
                   <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#1A1FB0;font-variant-numeric:tabular-nums">{{ p.total }}</span>
@@ -751,7 +751,7 @@
             <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
             <input value="{{ hq }}" sc-camel-on-input="{{ onHq }}" placeholder="Do'kon, kuryer yoki mahsulot" type="search" enterkeyhint="search" aria-label="Do'kon, kuryer yoki mahsulot izlash" style="flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;font-weight:500;color:#131429">
             <sc-if value="{{ hqOn }}" hint-placeholder-val="{{ false }}">
-              <button sc-camel-on-click="{{ clearHq }}" style="width:28px;height:28px;border-radius:999px;border:none;background:#F1F1F8;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none" style-hover="background:#F1F1F8">
+              <button sc-camel-on-click="{{ clearHq }}" aria-label="Tozalash" style="width:32px;height:32px;border-radius:999px;border:none;background:#F1F1F8;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none" style-hover="background:#F1F1F8">
                 <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6B6C85" stroke-width="2.7" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
               </button>
             </sc-if>
@@ -776,7 +776,7 @@
                   </div>
                   <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
                     <span style="font-size:15px;font-weight:700;color:#131429">{{ r.name }}</span>
-                    <span style="font-size:11px;font-weight:600;color:#6B6C85">{{ r.sub }}</span>
+                    <span lang="{{ dataLang }}" style="font-size:11px;font-weight:600;color:#6B6C85">{{ r.sub }}</span>
                   </div>
                   <span style="flex:none;font-size:11px;font-weight:600;color:#1A1FB0;background:#E9EAFD;padding:4px 8px;border-radius:999px">{{ r.kind }}</span>
                 </button>
@@ -1045,7 +1045,7 @@
         <sc-for list="{{ store.pros }}" as="p" hint-placeholder-count="3">
           <div style="display:flex;gap:10px;align-items:flex-start">
             <div style="width:6px;height:6px;border-radius:50%;background:#0F7B3E;margin-top:7px;flex:none"></div>
-            <span style="font-size:15px;color:#282944;line-height:1.5">{{ p }}</span>
+            <span lang="{{ dataLang }}" style="font-size:15px;color:#282944;line-height:1.5">{{ p }}</span>
           </div>
         </sc-for>
       </div>
@@ -1060,7 +1060,7 @@
         <sc-for list="{{ store.cons }}" as="c" hint-placeholder-count="2">
           <div style="display:flex;gap:10px;align-items:flex-start">
             <div style="width:6px;height:6px;border-radius:50%;background:#B45309;margin-top:7px;flex:none"></div>
-            <span style="font-size:15px;color:#282944;line-height:1.5">{{ c }}</span>
+            <span lang="{{ dataLang }}" style="font-size:15px;color:#282944;line-height:1.5">{{ c }}</span>
           </div>
         </sc-for>
       </div>
@@ -1085,12 +1085,12 @@
           </div>
           <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Qaytarish siyosati</span>
         </div>
-        <div style="font-size:15px;color:#282944;line-height:1.5;text-wrap:pretty">{{ store.returns }}</div>
+        <div lang="{{ dataLang }}" style="font-size:15px;color:#282944;line-height:1.5;text-wrap:pretty">{{ store.returns }}</div>
       </div>
 
       <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
         <div style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85">Kim uchun mos</div>
-        <div style="font-size:15px;color:#131429;font-weight:500;line-height:1.5;text-wrap:pretty">{{ store.forWhom }}</div>
+        <div lang="{{ dataLang }}" style="font-size:15px;color:#131429;font-weight:500;line-height:1.5;text-wrap:pretty">{{ store.forWhom }}</div>
       </div>
 
       <div style="display:flex;flex-direction:column;gap:10px">
@@ -1162,7 +1162,7 @@
               <!-- 3D bayroq rasmi: soyasi rasm ichida, shuning uchun CSS
                    soyasi kerak emas. Faqat shu ekranda; qolgan joylarda
                    bayroq emoji bo'lib qoladi. -->
-              <div style="width:64px;height:48px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ courierTop.flagPic }}" role="img" sc-camel-aria-label="{{ courierTop.title }} bayrog'i"></div>
+              <div style="width:64px;height:48px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ courierTop.flagPic }}" role="img" aria-label="{{ courierTop.title }} bayrog'i"></div>
               <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
                 <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#4F8A92">Eng ko'p kuryer</span>
                 <div style="display:flex;align-items:baseline;gap:6px">
@@ -1184,7 +1184,7 @@
                   <!-- Chetdagi davlat bayrog'i. O'zbekiston bayrog'i har
                        plitkada takrorlanardi — bo'lim allaqachon "qayerdan
                        olib keladi" haqida, shuning uchun olib tashlandi. -->
-                  <div style="width:48px;height:36px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ f.flagPic }}" role="img" sc-camel-aria-label="{{ f.title }} bayrog'i"></div>
+                  <div style="width:48px;height:36px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ f.flagPic }}" role="img" aria-label="{{ f.title }} bayrog'i"></div>
                   <span style="flex:none;font-size:11px;font-weight:600;color:{{ f.tintFg }};background:{{ f.tintChip }};padding:4px 8px;border-radius:999px;font-variant-numeric:tabular-nums">{{ f.count }}</span>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
@@ -1266,7 +1266,7 @@
                 </div>
                 <div style="flex:1;display:flex;flex-direction:column;gap:6px;min-width:0">
                   <div style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">{{ c.name }}</div>
-                  <div style="font-size:13px;color:#6B6C85;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.route }}</div>
+                  <div lang="{{ dataLang }}" style="font-size:13px;color:#6B6C85;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.route }}</div>
                   <div style="font-size:15px;letter-spacing:2px">{{ c.flags }}</div>
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none">
@@ -1320,7 +1320,7 @@
           <div style="display:flex;border-top:1px solid #F1F1F8">
             <div style="width:92px;flex:none;padding:12px 14px;font-size:13px;color:#6B6C85;font-weight:500">{{ r.k }}</div>
             <sc-for list="{{ r.vals }}" as="v" hint-placeholder-count="2">
-              <div style="flex:1;padding:12px 10px;font-size:13px;font-weight:700;color:#131429;font-variant-numeric:tabular-nums">{{ v }}</div>
+              <div lang="{{ dataLang }}" style="flex:1;padding:12px 10px;font-size:13px;font-weight:700;color:#131429;font-variant-numeric:tabular-nums">{{ v }}</div>
             </sc-for>
           </div>
         </sc-for>
@@ -1355,7 +1355,7 @@
           </div>
         </div>
         <sc-if value="{{ courier.hasNote }}" hint-placeholder-val="{{ false }}">
-          <span style="font-size:13px;color:#4E4F6B;line-height:1.5;text-wrap:pretty">{{ courier.note }}</span>
+          <span lang="{{ dataLang }}" style="font-size:13px;color:#4E4F6B;line-height:1.5;text-wrap:pretty">{{ courier.note }}</span>
         </sc-if>
         <div style="display:flex;flex-wrap:wrap;gap:8px">
           <sc-for list="{{ courier.links }}" as="l" hint-placeholder-count="3">
@@ -1377,7 +1377,7 @@
         <sc-for list="{{ courier.meta }}" as="m" hint-placeholder-count="3">
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px">
             <span style="font-size:13px;font-weight:500;color:#6B6C85;flex:none">{{ m.k }}</span>
-            <span style="font-size:13px;font-weight:700;color:#131429;text-align:right;line-height:1.5">{{ m.v }}</span>
+            <span lang="{{ dataLang }}" style="font-size:13px;font-weight:700;color:#131429;text-align:right;line-height:1.5">{{ m.v }}</span>
           </div>
         </sc-for>
       </div>
@@ -1393,14 +1393,14 @@
                 <span style="font-size:11px;font-weight:600;color:#1A1FB0;background:#E9EAFD;padding:4px 10px;border-radius:999px;flex:none">{{ t.t }}</span>
               </sc-if>
             </div>
-            <span style="font-size:13px;font-weight:500;color:#131429;line-height:1.5;text-wrap:pretty">{{ t.v }}</span>
+            <span lang="{{ dataLang }}" style="font-size:13px;font-weight:500;color:#131429;line-height:1.5;text-wrap:pretty">{{ t.v }}</span>
             <sc-if value="{{ t.d }}" hint-placeholder-val="{{ true }}">
-              <span style="font-size:13px;font-weight:700;color:#1A1FB0">{{ t.d }}</span>
+              <span lang="{{ dataLang }}" style="font-size:13px;font-weight:700;color:#1A1FB0">{{ t.d }}</span>
             </sc-if>
             <sc-for list="{{ t.meta }}" as="m" hint-placeholder-count="2">
               <div style="display:flex;gap:10px;align-items:baseline">
                 <span style="font-size:11px;font-weight:700;color:#6B6C85;flex:none;width:74px">{{ m.k }}</span>
-                <span style="font-size:13px;color:#4E4F6B;line-height:1.5;flex:1">{{ m.v }}</span>
+                <span lang="{{ dataLang }}" style="font-size:13px;color:#4E4F6B;line-height:1.5;flex:1">{{ m.v }}</span>
               </div>
             </sc-for>
           </div>
@@ -1417,7 +1417,7 @@
               </div>
               <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
                 <span style="font-size:13px;font-weight:700;color:#131429">{{ s.k }}</span>
-                <span style="font-size:13px;color:#4E4F6B;line-height:1.5;text-wrap:pretty">{{ s.v }}</span>
+                <span lang="{{ dataLang }}" style="font-size:13px;color:#4E4F6B;line-height:1.5;text-wrap:pretty">{{ s.v }}</span>
               </div>
             </div>
           </sc-for>
@@ -1435,7 +1435,7 @@
           <sc-for list="{{ courier.limits }}" as="l" hint-placeholder-count="3">
             <div style="display:flex;flex-direction:column;gap:4px">
               <span style="font-size:13px;font-weight:700;color:#9B1C1C">{{ l.k }}</span>
-              <span style="font-size:13px;color:#4E4F6B;line-height:1.5;text-wrap:pretty">{{ l.v }}</span>
+              <span lang="{{ dataLang }}" style="font-size:13px;color:#4E4F6B;line-height:1.5;text-wrap:pretty">{{ l.v }}</span>
             </div>
           </sc-for>
         </div>
@@ -2081,7 +2081,7 @@
             </div>
             <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
               <span style="font-size:15px;font-weight:700;color:#131429;line-height:1.5">{{ t.name }}</span>
-              <span style="font-size:11px;font-weight:600;color:#6B6C85">{{ t.note }}</span>
+              <span lang="{{ dataLang }}" style="font-size:11px;font-weight:600;color:#6B6C85">{{ t.note }}</span>
             </div>
             <div style="display:flex;gap:8px;flex:none">
               <sc-if value="{{ t.hasSite }}" hint-placeholder-val="{{ true }}">
@@ -2140,7 +2140,7 @@
 
         <div style="display:flex;flex-direction:column;gap:8px">
           <sc-if value="{{ wizCanBack }}" hint-placeholder-val="{{ false }}">
-            <button sc-camel-on-click="{{ wizBack }}" style="align-self:flex-start;display:flex;align-items:center;gap:6px;background:none;border:none;padding:4px 0;margin-bottom:-2px;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer" style-hover="opacity:.75">
+            <button sc-camel-on-click="{{ wizBack }}" style="align-self:flex-start;display:flex;align-items:center;gap:6px;background:none;border:none;min-height:32px;padding:4px 0;margin-bottom:-2px;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer" style-hover="opacity:.75">
               <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
               {{ wizBackLabel }}
             </button>
@@ -2189,13 +2189,13 @@
                 <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85">Mahsulot narxi</span>
                 <div style="display:flex;align-items:center;gap:8px;background:#F1F1F8;border-radius:20px;padding:0 14px;height:56px;box-shadow:inset 0 0 0 1px #E3E4EE">
                   <span style="font-size:26px;font-weight:800;color:#6B6C85">$</span>
-                  <input value="{{ wizPrice }}" sc-camel-on-input="{{ onWizPrice }}" inputmode="decimal" size="1" style="flex:1;min-width:0;width:100%;border:none;background:transparent;outline:none;font-size:26px;letter-spacing:-.03em;font-weight:800;color:#131429;font-variant-numeric:tabular-nums">
+                  <input value="{{ wizPrice }}" sc-camel-on-input="{{ onWizPrice }}" inputmode="decimal" size="1" aria-label="Mahsulot narxi, AQSh dollarida" autocomplete="off" style="flex:1;min-width:0;width:100%;border:none;background:transparent;outline:none;font-size:26px;letter-spacing:-.03em;font-weight:800;color:#131429;font-variant-numeric:tabular-nums">
                 </div>
               </div>
               <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
                 <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85">Og'irligi</span>
                 <div style="display:flex;align-items:center;gap:8px;background:#F1F1F8;border-radius:20px;padding:0 14px;height:56px;box-shadow:inset 0 0 0 1px #E3E4EE">
-                  <input value="{{ wizWeight }}" sc-camel-on-input="{{ onWizWeight }}" inputmode="decimal" size="1" style="flex:1;min-width:0;width:100%;border:none;background:transparent;outline:none;font-size:26px;letter-spacing:-.03em;font-weight:800;color:#131429;font-variant-numeric:tabular-nums">
+                  <input value="{{ wizWeight }}" sc-camel-on-input="{{ onWizWeight }}" inputmode="decimal" size="1" aria-label="Og'irligi, kilogrammda" autocomplete="off" style="flex:1;min-width:0;width:100%;border:none;background:transparent;outline:none;font-size:26px;letter-spacing:-.03em;font-weight:800;color:#131429;font-variant-numeric:tabular-nums">
                   <span style="font-size:15px;font-weight:700;color:#6B6C85">kg</span>
                 </div>
               </div>
@@ -2577,9 +2577,10 @@
     </div>
   </sc-if>
 
-  <sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}">
-    <div style="position:absolute;left:18px;right:18px;bottom:96px;background:#131429;color:#fff;border-radius:20px;padding:14px 16px;font-size:15px;font-weight:500;line-height:1.5;z-index:30;box-shadow:0 -2px 24px rgba(25,20,80,.14)">{{ toastText }}</div>
-  </sc-if>
+  <!-- Jonli hudud (role=status) doim DOM da turadi: ekran o'quvchi faqat
+       oldindan mavjud hududdagi o'zgarishni o'qiydi. Xabar yo'q paytda u
+       shaffof va bosilmaydi. -->
+  <div role="status" aria-live="polite" style="position:absolute;left:18px;right:18px;bottom:96px;background:#131429;color:#fff;border-radius:20px;padding:14px 16px;font-size:15px;font-weight:500;line-height:1.5;z-index:30;box-shadow:0 -2px 24px rgba(25,20,80,.14);opacity:{{ toastOpacity }};pointer-events:none;transition:opacity .18s">{{ toastText }}</div>
 
 </div>
 </div>
@@ -2663,6 +2664,20 @@ const loadState = () => {
     ['favs', 'searches'].forEach(k => {
       o[k] = Array.isArray(o[k]) ? o[k].filter(v => typeof v === 'string') : [];
     });
+    /* Filtr va sozlamalar ham tekshiriladi: buzuq qiymat (masalan, massiv
+       o'rniga satr) ilgari birinchi chizishdayoq TypeError berib, ilova
+       umuman ochilmay qolardi. Noto'g'ri qiymat shunchaki tashlab
+       yuboriladi — boshlang'ich holat ishlaydi. */
+    ['storeCountries', 'storeCats', 'courierCountries'].forEach(k => {
+      if (o[k] !== undefined && !(Array.isArray(o[k]) && o[k].every(v => typeof v === 'string'))) delete o[k];
+    });
+    ['lang', 'trackNo', 'storeGroup', 'courierMode', 'sort', 'lastTab', 'svcLane', 'storeFolderBy'].forEach(k => {
+      if (o[k] !== undefined && o[k] !== null && typeof o[k] !== 'string') delete o[k];
+    });
+    if (o.lang !== undefined && !['uz', 'uzc', 'ru'].includes(o.lang)) delete o.lang;
+    if (o.sort !== undefined && !['price', 'days', 'routes'].includes(o.sort)) delete o.sort;
+    if (o.storeGroup !== undefined && !['cat', 'country'].includes(o.storeGroup)) delete o.storeGroup;
+    if (o.courierMode !== undefined && o.courierMode !== null && !['avia', 'avto'].includes(o.courierMode)) delete o.courierMode;
     return o;
   } catch (e) { return {}; }
 };
@@ -2679,10 +2694,15 @@ const saveState = st => {
 };
 const SAVED = loadState();
 
-const CYR_PAIRS = [["O'", 'Ў'], ["o'", 'ў'], ["G'", 'Ғ'], ["g'", 'ғ'], ['Sh', 'Ш'], ['SH', 'Ш'], ['sh', 'ш'], ['Ch', 'Ч'], ['CH', 'Ч'], ['ch', 'ч'], ['Ya', 'Я'], ['YA', 'Я'], ['ya', 'я'], ['Yo', 'Ё'], ['YO', 'Ё'], ['yo', 'ё'], ['Yu', 'Ю'], ['YU', 'Ю'], ['yu', 'ю'], ['Ye', 'Е'], ['ye', 'е']];
+const CYR_PAIRS = [["O'", 'Ў'], ["o'", 'ў'], ["G'", 'Ғ'], ["g'", 'ғ'], ['Sh', 'Ш'], ['SH', 'Ш'], ['sh', 'ш'], ['Ch', 'Ч'], ['CH', 'Ч'], ['ch', 'ч'], ['Ya', 'Я'], ['YA', 'Я'], ['ya', 'я'], ['Yo', 'Ё'], ['YO', 'Ё'], ['yo', 'ё'], ['Yu', 'Ю'], ['YU', 'Ю'], ['yu', 'ю'], ['Ye', 'Е'], ['YE', 'Е'], ['ye', 'е']];
 const CYR_MAP = { a:'а', b:'б', d:'д', e:'е', f:'ф', g:'г', h:'ҳ', i:'и', j:'ж', k:'к', l:'л', m:'м', n:'н', o:'о', p:'п', q:'қ', r:'р', s:'с', t:'т', u:'у', v:'в', x:'х', y:'й', z:'з', "'":'ъ' };
 const toCyr = s => {
   let t = String(s);
+  /* Undoshdan keyingi "ye" — o'zlashma so'zlarda yumshatish belgisi bilan:
+     kuryer -> курьер, premyera -> премьера, karyera -> карьера. Ilgari
+     "Kuryerlar" "Курерлар" bo'lib chiqardi. So'z boshida va unlidan keyin
+     odatdagidek "е" qoladi (yetkazish -> етказиш, Yevropa -> Европа). */
+  t = t.replace(/([bcdfghjklmnpqrstvxz])y(e)/gi, (m, c, e) => c + (e === 'E' ? 'ЬЕ' : (c === c.toUpperCase() && m[1] === 'Y' ? 'ЬЕ' : 'ье')));
   CYR_PAIRS.forEach(p => { t = t.split(p[0]).join(p[1]); });
   return t.replace(/[A-Za-z']/g, ch => {
     const lo = ch.toLowerCase();
@@ -2880,6 +2900,8 @@ const RU = {
   'Kalkulyatorda hisoblash':'Посчитать в калькуляторе', 'Reja tuzish':'Составить план',
   'Xitoy':'Китай', 'Turkiya':'Турция', 'AQSh':'США', 'Yevropa':'Европа', 'Koreya':'Корея',
   'Rossiya':'Россия', 'BAA':'ОАЭ', 'MDH':'СНГ', 'Malayziya':'Малайзия',
+  'Buyuk Britaniya':'Великобритания', 'Global':'Глобальные',
+  "{0} yo'nalishi":'Направление: {0}', 'kg':'кг', 'Sayt':'Сайт', 'avia':'авиа', 'avto':'авто', 'avia · avto':'авиа · авто',
   'Bojxona kalkulyatori':'Таможенный калькулятор', "boj va yig'imni shu yerda hisoblang":'рассчитайте пошлину и сбор',
   'KALENDAR OYDAGI UMUMIY SUMMA':'ОБЩАЯ СУММА ЗА КАЛЕНДАРНЫЙ МЕСЯЦ', 'VAZN':'ВЕС', 'YETKAZISH, 1 KG':'ДОСТАВКА, 1 КГ',
   "Bojsiz me'yor · $200 / oy":'Беспошлинный лимит · $200 / мес', "Taxminiy to'lov":'Примерный платёж', "so'm":'сум',
@@ -2948,18 +2970,157 @@ const RU = {
   "Brend nusxasi (replika) bojxonada olib qo'yiladi. Narx bozordan keskin past bo'lsa, bu birinchi ogohlantirish.":'Копию бренда (реплику) изымают на таможне. Если цена резко ниже рыночной — это первый тревожный знак.',
   "Trek 5-7 kun yangilanmasa vahima qilmang: xalqaro tranzitda skaner nuqtalari orasida uzoq bo'shliq bo'ladi.":'Не паникуйте, если трек не обновляется 5-7 дней: в международном транзите между точками сканирования бывают длинные паузы.',
   "Bayram sovg'asini kamida 5-6 hafta oldin buyurtma qiling — dekabr oxirida barcha yo'nalish sekinlashadi.":'Заказывайте праздничный подарок минимум за 5-6 недель — в конце декабря все направления замедляются.',
+  /* --- Chuqur ekranlar: qidiruv, kuzatuv, do'kon va kuryer papkalari ---
+     Audit shuni ko'rsatdi: bu ekranlar ruscha rejimda o'zbekcha qolib
+     ketgan edi, chunki smoke test faqat beshta bo'limni tekshirardi. */
+  'Qidiruv':'Поиск', 'Nusxa':'Копия', 'universal':'универсальный', 'bo\'lim':'разд.',
+  "Hech narsa topilmadi. Do'kon nomi, kuryer nomi yoki kategoriya bilan urinib ko'ring.":'Ничего не найдено. Попробуйте название магазина, курьера или категорию.',
+  "Hali kuzatiladigan jo'natma yo'q":'Пока нет отслеживаемых отправлений',
+  "Reja tuzsangiz, u shu yerda jo'natmaga aylanadi: holatini belgilab borasiz va trek raqamini saqlaysiz.":'Составьте план — здесь он станет отправлением: вы будете отмечать статус и сохраните трек-номер.',
+  "Holatni o'zingiz belgilaysiz — ilova kuryer tizimlariga ulanmagan. Rasmiy holatni kuryerning o'z sayti yoki botida ko'ring.":'Статус отмечаете вы сами — приложение не подключено к системам курьеров. Официальный статус смотрите на сайте или в боте курьера.',
+  "Rejasiz jo'natma raqamini shu yerda saqlab, quyidagi kuryer saytiga qo'ying.":'Сохраните здесь номер отправления без плана и вставьте его на сайте курьера ниже.',
+  'Bojxona xabarnomasi':'Уведомление таможни',
+  "Jo'natma bojxonada ushlansa, YIDXP orqali tasdiqlanadi":'Если отправление задержит таможня, подтверждение — через ЕПИГУ',
+  "Bo'lim tanlang":'Выберите раздел', 'Tovar turi':'Тип товара', 'Hamma turdagi tovarlar':'Товары всех типов',
+  'Kiyim, sumka, aksessuar':'Одежда, сумки, аксессуары', 'Krossovka, sneaker, sport':'Кроссовки, сникеры, спорт',
+  'Gadjet, texnika, komponent':'Гаджеты, техника, комплектующие', "Parvarish va bo'yoq":'Уход и макияж',
+  'Bolalar va chaqaloqlar uchun':'Для детей и малышей', "Barcha do'konlar":'Все магазины',
+  'Arzon narx, keng tanlov':'Низкие цены, широкий выбор', 'Original brend va texnika':'Оригинальные бренды и техника',
+  'Yaqin ombor, tez yetkazish':'Близкий склад, быстрая доставка', 'Moda va kosmetika':'Мода и косметика',
+  'Dubay omborlari orqali':'Через склады в Дубае', "Ko'p davlatga yuboradi":'Отправляет во многие страны',
+  "To'g'ridan-to'g'ri":'Напрямую', "ta do'kon topildi":'магазинов найдено', 'VPN kerak':'Нужен VPN',
+  'Sotuvchiga bog\'liq':'Зависит от продавца', 'Buyurtma murakkab':'Заказ сложный', 'Buyurtma oson':'Заказ простой',
+  "Bu do'kondan qanday keltirish":'Как доставить из этого магазина', 'Vositachi (kuryer) kerak':'Нужен посредник (курьер)',
+  "O'zbekistonga to'g'ridan-to'g'ri yuboradi":'Отправляет в Узбекистан напрямую',
+  "Do'kon O'zbekistonga yubormaydi. Chetdagi ombor manzilini beruvchi kuryer tanlanadi, tovar o'sha manzilga keladi va u yerdan sizga jo'natiladi.":'Магазин не отправляет в Узбекистан. Выбирается курьер, который даёт адрес зарубежного склада: товар приходит туда, а оттуда отправляется вам.',
+  'Shu yo\'nalishdagi':'Показать', 'kuryerni ko\'rish':'курьеров на этом направлении',
+  'Kuchli tomonlari':'Сильные стороны', "E'tibor bering":'Обратите внимание', 'Faktlar':'Факты',
+  "O'zbekistonga yuboradimi":'Отправляет ли в Узбекистан', "Do'kon turi":'Тип магазина', 'Narx darajasi':'Уровень цен',
+  'Original mahsulot':'Оригинальный товар', 'Buyurtma':'Заказ', 'Qaytarish siyosati':'Политика возврата',
+  'ha':'да', "yo'q":'нет', 'Oson':'Просто', "O'rtacha":'Средне', 'Murakkab':'Сложно', 'Yuqori':'Высокий',
+  'Murakkab / VPN orqali ishlaydi':'Сложно / работает через VPN', "O'rtacha / VPN orqali ishlaydi":'Средне / работает через VPN',
+  'Rasmiy brend do\'koni':'Официальный магазин бренда', 'Ixtisoslashgan do\'kon':'Специализированный магазин', 'Premium / Luxury':'Премиум / люкс',
+  'Arzon':'Дёшево', 'Katta assortiment':'Большой ассортимент', 'Chegirma':'Скидки',
+  "To'liq qo'llanma":'Полная инструкция', "bo'lim · kalkulyator · lug'at · FAQ":'разд. · калькулятор · словарь · FAQ',
+  "Ma'lumot noto'g'rimi?":'Информация неверна?',
+  "Yo'nalishni tanlang":'Выберите направление', 'Kuryer va konsolidatsiya':'Курьеры и консолидация',
+  'AQSh omborlari orqali':'Через склады в США', 'Yevropa omborlari':'Склады в Европе', "Koreya yo'nalishi":'Корейское направление',
+  'Rossiya orqali':'Через Россию', 'Dubay omborlari':'Склады в Дубае', "Qo'shni davlatlar":'Соседние страны',
+  'Janubi-sharqiy Osiyo':'Юго-Восточная Азия', 'Barcha kuryerlar':'Все курьеры', "Ro'yxatdagi hamma kuryer":'Все курьеры из списка',
+  "yo'nalishi":'направление', 'eng arzon tarif':'самый дешёвый тариф', 'davlat':'стран.',
+  'ish kuni':'раб. дней', 'kun':'дней', 'kundan boshlab':'дней и более', "muddat e'lon qilinmagan":'срок не указан',
+  'Uyga yetkazish':'Доставка на дом', 'Qayta qadoqlash':'Переупаковка', 'Foto':'Фото', 'Foto/tekshiruv':'Фото/проверка',
+  'Konsolidatsiya':'Консолидация', "Sug'urta":'Страховка', 'Return/Refundga yordam':'Помощь с возвратом', 'Bepul saqlash':'Бесплатное хранение',
+  'Marketplace mosligi':'Совместимость с маркетплейсами', 'Telefon':'Телефон', 'Batareya/Powerbank':'Батареи/Powerbank', 'Parfyum':'Парфюм',
+  'Suyuqlik':'Жидкости', 'Oziq-ovqat':'Продукты питания', 'Brend/kontrafakt':'Бренд/контрафакт', 'Boshqa muhim cheklovlar':'Другие важные ограничения',
+  'Ombor':'Склад', 'Minimal':'Минимум', 'UZ ichida':'Внутри UZ', 'Hajmiy vazn':'Объёмный вес', "To'lov":'Оплата',
+  "Tekshiruv ma'lumoti":'Данные проверки', 'Tekshiruv':'Проверка', "Ma'lumot to'liqligi":'Полнота данных',
+  'Tasdiqlandi':'Подтверждено', 'Qisman tasdiqlandi':'Частично подтверждено', "Sayt ko'rsatilmagan":'Сайт не указан',
+  'Qisman / sayt JS':'Частично / сайт на JS', 'Sayt ishlamadi':'Сайт не открылся',
+  'Tariflar ·':'Тарифы ·', 'Tariflar kuryerlarning rasmiy manbalaridan':'Тарифы взяты из официальных источников курьеров по состоянию на',
+  "holatiga ko'ra olingan. Yakuniy narx vazn, hajm va yo'nalishga qarab o'zgaradi.":'— итоговая цена зависит от веса, объёма и направления.',
+  'Tariflar':'Тарифы', 'Xizmatlar va cheklovlar':'Услуги и ограничения',
+  /* --- Bojxona bo'limlari --- */
+  'Kalendar oydagi umumiy summani yozing':'Введите общую сумму за календарный месяц',
+  "Shu oyda kelgan barcha jo'natmalar qiymatini qo'shib yozing":'Сложите стоимость всех отправлений, пришедших в этом месяце',
+  'Umumiy vaznni yozing':'Введите общий вес', 'Yetkazish, 1 kg':'Доставка, 1 кг', "Bojsiz me'yor · $":'Беспошлинный лимит · $', '/ oy':'/ мес',
+  'Hisob bosqichlari':'Шаги расчёта',
+  "Kalendar oyda kelgan barcha jo'natmalar summasi qo'shiladi, undan $200 imtiyoz ayriladi.":'Складывается сумма всех отправлений за календарный месяц, из неё вычитается льгота $200.',
+  "Shu vaznning yetkazish xarajati tovar qiymatiga qo'shiladi — bu bojxona qiymati.":'Стоимость доставки этого веса прибавляется к цене товара — это таможенная стоимость.',
+  "30% va har kg uchun $3 hisoblanadi, kattasi olinadi; ustiga BHM ning 25% yig'imi qo'shiladi.":'Считаются 30% и $3 за каждый кг, берётся большее; сверху добавляется сбор 25% БРВ.',
+  "Oyda nechta jo'natma keldi?":'Сколько отправлений пришло за месяц?',
+  "my.gov.uz orqali nomingizga kelgan jo'natmalarni tekshiring":'Проверьте отправления на ваше имя через my.gov.uz',
+  "Bu hisob taxminiy. Yakuniy summa bojxona organi aniqlagan bojxona qiymati va to'lov kunidagi kurs bo'yicha belgilanadi.":'Расчёт приблизительный. Итоговая сумма определяется по таможенной стоимости, установленной таможенным органом, и курсу на день оплаты.',
+  "Bojsiz me'yor":'Беспошлинный лимит',
+  "Bir kalendar oy uchun. Kalendar oy — oyning 1-sanasidan so'nggi sanasigacha bo'lgan uzluksiz davr, masalan 1-yanvardan 31-yanvargacha.":'На один календарный месяц. Календарный месяц — непрерывный период с 1-го по последнее число месяца, например с 1 по 31 января.',
+  "Miqdoriy me'yorlar":'Количественные нормы', 'Bojsiz olib kiriladigan ayrim tovarlar uchun alohida chegara':'Отдельный предел для некоторых товаров, ввозимых без пошлины',
+  'Atir va ifor taratuvchi suvlar':'Духи и туалетная вода', 'dona':'шт.', '300 ml dan oshmagan miqdorda.':'В объёме не более 300 мл.',
+  "Biologik faol qo'shimchalar":'Биологически активные добавки', 'nom':'наимен.',
+  "Turli nomdagi va birlamchi qadoqda, umumiy og'irligi 3 kg dan hamda har bir nomdagi qo'shimcha 1 ta qadoqdan oshmagan miqdorda.":'Разных наименований и в первичной упаковке, общим весом не более 3 кг и не более 1 упаковки каждого наименования.',
+  "Alkogol va tamaki mahsulotlarini xalqaro pochta va kuryerlik jo'natmalari orqali olib kirish taqiqlanadi.":'Ввоз алкогольной и табачной продукции международными почтовыми и курьерскими отправлениями запрещён.',
+  'Notijorat maqsad deb topilishi':'Признание некоммерческой цели',
+  'Imtiyoz faqat shaxsiy va oilaviy ehtiyoj uchun tovarlarga beriladi. Bojxona xodimi quyidagilarga qarab aniqlaydi:':'Льгота даётся только на товары для личных и семейных нужд. Сотрудник таможни определяет это по следующим признакам:',
+  "Tovarning xususiyati — iste'mol xususiyatlari shaxsiy, oilaviy va maishiy ehtiyoj uchun mo'ljallanganligi.":'Характер товара — потребительские свойства предназначены для личных, семейных и бытовых нужд.',
+  "Tovarning miqdori — bir turdagi tovar shaxs va oilasi ehtiyojidan ortiq bo'lsa, aksi isbotlanmaguncha tijorat deb e'tirof etiladi.":'Количество товара — если однотипного товара больше, чем нужно человеку и его семье, он считается коммерческим, пока не доказано обратное.',
+  "Olib o'tishning takroriyligi — bir turdagi tovar bir necha bor olib kirilsa, aksi isbotlanmaguncha tijorat deb e'tirof etiladi.":'Повторяемость ввоза — если однотипный товар ввозится несколько раз, он считается коммерческим, пока не доказано обратное.',
+  'Safarning holatlari — maqsadi, davomiyligi va kelish davlati.':'Обстоятельства поездки — цель, длительность и страна прибытия.',
+  "Oluvchining yoshi, shu jumladan 16 yoshga to'lmagan farzandlariniki, tovar xususiyatiga muvofiqligi.":'Соответствие товара возрасту получателя, включая детей до 16 лет.',
+  "Bir manzilda yashovchi shaxslar tomonidan bir xil turdagi tovarlarni olib o'tish takroriyligi.":'Повторяемость ввоза однотипных товаров лицами, живущими по одному адресу.',
+  "Qabul qiluvchi manzilning shaxs ro'yxatdan o'tgan joyi bilan farqliligi.":'Отличие адреса получателя от места регистрации.',
+  "Me'yordan ortiq qismning bojxona qiymatidan 30 foiz, lekin har bir kilogrami uchun $3 dan kam emas. Qaysi hisob ko'p chiqsa, o'sha olinadi.":'30 процентов от таможенной стоимости части сверх лимита, но не менее $3 за каждый килограмм. Берётся тот расчёт, который больше.',
+  "Bojxona yig'imi":'Таможенный сбор', 'Qanday hisoblanadi':'Как рассчитывается',
+  "Yagona bojxona to'lovi bojxona to'lovlari undirilmaydigan tovarlarni olib kirishning cheklangan me'yorlaridan ortgan taqdirda, faqat ortiqcha qismga nisbatan undiriladi.":'Единый таможенный платёж взимается только с части, превышающей нормы беспошлинного ввоза.',
+  'Giyohvandlik vositalari, psixotrop moddalar va prekursorlar':'Наркотические средства, психотропные вещества и прекурсоры',
+  "Fuqaroviy qurol va uning o'q-dorilari":'Гражданское оружие и боеприпасы к нему',
+  'Radioelektron vositalar va yuqori chastotali qurilmalar':'Радиоэлектронные средства и высокочастотные устройства',
+  'Diniy mazmundagi materiallar':'Материалы религиозного содержания', "Xulosasi va gologrammasi yo'q diniy materiallar":'Религиозные материалы без заключения и голограммы',
+  'Saqlanishi taqiqlangan yovvoyi hayvonlar':'Дикие животные, содержание которых запрещено',
+  "Mineral o'g'itlar va o'simlik himoya vositalari":'Минеральные удобрения и средства защиты растений',
+  "O'g'it va kimyoviy vositalarni pochta orqali yuborish":'Пересылка удобрений и химических средств по почте',
+  'Madaniy boyliklar':'Культурные ценности', 'Hayvonotga mansub oziq-ovqat mahsulotlari':'Продукты питания животного происхождения',
+  'Elektron sigaretalar va nikotinli suyuqliklar':'Электронные сигареты и никотиновые жидкости',
+  'Portlovchi materiallar va masofadan portlatish qurilmalari':'Взрывчатые материалы и устройства дистанционного подрыва',
+  "Pul yutug'i bo'lgan o'yin avtomatlari":'Игровые автоматы с денежным выигрышем',
+  'Pirotexnika vositalari (II xavflilik sinfi)':'Пиротехнические изделия (II класс опасности)',
+  'Portativ lazerli nur tarqatuvchilar':'Портативные лазерные излучатели', 'Uchuvchisiz uchish apparatlari (dron)':'Беспилотные летательные аппараты (дроны)',
+  'Ishlatilgan induksion pechlar va kameralar':'Бывшие в употреблении индукционные печи и камеры',
+  "Ekstremistik, zo'ravonlik va pornografik materiallar":'Экстремистские, насильственные и порнографические материалы',
+  "O'zbekiston pul belgilari va xorijiy valyuta":'Денежные знаки Узбекистана и иностранная валюта', 'Tirik hayvonlar':'Живые животные',
+  "Qimmatbaho buyumlar (qiymati e'lon qilinmagan posilkada)":'Ценные предметы (в посылке без объявленной ценности)',
+  'Alkogol va tamaki mahsulotlari':'Алкогольная и табачная продукция', 'Dori vositalari':'Лекарственные средства',
+  "Jo'natma bojxona nazoratidan o'tadi":'Отправление проходит таможенный контроль',
+  "Jo'natmalar deklaratsiyasi tizimda ro'yxatga olinadi.":'Декларация на отправления регистрируется в системе.',
+  'Xabarnoma keladi':'Приходит уведомление',
+  "Har bir kuryerlik jo'natmasi bo'yicha xabarnoma qabul qiluvchiga YIDXP yoki mobil ilova orqali avtomatik yuboriladi.":'По каждому курьерскому отправлению уведомление автоматически отправляется получателю через ЕПИГУ или мобильное приложение.',
+  'Tasdiqlaysiz yoki rad etasiz':'Вы подтверждаете или отклоняете',
+  "Qabul qiluvchi YIDXP, mobil ilova orqali yoki eng yaqin bojxona organiga murojaat qilib xabarnomani tasdiqlaydi yoki rad etadi.":'Получатель подтверждает или отклоняет уведомление через ЕПИГУ, мобильное приложение или обратившись в ближайший таможенный орган.',
+  "To'lov va chiqarish":'Оплата и выпуск',
+  "Me'yordan ortiq bo'lsa yagona bojxona to'lovi va yig'im to'lanadi, so'ng jo'natma chiqariladi.":'Если лимит превышен, оплачиваются единый таможенный платёж и сбор, затем отправление выпускается.',
+  "Tasdiqlash yoki rad etish past va o'rta xavfli jo'natmalar uchun ixtiyoriy, yuqori xavflilar uchun majburiy.":'Подтверждение или отклонение необязательно для отправлений низкого и среднего риска и обязательно для отправлений высокого риска.',
+  'YIDXP orqali xabarnomani tasdiqlash →':'Подтвердить уведомление через ЕПИГУ →',
+  "Jo'natma qachon ushlab qolinadi":'Когда отправление задерживают',
+  "Quyidagi hollarda jo'natma vaqtincha saqlovga olinishi mumkin:":'В следующих случаях отправление может быть временно задержано:',
+  "Bojxona to'lovi to'lanishi lozim bo'lgan tovarlar aniqlanganda.":'Когда выявлены товары, за которые нужно уплатить таможенный платёж.',
+  'Tovar maqsadini aniqlashda nizoli holat yuzaga kelganda.':'Когда возник спор о назначении товара.',
+  "Namuna va sinamalar olinib, o'rganish yakunlanmaganda.":'Когда взяты пробы и образцы, а исследование не завершено.',
+  "Xavfni boshqarish tizimi topshirig'i asosida.":'По поручению системы управления рисками.',
+  "Qo'shimcha hujjat yoki ma'lumot talab qilinib, tekshiruv tugamaganda.":'Когда запрошены дополнительные документы или сведения, а проверка не завершена.',
+  "Bojxona ko'rigi yoki ekspertizasi yakunlanmaganda.":'Когда таможенный досмотр или экспертиза не завершены.',
+  '"Toshkent-AERO" IBK':'СТК «Ташкент-АЭРО»', 'E-manzil':'E-mail', 'Xaritada':'На карте',
+  /* --- Do'konlarning alohida xususiyati (ro'yxatdagi qator) --- */
+  /* --- Raqam ichida turadigan satrlar (tx orqali, {0} o'rinbosari) --- */
+  "me'yordan ${0} ortiq":'на ${0} сверх лимита', '${0} qoldi':'осталось ${0}',
+  "{0} ta jo'natma · {1} kg · {2}":'{0} отправл. · {1} кг · {2}',
+  "Kalendar oyda kelgan barcha jo'natmalar summasi qo'shiladi, undan ${0} imtiyoz ayriladi.":'Складывается сумма всех отправлений за календарный месяц, из неё вычитается льгота ${0}.',
+  "Ortiqcha qismga to'g'ri keladigan vazn nisbat bo'yicha ajratiladi: {0} kg.":'Вес, приходящийся на часть сверх лимита, выделяется пропорционально: {0} кг.',
+  "{0}% va har kg uchun ${1} hisoblanadi, kattasi olinadi; ustiga BHM ning {2}% yig'imi qo'shiladi.":'Считаются {0}% и ${1} за каждый кг, берётся большее; сверху добавляется сбор {2}% БРВ.',
+  "Summa ${0} me'yordan oshmadi — yagona bojxona to'lovi undirilmaydi.":'Сумма не превысила лимит ${0} — единый таможенный платёж не взимается.',
+  "Vazn bo'yicha hisob ko'proq chiqdi: {0} kg × ${1} = ${2} ({3}% varianti ${4} edi).":'Расчёт по весу оказался больше: {0} кг × ${1} = ${2} (вариант {3}% давал ${4}).',
+  "Qiymat bo'yicha hisob ko'proq chiqdi: ${0} × {1}% = ${2} (vazn varianti ${3} edi).":'Расчёт по стоимости оказался больше: ${0} × {1}% = ${2} (вариант по весу давал ${3}).',
+  "Kurs yangilandi: 1 USD = {0} so'm":'Курс обновлён: 1 USD = {0} сум',
+  /* --- Toastlar --- */
+  'Aloqa manzili hali kiritilmagan':'Контакт ещё не указан', "Avval jo'natma summasini yozing":'Сначала введите сумму отправления',
+  'Avval trek raqamini yozing':'Сначала введите трек-номер', 'Bosqich yangilandi':'Этап обновлён', "Do'kon topilmadi":'Магазин не найден',
+  "Havola e'lon qilinmagan":'Ссылка не указана', "Jo'natma bu oyga qo'shildi":'Отправление добавлено в этот месяц', 'Kuryer topilmadi':'Курьер не найден',
+  "Markaziy bank kursini olib bo'lmadi — zaxira qiymat ishlatilmoqda":'Не удалось получить курс ЦБ — используется резервное значение',
+  "O'rnatib bo'lmadi":'Не удалось установить', "Oy summasi kalkulyatorga qo'yildi":'Сумма за месяц подставлена в калькулятор',
+  "Reja Telegram'dagi saqlangan xabarlarga yuborildi":'План отправлен в «Избранное» Telegram', "Reja o'chirildi":'План удалён',
+  'Telefon raqami hali kiritilmagan':'Номер телефона ещё не указан', 'Trek raqam nusxalandi':'Трек-номер скопирован', 'Telegram ochildi':'Telegram открыт',
+  'Xabar berish sahifasi ochildi':'Страница для сообщения открыта', 'Sevimlilardan olib tashlandi':'Удалено из избранного', "Sevimlilarga qo'shildi":'Добавлено в избранное',
+  "Nusxalab bo'lmadi — matnni qo'lda belgilang":'Не удалось скопировать — выделите текст вручную', 'nusxalandi':'скопировано',
 };
 /* Matnlarda ASCII (') va tipografik (' ') apostroflar aralash uchraydi.
    Lug'at kalitlari yagona ko'rinishga keltiriladi, aks holda "Ko'p" kabi
    satrlar tarjima ham, kirillga o'girish ham qilinmay o'tib ketardi. */
 const dictKey = v => String(v == null ? '' : v).replace(/[\'\'\'\']/g, "'");
-const RU_OF = {}; const CYR_OF = {};
-Object.keys(RU).forEach(k => { const key = dictKey(k); RU_OF[key] = RU[k]; CYR_OF[key] = toCyr(key); });
-const RU_REV = {}; const CYR_REV = {};
-Object.keys(RU_OF).forEach(key => {
-  RU_REV[RU_OF[key]] = key;
-  if (CYR_OF[key] !== key) CYR_REV[CYR_OF[key]] = key;
-});
+/* Kirill shakli lug'atda oldindan hisoblanmaydi: u toCyrProse orqali birinchi
+   so'ralganda yasaladi va CYR_DYN da (kirill -> lotin) saqlanadi. Shunda
+   lug'at kalitlari ham brend-himoya bilan o'giriladi ("Batareya/Powerbank"
+   ilgari "Поwербанк" bo'lib chiqardi) va teskari xarita bitta joyda turadi. */
+const RU_OF = {};
+Object.keys(RU).forEach(k => { RU_OF[dictKey(k)] = RU[k]; });
+const RU_REV = {};
+Object.keys(RU_OF).forEach(key => { RU_REV[RU_OF[key]] = key; });
 /* Qidiruv uchun normallashtirish.
    - katta/kichik harf farqi olib tashlanadi;
    - tipografik apostroflar ('  ') va ASCII ' bir xil ko'rinishga keltiriladi;
@@ -3008,12 +3169,53 @@ const rank = (name, q) => {
   return n.startsWith(q) ? 0 : n.includes(q) ? 1 : 2;
 };
 
+/* Kirill rejimi lug'atga bog'liq emas: lug'atda bo'lmagan har qanday
+   o'zbekcha matn ham o'giriladi. Ilgari faqat ruscha lug'atdagi satrlar
+   kirillga o'tardi va chuqur ekranlar (bojxona bo'limlari, kuryer
+   sahifalari, do'kon tavsiflari) lotinchada qolib ketardi.
+   Brend nomlari, manzillar va valyuta kodlari o'girilmaydi: ular avval
+   o'rinbosar bilan almashtiriladi, o'girishdan keyin qaytariladi. */
+const CYR_KEEP = ['USD', 'EUR', 'GBP', 'RUB', 'CNY', 'KRW', 'AED', 'TRY', 'MYR', 'KZT', 'UZS', 'UZ',
+  'VPN', 'FAQ', 'ID', 'QR', 'PDF', 'SMS', 'IMEI', 'GPS', 'iOS', 'Android', 'App Store', 'Google Play',
+  'Visa', 'Mastercard', 'PayMe', 'Payme', 'Click', 'Humo', 'Uzcard', 'Uzum', 'Telegram', 'Instagram',
+  'TikTok', 'YouTube', 'WhatsApp', 'Wi-Fi', 'Bluetooth', 'Black Friday', '3D-Secure', 'iPad', 'iPhone',
+  'TV', 'PC', 'Marketplace', 'Buy for me', 'Door delivery', 'Return/Refund', 'Tracking', 'Powerbank',
+  'Luxury', 'Exclusive', 'SALES TAX', 'Pochtam', 'Meest', 'Shopping', 'English', 'invoice', 'lithium',
+  'lithium-ion', 'metal', 'robots', 'return', 'refund', 'shipping', 'buyer', 'seller', 'eligible',
+  'forwarding', 'third-party', 'proof', 'excessive', 'L×W×H', 'QUICK', 'Avia UZ', 'JS'];
+const CYR_PHRASES = [];   // to'ldirilishi pastda — STORES/COURIERS e'lon qilingandan keyin
+let CYR_PHRASE_RE = null;
+const cyrPhraseRe = () => {
+  if (CYR_PHRASE_RE) return CYR_PHRASE_RE;
+  const esc = t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const list = [...new Set(CYR_PHRASES.concat(CYR_KEEP).filter(Boolean))].sort((a, b) => b.length - a.length);
+  CYR_PHRASE_RE = new RegExp('(^|[^A-Za-z0-9])(' + list.map(esc).join('|') + ')(?![A-Za-z0-9])', 'gi');
+  return CYR_PHRASE_RE;
+};
+const CYR_DYN = {};      // kirill -> lotin (dinamik o'girilganlar uchun teskari xarita)
+const CYR_DYN_FWD = {};  // lotin -> kirill kesh
+const toCyrProse = s => {
+  if (CYR_DYN_FWD[s] !== undefined) return CYR_DYN_FWD[s];
+  const keep = [];
+  const masked = s
+    .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+|https?:\/\/\S+|\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:uz|com|ru|org|net|shopping|pro)\b\S*/gi,
+      m => { keep.push(m); return '\u0001' + (keep.length - 1) + '\u0002'; })
+    .replace(cyrPhraseRe(), (m, pre, word) => { keep.push(word); return pre + '\u0001' + (keep.length - 1) + '\u0002'; });
+  const out = toCyr(masked).replace(/\u0001(\d+)\u0002/g, (m, i) => keep[+i]);
+  CYR_DYN_FWD[s] = out;
+  if (out !== s) CYR_DYN[out] = s;
+  return out;
+};
 const trOne = (lang, s) => {
   const key = dictKey(s);
-  const base = RU_REV[s] || CYR_REV[s] || key;
-  if (lang === 'ru') return RU_OF[base] || s;
-  if (lang === 'uzc') return CYR_OF[base] || s;
-  return RU_OF[base] !== undefined ? base : s;
+  const base = RU_REV[s] || CYR_DYN[s] || key;
+  if (lang === 'ru') return RU_OF[base] || (CYR_DYN[s] ? base : s);
+  if (lang === 'uzc') {
+    if (CYR_DYN[s]) return s;                 // allaqachon kirill
+    if (!/[A-Za-z]/.test(base)) return s;     // raqam, belgi — o'giradigan narsa yo'q
+    return toCyrProse(base);
+  }
+  return (RU_OF[base] !== undefined || CYR_DYN[s]) ? base : s;
 };
 /* Ilovada "8 ta", "43 ta do'kon", "10 ta bo'lim" kabi o'nlab yorliq bor.
    Butun satr lug'atda bo'lishi mumkin emas — raqam har safar boshqa.
@@ -3022,10 +3224,20 @@ const trOne = (lang, s) => {
 const tr = (lang, s) => {
   const out = trOne(lang, s);
   if (out !== s || lang === 'uz') return out;
-  const m = /^([\d][\d\s.,\u00a0]*)\s+(\S.*)$/.exec(String(s).trim());
+  /* Boshidagi raqam ("2–3 ish kuni", "43 ta do'kon") yoki bayroq/belgi
+     ("🇨🇳 Xitoy") ajratiladi va faqat qolgan qism tarjima qilinadi. */
+  const m = /^([\d][\d\s.,\u00a0\u2013-]*|(?:\p{RI}\p{RI}|\p{Extended_Pictographic})\uFE0F?)\s+(\S.*)$/u.exec(String(s).trim());
   if (!m) return s;
   const tail = trOne(lang, m[2]);
   return tail === m[2] ? s : m[1].trim() + ' ' + tail;
+};
+/* Raqam ichida turadigan satrlar: "me'yordan $120 ortiq". Lug'atda {0}
+   o'rinbosari bilan turadi, raqam tarjimadan keyin qo'yiladi — shunda
+   tarjima raqamga bog'liq emas va kirillga ham o'giriladi. */
+const tx = (lang, tpl, ...vals) => {
+  let out = trOne(lang, tpl);
+  if (out === tpl && lang === 'uzc') out = toCyrProse(tpl);
+  return out.replace(/\{(\d)\}/g, (m, i) => (vals[+i] !== undefined ? String(vals[+i]) : m));
 };
 
 /* Ro'yxatdagi logotip qutisi brendning o'z rangida yumshoq ohang oladi:
@@ -3482,6 +3694,10 @@ STORES.forEach(s => {
 
 const COURIERS = [{"id":"mymeest","name":"MYMEEST","mono":"MYME","color":"#1B4D8F","price":8.45,"priceLabel":"$8.45","days":"5 kundan boshlab","dnum":5,"mode":"avia","from":["Yevropa","AQSH"],"route":"Yevropa · AQSH → UZ","flags":"🇬🇧 🇬🇷 🇪🇸 🇮🇹 🇩🇪 🇨🇦","countries":"Angliya, Gretsiya, Ispaniya, Italiya, Germaniya, Kanada, Polsha, Portugaliya, AQSh, Ukraina, Fransiya, Chexiya","nRoutes":12,"tracking":true,"note":"12 mamlakatdan xaridlarni yetkazish, kalkulyator va tracking mavjud. Xizmatlar omborga qarab farq qiladi.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Tasdiqlandi"},{"k":"Ma'lumot to'liqligi","v":"80%"},{"k":"Tracking","v":"Sayt/shaxsiy kabinet orqali"},{"k":"Til","v":"O\'zbek, Rus"}],"tariffs":[{"c":"Angliya","f":"🇬🇧","t":"","hasT":false,"v":"0.05–0.5 kg: 7 GBP/posilka; 0.501–1 kg: 8.25 GBP/posilka; 1.001–30 kg: 9.50 GBP/kg","d":"5 kundan boshlab","meta":[{"k":"Ombor","v":"London, UK"},{"k":"Minimal","v":"0.05 kg"}]},{"c":"Gretsiya","f":"🇬🇷","t":"","hasT":false,"v":"0.05–0.5 kg: 5.50 EUR; 0.501–1 kg: 6.50 EUR; 1.001–30 kg: 8 EUR/kg","d":"","meta":[{"k":"Ombor","v":"Afina, Gretsiya"},{"k":"Minimal","v":"0.05 kg"}]},{"c":"Ispaniya","f":"🇪🇸","t":"","hasT":false,"v":"0.05–0.5 kg: 5.50 EUR; 0.501–1 kg: 6.50 EUR; 1.001–30 kg: 8 EUR/kg","d":"10 kundan boshlab","meta":[{"k":"Ombor","v":"Fuenlabrada/Madrid, Ispaniya"},{"k":"Minimal","v":"0.05 kg"}]},{"c":"Italiya","f":"🇮🇹","t":"","hasT":false,"v":"0.05–0.5 kg: 5.50 EUR; 0.501–1 kg: 6.50 EUR; 1.001–30 kg: 8 EUR/kg","d":"10 kundan boshlab","meta":[{"k":"Ombor","v":"Rim, Italiya"},{"k":"Minimal","v":"0.05 kg"}]},{"c":"Germaniya","f":"🇩🇪","t":"","hasT":false,"v":"0.05–0.5 kg: 5.50 EUR; 0.501–1 kg: 6.50 EUR; 1.001–30 kg: 8 EUR/kg","d":"10 kundan boshlab","meta":[{"k":"Minimal","v":"0.05 kg"}]},{"c":"Kanada","f":"🇨🇦","t":"","hasT":false,"v":"0.05–1 kg: 16.65 USD/posilka; 1.001–30 kg qatorida 7.70 va 8.95 USD qiymatlari ko\'rsatilgan","d":"","meta":[{"k":"Ombor","v":"Mississauga, Ontario, Kanada"},{"k":"Minimal","v":"0.05 kg"}]},{"c":"Polsha","f":"🇵🇱","t":"","hasT":false,"v":"0.05–0.5 kg: 7 EUR; 0.501–1 kg: 8 EUR; 1.001–30 kg: 9.50 EUR/kg","d":"5 kundan boshlab","meta":[{"k":"Ombor","v":"Straszęcin, Polsha"},{"k":"Minimal","v":"0.05 kg"}]},{"c":"Portugaliya","f":"🇵🇹","t":"","hasT":false,"v":"0.05–0.5 kg: 5.50 EUR; 0.501–1 kg: 6.50 EUR; 1.001–30 kg: 8 EUR/kg","d":"10 kundan boshlab","meta":[{"k":"Ombor","v":"Odivelas/Lissabon, Portugaliya"},{"k":"Minimal","v":"0.05 kg"}]},{"c":"AQSh","f":"🇺🇸","t":"","hasT":false,"v":"0.05–0.5 kg: 4.75 USD/posilka; 0.501–30 kg: 0.95 USD har 100 g","d":"taxm. 10 kun","meta":[{"k":"Ombor","v":"Wilmington, Delaware, AQSh"},{"k":"Minimal","v":"0.05 kg"}]},{"c":"Ukraina","f":"🇺🇦","t":"","hasT":false,"v":"0.05–1 kg: 10.75 EUR/posilka; 1.001–30 kg: 7.75 EUR/kg","d":"10 kundan boshlab","meta":[{"k":"Ombor","v":"Lviv, Ukraina"},{"k":"Minimal","v":"0.05 kg"}]},{"c":"Fransiya","f":"🇫🇷","t":"","hasT":false,"v":"0.05–0.5 kg: 5.50 EUR; 0.501–1 kg: 6.50 EUR; 1.001–30 kg: 8 EUR/kg","d":"","meta":[{"k":"Ombor","v":"Perpignan, Fransiya"},{"k":"Minimal","v":"0.05 kg"}]},{"c":"Chexiya","f":"🇨🇿","t":"","hasT":false,"v":"0.05–0.5 kg: 5.50 EUR; 0.501–1 kg: 6.50 EUR; 1.001–30 kg: 8 EUR/kg","d":"","meta":[{"k":"Ombor","v":"Olomouc, Chexiya"},{"k":"Minimal","v":"0.05 kg"}]}],"svc":[{"k":"Konsolidatsiya","v":"Mavjud (omborga qarab)"},{"k":"Qayta qadoqlash","v":"Mavjud (omborga qarab)"},{"k":"Foto/tekshiruv","v":"Mavjud"},{"k":"Sug\'urta","v":"Qo\'shimcha sug\'urta 2.5%"},{"k":"Return/Refundga yordam","v":"Mavjud (omborga qarab)"},{"k":"Buy for me","v":"Mavjud"},{"k":"Door delivery UZ","v":"Mavjud (yo\'nalishga bog\'liq)"},{"k":"Bepul saqlash","v":"AQSh 28 kun; ko\'p Yevropa omborlarida 14 kun"},{"k":"Tracking","v":"Mavjud"},{"k":"Marketplace mosligi","v":"AQSh va Yevropa internet-do\'konlari"}],"limits":[{"k":"Telefon","v":"Cheklangan: ayrim yo\'nalishlarda mobil qurilmalar cheklovi bor"},{"k":"Batareya/Powerbank","v":"Taqiqlangan/cheklangan (yo\'nalishga bog\'liq)"},{"k":"Parfyum","v":"Ko\'p Yevropa yo\'nalishlarida taqiqlangan"},{"k":"Suyuqlik","v":"Yonuvchan suyuqliklar taqiqlangan"},{"k":"Oziq-ovqat","v":"Cheklangan"},{"k":"Brend/kontrafakt","v":"Kontrafakt/IP buzuvchi tovarlar taqiqlangan"},{"k":"Boshqa muhim cheklovlar","v":"Qurol, xavfli va tez alangalanadigan moddalar va boshqalar"}],"links":[{"l":"Sayt","u":"https://meest.shopping/uz"},{"l":"Telegram","u":"https://t.me/meestshopping_uzbekistan"},{"l":"Instagram","u":"https://www.instagram.com/meest.shopping.uz/"},{"l":"iOS","u":"https://apps.apple.com/uz/app/mymeest-shopping/id1509221073"},{"l":"Android","u":"https://play.google.com/store/apps/details?id=com.meest.mymeest.app"}],"updated":"15.08.2026","hasPrice":true},{"id":"meestchina","name":"MeestChina","mono":"MEES","color":"#D40511","price":6,"priceLabel":"$6.00","days":"8 kundan boshlab","dnum":8,"mode":"avia · avto","from":["Xitoy","Koreya"],"route":"Xitoy · Koreya → UZ","flags":"🇨🇳 🇰🇷","countries":"Xitoy, Koreya","nRoutes":2,"tracking":true,"note":"Xitoy va Koreya yo\'nalishlari; O\'zbekiston bo\'ylab kuryer yetkazishi tarifga kiritilgan.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Tasdiqlandi"},{"k":"Ma'lumot to'liqligi","v":"80%"},{"k":"Tracking","v":"Shaxsiy kabinet/ilova; qaytarishlarda ichki trek-raqam"},{"k":"Til","v":"O\'zbek, Rus"}],"tariffs":[{"c":"Xitoy","f":"🇨🇳","t":"Avia","hasT":true,"v":"10 USD/kg dan","d":"8 kundan boshlab","meta":[{"k":"Ombor","v":"Guangzhou, Xitoy"},{"k":"UZ ichida","v":"Uy/ofis yoki Toshkent bo\'limi; tarifga kiritilgan"},{"k":"Hajmiy vazn","v":"Agar hajmiy vazn haqiqiy vazndan >2x bo\'lsa: (hajmiy-haqiqiy)/2 + haqiqiy"}]},{"c":"Xitoy","f":"🇨🇳","t":"Avto","hasT":true,"v":"6 USD/kg dan","d":"17 kundan boshlab","meta":[{"k":"Ombor","v":"Guangzhou, Xitoy"},{"k":"UZ ichida","v":"Uy/ofis yoki Toshkent bo\'limi; tarifga kiritilgan"},{"k":"Hajmiy vazn","v":"Agar hajmiy vazn haqiqiy vazndan >2x bo\'lsa: (hajmiy-haqiqiy)/2 + haqiqiy"}]},{"c":"Koreya","f":"🇰🇷","t":"Avia","hasT":true,"v":"11.7 USD/kg dan","d":"10 kundan boshlab","meta":[{"k":"UZ ichida","v":"Uy/ofis yoki Toshkent bo\'limi; tarifga kiritilgan"},{"k":"Hajmiy vazn","v":"Agar hajmiy vazn haqiqiy vazndan >2x bo\'lsa: (hajmiy-haqiqiy)/2 + haqiqiy"}]}],"svc":[{"k":"Konsolidatsiya","v":"Tekshirish + birlashtirish $0.7/kg"},{"k":"Qayta qadoqlash","v":"Mavjud"},{"k":"Foto/tekshiruv","v":"$1.5/lot batafsil foto; avtomatik foto bepul"},{"k":"Sug\'urta","v":"Standart $100gacha; qo\'shimcha 2.5%"},{"k":"Return/Refundga yordam","v":"Xitoyga qaytarish — pullik"},{"k":"Buy for me","v":"Mavjud (Meest China Shop)"},{"k":"Door delivery UZ","v":"Mavjud; tarifga kiritilgan"},{"k":"Tracking","v":"Mavjud"},{"k":"Marketplace mosligi","v":"Taobao, 1688, Tmall va Xitoy marketplace\'lari"}],"limits":[{"k":"Batareya/Powerbank","v":"ZTO bepul pickup xizmatida taqiqlangan"},{"k":"Suyuqlik","v":"ZTO bepul pickup xizmatida taqiqlangan"},{"k":"Boshqa muhim cheklovlar","v":"Magnit, mo\'rt tovar, yondirgich, pichoq, yonuvchan/portlovchi moddalar ZTO pickupda qabul qilinmaydi"}],"links":[{"l":"Sayt","u":"https://uz.meest.cn/"},{"l":"Telegram","u":"https://t.me/meest_uzbekistan"},{"l":"Instagram","u":"https://www.instagram.com/meestcn.uz/"},{"l":"iOS","u":"https://apps.apple.com/uz/app/meest-china/id1258178131"},{"l":"Android","u":"https://play.google.com/store/apps/details?id=development.icecream.mymeest"}],"updated":"15.08.2026","hasPrice":true},{"id":"ethnologistics","name":"Ethno logistics","mono":"EL","color":"#0F7B3E","price":5,"priceLabel":"$5.00","days":"3–5 ish kuni","dnum":3,"mode":"avia · avto","from":["MDH","Rossiya","BAA","Turkiya"],"route":"MDH · Rossiya · BAA · Turkiya → UZ","flags":"🇰🇬 🇹🇯 🇰🇿 🇷🇺 🇦🇪 🇹🇷","countries":"Qirg\'iziston, Tojikiston, Qozog\'iston, Rossiya, BAA, Turkiya","nRoutes":6,"tracking":true,"note":"Original fayldagi ethno.uz o\'rniga 2026-yil tariflari uz.ethnologistics.com domenida topildi.","hasNote":true,"trusted":true,"meta":[{"k":"Tekshiruv","v":"Tasdiqlandi"},{"k":"Ma'lumot to'liqligi","v":"100%"},{"k":"Tracking","v":"Rasmiy saytda «Отследить посылку»"},{"k":"Til","v":"Rus; boshqa tillar Topilmadi"},{"k":"To'lov","v":"Visa, Mastercard, Uzcard, Payme, Click, Humo"}],"tariffs":[{"c":"Qirg\'iziston","f":"🇰🇬","t":"Express","hasT":true,"v":"8 USD/kg","d":"3–5 ish kuni","meta":[{"k":"UZ ichida","v":"PVZdan PVZgacha; hududlarga yetkazish mumkin"},{"k":"Minimal","v":"1 kg"}]},{"c":"Qirg\'iziston","f":"🇰🇬","t":"Ultra","hasT":true,"v":"30 USD/kg","d":"36 soat","meta":[{"k":"UZ ichida","v":"PVZdan PVZgacha"},{"k":"Minimal","v":"1 kg"}]},{"c":"Qirg\'iziston","f":"🇰🇬","t":"Avto","hasT":true,"v":"5 USD/kg","d":"10 ish kunidan","meta":[{"k":"UZ ichida","v":"PVZdan PVZgacha"},{"k":"Minimal","v":"10 kg"}]},{"c":"Tojikiston","f":"🇹🇯","t":"Express","hasT":true,"v":"8 USD/kg","d":"3–5 ish kuni","meta":[{"k":"UZ ichida","v":"PVZdan PVZgacha; hududlarga yetkazish mumkin"},{"k":"Minimal","v":"1 kg"}]},{"c":"Tojikiston","f":"🇹🇯","t":"Ultra","hasT":true,"v":"30 USD/kg","d":"36 soat","meta":[{"k":"UZ ichida","v":"PVZdan PVZgacha"},{"k":"Minimal","v":"1 kg"}]},{"c":"Tojikiston","f":"🇹🇯","t":"Avto","hasT":true,"v":"5 USD/kg","d":"10 ish kunidan","meta":[{"k":"UZ ichida","v":"PVZdan PVZgacha"},{"k":"Minimal","v":"10 kg"}]},{"c":"Qozog\'iston","f":"🇰🇿","t":"Express","hasT":true,"v":"8 USD/kg","d":"3–5 ish kuni","meta":[{"k":"UZ ichida","v":"PVZdan PVZgacha; hududlarga yetkazish mumkin"},{"k":"Minimal","v":"1 kg"}]},{"c":"Qozog\'iston","f":"🇰🇿","t":"Ultra","hasT":true,"v":"30 USD/kg","d":"36 soat","meta":[{"k":"UZ ichida","v":"PVZdan PVZgacha"},{"k":"Minimal","v":"1 kg"}]},{"c":"Qozog\'iston","f":"🇰🇿","t":"Avto","hasT":true,"v":"5 USD/kg","d":"10 ish kunidan","meta":[{"k":"UZ ichida","v":"PVZdan PVZgacha"},{"k":"Minimal","v":"10 kg"}]},{"c":"Rossiya","f":"🇷🇺","t":"Express","hasT":true,"v":"12 USD/kg","d":"3–5 ish kuni","meta":[{"k":"UZ ichida","v":"PVZdan PVZgacha; hududlarga yetkazish mumkin"},{"k":"Minimal","v":"1 kg"}]},{"c":"Rossiya","f":"🇷🇺","t":"Ultra","hasT":true,"v":"30 USD/kg","d":"36 soat","meta":[{"k":"UZ ichida","v":"PVZdan PVZgacha"},{"k":"Minimal","v":"1 kg"}]},{"c":"Rossiya","f":"🇷🇺","t":"Avto","hasT":true,"v":"5 USD/kg","d":"10 ish kunidan","meta":[{"k":"UZ ichida","v":"PVZdan PVZgacha"},{"k":"Minimal","v":"10 kg"}]},{"c":"BAA","f":"🇦🇪","t":"Express","hasT":true,"v":"8 USD/kg","d":"3–5 ish kuni","meta":[{"k":"Ombor","v":"Dubai, BAA"},{"k":"UZ ichida","v":"PVZdan PVZgacha"},{"k":"Minimal","v":"2 kg"}]},{"c":"Turkiya","f":"🇹🇷","t":"Express","hasT":true,"v":"8 USD/kg","d":"3–5 ish kuni","meta":[{"k":"Ombor","v":"Istanbul, Turkiya"},{"k":"UZ ichida","v":"PVZdan PVZgacha"},{"k":"Minimal","v":"2 kg"}]},{"c":"Turkiya","f":"🇹🇷","t":"Ultra","hasT":true,"v":"30 USD/kg","d":"36 soat","meta":[{"k":"Ombor","v":"Istanbul, Turkiya"},{"k":"UZ ichida","v":"PVZdan PVZgacha"},{"k":"Minimal","v":"0 kg (saytda shunday ko\'rsatilgan)"}]},{"c":"Turkiya","f":"🇹🇷","t":"Avto","hasT":true,"v":"5 USD/kg","d":"10 ish kunidan","meta":[{"k":"Ombor","v":"Istanbul, Turkiya"},{"k":"UZ ichida","v":"PVZdan PVZgacha"},{"k":"Minimal","v":"10 kg"}]}],"svc":[{"k":"Qayta qadoqlash","v":"Mavjud qadoqlash"},{"k":"Foto/tekshiruv","v":"Mavjud foto-hisobot"},{"k":"Buy for me","v":"ETHNO Buyer: Rossiya/Turkiya"},{"k":"Door delivery UZ","v":"Mavjud (hududlarga ham)"},{"k":"Tracking","v":"Mavjud"},{"k":"Marketplace mosligi","v":"Rossiya va Turkiya onlayn-do\'konlari"}],"limits":[],"links":[{"l":"Sayt","u":"https://uz.ethnologistics.com/"},{"l":"Telegram","u":"https://t.me/ethnologistics"},{"l":"Instagram","u":"https://www.instagram.com/ethno.uzbekistan/"},{"l":"iOS","u":"https://apps.apple.com/uz/app/ethno-logistics/id6751132197"},{"l":"Android","u":"https://play.google.com/store/apps/details?id=com.ethnologistics"}],"updated":"15.08.2026","hasPrice":true},{"id":"tezparcel","name":"TEZ PARCEL","mono":"TP","color":"#4D148C","price":8.89,"priceLabel":"$8.89","days":"7–14 ish kuni","dnum":7,"mode":"avia","from":["Yevropa","AQSH"],"route":"Yevropa · AQSH → UZ","flags":"🇬🇧 🇺🇸 🇩🇪","countries":"Angliya, AQSh, Germaniya","nRoutes":3,"tracking":true,"note":"Angliya bo\'yicha tarif va muddat topildi; AQSh va Germaniya aniq joriy tarifi rasmiy sahifada topilmadi.","hasNote":true,"trusted":true,"meta":[{"k":"Tekshiruv","v":"Qisman tasdiqlandi"},{"k":"Ma'lumot to'liqligi","v":"100%"},{"k":"Tracking","v":"Sayt orqali jo\'natmani kuzatish"},{"k":"Til","v":"O\'zbek/Rus/English interfeys mavjud"},{"k":"To'lov","v":"Naqd, karta/o\'tkazma; tafsilotlar yo\'nalishga bog\'liq"}],"tariffs":[{"c":"Angliya","f":"🇬🇧","t":"Avia/Express","hasT":true,"v":"7 GBP/kg (UKda to\'lov) yoki 9.5 USD/kg (O\'zbekistonda to\'lov)","d":"7–14 ish kuni","meta":[{"k":"Ombor","v":"London, SE5 0NS"},{"k":"UZ ichida","v":"Viloyatga 3 kg gacha qo\'shimcha haq"},{"k":"Minimal","v":"Minimal vazn yo\'q; minimal to\'lov mavjud"},{"k":"Hajmiy vazn","v":"Maks. 20 kg; tomonlar yig\'indisi 300 cm gacha"}]},{"c":"AQSh","f":"🇺🇸","t":"","hasT":false,"v":"9 USD","d":"","meta":[]},{"c":"Germaniya","f":"🇩🇪","t":"","hasT":false,"v":"7,5 EUR","d":"","meta":[]}],"svc":[{"k":"Buy for me","v":"Buyout xizmati mavjud"},{"k":"Door delivery UZ","v":"Viloyatlarga ham yetkazish"},{"k":"Tracking","v":"Mavjud"},{"k":"Marketplace mosligi","v":"Xorijiy internet-do\'konlari"}],"limits":[],"links":[{"l":"Sayt","u":"https://tezparcel.com/"},{"l":"Telegram","u":"https://t.me/tezparcel_uz"},{"l":"Instagram","u":"https://www.instagram.com/tezparcel/"},{"l":"iOS","u":"https://apps.apple.com/uz/app/tezparcel/id6514329371"},{"l":"Android","u":"https://play.google.com/store/apps/details?id=com.tezparcel"}],"updated":"15.08.2026","hasPrice":true},{"id":"abuexpress","name":"ABU EXPRESS","mono":"AE","color":"#C2410C","price":6,"priceLabel":"$6.00","days":"7–10 kun","dnum":7,"mode":"avia","from":["AQSH","Turkiya"],"route":"AQSH · Turkiya → UZ","flags":"🇺🇸 🇹🇷","countries":"AQSh, Turkiya","nRoutes":2,"tracking":true,"note":"Original abugroupmanagement.com o\'rniga ABU Expressning amaldagi sayti sifatida abuexpress.uz topildi. Joriy kg tarifi ochiq ko\'rsatilmagan.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Qisman tasdiqlandi"},{"k":"Ma'lumot to'liqligi","v":"60%"},{"k":"Tracking","v":"Rasmiy saytda tracking maydoni"}],"tariffs":[{"c":"AQSh","f":"🇺🇸","t":"Avia/yer usti xizmatlari mavjud","hasT":true,"v":"6 USD","d":"7–10 kun (sayt umumiy va\'da)","meta":[{"k":"Ombor","v":"AQShdagi soliqsiz shtat ombori (aniq manzil Topilmadi)"},{"k":"UZ ichida","v":"Uyga bepul yetkazish deb ko\'rsatilgan"}]},{"c":"Turkiya","f":"🇹🇷","t":"","hasT":false,"v":"10 USD","d":"","meta":[]}],"svc":[{"k":"Qayta qadoqlash","v":"Xavfsiz qadoqlash ko\'rsatilgan"},{"k":"Buy for me","v":"Mavjud: shopping/order assistance"},{"k":"Door delivery UZ","v":"Mavjud, sayt «free home delivery» deydi"},{"k":"Tracking","v":"Mavjud"},{"k":"Marketplace mosligi","v":"AQSh/Turkiya xaridlari"}],"limits":[],"links":[{"l":"Sayt","u":"https://abuexpress.uz/en/"},{"l":"Telegram","u":"https://t.me/abuexpressturk"},{"l":"Instagram","u":"https://www.instagram.com/abu_express_/"}],"updated":"15.08.2026","hasPrice":true},{"id":"silkroad","name":"SILK ROAD","mono":"SR","color":"#0369A1","price":9.9,"priceLabel":"$9.90","days":"muddat e'lon qilinmagan","dnum":99,"mode":"avia","from":["AQSH"],"route":"AQSH → UZ","flags":"🇺🇸","countries":"AQSh","nRoutes":1,"tracking":false,"note":"Original faylda rasmiy sayt ko\'rsatilmagan.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Sayt ko\'rsatilmagan"},{"k":"Ma'lumot to'liqligi","v":"0%"}],"tariffs":[{"c":"AQSh","f":"🇺🇸","t":"","hasT":false,"v":"9,9 USD","d":"","meta":[]}],"svc":[],"limits":[],"links":[{"l":"Telegram","u":"https://t.me/silkroad_inc"},{"l":"Instagram","u":"https://www.instagram.com/silkroadexpress_inc/"}],"updated":"15.08.2026","hasPrice":true},{"id":"spacexpress","name":"SPACEXPRESS","mono":"SPAC","color":"#9B1C1C","price":5.9,"priceLabel":"$5.90","days":"muddat e'lon qilinmagan","dnum":99,"mode":"avia · avto","from":["Xitoy"],"route":"Xitoy → UZ","flags":"🇨🇳","countries":"Xitoy","nRoutes":1,"tracking":true,"note":"Avia/avto/multimodal/temiryo\'l xizmatlari, konsolidatsiya va qadoqlash topildi; ommaviy kg tarifi topilmadi.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Qisman tasdiqlandi"},{"k":"Ma'lumot to'liqligi","v":"60%"},{"k":"Tracking","v":"Yuk holati va rejalashtirilgan sanalar bo\'yicha kuzatuv"}],"tariffs":[{"c":"Xitoy","f":"🇨🇳","t":"Avia","hasT":true,"v":"9,5 USD","d":"","meta":[{"k":"Ombor","v":"Xitoyda ombor(lar) mavjud; aniq manzil Topilmadi"},{"k":"UZ ichida","v":"Door-to-door mavjud"}]},{"c":"Xitoy","f":"🇨🇳","t":"Avto","hasT":true,"v":"5,9 USD","d":"","meta":[{"k":"Ombor","v":"Xitoyda ombor(lar) mavjud; aniq manzil Topilmadi"},{"k":"UZ ichida","v":"Door-to-door mavjud"}]}],"svc":[{"k":"Konsolidatsiya","v":"Mavjud"},{"k":"Qayta qadoqlash","v":"Mavjud"},{"k":"Sug\'urta","v":"Mavjud (multimodal yukda)"},{"k":"Door delivery UZ","v":"Mavjud door-to-door"},{"k":"Bepul saqlash","v":"Mavjud; bepul muddat Topilmadi"},{"k":"Tracking","v":"Mavjud"},{"k":"Marketplace mosligi","v":"B2B/cargo, Xitoy va Yevropa"}],"limits":[],"links":[{"l":"Sayt","u":"https://www.spaceexpress.uz"},{"l":"Telegram","u":"https://t.me/spaceexpress\nhttps://t.me/spaceexpress_bot"},{"l":"Instagram","u":"https://www.instagram.com/spaceexpress_uz/"}],"updated":"15.08.2026","hasPrice":true},{"id":"yellowpochta","name":"YELLOW POCHTA","mono":"YP","color":"#065F46","price":10,"priceLabel":"$10.00","days":"muddat e'lon qilinmagan","dnum":99,"mode":"avia","from":["AQSH"],"route":"AQSH → UZ","flags":"🇺🇸","countries":"AQSh","nRoutes":1,"tracking":false,"note":"Tarif sahifasi JavaScript talab qilgani sababli ochiq matndan tarif va xizmat tafsilotlari tekshirib bo\'lmadi.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Qisman / sayt JS"},{"k":"Ma'lumot to'liqligi","v":"20%"}],"tariffs":[{"c":"AQSh","f":"🇺🇸","t":"","hasT":false,"v":"10 USD","d":"","meta":[]}],"svc":[],"limits":[],"links":[{"l":"Sayt","u":"https://theyellowwayinc.com/"},{"l":"Telegram","u":"https://t.me/YellowIncOfficial"},{"l":"Instagram","u":"https://www.instagram.com/yellowincofficial"}],"updated":"15.08.2026","hasPrice":true},{"id":"globbing","name":"GLOBBING","mono":"GLOB","color":"#5B21B6","price":12,"priceLabel":"$12.00","days":"5–10 ish kuni","dnum":5,"mode":"avia","from":["AQSH","Xitoy","Yevropa"],"route":"AQSH · Xitoy · Yevropa → UZ","flags":"🇺🇸 🇨🇳 🇬🇧 🇩🇪 🇮🇹 🇪🇸","countries":"AQSh, Xitoy, Angliya, Germaniya, Italiya, Ispaniya","nRoutes":6,"tracking":true,"note":"Original faylda iOS va Android havolalari o\'zaro almashib qolgan; V2 da tuzatildi. iOS/Android havolalari tuzatildi.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Tasdiqlandi"},{"k":"Ma'lumot to'liqligi","v":"80%"},{"k":"Tracking","v":"Shaxsiy kabinet/ilova"},{"k":"Til","v":"Rus; boshqa tillar Topilmadi"}],"tariffs":[{"c":"AQSh","f":"🇺🇸","t":"Express","hasT":true,"v":"12 USD/kg","d":"5–10 ish kuni","meta":[{"k":"UZ ichida","v":"O\'zbekiston bo\'ylab uyga yetkazish mavjud"},{"k":"Minimal","v":"0.1 kg; min. $1.2"},{"k":"Hajmiy vazn","v":"Hajm katta bo\'lsa volumetrik hisob qo\'llanishi mumkin"}]},{"c":"Xitoy","f":"🇨🇳","t":"Express","hasT":true,"v":"13–14 USD/kg (sayt jadvalida ikki qiymat)","d":"","meta":[{"k":"UZ ichida","v":"O\'zbekiston bo\'ylab uyga yetkazish mavjud"},{"k":"Minimal","v":"0.1 kg; min. to\'lov statusga bog\'liq"},{"k":"Hajmiy vazn","v":"Hajm katta bo\'lsa volumetrik hisob qo\'llanishi mumkin"}]},{"c":"Angliya","f":"🇬🇧","t":"Express","hasT":true,"v":"13 USD/kg","d":"7–10 ish kuni","meta":[{"k":"UZ ichida","v":"O\'zbekiston bo\'ylab uyga yetkazish mavjud"},{"k":"Minimal","v":"0.1 kg; min. $1.3"},{"k":"Hajmiy vazn","v":"Hajm katta bo\'lsa volumetrik hisob qo\'llanishi mumkin"}]},{"c":"Germaniya","f":"🇩🇪","t":"Express","hasT":true,"v":"13 USD/kg","d":"7–9 ish kuni","meta":[{"k":"UZ ichida","v":"O\'zbekiston bo\'ylab uyga yetkazish mavjud"},{"k":"Minimal","v":"0.1 kg"},{"k":"Hajmiy vazn","v":"Hajm katta bo\'lsa volumetrik hisob qo\'llanishi mumkin"}]},{"c":"Italiya","f":"🇮🇹","t":"Express","hasT":true,"v":"13 USD/kg","d":"7–9 ish kuni","meta":[{"k":"UZ ichida","v":"O\'zbekiston bo\'ylab uyga yetkazish mavjud"},{"k":"Minimal","v":"0.1 kg"},{"k":"Hajmiy vazn","v":"Hajm katta bo\'lsa volumetrik hisob qo\'llanishi mumkin"}]},{"c":"Ispaniya","f":"🇪🇸","t":"Express","hasT":true,"v":"13 USD/kg","d":"7–9 ish kuni","meta":[{"k":"UZ ichida","v":"O\'zbekiston bo\'ylab uyga yetkazish mavjud"},{"k":"Minimal","v":"0.1 kg"},{"k":"Hajmiy vazn","v":"Hajm katta bo\'lsa volumetrik hisob qo\'llanishi mumkin"}]}],"svc":[{"k":"Buy for me","v":"Mavjud: Buy for me"},{"k":"Door delivery UZ","v":"Mavjud"},{"k":"Tracking","v":"Mavjud"},{"k":"Marketplace mosligi","v":"AQSh, Xitoy va Yevropa do\'konlari"}],"limits":[],"links":[{"l":"Sayt","u":"https://uz.globbing.com/ru"},{"l":"Telegram","u":"https://t.me/GlobbingUzbekistan"},{"l":"Instagram","u":"https://www.instagram.com/globbinguzbekistan/"},{"l":"iOS","u":"https://apps.apple.com/am/app/globbing/id958247076"},{"l":"Android","u":"https://play.google.com/store/apps/details?id=com.globbing.mobile&pli=1"}],"updated":"15.08.2026","hasPrice":true},{"id":"teztezdelivery","name":"Tez-Tez delivery","mono":"TTD","color":"#0E7490","price":5.88,"priceLabel":"$5.88","days":"muddat e'lon qilinmagan","dnum":99,"mode":"avia · avto","from":["Xitoy"],"route":"Xitoy → UZ","flags":"🇨🇳","countries":"Xitoy","nRoutes":1,"tracking":true,"note":"Tracking topildi; joriy ochiq tarif va yetkazish muddati saytda topilmadi.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Qisman tasdiqlandi"},{"k":"Ma'lumot to'liqligi","v":"60%"},{"k":"Tracking","v":"Saytda buyurtma holatini tekshirish"}],"tariffs":[{"c":"Xitoy","f":"🇨🇳","t":"Avia","hasT":true,"v":"9 USD","d":"","meta":[]},{"c":"Xitoy","f":"🇨🇳","t":"Avto","hasT":true,"v":"5,88 USD","d":"","meta":[]}],"svc":[{"k":"Tracking","v":"Mavjud"}],"limits":[],"links":[{"l":"Sayt","u":"https://www.tez-tez.uz/"},{"l":"Telegram","u":"https://t.me/teztez_china"},{"l":"Instagram","u":"https://www.instagram.com/tez_tez_china/"},{"l":"iOS","u":"https://apps.apple.com/uz/app/tez-tez/id6479942352"},{"l":"Android","u":"https://play.google.com/store/apps/details?id=uz.parcelpro.teztez&hl=uz"}],"updated":"15.08.2026","hasPrice":true},{"id":"smartpostus","name":"Smart Post US","mono":"SPU","color":"#9A3412","price":8.3,"priceLabel":"$8.30","days":"3–7 ish kuni","dnum":3,"mode":"avia","from":["AQSH"],"route":"AQSH → UZ","flags":"🇺🇸","countries":"AQSh","nRoutes":1,"tracking":false,"note":"Minimum 5 kg, hajmiy vazn formulasi, konsolidatsiya, AQSh omborlari va 3–7 ish kunlik express yetkazish topildi; joriy $/kg tarifi topilmadi.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Qisman tasdiqlandi"},{"k":"Ma'lumot to'liqligi","v":"20%"}],"tariffs":[{"c":"AQSh","f":"🇺🇸","t":"Express","hasT":true,"v":"8,3 USD","d":"3–7 ish kuni","meta":[{"k":"Ombor","v":"2688 Coney Island Ave, Brooklyn, NY 11235; boshqa AQSh nuqtalari ham bor"},{"k":"UZ ichida","v":"Eshikkacha express yetkazish mavjud"},{"k":"Minimal","v":"5 kg"},{"k":"Hajmiy vazn","v":"L(in)×W(in)×H(in)/366 = hajmiy kg"}]}],"svc":[{"k":"Konsolidatsiya","v":"Mavjud"},{"k":"Buy for me","v":"AQSh shopping xizmati ko\'rsatilgan"},{"k":"Door delivery UZ","v":"Mavjud, 3–7 ish kuni express"},{"k":"Marketplace mosligi","v":"AQSh internet-do\'konlari"}],"limits":[{"k":"Parfyum","v":"Cheklangan: sayt O\'zbekiston uchun 3 flakon/300 ml normani tilga oladi"},{"k":"Boshqa muhim cheklovlar","v":"Dori/medtexnika, dual-use, yonuvchan va litsenziyalanadigan tovarlar taqiqlangan/cheklangan"}],"links":[{"l":"Sayt","u":"https://smartpost.us/"},{"l":"Telegram","u":"https://t.me/SmartPostUs"},{"l":"Instagram","u":"https://www.instagram.com/smartpost.us"}],"updated":"15.08.2026","hasPrice":true},{"id":"cpost","name":"CPOST","mono":"CPOS","color":"#1E3A8A","price":10,"priceLabel":"$10.00","days":"muddat e'lon qilinmagan","dnum":99,"mode":"avia","from":["Xitoy"],"route":"Xitoy → UZ","flags":"🇨🇳","countries":"Xitoy","nRoutes":1,"tracking":false,"note":"Original faylda rasmiy sayt ko\'rsatilmagan.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Sayt ko\'rsatilmagan"},{"k":"Ma'lumot to'liqligi","v":"0%"}],"tariffs":[{"c":"Xitoy","f":"🇨🇳","t":"","hasT":false,"v":"10 USD","d":"","meta":[]}],"svc":[],"limits":[],"links":[{"l":"Telegram","u":"https://t.me/cpostuz"},{"l":"Instagram","u":"https://www.instagram.com/cpostuz"}],"updated":"15.08.2026","hasPrice":true},{"id":"yumecs","name":"YUMECS","mono":"YUME","color":"#134E4A","price":9,"priceLabel":"$9.00","days":"muddat e'lon qilinmagan","dnum":99,"mode":"avia","from":["Rossiya","Turkiya","Xitoy","Koreya","BAA","Malayziya"],"route":"Rossiya · Turkiya · Xitoy · Koreya · BAA · Malayziya → UZ","flags":"🇷🇺 🇹🇷 🇨🇳 🇰🇷 🇦🇪 🇲🇾","countries":"Rossiya, Turkiya, Xitoy, Koreya, BAA, Malayziya","nRoutes":6,"tracking":false,"note":"Tekshiruvda sayt 502 xatolik qaytardi. Qidiruvda yumecs.pro domeni ham uchradi, biroq u ham ochilmadi.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Sayt ishlamadi"},{"k":"Ma'lumot to'liqligi","v":"20%"}],"tariffs":[{"c":"Rossiya","f":"🇷🇺","t":"","hasT":false,"v":"10 USD","d":"","meta":[]},{"c":"Turkiya","f":"🇹🇷","t":"","hasT":false,"v":"10 USD","d":"","meta":[]},{"c":"Xitoy","f":"🇨🇳","t":"","hasT":false,"v":"10 USD","d":"","meta":[]},{"c":"Koreya","f":"🇰🇷","t":"","hasT":false,"v":"10 USD","d":"","meta":[]},{"c":"BAA","f":"🇦🇪","t":"","hasT":false,"v":"9 USD","d":"","meta":[]},{"c":"Malayziya","f":"🇲🇾","t":"","hasT":false,"v":"10 USD","d":"","meta":[]}],"svc":[],"limits":[],"links":[{"l":"Sayt","u":"https://yumecs.uz/"},{"l":"Telegram","u":"https://t.me/yumecs"},{"l":"Instagram","u":"https://www.instagram.com/yumecs.pro/"}],"updated":"15.08.2026","hasPrice":true},{"id":"d2d","name":"D2D","mono":"D2D","color":"#831843","price":5.5,"priceLabel":"$5.50","days":"4–7 kun","dnum":4,"mode":"avia · avto","from":["Xitoy"],"route":"Xitoy → UZ","flags":"🇨🇳","countries":"Xitoy","nRoutes":1,"tracking":true,"note":"Avia/avto tariflari, muddatlar, filial/manzilgacha yetkazish va tovar cheklovlari rasmiy saytda batafsil berilgan.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Tasdiqlandi"},{"k":"Ma'lumot to'liqligi","v":"80%"},{"k":"Tracking","v":"Real-time tracking + Telegram bot xabarlari"},{"k":"Til","v":"O\'zbek, Rus"}],"tariffs":[{"c":"Xitoy","f":"🇨🇳","t":"Avia","hasT":true,"v":"9.49 USD/kg; Avia Seriya 11.5; Avia Brand 13","d":"4–7 kun","meta":[{"k":"UZ ichida","v":"Viloyat filiallarigacha bepul; Toshkentda >5 kg manzilgacha bepul"}]},{"c":"Xitoy","f":"🇨🇳","t":"Avto","hasT":true,"v":"5.5 USD/kg Toshkent; 5.8 USD/kg viloyatlar; Seriya/Brand 7.5","d":"20–25 kun","meta":[{"k":"UZ ichida","v":"Viloyat filiallarigacha bepul; Toshkentda >5 kg manzilgacha bepul"}]}],"svc":[{"k":"Sug\'urta","v":"Topilmadi (yo\'qolish/zarar uchun javobgarlik bor)"},{"k":"Door delivery UZ","v":"Viloyat filiallarigacha bepul; Toshkent >5kg manzilgacha bepul"},{"k":"Tracking","v":"Real-time + Telegram bot"},{"k":"Marketplace mosligi","v":"Xitoy marketplace\'lari"}],"limits":[{"k":"Telefon","v":"Taqiqlangan"},{"k":"Batareya/Powerbank","v":"Powerbank va batareyasi asosiy qism bo\'lgan mahsulotlar faqat Avto"},{"k":"Parfyum","v":"Faqat Avto"},{"k":"Suyuqlik","v":"Yonuvchan suyuqliklar faqat Avto"},{"k":"Oziq-ovqat","v":"Taqiqlangan"},{"k":"Boshqa muhim cheklovlar","v":"Kompyuter, planshet/iPad, TV, o\'simlik/urug\', dori/medtexnika, dron, qurol, pirotexnika, tirik hayvon, tilla, kukun va boshqalar taqiqlangan"}],"links":[{"l":"Sayt","u":"https://d2d.uz/"},{"l":"Telegram","u":"https://t.me/DTD_channel"},{"l":"Instagram","u":"https://www.instagram.com/dtd_kargo_uz/"}],"updated":"15.08.2026","hasPrice":true},{"id":"humodelivery","name":"HUMO DELIVERY","mono":"HD","color":"#34343A","price":7,"priceLabel":"$7.00","days":"muddat e'lon qilinmagan","dnum":99,"mode":"avia · avto","from":["Xitoy"],"route":"Xitoy → UZ","flags":"🇨🇳","countries":"Xitoy","nRoutes":1,"tracking":true,"note":"Asosiy humodelivery.uz sahifasini tekshirishda ma\'lumot olinmadi; hmtrack.uz da Humo Delivery tracking tizimi topildi.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Qisman tasdiqlandi"},{"k":"Ma'lumot to'liqligi","v":"80%"},{"k":"Tracking","v":"hmtrack.uz orqali trek-raqam"},{"k":"Til","v":"Rus interfeys (hmtrack); boshqa tillar Topilmadi"}],"tariffs":[{"c":"Xitoy","f":"🇨🇳","t":"Avia","hasT":true,"v":"10 USD","d":"","meta":[]},{"c":"Xitoy","f":"🇨🇳","t":"Avto","hasT":true,"v":"7 USD","d":"","meta":[]}],"svc":[{"k":"Tracking","v":"Mavjud (hmtrack.uz)"}],"limits":[],"links":[{"l":"Sayt","u":"http://humodelivery.uz/"},{"l":"Telegram","u":"https://t.me/humo_china"},{"l":"Instagram","u":"https://www.instagram.com/humodelivery/"}],"updated":"15.08.2026","hasPrice":true},{"id":"wikishopus","name":"WIKISHOP.US","mono":"WU","color":"#166534","price":10.49,"priceLabel":"$10.49","days":"5–7 ish kuni","dnum":5,"mode":"avia","from":["AQSH"],"route":"AQSH → UZ","flags":"🇺🇸","countries":"AQSh","nRoutes":1,"tracking":true,"note":"2026 QUICK va Avia UZ tariflari, konsolidatsiya, repacking, foto, return, saqlash va AQSh ombori rasmiy saytda ko\'rsatilgan.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Tasdiqlandi"},{"k":"Ma'lumot to'liqligi","v":"80%"},{"k":"Tracking","v":"Shaxsiy kabinet orqali posilkalarni boshqarish"},{"k":"Til","v":"O\'zbek, Rus"}],"tariffs":[{"c":"AQSh","f":"🇺🇸","t":"Avia UZ","hasT":true,"v":"13.49 USD/kg","d":"5–7 ish kuni","meta":[{"k":"Ombor","v":"109 Rogers Rd STE 3, Wilmington, DE 19801"},{"k":"UZ ichida","v":"Toshkent va O\'zbekiston bo\'ylab $3/posilka (saytdagi aksiya)"},{"k":"Minimal","v":"0.1 kg"},{"k":"Hajmiy vazn","v":"Hajmiy vazn fizik vazndan 5+ kg ortsa qo\'llanadi"}]},{"c":"AQSh","f":"🇺🇸","t":"QUICK","hasT":true,"v":"10.49 USD/kg","d":"5–7 ish kuni","meta":[{"k":"Ombor","v":"109 Rogers Rd STE 3, Wilmington, DE 19801"},{"k":"UZ ichida","v":"Toshkent va O\'zbekiston bo\'ylab $3/posilka (saytdagi aksiya)"},{"k":"Minimal","v":"0.1 kg"},{"k":"Hajmiy vazn","v":"Hajmiy vazn fizik vazndan 5+ kg ortsa qo\'llanadi"}]}],"svc":[{"k":"Konsolidatsiya","v":"Bepul"},{"k":"Qayta qadoqlash","v":"$10 (kafolatlanmaydi)"},{"k":"Foto/tekshiruv","v":"$3 gacha 3 foto; video $5"},{"k":"Return/Refundga yordam","v":"$8 + lokal kuryer tarifi"},{"k":"Buy for me","v":"Mavjud, 10%"},{"k":"Door delivery UZ","v":"Toshkent/O\'zbekiston $3/posilka (aksiya)"},{"k":"Bepul saqlash","v":"28 kun bepul, keyin $1/kun"},{"k":"Tracking","v":"Mavjud"},{"k":"Marketplace mosligi","v":"Amazon, 6pm, Carters, Gap, Victoria's Secret, B&H, eBay, Apple, Walmart, H&M, Zara, Tommy Hilfiger"}],"limits":[],"links":[{"l":"Sayt","u":"https://wikishop.us/"},{"l":"Telegram","u":"https://t.me/Wikishop_Us"},{"l":"Instagram","u":"https://www.instagram.com/wikishop.us/"}],"updated":"15.08.2026","hasPrice":true},{"id":"greenpost","name":"GREEN POST","mono":"GP","color":"#7E22CE","price":9.5,"priceLabel":"$9.50","days":"7–10 kun","dnum":7,"mode":"avia","from":["Xitoy"],"route":"Xitoy → UZ","flags":"🇨🇳","countries":"Xitoy","nRoutes":1,"tracking":true,"note":"7–10 kun Xitoy–Toshkent va O\'zbekistonda 1–3 kun, konsolidatsiya/tekshiruv/fotohisobot topildi; joriy rasmiy kg tarifi ochiq matnda topilmadi.","hasNote":true,"trusted":true,"meta":[{"k":"Tekshiruv","v":"Qisman tasdiqlandi"},{"k":"Ma'lumot to'liqligi","v":"100%"},{"k":"Tracking","v":"Shaxsiy kabinet + Xitoy trek-kodi orqali identifikatsiya"},{"k":"Til","v":"O\'zbek, Rus, Xitoycha"},{"k":"To'lov","v":"Onlayn to\'lovda 2.5% ekvayring komissiyasi; to\'lov turi Topilmadi"}],"tariffs":[{"c":"Xitoy","f":"🇨🇳","t":"Avia/pochta","hasT":true,"v":"9,5 USD","d":"7–10 kun Xitoy omboridan Toshkentgacha","meta":[{"k":"Ombor","v":"Xitoy ombori; aniq manzil kabinetda"},{"k":"UZ ichida","v":"O\'zbekiston bo\'ylab 1–3 kun"}]}],"svc":[{"k":"Konsolidatsiya","v":"Mavjud"},{"k":"Qayta qadoqlash","v":"Mavjud (konsolidatsiyada qadoq optimallashtiriladi)"},{"k":"Foto/tekshiruv","v":"Tekshiruv; batafsil tekshiruv + 5 tagacha foto"},{"k":"Return/Refundga yordam","v":"Nomuvofiq/brak bo\'lsa qaytarishga yordam"},{"k":"Buy for me","v":"Taobao/Tmall/1688 uchun xarid xizmati"},{"k":"Door delivery UZ","v":"O\'zbekiston bo\'ylab 1–3 kun"},{"k":"Tracking","v":"Mavjud"},{"k":"Marketplace mosligi","v":"Taobao, Tmall, 1688"}],"limits":[{"k":"Boshqa muhim cheklovlar","v":"Saytda tashish qoidalari bo\'limi mavjud; yo\'nalish sahifasida kategoriya bo\'yicha to\'liq ro\'yxat olinmadi"}],"links":[{"l":"Sayt","u":"https://www.greenpost.uz/"},{"l":"Telegram","u":"https://t.me/greenpostuz"},{"l":"Instagram","u":"https://www.instagram.com/greenpost.uz/"}],"updated":"15.08.2026","hasPrice":true},{"id":"boxette","name":"BOXETTE","mono":"BOXE","color":"#A16207","price":10.28,"priceLabel":"$10.28","days":"3–9 ish kuni","dnum":3,"mode":"avia · avto","from":["AQSH","Turkiya"],"route":"AQSH · Turkiya → UZ","flags":"🇺🇸 🇹🇷","countries":"AQSh, Turkiya","nRoutes":2,"tracking":true,"note":"AQSh Express/Economy va Turkiya Economy tariflari 2026-yil saytida yangilangan.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Tasdiqlandi"},{"k":"Ma'lumot to'liqligi","v":"80%"},{"k":"Tracking","v":"Ilova/shaxsiy kabinetda jo\'natma bosqichlarini kuzatish"},{"k":"Til","v":"O\'zbek, Rus, English sahifalari"}],"tariffs":[{"c":"AQSh","f":"🇺🇸","t":"Express","hasT":true,"v":"160 000 UZS/kg","d":"3–9 ish kuni","meta":[{"k":"Ombor","v":"AQSh ombor manzili kabinetda beriladi"},{"k":"UZ ichida","v":"Toshkent 40 000 UZS dan; hududlar 65 000 UZS dan"},{"k":"Minimal","v":"100 g"},{"k":"Hajmiy vazn","v":"Faktik yoki hajmiy vazn ta\'sir qiladi; formula Topilmadi"}]},{"c":"AQSh","f":"🇺🇸","t":"Economy","hasT":true,"v":"130 000 UZS/kg","d":"9–16 ish kuni","meta":[{"k":"Ombor","v":"AQSh ombor manzili kabinetda beriladi"},{"k":"UZ ichida","v":"Toshkent 40 000 UZS dan; hududlar 65 000 UZS dan"},{"k":"Minimal","v":"1 kg"},{"k":"Hajmiy vazn","v":"Faktik yoki hajmiy vazn ta\'sir qiladi; formula Topilmadi"}]},{"c":"Turkiya","f":"🇹🇷","t":"Economy","hasT":true,"v":"130 000 UZS/kg","d":"9–16 ish kuni","meta":[{"k":"Ombor","v":"Turkiya ombor manzili kabinetda beriladi"},{"k":"UZ ichida","v":"Toshkent 40 000 UZS dan; hududlar 65 000 UZS dan"},{"k":"Minimal","v":"1 kg"},{"k":"Hajmiy vazn","v":"Faktik yoki hajmiy vazn ta\'sir qiladi; formula Topilmadi"}]}],"svc":[{"k":"Qayta qadoqlash","v":"Qo\'shimcha qadoqlash mavjud"},{"k":"Foto/tekshiruv","v":"Posilkani tekshirish mavjud"},{"k":"Buy for me","v":"Mavjud, 10% (min $5)"},{"k":"Door delivery UZ","v":"Mavjud, pullik"},{"k":"Bepul saqlash","v":"Omborda saqlash bor; bepul muddat Topilmadi"},{"k":"Tracking","v":"Mavjud"},{"k":"Marketplace mosligi","v":"AQSh/Turkiya; Walmart, eBay va boshqa do\'konlar"}],"limits":[{"k":"Telefon","v":"Mavjud: smartfon va elektronika tashilishi mumkinligi misollarda ko\'rsatilgan"},{"k":"Kosmetika","v":"Mavjud bo\'lishi mumkin; personal care misol qilingan"},{"k":"Oziq-ovqat","v":"Vitamin/supplement misol qilingan"},{"k":"Boshqa muhim cheklovlar","v":"Yakuniy ruxsat mahsulot kategoriyasi va bojxona talabiga bog\'liq"}],"links":[{"l":"Sayt","u":"https://boxette.uz/"},{"l":"Telegram","u":"https://t.me/boxette"},{"l":"Instagram","u":"https://www.instagram.com/boxette_uzbekistan/"}],"updated":"15.08.2026","hasPrice":true},{"id":"ase","name":"ASE","mono":"ASE","color":"#0F766E","price":4.74,"priceLabel":"$4.74","days":"2–3 ish kuni","dnum":2,"mode":"avia","from":["Turkiya"],"route":"Turkiya → UZ","flags":"🇹🇷","countries":"Turkiya","nRoutes":1,"tracking":false,"note":"Istanbul–Toshkent 2–3 ish kuni, hajmiy vazn /5000, 10% xaridga yordam va taqiqlar tekshirildi. Tarif sahifasi robots sabab ochilmadi.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Qisman tasdiqlandi"},{"k":"Ma'lumot to'liqligi","v":"60%"},{"k":"Til","v":"O\'zbek, Rus, English"},{"k":"To'lov","v":"Visa/Mastercard (xarid); yetkazish uchun naqd yoki karta; hududlarga PayMe invoice"}],"tariffs":[{"c":"Turkiya","f":"🇹🇷","t":"Avia","hasT":true,"v":"0–0.5kg 60 000; 0.5–0.6kg 75 000; 0.6–1kg 125 000; 1–1.1kg 135 000; 1.1–1.5kg 175 000; 1.5–1.6kg 185 000; 1.6–2kg 225 000 UZS","d":"2–3 ish kuni (Istanbul ombori → Toshkent)","meta":[{"k":"Ombor","v":"Istanbul, Turkiya"},{"k":"UZ ichida","v":"Hududlarga hamkorlar orqali, narx kelishiladi"},{"k":"Hajmiy vazn","v":"L×W×H / 5000 = hajmiy kg"}]}],"svc":[{"k":"Buy for me","v":"Mavjud, 10%"},{"k":"Door delivery UZ","v":"Hududlarga hamkorlar orqali"},{"k":"Marketplace mosligi","v":"Turkiya internet-do\'konlari"}],"limits":[{"k":"Batareya/Powerbank","v":"Alohida lithium/lithium-ion/metal batareyalar taqiqlangan"},{"k":"Parfyum","v":"Taqiqlangan"},{"k":"Suyuqlik","v":"Alkogolli/yonuvchan suyuqlik va aerozollar taqiqlangan"},{"k":"Brend/kontrafakt","v":"Kontrafakt/pirat mahsulotlar taqiqlangan"},{"k":"Boshqa muhim cheklovlar","v":"Qurol, valyuta, qimmatbaho buyumlar, madaniy boylik, tirik organizm, dori/medtexnika, xavfli moddalar, alkogol, tamaki va boshqalar"}],"links":[{"l":"Sayt","u":"https://aseshop.uz/"},{"l":"Instagram","u":"https://www.instagram.com/aseshopuzbekistan"}],"updated":"15.08.2026","hasPrice":true},{"id":"janapost","name":"Jana post","mono":"JP","color":"#BE123C","price":6.1,"priceLabel":"$6.10","days":"muddat e'lon qilinmagan","dnum":99,"mode":"avia","from":["Xitoy"],"route":"Xitoy → UZ","flags":"🇨🇳","countries":"Xitoy","nRoutes":1,"tracking":true,"note":"Marketplace jo\'natmalari, filial/kuryer orqali olish va tracking tasdiqlandi; Xitoydan 6.10 USD/kg joriy tarifi ochiq tarif sahifasida topilmadi.","hasNote":true,"trusted":false,"meta":[{"k":"Tekshiruv","v":"Qisman tasdiqlandi"},{"k":"Ma'lumot to'liqligi","v":"80%"},{"k":"Tracking","v":"Sayt va mobil ilovada tracking"},{"k":"Til","v":"O\'zbek, Rus, English, Xitoycha"}],"tariffs":[{"c":"Xitoy","f":"🇨🇳","t":"","hasT":false,"v":"6,10 USD","d":"","meta":[{"k":"UZ ichida","v":"Filialdan olish yoki kuryer yetkazishi"}]}],"svc":[{"k":"Door delivery UZ","v":"Filial yoki kuryer"},{"k":"Tracking","v":"Mavjud"},{"k":"Marketplace mosligi","v":"Marketplace jo\'natmalarini qabul qiladi"}],"limits":[{"k":"Suyuqlik","v":"Yonuvchan suyuqliklar taqiqlangan"},{"k":"Oziq-ovqat","v":"Taqiqlangan"},{"k":"Brend/kontrafakt","v":"Mualliflik huquqi bilan himoyalangan noqonuniy tovarlar taqiqlangan"},{"k":"Boshqa muhim cheklovlar","v":"Qurol/portlovchi, alkogol, aerozol, dorilar, radioaktiv, hayvon/o\'simlik, oksidlovchi, toksik/infeksion, tamaki, maishiy kimyo va boshqalar"}],"links":[{"l":"Sayt","u":"https://uz.janapost.com/"},{"l":"Telegram","u":"https://t.me/janapostuzbekistan"},{"l":"Instagram","u":"https://www.instagram.com/janapost.uzbekistan/"},{"l":"iOS","u":"https://apps.apple.com/uz/app/ja%C5%84a-post/id1460570242"},{"l":"Android","u":"https://play.google.com/store/apps/details?id=com.aitan.inexport&hl=kk&gl=US&pli=1"}],"updated":"15.08.2026","hasPrice":true}];
 
+/* Kirillga o'girishda tegilmaydigan nomlar: do'kon, kuryer va qo'llanma
+   nomlari. Ular matn ichida ham ("Taobao'da") o'z holicha qoladi. */
+STORES.forEach(x => { CYR_PHRASES.push(x.name); if (x.domain) CYR_PHRASES.push(x.domain); });
+COURIERS.forEach(x => { CYR_PHRASES.push(x.name); if (x.mono && x.mono.length > 2) CYR_PHRASES.push(x.mono); });
 const COURIER_LOGOS = { ase:'logos/ase.webp', ethnologistics:'logos/ethnologistics.webp', d2d:'logos/d2d.webp', teztezdelivery:'logos/teztezdelivery.webp', spacexpress:'logos/spacexpress.webp', meestchina:'logos/meestchina.webp', abuexpress:'logos/abuexpress.webp', janapost:'logos/janapost.webp', humodelivery:'logos/humodelivery.webp', smartpostus:'logos/smartpostus.webp', mymeest:'logos/mymeest.webp', tezparcel:'logos/tezparcel.webp', yumecs:'logos/yumecs.webp', greenpost:'logos/greenpost.webp', silkroad:'logos/silkroad.webp', yellowpochta:'logos/yellowpochta.webp', cpost:'logos/cpost.webp', boxette:'logos/boxette.webp', wikishopus:'logos/wikishopus.webp', globbing:'logos/globbing.webp' };
 COURIERS.forEach(c => {
   const f = COURIER_LOGOS[c.id];
@@ -3794,6 +4010,7 @@ const TIPS = [
   { c:'PLANLASH', t:'Bayram sovg\'asini kamida 5-6 hafta oldin buyurtma qiling — dekabr oxirida barcha yo\'nalish sekinlashadi.' }
 ];
 
+FULL_GUIDES.forEach(g => CYR_PHRASES.push(g.title));
 const LV = {
   green:{ bg:'#E9F8EF', fg:'#0F7B3E', dot:'#0F7B3E', ring:'#DCF3E5', label:'MUMKIN' },
   amber:{ bg:'#FDF3E3', fg:'#B45309', dot:'#B45309', ring:'#FBEFD6', label:'RUXSAT' },
@@ -4106,6 +4323,13 @@ class Component extends DCLogic {
     const now = this.state.stack;
     const was = this._prevStack;
     this._prevStack = now;
+    /* Qidiruv ekrani ochilganda maydon darhol fokusda — telefonda
+       klaviatura o'zi chiqadi, yana bir marta bosish shart emas. */
+    if (now[now.length - 1] === 'search' && !(was && was[was.length - 1] === 'search')) {
+      const main = this._mainEl();
+      const inp = main && main.querySelector('input[type="search"]');
+      if (inp) { try { inp.focus({ preventScroll: true }); } catch (e) { inp.focus(); } }
+    }
     /* "Endi saqlandi" tabrigi faqat reja ekranida va faqat bir marta. */
     if (this.state.justSaved && now[now.length - 1] !== 'plan') this.setState({ justSaved: false });
     if (was && was.length === now.length && was[was.length - 1] === now[now.length - 1]) return;
@@ -4130,6 +4354,7 @@ class Component extends DCLogic {
 
   componentWillUnmount() {
     if (this._onPop) window.removeEventListener('popstate', this._onPop);
+    if (this._onKey) window.removeEventListener('keydown', this._onKey);
     if (this._onInstall) window.removeEventListener('beforeinstallprompt', this._onInstall);
     const tg = tgApp();
     if (tg && tg.BackButton && this._tgBack) { try { tg.BackButton.offClick(this._tgBack); } catch (e) {} }
@@ -4198,6 +4423,16 @@ class Component extends DCLogic {
       };
       window.addEventListener('popstate', this._onPop);
     }
+    /* Klaviaturada Escape — ichki ekrandan orqaga (kompyuterda va
+       Telegram Desktop'da). Maydon ichida bo'lsa avval matn tozalanadi. */
+    this._onKey = e => {
+      if (e.key !== 'Escape' || this.state.stack.length < 2) return;
+      const a = document.activeElement;
+      if (a && a.tagName === 'INPUT' && a.value) return;
+      e.preventDefault();
+      this.back();
+    };
+    window.addEventListener('keydown', this._onKey);
     try {
       const raw = localStorage.getItem('xy_usd_rate');
       if (raw) {
@@ -4338,7 +4573,7 @@ class Component extends DCLogic {
         RATE_META.live = true; RATE_META.loading = false; RATE_META.at = Date.now();
         try { localStorage.setItem('xy_usd_rate', JSON.stringify({ v: USD_RATE, date: RATE_META.date, diff: RATE_META.diff, at: RATE_META.at })); } catch (e) {}
         this.forceUpdate();
-        if (!silent) this.toast('Kurs yangilandi: 1 USD = ' + money(USD_RATE) + ' so\'m');
+        if (!silent) this.toast(tx(this.state.lang, 'Kurs yangilandi: 1 USD = {0} so\'m', money(USD_RATE)));
         return true;
       } catch (e) {
         if (timer) clearTimeout(timer);
@@ -4424,9 +4659,11 @@ class Component extends DCLogic {
 
   calc() {
     const N = normsAt();
-    const price = num(this.state.calcPrice);
-    const weight = num(this.state.calcWeight);
-    const shipKg = num(this.state.calcShip);
+    /* Manfiy qiymat ma'noga ega emas, lekin "-" yozib bo'ladi: ilgari
+       "-2.5 kg" bojxona qiymatini kamaytirib, bojni pasaytirib berardi. */
+    const price = Math.max(0, num(this.state.calcPrice));
+    const weight = Math.max(0, num(this.state.calcWeight));
+    const shipKg = Math.max(0, num(this.state.calcShip));
     const excessGoods = Math.max(0, price - N.freeUsd);
     const ratio = price > 0 ? excessGoods / price : 0;
     const excessWeight = weight * ratio;
@@ -4496,7 +4733,7 @@ class Component extends DCLogic {
       return f.indexOf('from:') === 0
         ? (COURIER_ORIGINS.find(d => d[0] === f.slice(5)) || null) : null;
     })();
-    const titles = { plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? courierFolderDef[1] + ' yo\'nalishi' : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', search:'Qidiruv', wizard:'Reja tuzish', settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
+    const titles = { plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? tx(st.lang, '{0} yo\'nalishi', tr(st.lang, courierFolderDef[1])) : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', search:'Qidiruv', wizard:'Reja tuzish', settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
     /* Saralash tugmasi faqat ro'yxat ko'rinib turganda kerak: papkalar
        ekranida saralanadigan narsa yo'q. */
     const showSortBtn = cur === 'courierfolder' ||
@@ -5224,7 +5461,7 @@ class Component extends DCLogic {
       rateBtnLabel: RATE_META.loading ? 'Yuklanmoqda…' : 'Yangilash',
       refreshRate: () => this.refreshRate(false),
       usedPct: Math.min(100, Math.max(2, pctUsed / 2)) + '%',
-      freeText: c.cv > 0 ? 'me\'yordan $' + Math.round(c.excessGoods) + ' ortiq' : '$' + Math.round(NC.freeUsd - priceNum) + ' qoldi',
+      freeText: c.cv > 0 ? tx(st.lang, 'me\'yordan ${0} ortiq', Math.round(c.excessGoods)) : tx(st.lang, '${0} qoldi', Math.round(NC.freeUsd - priceNum)),
       freeColor: pctUsed <= 100 ? '#0F7B3E' : (pctUsed <= 150 ? '#B45309' : '#B91C1C'),
       freeBar: pctUsed <= 100 ? 'linear-gradient(90deg,#34D399,#0F7B3E)' : (pctUsed <= 150 ? 'linear-gradient(90deg,#E0A32E,#B45309)' : 'linear-gradient(90deg,#EF6A4B,#B91C1C)'),
       bhmLabel: money(NC.bhm),
@@ -5234,7 +5471,8 @@ class Component extends DCLogic {
       monthColor: mPct <= 100 ? '#131429' : (mPct <= 150 ? '#B45309' : '#B91C1C'),
       monthBar: mPct <= 100 ? 'linear-gradient(90deg,#34D399,#0F7B3E)' : (mPct <= 150 ? 'linear-gradient(90deg,#E0A32E,#B45309)' : 'linear-gradient(90deg,#EF6A4B,#B91C1C)'),
       monthMeta: monthList.length
-        ? monthList.length + ' ta jo\'natma · ' + mTot.kg.toFixed(1) + ' kg · ' + (mTot.usd <= NC.freeUsd ? '$' + Math.round(NC.freeUsd - mTot.usd) + ' qoldi' : 'me\'yordan $' + Math.round(mTot.usd - NC.freeUsd) + ' ortiq')
+        ? tx(st.lang, '{0} ta jo\'natma · {1} kg · {2}', monthList.length, mTot.kg.toFixed(1),
+            mTot.usd <= NC.freeUsd ? tx(st.lang, '${0} qoldi', Math.round(NC.freeUsd - mTot.usd)) : tx(st.lang, 'me\'yordan ${0} ortiq', Math.round(mTot.usd - NC.freeUsd)))
         : 'Bu oyda hali jo\'natma yo\'q. Reja saqlasangiz shu yerga o\'zi qo\'shiladi — yoki kalkulyatorda hisoblab qo\'ying.',
       hasMonth: monthList.length > 0,
       monthEmpty: monthList.length === 0,
@@ -5270,15 +5508,15 @@ class Component extends DCLogic {
         { k:'Bojxona yig\'imi (BHM ' + Math.round(c.norms.feeShare * 100) + '%)', v: money(c.fee) + ' so\'m' }
       ],
       calcNote: c.basis === 'none'
-        ? 'Summa $' + c.norms.freeUsd + ' me\'yordan oshmadi — yagona bojxona to\'lovi undirilmaydi.'
+        ? tx(st.lang, 'Summa ${0} me\'yordan oshmadi — yagona bojxona to\'lovi undirilmaydi.', c.norms.freeUsd)
         : (c.basis === 'weight'
-          ? 'Vazn bo\'yicha hisob ko\'proq chiqdi: ' + c.excessWeight.toFixed(1) + ' kg × $' + c.norms.minPerKg + ' = $' + Math.round(c.byWeight) + ' (' + Math.round(c.norms.dutyPct * 100) + '% varianti $' + Math.round(c.byValue) + ' edi).'
-          : 'Qiymat bo\'yicha hisob ko\'proq chiqdi: $' + Math.round(c.cv) + ' × ' + Math.round(c.norms.dutyPct * 100) + '% = $' + Math.round(c.byValue) + ' (vazn varianti $' + Math.round(c.byWeight) + ' edi).'),
+          ? tx(st.lang, 'Vazn bo\'yicha hisob ko\'proq chiqdi: {0} kg × ${1} = ${2} ({3}% varianti ${4} edi).', c.excessWeight.toFixed(1), c.norms.minPerKg, Math.round(c.byWeight), Math.round(c.norms.dutyPct * 100), Math.round(c.byValue))
+          : tx(st.lang, 'Qiymat bo\'yicha hisob ko\'proq chiqdi: ${0} × {1}% = ${2} (vazn varianti ${3} edi).', Math.round(c.cv), Math.round(c.norms.dutyPct * 100), Math.round(c.byValue), Math.round(c.byWeight))),
       calcSteps: [
-        { t:'Kalendar oyda kelgan barcha jo\'natmalar summasi qo\'shiladi, undan $' + c.norms.freeUsd + ' imtiyoz ayriladi.' },
-        { t:'Ortiqcha qismga to\'g\'ri keladigan vazn nisbat bo\'yicha ajratiladi: ' + c.excessWeight.toFixed(1) + ' kg.' },
-        { t:'Shu vaznning yetkazish xarajati tovar qiymatiga qo\'shiladi — bu bojxona qiymati.' },
-        { t: Math.round(normsAt().dutyPct * 100) + '% va har kg uchun $' + normsAt().minPerKg + ' hisoblanadi, kattasi olinadi; ustiga BHM ning ' + Math.round(normsAt().feeShare * 100) + '% yig\'imi qo\'shiladi.' }
+        { t: tx(st.lang, 'Kalendar oyda kelgan barcha jo\'natmalar summasi qo\'shiladi, undan ${0} imtiyoz ayriladi.', c.norms.freeUsd) },
+        { t: tx(st.lang, 'Ortiqcha qismga to\'g\'ri keladigan vazn nisbat bo\'yicha ajratiladi: {0} kg.', c.excessWeight.toFixed(1)) },
+        { t: tx(st.lang, 'Shu vaznning yetkazish xarajati tovar qiymatiga qo\'shiladi — bu bojxona qiymati.') },
+        { t: tx(st.lang, '{0}% va har kg uchun ${1} hisoblanadi, kattasi olinadi; ustiga BHM ning {2}% yig\'imi qo\'shiladi.', Math.round(normsAt().dutyPct * 100), normsAt().minPerKg, Math.round(normsAt().feeShare * 100)) }
       ],
       dutyPctLabel: Math.round(normsAt().dutyPct * 100) + '%', minPerKgLabel: String(normsAt().minPerKg),
       banCount: String(BANNED.length),
@@ -5467,7 +5705,12 @@ class Component extends DCLogic {
       resetAllFilters: () => this.setState({ storeCountries:[], storeCats:[], storeDirect:false, courierCountries:[], courierMode:null, storeQuery:'' }),
 
 
-      toastOn: !!st.toast, toastText: st.toast
+      toastOn: !!st.toast, toastText: st.toast, toastOpacity: st.toast ? '1' : '0',
+      /* Ma'lumotlar bazasidan kelgan matn (kuryer izohi, tarif, do'kon
+         tavsifi) ruschaga tarjima qilinmagan — o'zbekcha qoladi. Element
+         shuni ochiq aytadi: ruscha sahifada uning tili boshqa. Kirill
+         rejimida matn o'giriladi, shuning uchun til belgisi ham o'zgaradi. */
+      dataLang: st.lang === 'uzc' ? 'uz-Cyrl' : 'uz'
     };
   }
 }

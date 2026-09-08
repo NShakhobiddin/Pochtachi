@@ -176,6 +176,22 @@ try {
   check('bosilganda kalkulyator ochiladi va hisoblaydi',
     /\d/.test(calc.natija) && calc.maydonlar >= 3,
     `${calc.maydonlar} ta maydon · ${calc.natija.slice(0, 40)}`);
+  /* Manfiy og'irlik yoki yetkazish narxi bojni kamaytirmasin: ilgari
+     "-2.5 kg" bojxona qiymatini pasaytirib, to'lovni kam ko'rsatardi.
+     Manfiy qiymat nol bilan bir xil natija berishi kerak. */
+  const jami = async () => (await page.evaluate(() => (document.body.innerText.match(/([\d\s]+)\s*so'm/) || ['', ''])[1].replace(/\s+/g, '')));
+  const maydon = page.locator('main input');
+  const yoz = async (i, v) => { await maydon.nth(i).fill(v); await maydon.nth(i).dispatchEvent('change'); await page.waitForTimeout(250); };
+  await yoz(0, '320'); await yoz(1, '2.5'); await yoz(2, '9');
+  const oddiy = await jami();
+  await yoz(1, '0'); const nolVazn = await jami();
+  await yoz(1, '-2.5'); const manfiyVazn = await jami();
+  await yoz(1, '2.5'); await yoz(2, '-9'); const manfiyYet = await jami();
+  await yoz(2, '0'); const nolYet = await jami();
+  check('manfiy og\'irlik va yetkazish bojni kamaytirmaydi',
+    +oddiy > +nolVazn && manfiyVazn === nolVazn && manfiyYet === nolYet,
+    `2.5 kg: ${oddiy} · 0 kg: ${nolVazn} · -2.5 kg: ${manfiyVazn} · -9 $/kg: ${manfiyYet}`);
+  await yoz(1, '2.5'); await yoz(2, '9');
   await page.goBack();
   await page.waitForTimeout(400);
 
@@ -240,12 +256,23 @@ try {
     await page.evaluate(() => document.querySelectorAll('main input').length === 0));
   await page.locator('button[aria-label="Qidirish"]').first().click();
   await page.waitForTimeout(600);
+  /* Ochilganda maydon fokusda: telefonda klaviatura o'zi chiqadi. */
+  check('qidiruv ochilganda maydon fokusda',
+    await page.evaluate(() => document.activeElement && document.activeElement.type === 'search'));
   const input = page.locator('main input[type=search]').first();
   await input.fill('Али');
   await page.waitForTimeout(400);
   check('kirillcha qidiruv ishlaydi', /AliExpress/i.test(await page.evaluate(() => document.body.innerText)));
-  await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
+  check('qidiruvni tozalash tugmasi nomli va 32px',
+    await page.evaluate(() => { const b = document.querySelector('main label button');
+      const r = b ? b.getBoundingClientRect() : { width: 0 };
+      return !!b && !!b.getAttribute('aria-label') && r.width >= 32 && r.height >= 32; }));
+  /* Escape: bo'sh maydonda ekran yopiladi (kompyuter va Telegram Desktop). */
+  await input.fill('');
+  await page.keyboard.press('Escape');
   await page.waitForTimeout(500);
+  check('Escape qidiruvni yopadi',
+    await page.evaluate(() => document.querySelectorAll('main input[type=search]').length === 0));
 
   // 5. Qo'llanma iframe'da ochiladi
   await page.locator('nav button', { hasText: "Qo'llanmalar" }).first().click();
@@ -540,6 +567,22 @@ try {
   check('buzuq reja ilovani yiqitmaydi',
     tikladi.bor && tikladi.reja && xato.length === 0,
     xato[0] ? xato[0].slice(0, 70) : JSON.stringify(tikladi));
+  /* Filtr va sozlamalar ham: massiv o'rniga satr, noma'lum saralash
+     kaliti, noto'g'ri til. Ilgari `storeCountries.join is not a function`
+     bilan ilova umuman ochilmasdi. */
+  await page.evaluate(() => {
+    const st = JSON.parse(localStorage.getItem('xy_state_v1') || '{}');
+    Object.assign(st, { v: 1, sort: 42, storeCountries: 'x', storeCats: { a: 1 }, courierCountries: [1, null],
+      courierMode: {}, storeFolderBy: 9, lang: 'xx', lastTab: 'zzz', trackNo: { n: 1 } });
+    localStorage.setItem('xy_state_v1', JSON.stringify(st));
+  });
+  xato.length = 0;
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForTimeout(1600);
+  const filtrTikladi = await page.evaluate(() => ({ nav: !!document.querySelector('nav'), main: !!document.querySelector('main') }));
+  check('buzuq filtr holati ilovani yiqitmaydi',
+    filtrTikladi.nav && filtrTikladi.main && xato.length === 0,
+    xato[0] ? xato[0].slice(0, 70) : JSON.stringify(filtrTikladi));
   await page.evaluate(v => { if (v) localStorage.setItem('xy_state_v1', v); }, buzuq);
   await page.reload({ waitUntil: 'load' });
   await page.waitForTimeout(1400);
@@ -703,79 +746,87 @@ try {
     if (!m[1].startsWith('brand') && !UYA.has(+m[2])) yomonUya.add(m[2] + 'px');
   check('rasm uyalari shkalada', yomonUya.size === 0, [...yomonUya].join(' '));
 
-  /* Ruscha rejimda o'zbekcha matn qolib ketmasin. Interfeys satrlari
-     lug'atdan tarjima qilinadi; do'kon/kuryer nomlari, huquqiy manba va
-     til tugmasi ataylab asl holida qoladi. */
-  /* Toza kontekst: shu paytgacha localStorage da lang:'uz' saqlangan,
-     o'sha kontekstda tanishuv ekrani chiqmaydi va til tanlab bo'lmaydi. */
-  const ruContext = await browser.newContext({ viewport: { width: 390, height: 844 },
-    reducedMotion: 'reduce' });
-  const ruSahifa = await ruContext.newPage();
-  await ruSahifa.goto(base + '/', { waitUntil: 'load' });
-  await ruSahifa.waitForTimeout(1500);
-  const ruTanla = ruSahifa.getByText('Русский').first();
-  if (await ruTanla.count()) { await ruTanla.click(); await ruSahifa.waitForTimeout(500); }
-  for (let i = 0; i < 2; i++) {
-    const s = ruSahifa.getByRole('button', { name: /O'tkazib yuborish|Пропустить/ });
-    if (await s.count()) { await s.first().click(); await ruSahifa.waitForTimeout(350); }
-  }
-  await ruSahifa.waitForTimeout(500);
-  const ATAYLAB = /^(Taobao|Pinduoduo|Poizon|Trendyol|Amazon|eBay|SHEIN|O'zbekcha|VMQ|BHM|SALES TAX|Telegram|v\d)/;
-  /* Beshta bo'lim ham qaraladi: ilgari faqat bosh sahifa tekshirilardi va
-     boshqa ekranlardagi tarjimasiz satrlar ushlanmay qolardi. Matn tugunlari
-     bo'yicha yuramiz — "43 ta do'kon" kabi qo'shma yozuvlarda raqam alohida
-     tugun bo'lib, matn qismi lug'atdan chiqishi kerak. */
-  const uzQoldi = [];
-  for (const bolim of ['Bosh sahifa', "Qo'llanmalar", 'Reja', 'Bojxona', 'Sozlamalar']) {
-    const t = ruSahifa.locator('nav button').nth(['Bosh sahifa', "Qo'llanmalar", 'Reja', 'Bojxona', 'Sozlamalar'].indexOf(bolim));
-    await t.click().catch(() => {});
-    await ruSahifa.waitForTimeout(600);
-    const bu = await ruSahifa.evaluate(() => {
-      const out = [];
-      const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-      let n;
-      while ((n = w.nextNode())) {
-        const s = n.textContent.trim();
-        if (s.length < 4 || s.length > 200) continue;
-        if (!n.parentElement || !n.parentElement.getBoundingClientRect().width) continue;
-        if (/[А-Яа-яЀ-ӿ]/.test(s)) continue;
-        if (!/[a-z]{3}/.test(s)) continue;
-        out.push(s);
-      }
-      return [...new Set(out)];
-    });
-    uzQoldi.push(...bu);
-  }
-  /* Pullik xizmatlar ekrani alohida: u eng uzun matnli ekran va CONTACT
-     to'ldirilgunicha yashirin turgani uchun tarjimasi tekshirilmay qolgandi. */
-  await ruSahifa.locator('nav button').first().click();
-  await ruSahifa.waitForTimeout(700);
-  const ruSvcKirish = ruSahifa.locator('main button').filter({ hasText: /Mutaxassis|Помощь|консультац/i }).first();
-  if (await ruSvcKirish.count()) {
-    await ruSvcKirish.click();
-    await ruSahifa.waitForTimeout(800);
-    for (const lane of [/Kuryer tashkilotiman|Я курьерская/, /Men xaridorman|Я покупатель/]) {
-      const t = ruSahifa.locator('main button').filter({ hasText: lane }).first();
-      if (await t.count()) { await t.click(); await ruSahifa.waitForTimeout(500); }
-      uzQoldi.push(...await ruSahifa.evaluate(() => {
+  /* Ruscha va kirill rejimida o'zbekcha lotin matn qolib ketmasin.
+     Bitta yurish ikkala til uchun: bosh sahifadan tashqari qidiruv,
+     kuzatuv, do'kon va kuryer papkalari, do'kon/kuryer sahifasi,
+     taqqoslash, bojxonaning oltita bo'limi, sozlamalar va xizmatlar.
+     Ilgari faqat beshta bo'lim tekshirilar edi va chuqur ekranlarda
+     200 dan ortiq satr tarjimasiz turardi.
+     Ruscha rejimda ma'lumotlar bazasidan kelgan matn (kuryer izohi, tarif,
+     do'kon tavsifi) ataylab o'zbekcha — u lang="uz" bilan belgilangan va
+     o'tkazib yuboriladi. Kirill rejimida esa hammasi o'giriladi, faqat
+     brend nomlari, manzillar va valyuta kodlari lotin qoladi. */
+  const BREND = new RegExp('^(' + [...new Set([
+    ...[...src.matchAll(/\{"id":"[a-z0-9]+","name":"([^"]+)"/g)].map(m => m[1]),
+    ...[...src.matchAll(/^\s*\{ id:'[a-z0-9]+', name:'([^']+)'/gm)].map(m => m[1]),
+    ...[...src.matchAll(/name\s*:\s*['"]([^'"\\]+)['"]/g)].map(m => m[1]).filter(x => /^[A-Z]/.test(x) && x.length < 24),
+    ...[...src.matchAll(/title:'([^']+)', flag:/g)].map(m => m[1])
+  ])].map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')');
+  const ATAYLAB = /^(O'zbekcha|Ўзбекча|Русский|VMQ|BHM|SALES TAX|Telegram|Instagram|App Store|Google Play|v\d|USD|EUR|GBP|iOS|Android|Nike|Adidas|Puma|Apple|Samsung|Xiaomi|Lenovo|Tmall|Walmart|Noon|AliExpress|Buy for me|Door delivery|Marketplace|Tracking|Powerbank|Black Friday|Pochtam|[\w.+-]+@[\w.-]+|[\w-]+\.(uz|com|ru|org)(\/|$))/i;
+  const tarjimaSkan = async (lang) => {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+    const p = await ctx.newPage();
+    await p.goto(base + '/', { waitUntil: 'load' });
+    await p.waitForTimeout(1500);
+    const tanla = p.getByText(lang === 'ru' ? 'Русский' : 'Ўзбекча', { exact: true }).first();
+    if (await tanla.count()) { await tanla.click(); await p.waitForTimeout(500); }
+    for (let i = 0; i < 2; i++) {
+      const sk = p.getByRole('button', { name: /O'tkazib yuborish|Пропустить|Ўтказиб/ });
+      if (await sk.count()) { await sk.first().click(); await p.waitForTimeout(350); }
+    }
+    await p.waitForTimeout(500);
+    const qoldi = [];
+    const skan = async (nom) => {
+      await p.waitForTimeout(450);
+      const bu = await p.evaluate((lang) => {
         const out = [];
         const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
         let n;
         while ((n = w.nextNode())) {
           const s = n.textContent.trim();
           if (s.length < 4 || s.length > 200) continue;
-          if (!n.parentElement || !n.parentElement.getBoundingClientRect().width) continue;
+          const el = n.parentElement;
+          if (!el || !el.getBoundingClientRect().width) continue;
+          if (lang === 'ru' && el.closest('[lang^="uz"]')) continue;
           if (/[А-Яа-яЀ-ӿ]/.test(s)) continue;
           if (!/[a-z]{3}/.test(s)) continue;
           out.push(s);
         }
         return [...new Set(out)];
-      }));
+      }, lang);
+      bu.forEach(t => qoldi.push(nom + ': ' + t));
+    };
+    const nav = async (i) => { await p.locator('nav button').nth(i).click(); await p.waitForTimeout(500); };
+    const bos = async (re) => { const l = p.locator('main button').filter({ hasText: re }).first(); if (await l.count()) { await l.click(); await p.waitForTimeout(600); return true; } return false; };
+    await skan('bosh');
+    await p.locator('header button').first().click(); await p.waitForTimeout(400);
+    await p.locator('input').first().fill('nike'); await skan('qidiruv');
+    await p.locator('input').first().fill('zzqq'); await skan('qidiruv-bo\'sh');
+    await nav(0); await p.locator('header button').nth(1).click(); await skan('kuzatuv');
+    await nav(0); await bos(/Do'konlar|Дўконлар|Магазины/); await skan('do\'kon-papkalar');
+    await bos(/Universal|Универсал/); await skan('do\'kon-papka');
+    await bos(/Taobao/); await skan('do\'kon');
+    await nav(0); await bos(/Kuryerlar|Курьерлар|Курьеры/); await skan('kuryer-papkalar');
+    await bos(/Turkiya|Туркия|Турция/); await skan('kuryer-papka');
+    await bos(/ASE/); await skan('kuryer');
+    await bos(/Taqqoslash|Таққослаш|Сравн/); await skan('taqqoslash');
+    for (let i = 0; i < 6; i++) {
+      await nav(3); await p.waitForTimeout(300);
+      const secs = p.locator('main button').filter({ hasText: /Bojsiz|Yagona|Taqiqlangan|Rasmiylashtirish|kalkulyatori|organlari|Божсиз|Ягона|Тақиқланган|Расмийлаштириш|калькулятор|органлари|Беспошлин|Единый|Запрещ|Оформлен|калькулятор|органы/i });
+      if (await secs.count() > i) { await secs.nth(i).click(); await p.waitForTimeout(600); await skan('bojxona-' + i); }
     }
-  }
-  const uzYomon = [...new Set(uzQoldi)].filter(t => !ATAYLAB.test(t));
-  check('ruscha rejimda tarjimasiz matn yo\'q', uzYomon.length === 0, uzYomon.slice(0, 4).join(' | '));
-  await ruContext.close();
+    await nav(1); await skan('qo\'llanmalar');
+    await nav(2); await skan('reja');
+    await nav(4); await skan('sozlamalar');
+    await nav(0); await bos(/Mutaxassis|Мутахассис|Помощь|консульт/); await skan('xizmatlar');
+    await bos(/Kuryer tashkilotiman|Курьер ташкилотиман|Я курьерская/); await skan('xizmatlar-kuryer');
+    await ctx.close();
+    return [...new Set(qoldi)].filter(t => { const m = t.slice(t.indexOf(': ') + 2); return !ATAYLAB.test(m) && !BREND.test(m); });
+  };
+  const ruYomon = await tarjimaSkan('ru');
+  check('ruscha rejimda tarjimasiz matn yo\'q', ruYomon.length === 0, ruYomon.slice(0, 4).join(' | '));
+  const uzcYomon = await tarjimaSkan('uzc');
+  check('kirill rejimida lotin matn yo\'q', uzcYomon.length === 0, uzcYomon.slice(0, 4).join(' | '));
 
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(600);
@@ -1351,6 +1402,14 @@ try {
     }
     return { eng: en.length ? Math.min(...en) : 0, soni: en.length, uzBor, strelka, emoji, yuklanmagan };
   });
+  /* Bayroq rasmi ekran o'quvchi uchun nomli (role=img + aria-label).
+     sc-camel-aria-label chizilmasdi — nom yo'q edi. */
+  const bayroqNom = await page.evaluate(() => {
+    const els = [...document.querySelectorAll('main [role="img"]')];
+    return { soni: els.length, nomli: els.filter(e => /bayrog/i.test(e.getAttribute('aria-label') || '')).length };
+  });
+  check('bayroq rasmlari nomli (aria-label)', bayroqNom.soni >= 9 && bayroqNom.nomli === bayroqNom.soni,
+    `${bayroqNom.nomli}/${bayroqNom.soni}`);
   check('kuryer papkasida bayroq 3D rasm va yirik',
     bayroq && bayroq.soni === 9 && bayroq.eng >= 44 && !bayroq.yuklanmagan
       && bayroq.emoji === 0 && !bayroq.uzBor && !bayroq.strelka,
@@ -1585,6 +1644,11 @@ try {
   }
 
   // 15. Xato va yo'qolgan fayllar
+  /* Toast — jonli hudud (role=status) doim DOM da: ekran o'quvchi faqat
+     oldindan bor hududdagi o'zgarishni o'qiydi. */
+  check('toast jonli hudud sifatida doim mavjud',
+    await page.evaluate(() => { const t = document.querySelector('[role="status"][aria-live]'); return !!t && getComputedStyle(t).pointerEvents === 'none'; }));
+
   check('konsolda xato yo\'q', errors.length === 0, errors.slice(0, 2).join(' / '));
   check('404 yo\'q', missing.length === 0, missing.slice(0, 2).join(' / '));
 } finally {
