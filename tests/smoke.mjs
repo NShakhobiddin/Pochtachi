@@ -1397,6 +1397,19 @@ try {
   await page.locator('main button[translate="no"]').filter({ hasText: 'Русский' }).first().click();
   await page.waitForTimeout(500);
   const tilRu = await tilTugma();
+  /* Sozlamalarda BHM bir marta (ilgari norms.json manbasi va shablon
+     ikkalasi ham qo'shib, "BHM 440 000 so'm · BHM 440 000 so'm" chiqardi);
+     bosh sahifada ruscha ko'plik: 43 магазина, 20 курьеров, 7 инструкций. */
+  const ruSoz = await page.evaluate(() => document.querySelector('main').innerText.replace(/\s+/g, ' '));
+  check('ruscha sozlamalarda BRV bir marta', (ruSoz.match(/БРВ/g) || []).length === 1 && !/BHM/.test(ruSoz), (ruSoz.match(/Таможенные нормы:.{0,80}/) || [])[0]);
+  await page.locator('nav button', { hasText: /Настройки|Sozlamalar/ }).first().click();
+  await page.locator('nav button').first().click();
+  await page.waitForTimeout(500);
+  const ruBosh = await page.evaluate(() => document.querySelector('main').innerText.replace(/\s+/g, ' '));
+  check('ruscha ko\'plik: 43 магазина, 20 курьеров, 7 инструкций',
+    /43 магазина/.test(ruBosh) && /20 курьеров/.test(ruBosh) && /7 инструкций/.test(ruBosh), ruBosh.slice(0, 200));
+  await page.locator('nav button').last().click();
+  await page.waitForTimeout(500);
   await page.locator('main button[translate="no"]').filter({ hasText: "O'zbekcha" }).first().click();
   await page.waitForTimeout(500);
   const tilUz = await tilTugma();

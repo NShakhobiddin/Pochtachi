@@ -112,6 +112,12 @@ Til tugmalari ("Ўзбекча") shunday belgilangan: ilgari ruscha rejimda ular
 lotinga o'girilar va DOM matni bir marta almashtirilgach React uni qayta
 chizmagani uchun qaytmay qolardi.
 
+**Ruscha ko'plik.** "43 ta do'kon" kabi satrlarda son ajratilgach birlik
+`RU_PLURAL` jadvalidan songa qarab tanlanadi (43 магазина, 20 курьеров,
+7 инструкций, 2–3 раб. дня — oraliqda oxirgi son). Son va birlik alohida
+elementda turganda (bosh sahifa kartalari) birlik `nUnit(lang, n, key)`
+bilan view-modelda tanlanadi.
+
 Smoke test ikkala tilda chuqur ekranlarni ham aylanib chiqadi: qidiruv,
 kuzatuv, do'kon va kuryer papkalari, taqqoslash, bojxonaning oltita
 bo'limi, xizmatlar. Ruscha rejimda `lang="uz"` ichidagi matn, kirillda
