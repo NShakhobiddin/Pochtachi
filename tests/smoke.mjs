@@ -263,8 +263,42 @@ try {
   /* Ochilganda maydon fokusda: telefonda klaviatura o'zi chiqadi. */
   check('qidiruv ochilganda maydon fokusda',
     await page.evaluate(() => document.activeElement && document.activeElement.type === 'search'));
+  /* Bo'sh qidiruv oynasi bo'm-bo'sh emas: ko'p qidiriladigan so'zlar, toifa
+     kartalari va bojxonaga tez havolalar turadi. */
+  const idleText = await page.evaluate(() => document.querySelector('main').innerText.replace(/\s+/g, ' '));
+  check('bo\'sh qidiruvda takliflar: so\'zlar, toifalar, bojxona',
+    /Ko'p qidiriladi/i.test(idleText) && /krossovka/.test(idleText) && /Poyabzal\s*7 ta do'kon/.test(idleText) &&
+    /Bojxona kalkulyatori/.test(idleText) && /Taqiqlangan tovarlar/.test(idleText), idleText.slice(0, 200));
   const input = page.locator('main input[type=search]').first();
-  await input.fill('Али');
+  /* Toifa sinonimlari: "krossovka" do'kon matnida yo'q, lekin poyabzal
+     do'konlarining hammasi topiladi va tepada butun bo'limga havola turadi. */
+  const qidir = async (q) => { await input.fill(q); await page.waitForTimeout(350);
+    return page.evaluate(() => document.querySelector('main').innerText.replace(/\s+/g, ' ')); };
+  let t = await qidir('krossovka');
+  check('krossovka -> Poyabzal bo\'limi, Nike va Adidas', /Poyabzal 7 ta do'kon Bo'lim/.test(t) && /Nike/.test(t) && /Adidas/.test(t), t.slice(0, 200));
+  t = await qidir('telefon');
+  check('telefon -> Elektronika do\'konlari', /Elektronika 8 ta do'kon/.test(t) && /Apple Store/.test(t), t.slice(0, 200));
+  t = await qidir('кроссовки');
+  check('ruscha "кроссовки" -> poyabzal', /Nike/.test(t), t.slice(0, 200));
+  t = await qidir('Турция');
+  check('ruscha "Турция" -> Trendyol va ASE', /Trendyol/.test(t) && /ASE/.test(t), t.slice(0, 200));
+  /* Toifa qatori bosilganda papka ochiladi. */
+  await input.fill('krossovka'); await page.waitForTimeout(350);
+  await page.locator('main button').filter({ hasText: /Poyabzal/ }).first().click();
+  await page.waitForTimeout(600);
+  check('toifa qatori papkani ochadi',
+    await page.evaluate(() => /Krossovka, sneaker, sport/.test(document.querySelector('main').innerText)));
+  await page.locator('button[aria-label="Orqaga qaytish"]').first().click().catch(() => {});
+  await page.waitForTimeout(500);
+  if (!(await page.locator('main input[type=search]').count())) {
+    await page.locator('button[aria-label="Qidirish"]').first().click(); await page.waitForTimeout(500);
+  }
+  /* Toifa qatori ochilgani tarixga "krossovka" ni yozdi; keyingi "bo'sh
+     shaxsiy bloklar" tekshiruvi toza tarix kutadi. */
+  await page.locator('button[aria-label="Qidiruv tarixini tozalash"]').first().click().catch(() => {});
+  await page.waitForTimeout(200);
+  const input2 = page.locator('main input[type=search]').first();
+  await input2.fill('Али');
   await page.waitForTimeout(400);
   check('kirillcha qidiruv ishlaydi', /AliExpress/i.test(await page.evaluate(() => document.body.innerText)));
   check('qidiruvni tozalash tugmasi nomli va 32px',
@@ -272,7 +306,7 @@ try {
       const r = b ? b.getBoundingClientRect() : { width: 0 };
       return !!b && !!b.getAttribute('aria-label') && r.width >= 32 && r.height >= 32; }));
   /* Escape: bo'sh maydonda ekran yopiladi (kompyuter va Telegram Desktop). */
-  await input.fill('');
+  await input2.fill('');
   await page.keyboard.press('Escape');
   await page.waitForTimeout(500);
   check('Escape qidiruvni yopadi',
@@ -1545,7 +1579,6 @@ try {
     });
     check(`360 px da gorizontal siljish yo'q: ${label}`, over <= 0, over > 0 ? `+${over}px` : '');
   }
-  await page.goBack().catch(() => {});
   await page.waitForTimeout(300);
 
   await page.setViewportSize({ width: 430, height: 880 });

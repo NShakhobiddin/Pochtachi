@@ -798,6 +798,46 @@
               </button>
             </div>
           </sc-if>
+
+          <!-- Qidiruv bo'sh turganda: ko'p qidiriladigan so'zlar, toifalar va
+               bojxonaga tez havolalar. Ilgari bu oyna bo'm-bo'sh edi. -->
+          <sc-if value="{{ hqIdle }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85;padding:0 2px">Ko'p qidiriladi</span>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <sc-for list="{{ hotChips }}" as="hc" hint-placeholder-count="7">
+                  <button sc-camel-on-click="{{ hc.run }}" style="flex:none;height:36px;padding:0 14px;border:none;border-radius:999px;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">{{ hc.t }}</button>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85;padding:0 2px">Toifa bo'yicha</span>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <sc-for list="{{ hqCats }}" as="hcat" hint-placeholder-count="6">
+                  <button sc-camel-on-click="{{ hcat.open }}" style="display:flex;align-items:center;gap:10px;min-height:64px;background:#FFFFFF;border:none;border-radius:20px;padding:10px 12px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
+                    <div style="width:40px;height:40px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ hcat.pic }}"></div>
+                    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                      <span style="font-size:15px;font-weight:700;color:#131429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ hcat.title }}</span>
+                      <span style="font-size:11px;font-weight:600;color:#6B6C85;font-variant-numeric:tabular-nums">{{ hcat.count }}</span>
+                    </div>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85;padding:0 2px">Bojxona</span>
+              <div style="display:flex;gap:10px">
+                <button sc-camel-on-click="{{ hqGoCalc }}" style="flex:1;display:flex;align-items:center;gap:10px;min-height:56px;background:#FFFFFF;border:none;border-radius:20px;padding:10px 12px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
+                  <img src="icons/boj-kalkulyator.webp" alt="" width="32" height="32" style="width:32px;height:32px;object-fit:contain;flex:none" decoding="async">
+                  <span style="font-size:13px;font-weight:700;color:#131429;line-height:1.3">Bojxona kalkulyatori</span>
+                </button>
+                <button sc-camel-on-click="{{ hqGoBanned }}" style="flex:1;display:flex;align-items:center;gap:10px;min-height:56px;background:#FFFFFF;border:none;border-radius:20px;padding:10px 12px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
+                  <img src="icons/boj-taqiq.webp" alt="" width="32" height="32" style="width:32px;height:32px;object-fit:contain;flex:none" decoding="async">
+                  <span style="font-size:13px;font-weight:700;color:#131429;line-height:1.3">Taqiqlangan tovarlar</span>
+                </button>
+              </div>
+            </div>
+          </sc-if>
         </div>
     </div>
   </sc-if>
@@ -2633,6 +2673,9 @@ const PERSIST = ['lang', 'onboarded', 'plans', 'monthly', 'trackNo',
   'favs', 'searches'];
 /* Qidiruv tarixi cheksiz o'smasin: eskisi oxiridan tushib ketadi. */
 const SEARCH_MAX = 6;
+/* Qidiruv bo'sh turganda taklif qilinadigan so'rovlar: toifa sinonimlari
+   va mashhur do'kon/yo'nalish. Har biri kamida bitta natija beradi. */
+const HOT_QUERIES = ['krossovka', 'telefon', 'kiyim', 'parfyum', "o'yinchoq", 'Taobao', 'Turkiya'];
 /* Eski yoki yarim yozilgan reja butun ekranni yiqitmasin: raqam maydonlari
    son ekaniga ishonch hosil qilamiz va bosqichni chegaraga kiritamiz.
    Ilgari maydoni yetishmagan reja `total.toFixed` da TypeError berardi. */
@@ -2879,7 +2922,8 @@ const RU = {
   "To'lov yo'q":'Платежа нет', "me'yordan oshmadi":'не превысило лимит', "me'yordan ortiq · boj va yig'im":'сверх лимита · пошлина и сбор',
   "Qo'llanma bor":'Есть инструкция',
   'Solishtirish uchun 2-3 kuryerni belgilang':'Отметьте 2-3 курьера для сравнения',
-  'Natijalar':'Результаты', 'Eng arzon uchta kuryer':'Три самых дешёвых курьера',
+  'Natijalar':'Результаты', "Ko'p qidiriladi":'Часто ищут', "Toifa bo'yicha":'По категории', "Bo'lim":'Раздел',
+  "{0} bo'lim · kalkulyator":'{0} разделов · калькулятор', 'krossovka':'кроссовки', 'telefon':'телефон', 'kiyim':'одежда', 'parfyum':'парфюм', "o'yinchoq":'игрушки', 'Eng arzon uchta kuryer':'Три самых дешёвых курьера',
   'Kim uchun mos':'Кому подходит', 'Huquqiy manba':'Правовой источник',
   "Qo'ng'iroq qilish":'Позвонить', "Boshqa jo'natma raqami":'Другой трек-номер',
   'Kuryer saytida kuzatish':'Отследить на сайте курьера', "Og'irligi":'Вес',
@@ -3152,11 +3196,38 @@ const matches = (hay, q) => {
 
 /* Do'konning qidiruvga tegishli barcha matni bir satrda, normallashtirilgan
    holda. Bir marta hisoblanadi va keyin keshdan olinadi. */
+/* Toifa sinonimlari. Foydalanuvchi "krossovka" yoki "телефон" deb yozadi,
+   do'kon matnida esa bu so'z ko'pincha yo'q ("Designer kiyim, poyabzal va
+   aksessuarlar"). Endi har bir do'kon o'z toifasining nomi, tavsifi va shu
+   sinonimlar bilan ham topiladi. Kirillcha so'rov norm() da lotinga
+   o'giriladi, shuning uchun ruscha so'zlar ham lotin harflarida:
+   "кроссовки" -> "krossovki", "одежда" -> "odejda". */
+const CAT_SYN = {
+  'universal':     "hamma narsa har xil tovar uy buyumlari marketpleys vse tovary",
+  'kiyim va moda': "kiyim ko'ylak futbolka shim kurtka ko'ylak sumka aksessuar moda brend odejda plate futbolka kurtka sumka aksessuary",
+  'poyabzal':      "poyabzal krossovka krossovki sneaker sport etik tufli obuv kedy botinki",
+  'elektronika':   "elektronika telefon smartfon iphone samsung noutbuk kompyuter planshet naushnik quloqchin gadjet texnika soat kamera elektronika naushniki chasy",
+  'kosmetika':     "kosmetika parfyum atir krem makiyaj parvarish soch teri duxi parfyumeriya uxod",
+  'bolalar':       "bolalar bola chaqaloq o'yinchoq kiyim detskie igrushki rebenok malysh detskaya odejda"
+};
+const catHay = c => norm([c[0], c[1], c[2], CAT_SYN[c[0]] || ''].join(' '));
+/* Davlat sinonimlari: ruscha interfeysda "Турция" deb yozilgan so'rov
+   norm() da "turtsiya" bo'ladi, do'kon esa "Turkiya" deb yozilgan. Matnda
+   davlat nomi uchrasa, uning ruscha/inglizcha shakllari ham qo'shiladi. */
+const GEO_SYN = {
+  'Xitoy': 'kitay china', 'AQSh': 'ssha usa amerika', 'Turkiya': 'turtsiya turkey',
+  'Buyuk Britaniya': 'velikobritaniya angliya england uk', 'BAA': 'oae dubai dubay uae',
+  'Koreya': 'korea', 'Yevropa': 'evropa europe', 'Rossiya': 'russia', 'Malayziya': 'malaysia',
+  'MDH': 'sng', 'Global': 'globalnye mir'
+};
+const geoSyn = t => Object.keys(GEO_SYN).filter(k => t.indexOf(k) >= 0).map(k => GEO_SYN[k]).join(' ');
 const STORE_HAY = new Map();
 const storeHay = s => {
   let h = STORE_HAY.get(s.id);
   if (h === undefined) {
-    h = norm([s.name, s.cat, s.subcats, s.type, s.country, s.segment, s.forWhom, (s.tags || []).join(' ')].join(' '));
+    const cat = STORE_CATS.find(c => c[0] === s.cat);
+    h = norm([s.name, s.cat, s.subcats, s.type, s.country, s.segment, s.forWhom, (s.tags || []).join(' '),
+      cat ? cat[1] + ' ' + cat[2] : '', CAT_SYN[s.cat] || '', geoSyn(String(s.country || ''))].join(' '));
     STORE_HAY.set(s.id, h);
   }
   return h;
@@ -5121,10 +5192,29 @@ class Component extends DCLogic {
       })(),
       ...(() => {
         const list = (st.searches || []).filter(Boolean);
+        const idle = norm(st.homeQuery).length < 2;
+        /* Bo'sh qidiruv oynasi ilgari bo'm-bo'sh edi: nima yozishni bilmagan
+           foydalanuvchi qaytib ketardi. Endi ko'p qidiriladigan so'zlar,
+           toifa kartalari va bojxonaga tez havolalar chiqadi. Chip bosilganda
+           so'rov tanlangan tilda yoziladi, shunda maydondagi matn chip bilan
+           bir xil ko'rinadi. */
+        const openCat = key => {
+          this.setState({ storeFolder: 'cat:' + key, storeFolderBy: 'cat', storeQuery: '', homeQuery: '' });
+          this.push('storefolder');
+        };
         return {
           searchChips: list.map(t => ({ t, run: () => this.setState({ homeQuery: t }) })),
-          hasSearches: list.length > 0 && norm(st.homeQuery).length < 2,
-          clearSearches: () => this.setState({ searches: [] })
+          hasSearches: list.length > 0 && idle,
+          clearSearches: () => this.setState({ searches: [] }),
+          hqIdle: idle,
+          hotChips: HOT_QUERIES.map(t => ({ t, run: () => this.setState({ homeQuery: tr(st.lang, t) }) })),
+          hqCats: STORE_CATS.map(([key, title, , icon]) => ({
+            title, count: STORES.filter(x => x.cat === key).length + ' ta do\'kon',
+            pic: "url('" + icon + "')", open: () => openCat(key)
+          })),
+          hqGoCalc: () => { this.setState({ homeQuery: '' }); this.openSec(4); },
+          hqGoBanned: () => { this.setState({ homeQuery: '' }); this.openSec(2); },
+          openCat
         };
       })(),
 
@@ -5134,11 +5224,22 @@ class Component extends DCLogic {
         if (q.length < 2) return { hqOn: false, hqEmpty: false, hqCount: '', hqResults: [] };
         const hay = (...p) => norm(p.filter(Boolean).join(' '));
         const byRank = (list, key) => [...list].sort((a, b) => rank(a[key], q) - rank(b[key], q));
+        /* So'rov toifaga tegsa ("krossovka", "telefon"), natijaning tepasida
+           butun papkaga havola: 5 ta do'kon o'rniga 15 tasini ko'rish yo'li. */
+        const cats = STORE_CATS.filter(c => matches(catHay(c), q)).slice(0, 2).map(c => ({
+          kind: 'Bo\'lim', name: c[1], sub: STORES.filter(x => x.cat === c[0]).length + ' ta do\'kon',
+          mono: '', color: 'transparent', ink: '#1A1FB0', fit: '28px 28px', logoCss: "url('" + c[3] + "')",
+          bg: '#F1F1F8', logoOn: true, logoOff: false,
+          open: () => { this.noteSearch(st.homeQuery); this.setState({ storeFolder: 'cat:' + c[0], storeFolderBy: 'cat', storeQuery: '', homeQuery: '' }); this.push('storefolder'); }
+        }));
         const stores = byRank(STORES
           .filter(s => matches(storeHay(s), q)), 'name')
           .slice(0, 5)
           .map(s => ({
-            kind: 'Do\'kon', name: s.name, sub: s.country + ' · ' + s.cat,
+            /* Tagsatr qismlarga bo'lib tarjima qilinadi: "Xitoy · poyabzal"
+               yaxlit holda lug'atda yo'q, alohida-alohida bor. */
+            kind: 'Do\'kon', name: s.name,
+            sub: tr(st.lang, s.country) + ' · ' + tr(st.lang, (STORE_CATS.find(c => c[0] === s.cat) || [0, s.cat])[1]),
             /* So'z-belgi logotip: qutiga to'liq sig'sin, ozgina bo'shliq bilan. */
             mono: s.mono, color: s.color, ink: s.ink, fit: 'contain', logoCss: s.logoCss,
             bg: (s.logoCss && s.logoCss !== 'none') ? 'transparent' : '#F1F1F8',
@@ -5146,10 +5247,10 @@ class Component extends DCLogic {
             open: () => { this.noteSearch(st.homeQuery); this.warmGuide(s.id); this.setState({ storeId: s.id, homeQuery: '' }); this.push('store'); }
           }));
         const couriers = byRank(COURIERS
-          .filter(c => matches(hay(c.name, c.mode, c.route, c.countries, c.note, (c.from || []).join(' ')), q)), 'name')
+          .filter(c => matches(hay(c.name, c.mode, c.route, c.countries, c.note, (c.from || []).join(' '), geoSyn(String(c.route || '') + ' ' + (c.from || []).join(' '))), q)), 'name')
           .slice(0, 5)
           .map(c => ({
-            kind: 'Kuryer', name: c.name, sub: c.days + ' · ' + c.mode,
+            kind: 'Kuryer', name: c.name, sub: tr(st.lang, c.days) + ' · ' + tr(st.lang, c.mode),
             mono: (c.mono || '').slice(0, 4), color: '#FFFFFF', ink: '#FFFFFF',
             /* Logotip bor bo'lsa plita shaffof: 3D ikonkaning burchaklari
                shaffof, ostidagi brend rangi halqa bo'lib ko'rinib qolardi. */
@@ -5160,12 +5261,18 @@ class Component extends DCLogic {
         const guides = byRank(FULL_GUIDES
           .filter(f => matches(hay(f.title, f.desc), q)), 'title')
           .slice(0, 4)
-          .map(f => ({
-            kind: 'Qo\'llanma', name: f.title, sub: f.sections + ' bo\'lim · kalkulyator',
-            mono: f.mono, color: '#FFFFFF', ink: '#FFFFFF', bg: f.color, fit: 'cover', logoCss: 'none',
+          .map(f => {
+            /* Qo'llanma qatorida do'kon logotipi; logotip yo'q bo'lsa
+               monogramma. Ilgari logoOff berilmagani uchun bo'sh rangli
+               kvadrat chiqardi. */
+            const bor = STORE_LOGO_SET.has(f.id);
+            return {
+            kind: 'Qo\'llanma', name: f.title, sub: tx(st.lang, "{0} bo'lim · kalkulyator", f.sections),
+            mono: f.mono, color: f.color, ink: '#FFFFFF', bg: bor ? 'transparent' : f.color, fit: 'contain',
+            logoCss: bor ? "url('stores/" + f.id + ".webp')" : 'none', logoOn: bor, logoOff: !bor,
             open: () => { this.noteSearch(st.homeQuery); this.setState({ fullId: f.id, homeQuery: '' }); this.push('fullguide'); }
-          }));
-        const all = [...stores, ...couriers, ...guides];
+          }; });
+        const all = [...cats, ...stores, ...couriers, ...guides];
         return { hqOn: true, hqEmpty: all.length === 0, hqCount: String(all.length), hqResults: all };
       })(),
       /* Papka ichida o'sha kesim bo'yicha chip ko'rsatilmaydi: "Elektronika"

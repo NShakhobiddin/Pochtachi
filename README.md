@@ -112,6 +112,32 @@ kuzatuv, do'kon va kuryer papkalari, taqqoslash, bojxonaning oltita
 bo'limi, xizmatlar. Ruscha rejimda `lang="uz"` ichidagi matn, kirillda
 brend nomlari va manzillar hisobga olinmaydi.
 
+## Qidiruv
+
+Bitta maydon do'kon, kuryer va qo'llanmani birga izlaydi (`hqResults`).
+So'rov `norm` bilan normallashtiriladi: registr, apostrof, kirill ->
+lotin, `x` -> `ks`. Uch harfgacha bo'lgan so'rov so'z boshidan, uzunroq
+so'rov istalgan joydan qidiriladi.
+
+**Toifa sinonimlari** (`CAT_SYN`). "krossovka", "telefon", "кроссовки",
+"одежда" kabi so'zlar do'kon matnida yo'q, lekin toifada bor: har do'kon
+o'z toifasining nomi, tavsifi va sinonimlari bilan ham topiladi. Ruscha
+so'zlar lotin harflarida yoziladi, chunki so'rov ham `norm` dan o'tadi
+("кроссовки" -> "krossovki"). Davlat nomlari uchun `GEO_SYN`
+("Турция" -> "turtsiya" -> Turkiya).
+
+**Toifa qatori.** So'rov toifaga tegsa, natijaning tepasida "Poyabzal · 7
+ta do'kon · Bo'lim" qatori chiqadi va butun papkani ochadi — ro'yxatda
+faqat 5 ta do'kon ko'rsatiladi.
+
+**Bo'sh holat.** Maydon bo'sh turganda oxirgi qidiruvlar, ko'p
+qidiriladigan so'zlar (`HOT_QUERIES`, chip bosilganda so'rov joriy tilda
+yoziladi), oltita toifa kartasi va bojxona kalkulyatori/taqiqlangan
+tovarlarga havola turadi. Ilgari bu oyna bo'm-bo'sh edi.
+
+Smoke test: bo'sh holat takliflari, `krossovka`/`telefon`/`кроссовки`/
+`Турция` so'rovlari va toifa qatorining papkani ochishi.
+
 ## Telegram bot ichida ochish
 
 Ilova Telegram Mini App sifatida to'liq ekranda ochiladi. Botga ulash:
