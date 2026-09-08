@@ -2671,6 +2671,16 @@ const fmtDate = iso => { const p = String(iso).split('-'); return p.length === 3
 /* Telegram ichida tugmalarga yengil tebranish bilan javob berish —
    ilova hissini beradi. Telegramdan tashqarida hech nima qilmaydi. */
 const tgApp = () => (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) || null;
+/* t.me havolasi Telegram Mini App ichida openTelegramLink bilan ochiladi:
+   window.open u yerda tashqi brauzerga chiqarib yuborar yoki to'silardi.
+   Tashqarida odatdagidek yangi oynada. Ochilgan-ochilmaganini qaytaradi. */
+const openTg = url => {
+  const tg = tgApp();
+  if (tg && /t\.me\//.test(url) && typeof tg.openTelegramLink === 'function') {
+    try { tg.openTelegramLink(url); return true; } catch (e) {}
+  }
+  try { return !!window.open(url, '_blank', 'noopener,noreferrer'); } catch (e) { return false; }
+};
 const haptic = kind => {
   const tg = tgApp();
   const h = tg && tg.HapticFeedback;
@@ -3178,6 +3188,8 @@ const RU = {
   "Kurs yangilandi: 1 USD = {0} so'm":'Курс обновлён: 1 USD = {0} сум',
   /* --- Toastlar --- */
   'Aloqa manzili hali kiritilmagan':'Контакт ещё не указан', "Avval jo'natma summasini yozing":'Сначала введите сумму отправления',
+  /* Reja bosqichlari va kuzatuv kartasi: ilgari ruscha lug'atda yo'q edi. */
+  'Reja tuzildi':'План составлен', 'Buyurtma qilindi':'Заказ оформлен', 'Kuryer omborida':'На складе курьера', "Yo'lda":'В пути', 'Qabul qilindi':'Получено', 'Omborda':'На складе', 'Keldi':'Получено', "Do'kon, kuryer va taxminiy xarajat aniqlandi":'Магазин, курьер и примерные расходы определены', "Do'konda to'lov amalga oshirildi":'Оплата в магазине выполнена', 'Tovar chetdagi omborga yetib keldi':'Товар прибыл на зарубежный склад', "Jo'natma O'zbekiston tomon uchdi":'Отправление вылетело в Узбекистан', "Bojxonadan chiqdi va qo'lingizga tegdi":'Прошло таможню и получено вами', '{0} — belgilash':'{0} — отметить', '{0} — belgilandi':'{0} — отмечено', "Mening jo'natmalarim":'Мои отправления', 'Trek raqamini yozing':'Введите трек-номер', "Rejani o'chirish":'Удалить план', 'Hisob-kitob':'Расчёт', 'Bosqichlar':'Этапы', 'Jami (taxminiy)':'Итого (примерно)', 'Trek raqam':'Трек-номер',
   'Avval trek raqamini yozing':'Сначала введите трек-номер', 'Bosqich yangilandi':'Этап обновлён', "Do'kon topilmadi":'Магазин не найден',
   "Havola e'lon qilinmagan":'Ссылка не указана', "Jo'natma bu oyga qo'shildi":'Отправление добавлено в этот месяц', 'Kuryer topilmadi':'Курьер не найден',
   "Markaziy bank kursini olib bo'lmadi — zaxira qiymat ishlatilmoqda":'Не удалось получить курс ЦБ — используется резервное значение',
@@ -4270,9 +4282,7 @@ class Component extends DCLogic {
     metrics.hit('svcAsk', key || 'umumiy');
     const url = tgLink(title ? 'Assalomu alaykum! «' + title + '» xizmati bo\'yicha yozmoqchiman.' : '');
     if (!url) { this.toast('Aloqa manzili hali kiritilmagan'); return; }
-    let opened = null;
-    try { opened = window.open(url, '_blank', 'noopener,noreferrer'); } catch (e) {}
-    if (!opened) this.toast('Telegram: @' + CONTACT.tg);
+    if (!openTg(url)) this.toast('Telegram: @' + CONTACT.tg);
   }
 
   chip(label, on, toggle) {
@@ -4414,9 +4424,7 @@ class Component extends DCLogic {
   askPartner(text) {
     metrics.hit('hamkor', 'kuryer');
     const url = REPORT_URL + '?text=' + encodeURIComponent(text);
-    let opened = null;
-    try { opened = window.open(url, '_blank', 'noopener,noreferrer'); } catch (e) {}
-    this.toast(opened ? 'Telegram ochildi' : REPORT_URL);
+    this.toast(openTg(url) ? 'Telegram ochildi' : REPORT_URL);
   }
 
   isFav(key) { return (this.state.favs || []).includes(key); }
@@ -5020,7 +5028,7 @@ class Component extends DCLogic {
           ? (this.setState({ fullId: store.id }), this.push('fullguide'))
           : this.go('couriers')
       },
-      courier: (() => { const tg = (courier.links.find(l => l.l === 'Telegram') || courier.links.find(l => l.l === 'Sayt') || {}).u; return { label: tg && /t\.me/.test(tg) ? 'Telegram\'da yozish' : 'Saytga o\'tish', action: () => { metrics.hit('courier', courier.id); return tg ? window.open(tg, '_blank', 'noopener') : this.toast('Havola e\'lon qilinmagan'); }, altLabel:'Taqqoslash', altAction: () => this.go('compare') }; })(),
+      courier: (() => { const tg = (courier.links.find(l => l.l === 'Telegram') || courier.links.find(l => l.l === 'Sayt') || {}).u; return { label: tg && /t\.me/.test(tg) ? 'Telegram\'da yozish' : 'Saytga o\'tish', action: () => { metrics.hit('courier', courier.id); return tg ? openTg(tg) : this.toast('Havola e\'lon qilinmagan'); }, altLabel:'Taqqoslash', altAction: () => this.go('compare') }; })(),
     };
     const mb = mainMap[cur];
     const dayOfs = Math.floor(Date.now() / 86400000);
@@ -5153,7 +5161,7 @@ class Component extends DCLogic {
         { k:'Kutilgan muddat', v: pl.days, c:'#131429' }
       ] : [],
       planCanAdvance: !!pl && pl.step < 4,
-      planNextLabel: pl && pl.step < 4 ? PLAN_STEPS[pl.step + 1].t + ' — belgilash' : '',
+      planNextLabel: pl && pl.step < 4 ? tx(st.lang, '{0} — belgilash', tr(st.lang, PLAN_STEPS[pl.step + 1].t)) : '',
       planAdvance: () => { if (!pl) return; this.setState(x => ({ plans: x.plans.map(p => p.id === pl.id ? { ...p, step: Math.min(p.step + 1, 4) } : p) })); this.toast('Bosqich yangilandi'); },
       planDelete: () => { if (!pl) return; this.setState(x => ({ plans: x.plans.filter(p => p.id !== pl.id), stack: ['home'] })); this.toast('Reja o\'chirildi'); },
       planOpenStore: () => { if (pl && pl.storeId) { this.warmGuide(pl.storeId); this.setState({ storeId: pl.storeId }); this.push('store'); } else this.toast('Do\'kon topilmadi'); },
@@ -5186,23 +5194,25 @@ class Component extends DCLogic {
               track: p.track || '',
               hasTrack: !!p.track,
               noTrack: !p.track,
-              nextLabel: p.step < 4 ? PLAN_STEPS[p.step + 1].t : '',
+              /* Reja sahifasidagi kabi "— belgilash": yolg'iz "Buyurtma qilindi"
+                 joriy holat deb o'qilardi (joriy holat o'ngdagi chipda). */
+              nextLabel: p.step < 4 ? tx(st.lang, '{0} — belgilash', tr(st.lang, PLAN_STEPS[p.step + 1].t)) : '',
               canNext: p.step < 4,
               site: k && k.track ? k.track : '',
               hasSite: !!(k && k.track),
               onTrack: e => {
-                const v = e.target.value.toUpperCase();
+                /* Trek raqam bo'shliqsiz: "RB 1234 CN" kuryer saytida topilmaydi. */
+                const v = e.target.value.replace(/\s+/g, '').toUpperCase();
                 this.setState(x => ({ plans: x.plans.map(q => q.id === p.id ? { ...q, track: v } : q) }));
               },
               copy: () => {
                 if (!p.track) { this.toast('Avval trek raqamini yozing'); return; }
-                try { navigator.clipboard.writeText(p.track); this.toast('Trek raqam nusxalandi'); }
-                catch (e) { this.toast(p.track); }
+                this.copyText(p.track, 'Trek raqam');
               },
               next: () => {
                 this.setState(x => ({ plans: x.plans.map(q => q.id === p.id ? { ...q, step: Math.min(q.step + 1, 4) } : q) }));
                 haptic('light');
-                this.toast(PLAN_STEPS[Math.min(p.step + 1, 4)].t + ' — belgilandi');
+                this.toast(tx(this.state.lang, '{0} — belgilandi', tr(this.state.lang, PLAN_STEPS[Math.min(p.step + 1, 4)].t)));
               },
               open: () => { this.setState({ planId: p.id }); this.push('plan'); }
             };
@@ -5572,9 +5582,7 @@ class Component extends DCLogic {
                        else this.toast('Telefon raqami hali kiritilmagan'); },
 
       reportInfo: () => {
-        let opened = null;
-        try { opened = window.open(REPORT_URL, '_blank', 'noopener,noreferrer'); } catch (e) {}
-        this.toast(opened ? 'Xabar berish sahifasi ochildi' : 'Xabar berish: ' + REPORT_URL);
+        this.toast(openTg(REPORT_URL) ? 'Xabar berish sahifasi ochildi' : 'Xabar berish: ' + REPORT_URL);
       },
 
       /* Hamkorlik so'rovi: Telegram xabari oldindan yozib qo'yiladi, ya'ni
@@ -5858,9 +5866,9 @@ class Component extends DCLogic {
 
       trackNo: st.trackNo,
       onTrackNo: e => this.setState({ trackNo: e.target.value }),
-      onTrackBlur: e => this.setState({ trackNo: e.target.value.trim().toUpperCase() }),
+      onTrackBlur: e => this.setState({ trackNo: e.target.value.replace(/\s+/g, '').toUpperCase() }),
       copyTrack: () => {
-        const v = (st.trackNo || '').trim();
+        const v = (st.trackNo || '').replace(/\s+/g, '');
         if (!v) { this.toast('Avval trek raqamini yozing'); return; }
         this.copyText(v, 'Trek raqam');
       },

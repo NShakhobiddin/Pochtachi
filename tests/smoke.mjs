@@ -1213,10 +1213,14 @@ try {
   if (await nx.count()) { await nx.click(); await page.waitForTimeout(600); }
   const kuz = await page.evaluate(() => {
     const inp = document.querySelector('main input[placeholder="Trek raqamini yozing"]');
-    return { trek: inp ? inp.value : '', holat: /Buyurtma qilindi/.test(document.body.innerText) };
+    const btn = [...document.querySelectorAll('main button')].find(b => /belgilash/.test(b.innerText));
+    return { trek: inp ? inp.value : '', holat: /Buyurtma qilindi/.test(document.body.innerText),
+      tugma: btn ? btn.innerText.trim() : '' };
   });
+  /* Trek raqam bo'shliqsiz saqlanadi (kuryer sayti "RB 1234 CN" ni
+     topmaydi); holat tugmasi reja sahifasidagi kabi "… — belgilash". */
   check('kuzatuv: reja jo\'natmaga aylandi',
-    kuz.trek === 'RB 1234 CN' && kuz.holat, JSON.stringify(kuz));
+    kuz.trek === 'RB1234CN' && kuz.holat && /Kuryer omborida — belgilash/.test(kuz.tugma), JSON.stringify(kuz));
 
   /* Kuryer kartochkasidagi havola chiplarida belgi bo'lsin. */
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();

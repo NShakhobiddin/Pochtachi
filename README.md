@@ -172,6 +172,20 @@ kuryer ekranlarida kuryer filtrlarini (yuborish turi, saralash; yo'nalish
 papkasidan tashqarida davlat ham) ko'rsatadi. Escape avval ochiq varaqni
 yopadi, keyingina ekranni.
 
+## Kuzatuv va xizmatlar
+
+Kuzatuv ekrani saqlangan rejalarni jo'natma sifatida ko'rsatadi: trek
+raqami (bo'shliqsiz, katta harfda saqlanadi — "RB 1234 CN" kuryer saytida
+topilmaydi), "Nusxa", holat tugmasi "Keyingi bosqich — belgilash" (holatni
+foydalanuvchi o'zi belgilaydi, ilova kuryer tizimlariga ulanmagan).
+Rejasiz jo'natma raqami alohida maydonda saqlanadi. Pastda kuzatuv
+sahifasi bor kuryerlar ro'yxati.
+
+Xizmatlar ikki yo'lakda (`SERVICES`, `lane`): xaridor va kuryerlik
+tashkiloti. "Bog'lanish" Telegramga xizmat nomi yozilgan xabar bilan
+ochadi (`tgLink`). t.me havolalari `openTg` orqali: Telegram Mini App
+ichida `openTelegramLink`, tashqarida yangi oyna.
+
 ## Telegram bot ichida ochish
 
 Ilova Telegram Mini App sifatida to'liq ekranda ochiladi. Botga ulash:
