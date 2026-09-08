@@ -1424,6 +1424,39 @@ try {
     ban.qator === 23 && ban.xil >= 20 && ban.yuklandi === ban.xil,
     `${ban.qator} qator, ${ban.xil} xil, ${ban.yuklandi} yuklandi`);
 
+  /* Motion-tushuntirish: taqiq bo'limida yo'q, me'yor bo'limida bor;
+     bosilganda o'ynaydi, qadam nuqtasi ishlaydi, orqaga chiqilganda yopiladi. */
+  const moTaqiq = await page.locator('main button').filter({ hasText: /Qanday ishlaydi/ }).count();
+  await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
+  await page.waitForTimeout(500);
+  await page.getByText('Bojsiz olib kirish', { exact: false }).first().click();
+  await page.waitForTimeout(700);
+  const moKarta = page.locator('main button').filter({ hasText: /Qanday ishlaydi/ });
+  const moBor = await moKarta.count();
+  const moSub = moBor ? (await moKarta.first().innerText()).replace(/\s+/g, ' ') : '';
+  if (moBor) { await moKarta.first().click(); await page.waitForTimeout(600); }
+  const moBosh = await page.evaluate(() => ({
+    qadam: (document.querySelector('main').innerText.match(/(\d) \/ 5/) || [])[1],
+    sahna: document.querySelectorAll('main svg .mo-pop, main svg .mo-in').length,
+    izoh: /bitta hisobga qo'shiladi/.test(document.querySelector('main').innerText)
+  }));
+  await page.locator('main button[aria-label="4-qadam"]').first().click().catch(() => {});
+  await page.waitForTimeout(400);
+  const moTort = await page.evaluate(() => (document.querySelector('main').innerText.match(/(\d) \/ 5/) || [])[1]);
+  await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
+  await page.waitForTimeout(500);
+  await page.getByText('Bojsiz olib kirish', { exact: false }).first().click();
+  await page.waitForTimeout(600);
+  const moYopiq = await page.locator('main button').filter({ hasText: /Qanday ishlaydi/ }).count();
+  check('bojxona motion-tushuntirish: karta, o\'yin, qadam, yopilish',
+    moTaqiq === 0 && moBor === 1 && /20 soniya · 5 qadam/.test(moSub) && moBosh.qadam === '1' && moBosh.sahna > 0 &&
+    moBosh.izoh && moTort === '4' && moYopiq === 1,
+    JSON.stringify({ moTaqiq, moBor, moSub, moBosh, moTort, moYopiq }));
+  await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
+  await page.waitForTimeout(500);
+  await page.getByText('Taqiqlangan tovarlar', { exact: false }).first().click();
+  await page.waitForTimeout(700);
+
   /* Taqiq qidiruvi kirillcha so'rov va sinonimlarni tushunadi: "сигарет"
      ilgari hech narsa topmasdi. */
   const banQ = page.locator('main input[type=search]').first();

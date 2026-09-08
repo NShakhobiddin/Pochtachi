@@ -90,8 +90,8 @@ const index = join(ROOT, 'index.html');
 if (existsSync(index)) {
   const size = kb(statSync(index).size);
   const gz = kb(gzipSync(readFileSync(index), { level: 9 }).length);
-  const ok = size <= 560;
-  console.log(`${ok ? '  ok  ' : ' XATO '} index.html: ${size} KB (chegara 560 KB), gzip ${gz} KB`);
+  const ok = size <= 640;
+  console.log(`${ok ? '  ok  ' : ' XATO '} index.html: ${size} KB (chegara 640 KB), gzip ${gz} KB`);
   if (!ok) failed = true;
 }
 

@@ -200,6 +200,20 @@ ortiqcha esa tiyin bilan ("$0.01" — 200.01 dollarda ham yig'im
 undirilishi ko'rinib tursin). Bojxona tabidagi "Oy summasini qo'yish"
 summani qo'yib, kalkulyatorning o'zini ochadi.
 
+## Motion-tushuntirishlar (bojxona)
+
+Uch bo'lim tepasida "Qanday ishlaydi · 20 soniya · 5 qadam" kartasi:
+Bojsiz me'yor, Yagona bojxona to'lovi, Rasmiylashtirish tartibi. Bosilganda
+5 qadamlik SVG/CSS animatsiya o'ynaydi (har qadam `MO_STEP_MS` = 4 s):
+pauza, qadam nuqtalari, qayta ko'rish, yopish. Sahnalar shablonda
+(`moScene.mNsK`, har sahna o'z `<svg>` ida, `sc-if` svg tashqarisida),
+sarlavhalar `MOTION[bo'lim].caps` da va ruscha lug'atda; SVG ichidagi
+so'zlar ham lug'at orqali tarjima qilinadi. Animatsiya sinflari `.mo-*`
+(`mo-in`, `mo-pop`, `mo-grow`, `mo-rise`, `mo-drive`, `mo-ring`, `mo-tap`),
+harakatni kamaytirish rejimida kechikishsiz statik kadr. Ekran yoki bo'lim
+almashganda to'xtaydi. Video fayl yo'q: hammasi index.html ichida (~45 KB),
+oflayn ishlaydi, shuning uchun index.html chegarasi 560 → 640 KB.
+
 ## Kuzatuv va xizmatlar
 
 Kuzatuv ekrani saqlangan rejalarni jo'natma sifatida ko'rsatadi: trek
