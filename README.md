@@ -137,6 +137,16 @@ so'zlar lotin harflarida yoziladi, chunki so'rov ham `norm` dan o'tadi
 ("кроссовки" -> "krossovki"). Davlat nomlari uchun `GEO_SYN`
 ("Турция" -> "turtsiya" -> Turkiya).
 
+**Ko'p so'zli so'rov.** "pinduoduo qollanma" kabi so'rovda har bir so'z
+alohida topilishi kerak, tartibi muhim emas (`matches` → `matchesOne`).
+
+**Bojxona natijalari.** Bojxonaning oltita bo'limi (o'z sinonimlari bilan,
+ruscha transliteratsiya ham: "таможня", "лимит") va taqiqlangan tovarlar
+(`BANNED`, `syn` bilan) ham natijada chiqadi: "dron" taqiqlar ro'yxatini
+o'sha pozitsiya ochilgan holda ochadi, "kalkulyator" bojxona
+kalkulyatorini. Natija bo'lmasa toifa kartalari va bojxona havolalari
+baribir turadi.
+
 **Toifa qatori.** So'rov toifaga tegsa, natijaning tepasida "Poyabzal · 7
 ta do'kon · Bo'lim" qatori chiqadi va butun papkani ochadi — ro'yxatda
 faqat 5 ta do'kon ko'rsatiladi.
@@ -191,6 +201,15 @@ Xizmatlar ikki yo'lakda (`SERVICES`, `lane`): xaridor va kuryerlik
 tashkiloti. "Bog'lanish" Telegramga xizmat nomi yozilgan xabar bilan
 ochadi (`tgLink`). t.me havolalari `openTg` orqali: Telegram Mini App
 ichida `openTelegramLink`, tashqarida yangi oyna.
+
+## Tanishuv
+
+Bitta ekran: til tanlash (lotin, kirill, rus) va "O'tkazib yuborish".
+Birinchi ochilishda til `autoLang()` bilan taxmin qilinadi: Telegram
+foydalanuvchisining `language_code` yoki brauzer tili ruscha bo'lsa ekran
+ruscha ochiladi va "Русский" kartasi belgilangan turadi; tanlov
+foydalanuvchida qoladi. Tanlangan til va tanishuv o'tilgani `localStorage`
+da (`v: 1` bilan) saqlanadi.
 
 ## Telegram bot ichida ochish
 

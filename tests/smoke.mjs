@@ -282,6 +282,17 @@ try {
   check('ruscha "кроссовки" -> poyabzal', /Nike/.test(t), t.slice(0, 200));
   t = await qidir('Турция');
   check('ruscha "Турция" -> Trendyol va ASE', /Trendyol/.test(t) && /ASE/.test(t), t.slice(0, 200));
+  /* Ko'p so'zli so'rov: har bir so'z alohida topiladi. Bojxona bo'limlari va
+     taqiqlangan tovarlar ham natijada. Hech narsa topilmasa toifa kartalari
+     baribir turadi. */
+  t = await qidir('pinduoduo qollanma');
+  check('ko\'p so\'zli so\'rov: "pinduoduo qollanma"', /Pinduoduo/.test(t) && /Qo'llanma/.test(t), t.slice(0, 160));
+  t = await qidir('dron');
+  check('qidiruvda taqiqlangan tovar: dron', /Uchuvchisiz uchish apparatlari/.test(t) && /Cheklangan/.test(t), t.slice(0, 160));
+  t = await qidir('kalkulyator');
+  check('qidiruvda bojxona bo\'limi: kalkulyator', /Bojxona kalkulyatori/.test(t) && /Ma'lumotnoma/.test(t), t.slice(0, 160));
+  t = await qidir('zzqqzz');
+  check('natija yo\'q bo\'lsa ham toifa kartalari turadi', /Hech narsa topilmadi/.test(t) && /Toifa bo'yicha/i.test(t) && /Poyabzal/.test(t), t.slice(0, 160));
   /* Toifa qatori bosilganda papka ochiladi. */
   await input.fill('krossovka'); await page.waitForTimeout(350);
   await page.locator('main button').filter({ hasText: /Poyabzal/ }).first().click();
@@ -957,6 +968,17 @@ try {
   });
   check('intro ochilishda chiqadi', introBor.bor && introBor.rasm === 11,
     JSON.stringify(introBor));
+
+  /* Telegram foydalanuvchisining tili ruscha bo'lsa, tanishuv ekrani ruscha
+     ochiladi ("Выберите язык"); tanlov baribir foydalanuvchida. */
+  const tgCtx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+  await tgCtx.addInitScript(() => { window.Telegram = { WebApp: { initData: '', initDataUnsafe: { user: { language_code: 'ru' } }, ready() {}, expand() {}, BackButton: { onClick() {}, show() {}, hide() {} }, colorScheme: 'light', themeParams: {} } }; });
+  const tgOnbPage = await tgCtx.newPage();
+  await tgOnbPage.goto(base + '/', { waitUntil: 'load' });
+  await tgOnbPage.waitForTimeout(900);
+  const tgOnb = await tgOnbPage.evaluate(() => document.body.innerText.replace(/\s+/g, ' ').slice(0, 120));
+  check('ruscha Telegram foydalanuvchisiga tanishuv ruscha', /Выберите язык/.test(tgOnb), tgOnb);
+  await tgCtx.close();
   await introPage.waitForTimeout(2800);
   const introKetdi = await introPage.evaluate(() => ({
     intro: !!document.querySelector('div[aria-hidden="true"][style*="9999"]'),

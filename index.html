@@ -2675,6 +2675,17 @@ const tgApp = () => (typeof window !== 'undefined' && window.Telegram && window.
 /* t.me havolasi Telegram Mini App ichida openTelegramLink bilan ochiladi:
    window.open u yerda tashqi brauzerga chiqarib yuborar yoki to'silardi.
    Tashqarida odatdagidek yangi oynada. Ochilgan-ochilmaganini qaytaradi. */
+/* Birinchi ochilishda til: Telegram foydalanuvchisining tili yoki brauzer
+   tili ruscha bo'lsa, tanishuv ekrani ruscha ochiladi va "Русский" kartasi
+   belgilangan turadi. Tanlov baribir foydalanuvchida. */
+const autoLang = () => {
+  try {
+    const tg = tgApp();
+    const code = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code) ||
+      (typeof navigator !== 'undefined' && (navigator.language || '')) || '';
+    return /^ru/i.test(String(code)) ? 'ru' : 'uz';
+  } catch (e) { return 'uz'; }
+};
 const openTg = url => {
   const tg = tgApp();
   if (tg && /t\.me\//.test(url) && typeof tg.openTelegramLink === 'function') {
@@ -3235,10 +3246,18 @@ const norm = v => String(v == null ? '' : v)
 /* Qisqa so'rov uzun so'zning o'rtasiga tushib ketmasin: "ali" so'rovi
    "kundalik" yoki "poyabzali" ichidan emas, so'z boshidan qidiriladi.
    4 harfdan uzun so'rovlar odatdagidek istalgan joydan topiladi. */
-const matches = (hay, q) => {
+const matchesOne = (hay, q) => {
   if (!q) return true;
   if (q.length >= 4) return hay.includes(q);
   return new RegExp('(^|[ ,.·/-])' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).test(hay);
+};
+/* Bir necha so'zli so'rov ("pinduoduo qollanma", "nike aqsh") — har bir so'z
+   alohida topilishi kerak, tartibi muhim emas. Ilgari butun satr yaxlit
+   qidirilib, ikki so'zli so'rov deyarli hech narsa topmasdi. */
+const matches = (hay, q) => {
+  if (!q) return true;
+  const parts = q.split(' ').filter(Boolean);
+  return parts.length <= 1 ? matchesOne(hay, q) : parts.every(w => matchesOne(hay, w));
 };
 
 /* Do'konning qidiruvga tegishli barcha matni bir satrda, normallashtirilgan
@@ -4234,7 +4253,7 @@ class Component extends DCLogic {
           ? (TABS.indexOf(SAVED.lastTab) >= 0 ? SAVED.lastTab : (this.props.startScreen || 'home'))
           : 'onboard')],
     lastTab: TABS.indexOf(SAVED.lastTab) >= 0 ? SAVED.lastTab : 'home',
-    lang: SAVED.lang || 'uz',
+    lang: SAVED.lang || autoLang(),
     onboarded: !!SAVED.onboarded,
     monthly: SAVED.monthly || [],
     tip: 0,
@@ -5327,7 +5346,7 @@ class Component extends DCLogic {
       clearHq: () => this.setState({ homeQuery: '' }),
       ...(() => {
         const q = norm(st.homeQuery);
-        if (q.length < 2) return { hqOn: false, hqEmpty: false, hqCount: '', hqResults: [] };
+        if (q.length < 2) return { hqOn: false, hqEmpty: false, hqCount: '', hqResults: [], hqIdle: true };
         const hay = (...p) => norm(p.filter(Boolean).join(' '));
         const byRank = (list, key) => [...list].sort((a, b) => rank(a[key], q) - rank(b[key], q));
         /* So'rov toifaga tegsa ("krossovka", "telefon"), natijaning tepasida
@@ -5365,7 +5384,7 @@ class Component extends DCLogic {
             open: () => { this.noteSearch(st.homeQuery); this.setState({ homeQuery: '' }); this.openCourierId(c.id); }
           }));
         const guides = byRank(FULL_GUIDES
-          .filter(f => matches(hay(f.title, f.desc), q)), 'title')
+          .filter(f => matches(hay(f.title, f.desc, "qo'llanma yo'riqnoma instruksiya instruktsiya gid"), q)), 'title')
           .slice(0, 4)
           .map(f => {
             /* Qo'llanma qatorida do'kon logotipi; logotip yo'q bo'lsa
@@ -5378,8 +5397,30 @@ class Component extends DCLogic {
             logoCss: bor ? f.logoCss : 'none', logoOn: bor, logoOff: !bor,
             open: () => { this.noteSearch(st.homeQuery); this.setState({ fullId: f.id, homeQuery: '' }); this.push('fullguide'); }
           }; });
-        const all = [...cats, ...stores, ...couriers, ...guides];
-        return { hqOn: true, hqEmpty: all.length === 0, hqCount: String(all.length), hqResults: all };
+        /* Bojxona: bo'limlar (me'yor, to'lov, taqiq, tartib, kalkulyator,
+           organlar) va taqiqlangan tovarlar. Ilgari "bojxona", "dron",
+           "sigaret" so'rovlari hech narsa bermasdi. */
+        const SEC_ICON = ['boj-meyor', 'boj-tolov', 'boj-taqiq', 'boj-tartib', 'boj-kalkulyator', 'boj-aloqa'];
+        const SEC_SYN = ['bojsiz meyor limit 200 dollar oy norma tamojnya besposhlinnyy limit', 'yagona bojxona tolov boj 30 foiz yigim bhm tamojnya poshlina sbor', 'taqiqlangan cheklangan tovarlar royxat tamojnya zapreshchennye zapreshcheno ogranicheno', 'rasmiylashtirish tartib xabarnoma yidxp deklaratsiya tasdiqlash tamojnya oformlenie uvedomlenie', 'bojxona kalkulyator hisob boj yigim tamojnya kalkulyator raschet', 'bojxona organlari manzil telefon xarita aloqa tamojnya organy adres telefon'];
+        const secs = CUSTOMS_SECTIONS.map((t, i) => ({ t, i }))
+          .filter(x => matches(hay(x.t, 'bojxona', SEC_SYN[x.i]), q)).slice(0, 2)
+          .map(x => ({
+            kind: 'Bojxona', name: x.t, sub: tr(st.lang, "Ma'lumotnoma"),
+            mono: '', color: 'transparent', ink: '#1A1FB0', fit: '26px 26px', logoCss: "url('icons/" + SEC_ICON[x.i] + ".webp')",
+            bg: '#F1F1F8', logoOn: true, logoOff: false,
+            open: () => { this.noteSearch(st.homeQuery); this.setState({ homeQuery: '' }); this.openSec(x.i); }
+          }));
+        const bans = BANNED.filter(b => matches(hay(b.name, b.syn), q)).slice(0, 3).map(b => ({
+          kind: b.level === 'red' ? 'Taqiqlangan' : 'Cheklangan', name: b.name, sub: tr(st.lang, 'Taqiqlangan tovarlar'),
+          mono: '', color: 'transparent', ink: '#1A1FB0', fit: '26px 26px', logoCss: "url('icons/ban/" + b.icon + ".webp')",
+          bg: b.level === 'red' ? '#FCEAEA' : '#FDF3E3', logoOn: true, logoOff: false,
+          open: () => { this.noteSearch(st.homeQuery); this.setState({ homeQuery: '', banQuery: '', banFilter: 0, banOpen: b.name }); this.openSec(2); }
+        }));
+        const all = [...cats, ...stores, ...couriers, ...guides, ...secs, ...bans];
+        /* Natija bo'lmasa ham toifa kartalari va bojxona havolalari qoladi:
+           "hech narsa topilmadi" dan keyin foydalanuvchi nima qilishni
+           bilmay qolmasin. */
+        return { hqOn: true, hqEmpty: all.length === 0, hqCount: String(all.length), hqResults: all, hqIdle: all.length === 0 };
       })(),
       /* Papka ichida o'sha kesim bo'yicha chip ko'rsatilmaydi: "Elektronika"
          papkasida yana "elektronika" chipini chiqarish chalkashtiradi. */
