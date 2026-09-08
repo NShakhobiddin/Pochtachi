@@ -286,3 +286,43 @@ nav.tabs {
   .card { padding: 14px; }
   h2 { font-size: 19px; }
 }
+
+/* ---- "Qanday ishlaydi" motion-tushuntirishi (guide-motion.js) ----
+   Ilovadagi bojxona bo'limlaridagi bilan bir xil ko'rinish. */
+.gm-card { background:#FFFFFF; border-radius:20px; box-shadow:0 2px 8px -4px rgba(16,18,45,.10); overflow:hidden; margin:0 0 16px; }
+.gm-open { display:flex; align-items:center; gap:14px; width:100%; padding:14px 16px; border:none; background:none; text-align:left; cursor:pointer; font:inherit; color:inherit; }
+.gm-open:hover { background:#F6F7FB; }
+.gm-play { width:44px; height:44px; border-radius:22px; flex:none; display:flex; align-items:center; justify-content:center; background:linear-gradient(155deg,#494FE9,#13189D); box-shadow:0 8px 20px -10px rgba(17,21,132,.34); }
+.gm-txt { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.gm-txt b { font-size:15px; font-weight:700; color:#131429; }
+.gm-txt span { font-size:13px; font-weight:500; color:#6B6C85; }
+.gm-stage { position:relative; height:200px; background:linear-gradient(180deg,#F6F7FB,#EEF0FA); overflow:hidden; }
+.gm-stage svg { position:absolute; inset:0; width:100%; height:100%; font-family:inherit; }
+.gm-body { padding:12px 16px 14px; display:flex; flex-direction:column; gap:10px; }
+.gm-cap { font-size:15px; color:#282944; line-height:1.5; min-height:46px; text-wrap:pretty; }
+.gm-ctl { display:flex; align-items:center; gap:8px; }
+.gm-btn { width:44px; height:44px; border-radius:22px; border:none; flex:none; cursor:pointer; display:flex; align-items:center; justify-content:center; background:#E9EAFD; }
+.gm-btn:hover { background:#DCDDFA; }
+.gm-dot { height:44px; padding:0 4px; border:none; background:none; cursor:pointer; flex:none; display:flex; align-items:center; }
+.gm-dot span { display:block; height:8px; width:8px; border-radius:4px; background:#DCDDFA; transition:width .25s, background .25s; }
+.gm-dot.on span { width:22px; background:#1A1FB0; }
+.gm-sp { flex:1; }
+.gm-n { font-size:11px; font-weight:600; color:#6B6C85; font-variant-numeric:tabular-nums; }
+.gm-x { width:36px; height:36px; border-radius:18px; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; flex:none; }
+.gm-x:hover { background:#F1F1F8; }
+@keyframes gm-in { from { opacity:0; transform:translateY(10px) } to { opacity:1; transform:none } }
+@keyframes gm-pop { 0% { opacity:0; transform:scale(.6) } 70% { transform:scale(1.08) } 100% { opacity:1; transform:scale(1) } }
+@keyframes gm-grow { from { transform:scaleX(0) } to { transform:scaleX(1) } }
+@keyframes gm-fly { from { transform:translateX(-30px) } to { transform:translateX(56px) } }
+@keyframes gm-out { from { opacity:0; transform:translateX(-30px) } 40% { opacity:1; transform:none } to { opacity:1; transform:translateX(40px) } }
+@keyframes gm-tap { 0% { opacity:0; transform:scale(.4) } 50% { opacity:1; transform:scale(1) } 100% { opacity:0; transform:scale(1.5) } }
+.gm-in, .gm-pop, .gm-grow, .gm-fly, .gm-out, .gm-tap { transform-box:fill-box; animation-fill-mode:both; animation-timing-function:cubic-bezier(.22,.9,.3,1); }
+.gm-in { animation-name:gm-in; animation-duration:.5s; }
+.gm-pop { animation-name:gm-pop; animation-duration:.45s; }
+.gm-grow { animation-name:gm-grow; animation-duration:.9s; transform-origin:left center; }
+.gm-fly { animation-name:gm-fly; animation-duration:2.2s; animation-timing-function:cubic-bezier(.3,.7,.3,1); }
+.gm-out { animation-name:gm-out; animation-duration:1.6s; }
+.gm-tap { animation-name:gm-tap; animation-duration:1s; transform-origin:center; }
+@media (prefers-reduced-motion: reduce) {
+  .gm-in, .gm-pop, .gm-grow, .gm-fly, .gm-out, .gm-tap { animation-duration:.01ms !important; animation-delay:0s !important; animation-iteration-count:1 !important; }
+}

@@ -55,7 +55,7 @@ const SHELL_ICONS = ['icons/brand.webp', 'icons/brand-full.webp', 'icons/stores-
 function precacheList() {
   const files = ['./', 'support.js', 'manifest.webmanifest', 'data/norms.json',
     'vendor/react.production.min.js', 'vendor/react-dom.production.min.js'];
-  const later = ['guides/guide-base.css', 'guides/guide-common.css', 'guides/guide-engine.js', 'guides/guide.js'];
+  const later = ['guides/guide-base.css', 'guides/guide-common.css', 'guides/guide-engine.js', 'guides/guide-motion.js', 'guides/guide.js'];
   /* Shriftlar o'z domenimizda turadi, shuning uchun ular ham qobiq bilan
      birga keshlanadi — ikkinchi ochilishda umuman tarmoq kerak emas. */
   for (const f of readdirSync(join(ROOT, 'fonts')).sort()) {

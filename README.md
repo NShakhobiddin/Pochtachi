@@ -214,6 +214,18 @@ harakatni kamaytirish rejimida kechikishsiz statik kadr. Ekran yoki bo'lim
 almashganda to'xtaydi. Video fayl yo'q: hammasi index.html ichida (~45 KB),
 oflayn ishlaydi, shuning uchun index.html chegarasi 560 → 640 KB.
 
+### Qo'llanmalarda
+
+Har bir qo'llanmaning birinchi paneli tepasida ham shunday karta bor
+(`guides/guide-motion.js`, uslublar `guide-common.css` dagi `.gm-*`).
+Sahnalar do'konga qarab `MOTION` obyektidan chiziladi (har `guides/inline/*.html`
+da `const TABS=` oldida): `store`, `color`, `from`, `flow` (`courier` — ombor
+manzili va ID kod, `direct` — checkout'da O'zbekiston), `days`, `id`, `free`/`val`
+(bojxona sahnasi) va `caps` (5 ta sarlavha). Karta faqat faol panelda o'ynaydi:
+boshqa tabga o'tilsa (`xy:panel` hodisasi) to'xtab, yopiq holatga qaytadi.
+`tests/guides.mjs` har qo'llanmada kartani ochib, 5-qadamga o'tib, tab almashib
+va yopib tekshiradi.
+
 ## Kuzatuv va xizmatlar
 
 Kuzatuv ekrani saqlangan rejalarni jo'natma sifatida ko'rsatadi: trek

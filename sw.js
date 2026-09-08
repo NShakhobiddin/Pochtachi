@@ -17,7 +17,7 @@
  *   - Do'kon logotiplari: versiyadan qat'i nazar saqlanadigan alohida keshda.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
  */
-const VERSION = '0979a75f4798';
+const VERSION = '7c6e5c3cd6bc';
 const CACHE = 'xarid-' + VERSION;
 /* Logotiplar keshi ilova versiyasiga bog'lanmaydi: yangilanish chiqqanda
    ular qaytadan yuklanmaydi. */
@@ -182,6 +182,7 @@ const LATER = [
   "guides/guide-base.css",
   "guides/guide-common.css",
   "guides/guide-engine.js",
+  "guides/guide-motion.js",
   "guides/guide.js",
   "icons/app-play.webp",
   "icons/app-store.webp",
