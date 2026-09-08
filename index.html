@@ -2156,6 +2156,34 @@
 
   <sc-if value="{{ sWizard }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:20px;padding-bottom:112px">
+      <!-- Reja saqlangach "Reja" tabiga qaytgan foydalanuvchi bo'sh
+           ustani ko'rib "rejam qayerda?" deb qolardi: saqlanganlar bosh
+           sahifa va kuzatuvda edi. Endi birinchi qadamda shu yerda ham
+           ixcham ro'yxat turadi. -->
+      <sc-if value="{{ wizShowPlans }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 2px">
+            <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85">Saqlangan rejalar</span>
+            <span style="font-size:11px;font-weight:600;color:#6B6C85;font-variant-numeric:tabular-nums">{{ planCount }}</span>
+          </div>
+          <sc-for list="{{ myPlans }}" as="p" hint-placeholder-count="1">
+            <button sc-camel-on-click="{{ p.open }}" style="display:flex;align-items:center;gap:12px;width:100%;background:#FFFFFF;border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
+              <div style="width:40px;height:40px;border-radius:12px;flex:none;position:relative;background:{{ p.plate }}">
+                <div style="position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ p.logoCss }}"></div>
+              </div>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                <span style="font-size:15px;font-weight:700;color:#131429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.title }}</span>
+                <span lang="{{ dataLang }}" style="font-size:11px;font-weight:600;color:#6B6C85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.sub }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none">
+                <span style="font-size:15px;font-weight:700;color:#1A1FB0;font-variant-numeric:tabular-nums">{{ p.total }}</span>
+                <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap;color:{{ p.stFg }};background:{{ p.stBg }}">{{ p.stLabel }}</span>
+              </div>
+            </button>
+          </sc-for>
+          <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85;padding:6px 2px 0">Yangi reja</span>
+        </div>
+      </sc-if>
       <sc-if value="{{ wizRunning }}" hint-placeholder-val="{{ true }}">
         <div style="background:linear-gradient(148deg,#5C61EB 0%,#1A1FB0 48%,#0E127B 100%);border-radius:24px;padding:20px 16px 18px;position:relative;overflow:hidden;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">
         <div style="position:absolute;top:-70px;right:-45px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.20),rgba(255,255,255,0) 70%)"></div>
@@ -2766,7 +2794,10 @@ const RU = {
   'Do\'kon tavsiflari va qo\'llanmalar hozircha faqat o\'zbek tilida.':'Описания магазинов и инструкции пока только на узбекском.',
   'Bosh sahifa':'Главная', "Qo'llanmalar":'Инструкции', "Reja":'План', 'Bojxona':'Таможня', 'Sozlamalar':'Настройки',
   "Do'konlar":'Магазины', 'Kuryerlar':'Курьеры', 'Kuzatuv':'Отслеживание', 'Taqqoslash':'Сравнение', 'Xarid rejasi':'План покупки',
-  "Qo'llanma":'Инструкция', "Reja tuzish":'Составление плана', 'Mening rejalarim':'Мои планы', 'Bugungi foydali':'Совет дня',
+  "Qo'llanma":'Инструкция', "Reja tuzish":'Составление плана', 'Mening rejalarim':'Мои планы',
+  'Saqlangan rejalar':'Сохранённые планы', 'Yangi reja':'Новый план',
+  "Tanlovingizga mos {0} ta do'kon.":'Под ваш выбор подходит {0} магазинов.',
+  "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi ko'p davlatga yuboradi.":'Под ваш выбор подходит {0} магазинов, последние {1} доставляют во многие страны.', 'Bugungi foydali':'Совет дня',
   "Do'kon, kuryer yoki mahsulot":'Магазин, курьер или товар', "Do'kon nomi yoki kategoriya":'Название магазина или категория',
   'Tovar nomini yozing':'Введите название товара', "Saytga o'tish":'Перейти на сайт', "Telegram'da yozish":'Написать в Telegram',
   'Tozalash':'Очистить', "Natijani ko'rish":'Показать результат', 'Filtr':'Фильтр', "O'zgartirish":'Изменить',
@@ -4891,13 +4922,20 @@ class Component extends DCLogic {
     const catKey = (WIZ_CATS.find(c => c.label === st.wizCat) || {}).key || null;
     const cKey = (WIZ_COUNTRIES.find(c => c.label === st.wizCountry) || {}).key || 'Global';
     const onWizard = cur === 'wizard';
-    /* Davlat tanlansa, faqat o'sha davlatning do'konlari qoladi: "Global"
-       deb belgilanganlar (Amazon, Nike, Zara...) endi qo'shilmaydi —
-       foydalanuvchi aynan o'sha yo'nalishni so'ragan. */
-    const wizInCountry = !onWizard ? []
-      : (cKey === 'Global' ? STORES : STORES.filter(s => s.country === cKey));
-    const wizStores = wizInCountry.filter(s =>
-      !catKey ? true : (s.cat === catKey || (catKey !== 'universal' && s.cat === 'universal')));
+    /* Davlat tanlansa, avval o'sha davlatning do'konlari, keyin "Global"
+       (ko'p davlatga yuboradigan: Nike, Adidas, Sephora...) chiqadi.
+       Ilgari Global'lar umuman chiqmasdi: "Poyabzal + AQSh" tanlagan
+       foydalanuvchi Nike va Adidas'ni ko'rmay, faqat Walmart va Foot
+       Locker'ni ko'rardi. */
+    const wizLocal = !onWizard ? [] : (cKey === 'Global' ? STORES : STORES.filter(s => s.country === cKey));
+    const wizGlobal = !onWizard || cKey === 'Global' ? [] : STORES.filter(s => s.country === 'Global');
+    const wizCatOk = s => !catKey ? true : (s.cat === catKey || (catKey !== 'universal' && s.cat === 'universal'));
+    const wizInCountry = [...wizLocal, ...wizGlobal];
+    /* Global'lar ichida avval toifaning o'zi (Nike, Adidas), keyin
+       universal marketpleyslar (Amazon, eBay). */
+    const wizGlobalCat = wizGlobal.filter(wizCatOk).sort((a, b) => (a.cat === catKey ? 0 : 1) - (b.cat === catKey ? 0 : 1));
+    const wizStores = [...wizLocal.filter(wizCatOk), ...wizGlobalCat];
+    const wizGlobalN = wizGlobal.filter(wizCatOk).length;
     const wizCouriers = !onWizard ? [] : [...COURIERS].filter(k =>
       cKey === 'Global' ? true : (CUR_MATCH[cKey].test(k.countries || '') || (k.from || []).some(x => CUR_MATCH[cKey].test(x)))
     ).sort((a, b) => a.price - b.price);
@@ -4921,13 +4959,14 @@ class Component extends DCLogic {
         pick:() => this.setState({ wizCountry:o.label, wizStep:2 }), ...plain }));
       if (st.wizStep === 2) return (wizStores.length ? wizStores
         : (wizInCountry.length ? wizInCountry : STORES)).map(s => ({
-        label:s.name, note:s.type + ' · ' + s.country + (s.direct ? ' · to\'g\'ridan-to\'g\'ri' : ' · vositachi kerak'),
+        /* Izoh qismlarga bo'lib tarjima qilinadi: yaxlit satr lug'atda yo'q. */
+        label:s.name, note:tr(st.lang, s.type) + ' · ' + tr(st.lang, s.country) + ' · ' + tr(st.lang, s.direct ? 'to\'g\'ridan-to\'g\'ri' : 'vositachi kerak'),
         pick:() => this.setState({ wizStore:s.name, wizStep:3 }),
         hasMono:true, hasPrice:true, plain:false, color:s.color, ink:s.ink, mono:s.mono,
         logoCss:s.logoCss, logoFit:'contain', logoBg:'transparent', boxW:'48px', logoInset:'0',
         logoOff:s.logoOn === false, price:s.price }));
       if (st.wizStep === 3) return (wizCouriers.length ? wizCouriers : COURIERS).map(k => ({
-        label:k.name, note:k.days + ' · ' + k.mode + ' · ' + k.nRoutes + ' ta yo\'nalish',
+        label:k.name, note:tr(st.lang, k.days) + ' · ' + tr(st.lang, k.mode) + ' · ' + tr(st.lang, k.nRoutes + ' ta yo\'nalish'),
         pick:() => this.setState({ wizCourier:k.name, wizStep:4 }),
         hasMono:true, hasPrice:true, plain:false, color:k.color, ink:k.color, mono:k.mono,
         logoCss:k.logoCss, logoFit:k.logoFit, logoBg:k.logoBg, boxW:'48px', logoInset:'0',
@@ -4942,7 +4981,9 @@ class Component extends DCLogic {
       'Kategoriyani tanlang — shunga qarab do\'kon tavsiya qilaman.',
       'Yo\'nalish narx va muddatni belgilaydi.',
       wizStores.length
-        ? 'Tanlovingizga mos ' + wizStores.length + ' ta do\'kon.'
+        ? (wizGlobalN && wizGlobalN < wizStores.length
+          ? tx(st.lang, "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi ko'p davlatga yuboradi.", wizStores.length, wizGlobalN)
+          : tx(st.lang, "Tanlovingizga mos {0} ta do'kon.", wizStores.length))
         : (wizInCountry.length
           ? 'Bu kategoriyada mos do\'kon yo\'q — shu yo\'nalishdagi qolganlari.'
           : 'Bu yo\'nalishda do\'kon topilmadi — barchasi ko\'rsatilmoqda.'),
@@ -5056,9 +5097,11 @@ class Component extends DCLogic {
       sPlan: cur === 'plan' && !!pl,
       hasPlans: st.plans.length > 0,
       planCount: st.plans.length + ' ta',
+      wizShowPlans: cur === 'wizard' && st.wizStep === 0 && st.plans.length > 0,
       myPlans: st.plans.map(p => ({
         title: p.cat, sub: p.storeName + ' · ' + p.courierName,
         total: '$' + p.total.toFixed(0), logoCss: p.logoCss,
+        plate: p.logoCss && p.logoCss !== 'none' ? 'transparent' : '#F1F1F8',
         stLabel: PLAN_STATUS[p.step].label, stBg: PLAN_STATUS[p.step].bg, stFg: PLAN_STATUS[p.step].fg,
         pct: Math.round((p.step / 4) * 100) + '%',
         open: () => { this.setState({ planId: p.id }); this.push('plan'); }

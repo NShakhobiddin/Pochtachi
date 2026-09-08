@@ -961,9 +961,10 @@ try {
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(500);
 
-  /* Sehrgarda davlat tanlansa, "Global" deb belgilangan do'konlar (Amazon,
-     Nike, Zara...) qo'shilmaydi — foydalanuvchi aynan o'sha yo'nalishni
-     so'ragan. Xitoyni tanlab, ro'yxatda faqat Xitoy chiqishini qaraymiz. */
+  /* Sehrgarda davlat tanlansa avval o'sha davlatning do'konlari, keyin
+     "Global" (ko'p davlatga yuboradigan) do'konlar chiqadi — ular umuman
+     chiqmasa, "Poyabzal + AQSh" tanlagan odam Nike'ni ko'rmasdi. Xitoyni
+     tanlab, ro'yxat Xitoy bilan boshlanib Global bilan tugashini qaraymiz. */
   await page.locator('nav button', { hasText: 'Reja' }).first().click();
   await page.waitForTimeout(700);
   await page.locator('main button').filter({ hasText: 'Elektronika' }).first().click();
@@ -976,8 +977,10 @@ try {
       .filter(L => L.length >= 2 && /·/.test(L[1]));
     return kart.map(L => L[1].split('·')[1].trim());
   });
-  check('sehrgarda davlat tanlansa Global do\'konlar qo\'shilmaydi',
-    wizDav.length > 0 && wizDav.every(x => x === 'Xitoy'),
+  const wizGlobalIdx = wizDav.indexOf('Global');
+  check('sehrgarda davlat tanlansa avval o\'sha davlat, keyin Global do\'konlar',
+    wizDav.length > 0 && wizDav[0] === 'Xitoy' && wizGlobalIdx > 0 &&
+    wizDav.every((x, i) => i < wizGlobalIdx ? x === 'Xitoy' : x === 'Global'),
     wizDav.join(', ') || 'do\'kon topilmadi');
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(500);
@@ -1106,6 +1109,17 @@ try {
   await page.waitForTimeout(450);
   await page.locator('button:visible').filter({ hasText: /Xitoy|AQSh|Turkiya/ }).first().click();
   await page.waitForTimeout(550);
+  /* Davlat tanlanganda ham ko'p davlatga yuboradigan (Global) do'konlar
+     ro'yxatda, lekin o'sha davlatnikidan keyin: "Kiyim + Xitoy" da SHEIN,
+     "Poyabzal + AQSh" da Nike ko'rinishi kerak. */
+  const wizRo = await page.evaluate(() => {
+    const rows = [...document.querySelectorAll('main button')].map(b => b.innerText.replace(/\s+/g, ' ')).filter(t => /vositachi kerak|to'g'ridan-to'g'ri/.test(t));
+    return { n: rows.length, birinchi: rows[0] || '', global: rows.filter(t => /· Global ·/.test(t)).length,
+      sub: (document.querySelector('main').innerText.match(/Tanlovingizga mos[^\n]*/) || [''])[0] };
+  });
+  check('rejada Global do\'konlar davlatnikidan keyin chiqadi',
+    wizRo.n > 2 && wizRo.global > 0 && !/· Global ·/.test(wizRo.birinchi) && /ko'p davlatga/.test(wizRo.sub),
+    `${wizRo.n} ta, ${wizRo.global} global · ${wizRo.sub}`);
   await page.locator('button:visible').filter({ hasText: /Marketplace/ }).first().click();
   await page.waitForTimeout(550);
   const kk = page.locator('main button:visible');
@@ -1131,6 +1145,18 @@ try {
   check('reja saqlangach yakun ko\'rinadi',
     yakun.tayyor && yakun.meyor && yakun.jami && yakun.yol.split('·').length >= 3,
     yakun.yol || JSON.stringify(yakun));
+
+  /* Reja tabiga qaytganda saqlangan reja ko'rinib turadi — ilgari bo'sh
+     sehrgar chiqar va foydalanuvchi rejasini bosh sahifadan qidirardi. */
+  await page.locator('nav button', { hasText: 'Reja' }).first().click();
+  await page.waitForTimeout(600);
+  const rejaTab = await page.evaluate(() => {
+    const t = document.querySelector('main').innerText.replace(/\s+/g, ' ');
+    return { saq: /Saqlangan rejalar/i.test(t), yangi: /Yangi reja/i.test(t), qadam: /1 \/ 5/.test(t),
+      oldin: t.indexOf('Saqlangan rejalar') < t.indexOf('Nimani olmoqchisiz') };
+  });
+  check('reja tabida saqlangan reja va yangi sehrgar birga',
+    rejaTab.saq && rejaTab.yangi && rejaTab.qadam && rejaTab.oldin, JSON.stringify(rejaTab));
 
   /* Kuzatuv tugmasi bosh sahifa sarlavhasida — avval o'sha yerga qaytamiz. */
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();

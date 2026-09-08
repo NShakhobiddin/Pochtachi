@@ -138,6 +138,19 @@ tovarlarga havola turadi. Ilgari bu oyna bo'm-bo'sh edi.
 Smoke test: bo'sh holat takliflari, `krossovka`/`telefon`/`кроссовки`/
 `Турция` so'rovlari va toifa qatorining papkani ochishi.
 
+## Reja sehrgari
+
+Besh qadam: mahsulot toifasi, davlat, do'kon, kuryer, hisob; keyin
+"Sizning rejangiz" ko'rinishi va saqlash. Davlat tanlanganda do'kon
+ro'yxatida avval o'sha davlatning do'konlari, keyin "Global" (ko'p
+davlatga yuboradigan: Nike, Adidas, Sephora, Amazon) turadi — Global'lar
+ichida ham toifaning o'zi universal marketpleyslardan oldin. Tagsarlavha
+nechtasi global ekanini aytadi. Ilgari Global'lar umuman chiqmasdi va
+"Poyabzal + AQSh" tanlagan foydalanuvchi Nike'ni ko'rmasdi.
+
+Saqlangan rejalar bosh sahifada, kuzatuvda va Reja tabining birinchi
+qadamida (sehrgar ustida, "Saqlangan rejalar") ko'rinadi.
+
 ## Telegram bot ichida ochish
 
 Ilova Telegram Mini App sifatida to'liq ekranda ochiladi. Botga ulash:
