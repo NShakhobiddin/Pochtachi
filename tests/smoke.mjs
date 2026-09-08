@@ -897,6 +897,49 @@ try {
   check('taqqoslash rejimida yo\'riqnoma chiqadi', !cmpOldin && cmpKeyin,
     `oldin ${cmpOldin}, keyin ${cmpKeyin}`);
 
+  /* Taqqoslash rejimi papkaga tegishli: boshqa papkada qolib ketmaydi. */
+  await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
+  await page.waitForTimeout(500);
+  await page.locator('main button', { hasText: 'Turkiya' }).first().click();
+  await page.waitForTimeout(700);
+  const cmpBoshqa = await page.evaluate(() => /belgilang/.test(document.querySelector('main').innerText));
+  check('taqqoslash rejimi boshqa papkaga o\'tmaydi', !cmpBoshqa);
+
+  /* Kuryer papkasidagi filtr varag'i kuryer filtrlarini ko'rsatadi (ilgari
+     do'kon filtrlari chiqardi), yo'nalish papkasida davlat so'ralmaydi,
+     Escape esa ekranni emas, varaqni yopadi. */
+  await page.locator('header button').last().click();
+  await page.waitForTimeout(400);
+  const varaq = await page.evaluate(() => document.body.innerText.replace(/\s+/g, ' '));
+  check('kuryer papkasida kuryer filtri, davlatsiz',
+    /Yuborish turi/.test(varaq) && /Saralash/.test(varaq) && !/Qaysi davlatdan/.test(varaq) && !/Kategoriya/.test(varaq),
+    (varaq.match(/Filtr (.{0,80})/) || [])[1]);
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(400);
+  const escHolat = await page.evaluate(() => ({
+    varaq: /Natijani ko'rish/.test(document.body.innerText),
+    sarlavha: document.querySelector('header').innerText.replace(/\s+/g, ' ').trim()
+  }));
+  check('Escape filtr varag\'ini yopadi, ekran qoladi',
+    !escHolat.varaq && /Turkiya/.test(escHolat.sarlavha), JSON.stringify(escHolat));
+
+  /* Do'kon sahifasidan "N kuryerni ko'rish" to'g'ri yo'nalish papkasini
+     ochadi; Global do'kon uchun "Barcha kuryerlar". */
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
+  await page.waitForTimeout(500);
+  await page.locator('main button', { hasText: "Do'konlar" }).first().click();
+  await page.waitForTimeout(600);
+  await page.locator('main button', { hasText: 'Tovar turi' }).first().click();
+  await page.waitForTimeout(300);
+  await page.locator('main button', { hasText: 'Universal' }).first().click();
+  await page.waitForTimeout(600);
+  await page.locator('main button', { hasText: 'Taobao' }).first().click();
+  await page.waitForTimeout(700);
+  await page.locator('main button', { hasText: "kuryerni ko'rish" }).first().click();
+  await page.waitForTimeout(700);
+  const taobaoKur = await page.evaluate(() => document.querySelector('header').innerText.replace(/\s+/g, ' ').trim());
+  check('do\'kondan kuryerlarga: Taobao -> Xitoy yo\'nalishi', /Xitoy yo'nalishi/.test(taobaoKur), taobaoKur);
+
   /* Brend introsi: har ochilishda o'ynaydi, ilova ortda ko'tariladi,
      ~3 soniyada o'zi ketadi. Harakatni kamaytirish yoqilgan bo'lsa
      umuman ko'rsatilmaydi. */

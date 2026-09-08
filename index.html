@@ -4254,7 +4254,7 @@ class Component extends DCLogic {
     // Bo'lim almashtirish ham tarixga yoziladi: "orqaga" bosilganda ilova
     // avval bosh sahifaga qaytadi, keyingina chiqadi.
     if (this._histOn && this.cur() !== s) { try { history.pushState({ xy: Date.now() }, ''); } catch (e) {} }
-    this.setState(TABS.indexOf(s) >= 0 ? { stack: [s], toast: '', lastTab: s } : { stack: [s], toast: '' });
+    this.setState(TABS.indexOf(s) >= 0 ? { stack: [s], toast: '', lastTab: s, compareMode: false, selected: [] } : { stack: [s], toast: '', compareMode: false, selected: [] });
   }
   back() {
     this.rememberScroll();
@@ -4596,7 +4596,11 @@ class Component extends DCLogic {
     /* Klaviaturada Escape — ichki ekrandan orqaga (kompyuterda va
        Telegram Desktop'da). Maydon ichida bo'lsa avval matn tozalanadi. */
     this._onKey = e => {
-      if (e.key !== 'Escape' || this.state.stack.length < 2) return;
+      if (e.key !== 'Escape') return;
+      /* Filtr varag'i ochiq bo'lsa Escape avval uni yopadi; ilgari butun
+         ekran orqaga ketar, varaq esa ochiq qolib bosishlarni to'sardi. */
+      if (this.state.sheetOpen) { e.preventDefault(); this.setState({ sheetOpen: false }); return; }
+      if (this.state.stack.length < 2) return;
       const a = document.activeElement;
       if (a && a.tagName === 'INPUT' && a.value) return;
       e.preventDefault();
@@ -5512,9 +5516,15 @@ class Component extends DCLogic {
           open: () => this.openCourierId(k.id)
         })),
         allCouriers: () => {
-          const regions = [...new Set(storeCouriers.slice(0, 8).flatMap(k => k.from || []))];
-          this.setState({ courierCountries: regions.length && STORE_ROUTE[store.country] ? regions.filter(r => STORE_ROUTE[store.country].test(r)) : [], courierMode: null, sort: 'price' });
-          this.push('couriers');
+          /* To'g'ridan-to'g'ri ro'yxatga: do'kon davlatiga mos bitta yo'nalish
+             bo'lsa o'sha papka, aks holda "Barcha kuryerlar". Ilgari "20
+             kuryerni ko'rish" tugmasi papka tanlash ekraniga olib chiqardi. */
+          const regions = [...new Set(storeCouriers.slice(0, 8).flatMap(k => k.from || []))]
+            .filter(r => STORE_ROUTE[store.country] ? STORE_ROUTE[store.country].test(r) : false);
+          const one = regions.length === 1 && COURIER_ORIGINS.some(o => o[0] === regions[0]) ? regions[0] : null;
+          this.setState({ courierFolder: one ? 'from:' + one : 'all:', courierCountries: one ? [] : regions,
+            courierMode: null, sort: 'price', compareMode: false, selected: [] });
+          this.push('courierfolder');
         } },
       /* Ilgari bu tugma hech narsa yubormasa ham "Xabaringiz yuborildi" deb
          yozardi. Endi haqiqiy kanal ochiladi — Telegramdagi @shopo_manage.
@@ -5577,7 +5587,9 @@ class Component extends DCLogic {
       ...(() => {
         const filtersOn = st.courierCountries.length > 0 || !!st.courierMode;
         const openFolder = key => {
-          this.setState({ courierFolder: 'from:' + key });
+          /* Taqqoslash rejimi papkaga tegishli: boshqa papkada "2-3 kuryerni
+             belgilang" yozuvi va katakchalar qolib ketmasin. */
+          this.setState({ courierFolder: 'from:' + key, compareMode: false, selected: [] });
           this.push('courierfolder');
         };
         const all = COURIER_ORIGINS.map(([key, title, sub, flag, region, pic]) => {
@@ -5596,7 +5608,7 @@ class Component extends DCLogic {
         return {
           courierTop: top, hasCourierTop: !!top,
           courierFolders: folders,
-          openAllCouriers: () => { this.setState({ courierFolder: 'all:' }); this.push('courierfolder'); },
+          openAllCouriers: () => { this.setState({ courierFolder: 'all:', compareMode: false, selected: [] }); this.push('courierfolder'); },
           allCouriersCount: COURIERS.length + ' ta',
           courierFolderFlag: courierFolderDef ? courierFolderDef[3] : '🌍',
           courierFolderName: courierFolderDef ? courierFolderDef[1] : 'Barcha kuryerlar',
@@ -5929,8 +5941,13 @@ class Component extends DCLogic {
       openSheet: () => this.setState({ sheetOpen: true }),
       closeSheet: () => this.setState({ sheetOpen: false }),
       stop: e => e.stopPropagation(),
-      sheetGroups: cur === 'couriers' ? [
-        { title:'Qaysi davlatdan', items: ['Xitoy','Turkiya','AQSH','Yevropa'].map(k => this.chip(k, st.courierCountries.includes(k), () => this.toggleIn('courierCountries', k))) },
+      /* Kuryer papkasi ichida ham kuryer filtrlari: ilgari 'courierfolder'
+         ekranida do'kon filtrlari (Davlat / Yetkazish / Kategoriya) chiqardi.
+         Yo'nalish papkasida "qaysi davlatdan" so'ralmaydi — u allaqachon
+         tanlangan. */
+      sheetGroups: (cur === 'couriers' || cur === 'courierfolder') ? [
+        ...((cur === 'courierfolder' && String(st.courierFolder || '').indexOf('from:') === 0) ? [] : [
+        { title:'Qaysi davlatdan', items: ['Xitoy','Turkiya','AQSH','Yevropa'].map(k => this.chip(k, st.courierCountries.includes(k), () => this.toggleIn('courierCountries', k))) }]),
         { title:'Yuborish turi', items: ['avia','quruqlik'].map(m => this.chip(m === 'avia' ? 'Avia' : 'Quruqlik', st.courierMode === m, () => this.setState(x => ({ courierMode: x.courierMode === m ? null : m })))) },
         { title:'Saralash', items: [{k:'price',l:'Narx'},{k:'days',l:'Muddat'},{k:'routes',l:'Yo\'nalishlar'}].map(s => this.chip(s.l, st.sort === s.k, () => this.setState({ sort:s.k }))) }
       ] : [

@@ -159,6 +159,19 @@ nechtasi global ekanini aytadi. Ilgari Global'lar umuman chiqmasdi va
 Saqlangan rejalar bosh sahifada, kuzatuvda va Reja tabining birinchi
 qadamida (sehrgar ustida, "Saqlangan rejalar") ko'rinadi.
 
+## Do'konlar va kuryerlar
+
+Ikkala bo'lim papka bilan ochiladi (do'konlar: tovar turi yoki davlat;
+kuryerlar: yo'nalish). Do'kon sahifasidagi "N kuryerni ko'rish" tugmasi
+do'kon davlatiga mos yo'nalish papkasini ochadi (Taobao -> Xitoy
+yo'nalishi), Global do'konda "Barcha kuryerlar".
+
+Kuryer papkasida "Taqqoslash" rejimi shu papkaga tegishli: boshqa papka
+ochilganda yoki bo'lim almashganda o'chadi. Sarlavhadagi filtr varag'i
+kuryer ekranlarida kuryer filtrlarini (yuborish turi, saralash; yo'nalish
+papkasidan tashqarida davlat ham) ko'rsatadi. Escape avval ochiq varaqni
+yopadi, keyingina ekranni.
+
 ## Telegram bot ichida ochish
 
 Ilova Telegram Mini App sifatida to'liq ekranda ochiladi. Botga ulash:
