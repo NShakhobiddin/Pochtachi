@@ -446,8 +446,20 @@ O'lchov (sekin tarmoq, 3x sekin protsessor, do'kon papkasi ochilganda):
 | Isitilgan ochilish, ilova ko'tarilishi | — | 0,5 s |
 | Isitilgan ochilishda server so'rovlari | ~100 | 4 (HTML, skript, JSON, sw.js) |
 
-Birinchi ochilishda do'kon papkasining 8 logotipi tarmoqdan keladi — bu
-tarmoq tezligiga bog'liq (~0,5 s). Isitish tartibi ehtimol bo'yicha: intro,
+**Bo'lim ikonkalari oldindan** (`warmIcons`). Ilova ko'tarilib 0,6 s
+o'tgach sahifaning o'zi bo'lim ikonkalarini uch oqimda, past
+ustuvorlikda yuklab qo'yadi: do'kon va bojxona papkalari, bayroqlar,
+do'kon logotiplari (mashhurlik tartibida), kuryer logotiplari,
+xizmatlar, taqiq belgilari. Ekran almashganda 1,2 s to'xtaydi — yangi
+ekranning o'z ikonkalari oldin kelsin. Worker hali sahifani boshqarmagan
+dastlabki soniyalarda ular brauzerning HTTP keshiga tushadi (GitHub Pages
+`max-age=600` beradi), keyin worker isitishda o'sha keshdan oladi.
+"Trafikni tejash" rejimida qilinmaydi. O'lchov (birinchi tashrif, sekin
+tarmoq, bo'lim ochilganda ko'rinadigan ikonkalar): do'kon papkalari
+214 -> 118 ms, do'kon logotiplari 576 -> 125 ms, kuryer bayroqlari
+539 -> 114 ms — hammasi keshdan, serverga so'rovsiz.
+
+Worker isitish tartibi ham ehtimol bo'yicha: intro,
 do'kon papkalari ikonkalari, do'kon logotiplari, kuryer logotiplari va
 bayroqlar, keyin qolgani — foydalanuvchi ilovani isitish tugamay yopsa ham
 eng kerakli fayllar keshda bo'ladi.

@@ -4128,6 +4128,7 @@ class Component extends DCLogic {
 
   push(s) {
     haptic('light');
+    this.pauseWarm();
     this.rememberScroll();
     this.onScreenChange(s);
     if (this._histOn) { try { history.pushState({ xy: Date.now() }, ''); } catch (e) {} }
@@ -4135,6 +4136,7 @@ class Component extends DCLogic {
   }
   go(s) {
     if (this.cur() !== s) haptic('select');
+    this.pauseWarm();
     this.rememberScroll();
     this.onScreenChange(s);
     // Bo'lim almashtirish ham tarixga yoziladi: "orqaga" bosilganda ilova
@@ -4357,7 +4359,52 @@ class Component extends DCLogic {
     try { deep ? tg.BackButton.show() : tg.BackButton.hide(); } catch (e) {}
   }
 
+  /* Bo'lim ikonkalarini oldindan yuklash. Ilova ko'tarilib, shriftlar
+     kelgach, ikki oqimda va past ustuvorlikda — foydalanuvchi qaysi
+     bo'limni ochsa ham ikonkalar allaqachon keshda bo'ladi. Tartib —
+     ochilish ehtimoli bo'yicha: do'kon va bojxona papkalari, bayroqlar,
+     do'kon logotiplari, kuryer logotiplari, xizmatlar, taqiq belgilari.
+     Service worker ham keyinroq shu fayllarni isitadi, lekin u 4 s dan
+     keyin boshlaydi; bu yerda birinchi tashrifdagi eng dastlabki bosishlar
+     uchun. "Trafikni tejash" yoqilgan bo'lsa qilinmaydi. O'lchov (sekin
+     tarmoq, birinchi tashrif): do'kon papkasi ikonkalari 849 ms -> keshdan. */
+  warmIcons() {
+    try {
+      const c = navigator.connection;
+      if (c && c.saveData) return;
+    } catch (e) {}
+    const list = [];
+    STORE_CATS.forEach(x => list.push(x[3]));
+    ['boj-meyor', 'boj-tolov', 'boj-taqiq', 'boj-tartib', 'boj-kalkulyator', 'boj-aloqa'].forEach(x => list.push('icons/' + x + '.webp'));
+    COURIER_ORIGINS.forEach(o => list.push('flags/' + o[5] + '.webp'));
+    /* Do'kon logotiplari ro'yxatdagi tartibda — u mashhurlik bo'yicha
+       tuzilgan, universal papkaning birinchi qatorlari oldin keladi. */
+    STORES.forEach(st => { if (STORE_LOGO_SET.has(st.id)) list.push('stores/' + st.id + '.webp'); });
+    Object.keys(COURIER_LOGOS).forEach(k => list.push(COURIER_LOGOS[k]));
+    SERVICES.forEach(x => { if (x.icon) list.push('icons/' + x.icon + '.webp'); });
+    list.push('icons/app-store.webp', 'icons/app-play.webp');
+    BANNED.forEach(b => list.push('icons/ban/' + b.icon + '.webp'));
+    QTY_NORMS.forEach(q => list.push('icons/norm/' + q.icon + '.webp'));
+    const uniq = [...new Set(list)];
+    let i = 0;
+    /* Ekran almashganda 1,2 s to'xtab turadi: yangi ekranning o'z ikonkalari
+       birinchi kelsin. Shriftlarni kutmaydi — ular baribir yuqori
+       ustuvorlikda, bu yerdagi rasmlar esa past ustuvorlikda. */
+    const next = () => {
+      if (i >= uniq.length) return;
+      const wait = (this._warmPause || 0) - Date.now();
+      if (wait > 0) { this._warmT = setTimeout(next, wait); return; }
+      const im = new Image();
+      try { im.fetchPriority = 'low'; } catch (e) {}
+      im.onload = im.onerror = () => setTimeout(next, 0);
+      im.src = uniq[i++];
+    };
+    this._warmT = setTimeout(() => { next(); next(); next(); }, 600);
+  }
+  pauseWarm() { this._warmPause = Date.now() + 1200; }
+
   componentWillUnmount() {
+    clearTimeout(this._warmT);
     if (this._onPop) window.removeEventListener('popstate', this._onPop);
     if (this._onKey) window.removeEventListener('keydown', this._onKey);
     if (this._onInstall) window.removeEventListener('beforeinstallprompt', this._onInstall);
@@ -4399,6 +4446,7 @@ class Component extends DCLogic {
     this.applyLang();
     this.loadNorms();
     this.loadStoreLogos();
+    this.warmIcons();
     /* Brauzer "ilovani o'rnatish" taklifini bersa, uni sozlamalardagi tugmaga
        ulaymiz — foydalanuvchi ilovani bosh ekraniga qo'sha oladi. */
     this._onInstall = e => { e.preventDefault(); this._installEvt = e; this.forceUpdate(); };

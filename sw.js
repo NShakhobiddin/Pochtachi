@@ -17,7 +17,7 @@
  *   - Do'kon logotiplari: versiyadan qat'i nazar saqlanadigan alohida keshda.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
  */
-const VERSION = 'c4bac72d9127';
+const VERSION = '494357686b21';
 const CACHE = 'xarid-' + VERSION;
 /* Logotiplar keshi ilova versiyasiga bog'lanmaydi: yangilanish chiqqanda
    ular qaytadan yuklanmaydi. */
