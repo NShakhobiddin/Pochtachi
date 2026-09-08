@@ -412,6 +412,16 @@ test uchun alohida kod emas.
 Bo'laklarni qayta yasash: asl PNG larni `icons/src/intro/` ga qo'yib,
 `npm run intro`.
 
+## Do'kon papkalari va qo'llanma ikonkalari
+
+Do'kon papkalarining oltita 3D ikonkasi `icons/src/dok-*.webp` da
+(universal, moda, poyabzal, elektronika, kosmetika, bolalar), ekranga
+`icons/dok-*.webp` (174 px) chiqadi; ular qidiruv takliflari va reja
+sehrgarida ham ishlatiladi. Qo'llanmalarning yettita ikonkasi
+`icons/src/guide-*.webp` → `icons/guide-*.webp` (162 px): qo'llanmalar
+ro'yxati, qo'llanma sarlavhasi va qidiruv natijasi. Ikkalasi ham
+`node tools/optimize-icons.mjs` bilan yangilanadi.
+
 ## Do'kon va kuryer logotiplari
 
 43 ta do'konning hammasida logotip bor: `stores/*.webp`, 128x128 px, jami ~230 KB.

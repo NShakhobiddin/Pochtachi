@@ -19,7 +19,7 @@ const BUDGETS = [
      bojxona qatorlari, do'kon papkalari, qo'llanmalardagi ilova tugmalari
      va xizmat kartochkalari. Hammasi ekran ochilganda yuklanadi va service
      worker keshiga tushadi; do'kon logotiplari (178 KB) bilan bir darajada. */
-  { name: 'ikonkalar (icons/*.webp)', dir: 'icons', ext: ['.webp'], maxTotalKb: 200, maxFileKb: 25 },
+  { name: 'ikonkalar (icons/*.webp)', dir: 'icons', ext: ['.webp'], maxTotalKb: 290, maxFileKb: 25 },
   /* Taqiqlangan tovarlar ro'yxati uchun 22 ta belgi. Faqat o'sha bo'lim
      ochilganda yuklanadi, shuning uchun alohida hisoblanadi. */
   /* Intro logotipining bo'laklari: 11 ta fayl, faqat birinchi ochilishda

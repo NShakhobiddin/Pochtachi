@@ -32,7 +32,9 @@ const target = name =>
   name.startsWith('boj-') ? 144 :
   name.startsWith('dok-') ? 174 :
   name.startsWith('app-') ? 102 :
-  name.startsWith('mutaxassis-') ? 144 : 180;
+  name.startsWith('mutaxassis-') ? 144 :
+  /* `guide-` — qo'llanma ro'yxatidagi 54 px kartochka ikonkasi (3x = 162). */
+  name.startsWith('guide-') ? 162 : 180;
 
 /* `raw-` bilan boshlanadiganlar — kesib olingan to'liq o'lchamdagi asl
    nusxalar; ular faqat qayta hisoblash uchun saqlanadi va ekranga chiqmaydi.

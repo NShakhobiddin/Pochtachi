@@ -1975,11 +1975,11 @@
   <sc-if value="{{ sFull }}" hint-placeholder-val="{{ false }}">
     <div style="margin:0 -18px -24px;height:calc(100% + 24px);display:flex;flex-direction:column;background:#FFFFFF">
       <div style="flex:none;display:flex;align-items:center;gap:10px;padding:8px 16px;background:#FFFFFF;border-bottom:1px solid #F1F1F8">
-        <div style="width:42px;height:28px;border-radius:8px;flex:none;position:relative;background:#F1F1F8">
+        <div style="width:32px;height:32px;border-radius:8px;flex:none;position:relative;background:{{ fullPlate }}">
           <sc-if value="{{ fullLogoOff }}" hint-placeholder-val="{{ true }}">
             <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:11px;font-weight:600;color:{{ fullColor }}">{{ fullMono }}</span>
           </sc-if>
-          <div style="position:absolute;inset:4px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ fullLogoCss }}"></div>
+          <div style="position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ fullLogoCss }}"></div>
         </div>
         <span style="flex:1;font-size:13px;font-weight:700;color:#6B6C85">{{ fullSections }} bo'lim</span>
       </div>
@@ -4176,6 +4176,9 @@ const LV = {
 /* Ilovaning qolgan hamma joyida kategoriyalar 3D ikonka bilan chiziladi;
    sehrgar 1-qadamida esa emoji qolib ketgan edi va boshqacha ko'rinardi.
    Ikonkalar do'konlar bo'limi bilan bir xil fayllardan olinadi. */
+/* Qo'llanmalarning o'z 3D ikonkalari (icons/guide-*.webp): ilgari do'kon
+   logotipi ishlatilardi. loadStoreLogos logoOn turganini bosib ketmaydi. */
+FULL_GUIDES.forEach(g => { g.logoCss = "url('icons/guide-" + g.id + ".webp')"; g.logoOn = true; g.logoOff = false; });
 const WIZ_CATS = [
   { label:'Kiyim va moda', key:'kiyim va moda', icon:'dok-moda' },
   { label:'Poyabzal va krossovka', key:'poyabzal', icon:'dok-poyabzal' },
@@ -4528,6 +4531,7 @@ class Component extends DCLogic {
     STORES.forEach(st => { if (STORE_LOGO_SET.has(st.id)) list.push('stores/' + st.id + '.webp'); });
     Object.keys(COURIER_LOGOS).forEach(k => list.push(COURIER_LOGOS[k]));
     SERVICES.forEach(x => { if (x.icon) list.push('icons/' + x.icon + '.webp'); });
+    FULL_GUIDES.forEach(g => list.push('icons/guide-' + g.id + '.webp'));
     list.push('icons/app-store.webp', 'icons/app-play.webp');
     BANNED.forEach(b => list.push('icons/ban/' + b.icon + '.webp'));
     QTY_NORMS.forEach(q => list.push('icons/norm/' + q.icon + '.webp'));
@@ -5366,11 +5370,11 @@ class Component extends DCLogic {
             /* Qo'llanma qatorida do'kon logotipi; logotip yo'q bo'lsa
                monogramma. Ilgari logoOff berilmagani uchun bo'sh rangli
                kvadrat chiqardi. */
-            const bor = STORE_LOGO_SET.has(f.id);
+            const bor = !!(f.logoCss && f.logoCss !== 'none');
             return {
             kind: 'Qo\'llanma', name: f.title, sub: tx(st.lang, "{0} bo'lim · kalkulyator", f.sections),
             mono: f.mono, color: f.color, ink: '#FFFFFF', bg: bor ? 'transparent' : f.color, fit: 'contain',
-            logoCss: bor ? "url('stores/" + f.id + ".webp')" : 'none', logoOn: bor, logoOff: !bor,
+            logoCss: bor ? f.logoCss : 'none', logoOn: bor, logoOff: !bor,
             open: () => { this.noteSearch(st.homeQuery); this.setState({ fullId: f.id, homeQuery: '' }); this.push('fullguide'); }
           }; });
         const all = [...cats, ...stores, ...couriers, ...guides];
@@ -5892,6 +5896,7 @@ class Component extends DCLogic {
       sFull: cur === 'fullguide',
       fullSrc: fullG.file, fullTitle: fullG.title, fullMono: fullG.mono, fullColor: fullG.color, fullSections: fullG.sections,
       fullLogoCss: fullG.logoCss, fullLogoOff: fullG.logoOff !== false,
+      fullPlate: (fullG.logoCss && fullG.logoCss !== 'none') ? 'transparent' : '#F1F1F8',
       fullExternal: () => window.open(fullG.file, '_blank', 'noopener'),
 
       trackNo: st.trackNo,
