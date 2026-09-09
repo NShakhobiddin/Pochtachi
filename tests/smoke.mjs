@@ -1130,6 +1130,13 @@ try {
   } else {
     await page.getByText('Mutaxassis yordami', { exact: false }).first().click();
     await page.waitForTimeout(700);
+    /* Belgilangan narx: xaridor yo'lagida "Kelishilgan holda" qolmasin —
+       narx ko'rinsa odam yozadi. Tugma Telegram xabariga narxni qo'shadi. */
+    const svcNarx = await page.evaluate(() => {
+      const t = document.querySelector('main').innerText;
+      return { kelishilgan: /Kelishilgan holda/.test(t), som: (t.match(/\d[\d ]+ so'm/g) || []).length };
+    });
+    check('xizmatlarda belgilangan narx', !svcNarx.kelishilgan && svcNarx.som >= 5, JSON.stringify(svcNarx));
     const svcShaxs = await page.evaluate(() => {
       const b = [...document.querySelectorAll('main button')].filter(x => x.innerText.trim() === "Bog'lanish");
       const ic = [...document.querySelectorAll('main div')]
@@ -1424,9 +1431,43 @@ try {
     ban.qator === 23 && ban.xil >= 20 && ban.yuklandi === ban.xil,
     `${ban.qator} qator, ${ban.xil} xil, ${ban.yuklandi} yuklandi`);
 
+  /* Og'riq nuqtasi: kalkulyatorda me'yor oshganda mutaxassis tugmasi narx
+     bilan, me'yor ichida bo'lsa yo'q; Telegram xabarida kalkulyator raqamlari. */
+  await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
+  await page.waitForTimeout(500);
+  await page.getByText('Bojxona kalkulyatori', { exact: false }).first().click();
+  await page.waitForTimeout(700);
+  await page.evaluate(() => { window.__opened = []; window.open = u => { window.__opened.push(u); return {}; }; });
+  /* Oldingi tekshiruvlar kalkulyatorda boshqa qiymat qoldirgan bo'lishi mumkin. */
+  await page.locator('main input[aria-label*="summa"]').first().fill('320');
+  await page.locator('main input[aria-label*="vazn"]').first().fill('2.5');
+  await page.waitForTimeout(300);
+  const ctaOver = page.locator('main button').filter({ hasText: /Hisobni tekshirtirish/ });
+  const ctaOverN = await ctaOver.count();
+  const ctaOverTxt = ctaOverN ? (await ctaOver.first().innerText()).replace(/\s+/g, ' ') : '';
+  if (ctaOverN) { await ctaOver.first().click(); await page.waitForTimeout(200); }
+  const ctaUrl = decodeURIComponent(await page.evaluate(() => (window.__opened || [])[0] || ''));
+  await page.locator('main input[aria-label*="summa"]').first().fill('150');
+  await page.waitForTimeout(300);
+  const ctaWithin = await page.locator('main button').filter({ hasText: /Hisobni tekshirtirish/ }).count();
+  check('kalkulyator: me\'yor oshganda mutaxassis tugmasi narx bilan',
+    ctaOverN === 1 && /so'm/.test(ctaOverTxt) && /t\.me\/.*Boj hisobini tekshirish.*so'm.*Kalkulyator: oyda \$320/s.test(ctaUrl) && ctaWithin === 0,
+    `${ctaOverTxt} · ichida: ${ctaWithin} · ${ctaUrl.slice(0, 90)}`);
+  await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
+  await page.waitForTimeout(500);
+  await page.getByText('Taqiqlangan tovarlar', { exact: false }).first().click();
+  await page.waitForTimeout(700);
+
   /* Motion-tushuntirish: taqiq bo'limida yo'q, me'yor bo'limida bor;
      bosilganda o'ynaydi, qadam nuqtasi ishlaydi, orqaga chiqilganda yopiladi. */
   const moTaqiq = await page.locator('main button').filter({ hasText: /Qanday ishlaydi/ }).count();
+  await page.locator('main button').filter({ hasText: /CHEKLANGAN/ }).first().click();
+  await page.waitForTimeout(300);
+  const banAmber = await page.locator('main button').filter({ hasText: /Qanday hujjat kerak\?/ }).count();
+  await page.locator('main button').filter({ hasText: /TAQIQLANGAN/ }).first().click();
+  await page.waitForTimeout(300);
+  const banRed = await page.locator('main button').filter({ hasText: /Qanday hujjat kerak\?/ }).count();
+  check('taqiqlar: cheklangan tovarda hujjat tugmasi, taqiqlanganda yo\'q', banAmber === 1 && banRed === 0, `${banAmber} / ${banRed}`);
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(500);
   await page.getByText('Bojsiz olib kirish', { exact: false }).first().click();

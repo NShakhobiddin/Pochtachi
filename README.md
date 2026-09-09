@@ -374,9 +374,44 @@ Bo'lim `CONTACT` bilan boshqariladi. `tg` yoki `phone` bo'sh bo'lsa
 har bir tugma ogohlantirishga olib borishi o'rniga. Narxlar `SERVICES`
 dagi `price` maydonida; boshqa joyda takrorlanmaydi.
 
-Kirish nuqtalari ikkita: bosh sahifadagi "Mutaxassis yordami" kartochkasi
-va Bojxona bo'limidagi "Mutaxassis konsultatsiyasi". Har bir xizmatning
-"Bog'lanish" tugmasi Telegramni ochadi va xabar matnini oldindan yozadi.
+**Belgilangan narx.** Xaridor xizmatlari "kelishilgan holda" emas, aniq
+narx bilan (40 000 dan 300 000 so'mgacha; tashkilotlar uchun shartnoma va
+oylik joylashish ham belgilangan, qolganlari loyiha bo'yicha). Narx
+`price` maydonida raqam bo'lsa u Telegram xabariga ham qo'shiladi
+(`contactAbout`): "«Boj hisobini tekshirish» xizmati (60 000 so'm)
+bo'yicha yozmoqchiman" — ikki tomon ham bir xil raqamni ko'radi.
+Narxni o'zgartirish: faqat `SERVICES[].price`.
+
+**Og'riq nuqtalaridagi tugmalar** (`askSvc(icon, ctx)`, narx tugmaning
+o'zida, xabarga holat qo'shiladi, `HAS_CONTACT` bo'lmasa ko'rinmaydi):
+
+- Kalkulyator, me'yor oshganda — "Hisobni tekshirtirish" (xabarda summa,
+  vazn, yetkazish va hisob);
+- Kuzatuv, reja 20 kundan ortiq yo'lda bo'lsa — "N kun — ushlanib
+  qoldimi?" (xabarda jo'natma, kuryer, trek, kunlar; `planAgeDays`);
+- Taqiqlangan tovarlar, cheklangan (sariq) tovar ochilganda — "Qanday
+  hujjat kerak?" (xabarda tovar nomi);
+- Rasmiylashtirish tartibi, "qachon ushlab qolinadi" ro'yxati ostida —
+  "Mutaxassis yordami".
+
+Kirish nuqtalari bundan tashqari: bosh sahifadagi "Mutaxassis yordami"
+kartochkasi va Bojxona bo'limidagi "Mutaxassis konsultatsiyasi". Har bir
+murojaat `metrics.hit('svcAsk', xizmat)` bilan sanaladi.
+
+## Hamkorlik havolalari
+
+`AFF` obyekti (`const AFF = { id: 'https://…' }`): do'kon id ga hamkorlik
+(affiliate) havolasi yozilsa "Saytga o'tish" va do'kon kartasidagi havola
+shu manzilga o'tadi (`storeHref`), kartada "hamkorlik havolasi" belgisi,
+sozlamalarda oshkoralik matni chiqadi (`HAS_AFF`). Bo'sh qoldirilgan
+do'konda oddiy `url` ishlaydi. Narx foydalanuvchi uchun o'zgarmaydi.
+
+Havolani qayerdan olish: AliExpress — AliExpress Portals yoki Admitad /
+ePN; eBay — eBay Partner Network; Trendyol, Farfetch, ASOS, iHerb — Admitad
+kabi tarmoqlar orqali; Amazon Associates O'zbekiston uchun cheklangan,
+alohida tekshiring. Tarmoq bergan havolani `AFF` ga qo'ying, `npm run
+build`. `tools/check-links.mjs` do'konning asl `url` ini tekshiradi,
+hamkorlik havolasini emas.
 
 ## Brend logotipi
 
