@@ -1436,22 +1436,41 @@ try {
   const moSub = moBor ? (await moKarta.first().innerText()).replace(/\s+/g, ' ') : '';
   if (moBor) { await moKarta.first().click(); await page.waitForTimeout(600); }
   const moBosh = await page.evaluate(() => ({
-    qadam: (document.querySelector('main').innerText.match(/(\d) \/ 5/) || [])[1],
+    qadam: (document.querySelector('main').innerText.match(/(\d+) \/ 11/) || [])[1],
     sahna: document.querySelectorAll('main svg .mo-pop, main svg .mo-in').length,
-    izoh: /bitta hisobga qo'shiladi/.test(document.querySelector('main').innerText)
+    sarlavha: /Oyiga \$200 bojsiz/.test(document.querySelector('main').innerText),
+    izoh: /har bir qabul qiluvchi uchun alohida/.test(document.querySelector('main').innerText),
+    /* Segmentli vaqt chizig'i tor ekranga sig'adi (11 nuqta sig'mas edi) */
+    sigadi: (() => { const b = document.querySelector('main button[aria-label="1-qadam"]'); const r = b.parentElement.parentElement; return r.scrollWidth <= r.clientWidth; })()
   }));
   await page.locator('main button[aria-label="4-qadam"]').first().click().catch(() => {});
   await page.waitForTimeout(400);
-  const moTort = await page.evaluate(() => (document.querySelector('main').innerText.match(/(\d) \/ 5/) || [])[1]);
+  const moTort = await page.evaluate(() => (document.querySelector('main').innerText.match(/(\d+) \/ 11/) || [])[1]);
+  /* Yagona to'lov bo'limida so'mdagi raqamlar kalkulyator formulasidan:
+     BHM ning 25% yig'imi izohda ham, sahnada (HTML qatlam) ham bir xil. */
+  await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
+  await page.waitForTimeout(500);
+  await page.getByText('Yagona bojxona', { exact: false }).first().click();
+  await page.waitForTimeout(600);
+  await page.locator('main button').filter({ hasText: /Qanday ishlaydi/ }).first().click();
+  await page.waitForTimeout(400);
+  await page.locator('main button[aria-label="8-qadam"]').first().click().catch(() => {});
+  await page.waitForTimeout(400);
+  const moYigim = await page.evaluate(() => {
+    const t = document.querySelector('main').innerText;
+    const izoh = (t.match(/25% i = ([\d ]+) so'm/) || [])[1];
+    const qatlam = [...document.querySelectorAll('main span')].map(x => x.textContent.trim()).filter(x => x === izoh).length;
+    return { izoh, qatlam };
+  });
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(500);
   await page.getByText('Bojsiz olib kirish', { exact: false }).first().click();
   await page.waitForTimeout(600);
   const moYopiq = await page.locator('main button').filter({ hasText: /Qanday ishlaydi/ }).count();
   check('bojxona motion-tushuntirish: karta, o\'yin, qadam, yopilish',
-    moTaqiq === 0 && moBor === 1 && /20 soniya · 5 qadam/.test(moSub) && moBosh.qadam === '1' && moBosh.sahna > 0 &&
-    moBosh.izoh && moTort === '4' && moYopiq === 1,
-    JSON.stringify({ moTaqiq, moBor, moSub, moBosh, moTort, moYopiq }));
+    moTaqiq === 0 && moBor === 1 && /≈ 1,5 daqiqa · 11 qadam/.test(moSub) && moBosh.qadam === '1' && moBosh.sahna > 0 &&
+    moBosh.sarlavha && moBosh.izoh && moBosh.sigadi && moTort === '4' && moYigim.izoh === '110 000' && moYigim.qatlam >= 1 && moYopiq === 1,
+    JSON.stringify({ moTaqiq, moBor, moSub, moBosh, moTort, moYigim, moYopiq }));
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(500);
   await page.getByText('Taqiqlangan tovarlar', { exact: false }).first().click();

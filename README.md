@@ -202,17 +202,27 @@ summani qo'yib, kalkulyatorning o'zini ochadi.
 
 ## Motion-tushuntirishlar (bojxona)
 
-Uch bo'lim tepasida "Qanday ishlaydi · 20 soniya · 5 qadam" kartasi:
-Bojsiz me'yor, Yagona bojxona to'lovi, Rasmiylashtirish tartibi. Bosilganda
-5 qadamlik SVG/CSS animatsiya o'ynaydi (har qadam `MO_STEP_MS` = 4 s):
-pauza, qadam nuqtalari, qayta ko'rish, yopish. Sahnalar shablonda
-(`moScene.mNsK`, har sahna o'z `<svg>` ida, `sc-if` svg tashqarisida),
-sarlavhalar `MOTION[bo'lim].caps` da va ruscha lug'atda; SVG ichidagi
-so'zlar ham lug'at orqali tarjima qilinadi. Animatsiya sinflari `.mo-*`
-(`mo-in`, `mo-pop`, `mo-grow`, `mo-rise`, `mo-drive`, `mo-ring`, `mo-tap`),
+Uch bo'lim tepasida "Qanday ishlaydi · ≈ 1,5 daqiqa · 11 qadam" kartasi:
+Bojsiz me'yor, Yagona bojxona to'lovi, Rasmiylashtirish tartibi. Har qadamda
+sarlavha va batafsil izoh (`MOTION[bo'lim].steps[].t/.c`), qadam davomiyligi
+matn uzunligiga qarab `moMs()` bilan 4,5–8,5 s (bo'lim ≈ 70–90 s). Pastda
+segmentli vaqt chizig'i: har segment bosiladigan qadam, joriy segment qadam
+davomiyligida to'ladi (`mo-bar-a/b` — nom almashib animatsiya qaytadan
+boshlanadi). Oxirida harakat tugmasi (`MO_CTA`): kalkulyator yoki bojxona
+organlari.
+
+Sahnalar shablonda (`moScene.mNsK`, har sahna o'z `<svg>` ida, 360×200,
+markazda qat'iy o'lchamda). So'mdagi raqamlar (BHM, yig'im, kurs, boj, jami)
+`moExample()` dan — kalkulyator bilan bir xil formula, `normsAt()` va
+`USD_RATE` dan tirik. SVG `<text>` ichida shablon o'rinbosari ko'rinmaydi
+(u `<span>` ga o'raladi), shuning uchun tirik raqamlar sahna ustidagi HTML
+qatlamida, o'sha koordinata va animatsiya sinfi bilan, kegl shkalasida.
+Izohlardagi raqamlar `{0}` o'rinbosari va `steps[].v(ex)` orqali. Ruscha
+lug'atda sarlavha, izoh va SVG so'zlari; animatsiya sinflari `.mo-*`,
 harakatni kamaytirish rejimida kechikishsiz statik kadr. Ekran yoki bo'lim
-almashganda to'xtaydi. Video fayl yo'q: hammasi index.html ichida (~45 KB),
-oflayn ishlaydi, shuning uchun index.html chegarasi 560 → 640 KB.
+almashganda to'xtaydi. Video fayl yo'q: hammasi index.html ichida (~100 KB,
+gzip bilan ~25 KB), oflayn ishlaydi, shuning uchun index.html chegarasi
+640 → 680 KB.
 
 ### Qo'llanmalarda
 

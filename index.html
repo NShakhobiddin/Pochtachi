@@ -422,6 +422,9 @@
   @keyframes mo-out { from { opacity:0; transform:translateX(-30px) } 40% { opacity:1; transform:none } to { opacity:1; transform:translateX(40px) } }
   @keyframes mo-ring { from { opacity:.8; transform:scale(.5) } to { opacity:0; transform:scale(1.6) } }
   @keyframes mo-tap { 0% { opacity:0; transform:scale(.4) } 50% { opacity:1; transform:scale(1) } 100% { opacity:0; transform:scale(1.5) } }
+  /* Qadam vaqt chizig'i: ikki nom bir xil, faqat almashish uchun. */
+  @keyframes mo-bar-a { from { width:0 } to { width:100% } }
+  @keyframes mo-bar-b { from { width:0 } to { width:100% } }
   .mo-in, .mo-pop, .mo-grow, .mo-shrink, .mo-rise, .mo-drive, .mo-out, .mo-ring, .mo-tap { transform-box:fill-box; animation-fill-mode:both; animation-timing-function:cubic-bezier(.22,.9,.3,1) }
   .mo-in { animation-name:mo-in; animation-duration:.5s }
   .mo-pop { animation-name:mo-pop; animation-duration:.45s }
@@ -1681,7 +1684,10 @@
     <div style="display:flex;flex-direction:column;gap:16px">
       <!-- ===== Motion-tushuntirish: bo'lim tepasidagi "Qanday ishlaydi" =====
            Uch bo'lim (bojsiz me'yor, yagona to'lov, rasmiylashtirish tartibi)
-           uchun 5 qadamlik SVG/CSS animatsiya. Har sahna o'z <svg> ida:
+           uchun 11 qadamlik SVG/CSS animatsiya (sarlavha + batafsil izoh,
+           qadam davomiyligi matn uzunligiga qarab, vaqt chizig'i, oxirida
+           harakat tugmasi). So'mdagi raqamlar moEx orqali normsAt() va
+           USD_RATE dan olinadi — kalkulyator bilan bir xil chiqadi. Har sahna o'z <svg> ida:
            sc-if svg ichida emas, tashqarisida turadi. Harakatni kamaytirish
            yoqilgan bo'lsa sahnalar statik kadr bo'lib qoladi (umumiy CSS). -->
       <sc-if value="{{ moHas }}" hint-placeholder-val="{{ false }}">
@@ -1703,7 +1709,10 @@
 
               <!-- M0 · Bojsiz me'yor -->
               <sc-if value="{{ moScene.m0s0 }}" hint-placeholder-val="{{ true }}">
-                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;inset:0;width:100%;height:100%">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-pop"><rect x="48" y="60" width="92" height="80" rx="15" fill="#FDF3E3" stroke="#B45309" stroke-width="2"></rect><path d="M48 100h92M94 60v80" stroke="#B45309" stroke-width="2" opacity=".4"></path></g><g class="mo-in" style="animation-delay:0.6s"><rect x="164" y="56" width="152" height="88" rx="16" fill="#1A1FB0"></rect><text x="240" y="98" text-anchor="middle" font-size="26" font-weight="800" fill="#FFFFFF">$200</text><text x="240" y="124" text-anchor="middle" font-size="11" font-weight="700" fill="#DCDDFA">oyiga · bojsiz</text></g><g class="mo-pop" style="animation-delay:1.6s"><circle cx="164" cy="56" r="14" fill="#E9F8EF"></circle><path d="M157 56l4.84615 4.84615 9.15385-9.69231" fill="none" stroke="#0F7B3E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></g><text class="mo-in" style="animation-delay:2.2s" x="180" y="178" text-anchor="middle" font-size="12" font-weight="600" fill="#6B6C85">har bir qabul qiluvchi uchun</text></svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m0s1 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px">
                   <rect class="mo-in" x="40" y="26" width="280" height="150" rx="16" fill="#FFFFFF" stroke="#E3E4EE"></rect>
                   <rect class="mo-in" x="40" y="26" width="280" height="34" rx="16" fill="#1A1FB0"></rect>
                   <rect class="mo-in" x="40" y="44" width="280" height="16" fill="#1A1FB0"></rect>
@@ -1719,8 +1728,11 @@
                   <g class="mo-pop" style="animation-delay:2.3s"><rect x="96" y="142" width="30" height="24" rx="7" fill="#E9EAFD" stroke="#1A1FB0" stroke-width="2"></rect><text x="111" y="159" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1FB0">$60</text></g>
                 </svg>
               </sc-if>
-              <sc-if value="{{ moScene.m0s1 }}" hint-placeholder-val="{{ false }}">
-                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;inset:0;width:100%;height:100%">
+              <sc-if value="{{ moScene.m0s2 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-pop"><rect x="56" y="30" width="56" height="44" rx="9" fill="#E9EAFD" stroke="#1A1FB0" stroke-width="2"></rect><path d="M56 52h56M84 30v44" stroke="#1A1FB0" stroke-width="2" opacity=".4"></path></g><text class="mo-in" style="animation-delay:0.2s" x="84" y="94" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">Kuryer</text><path class="mo-in" style="animation-delay:1.4s" d="M84 102v16" stroke="#A6A7BC" stroke-width="2.2" stroke-linecap="round"></path><g class="mo-pop" style="animation-delay:0.4s"><rect x="152" y="30" width="56" height="44" rx="9" fill="#FDF3E3" stroke="#B45309" stroke-width="2"></rect><path d="M152 52h56M180 30v44" stroke="#B45309" stroke-width="2" opacity=".4"></path></g><text class="mo-in" style="animation-delay:0.6000000000000001s" x="180" y="94" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">Pochta</text><path class="mo-in" style="animation-delay:1.4s" d="M180 102v16" stroke="#A6A7BC" stroke-width="2.2" stroke-linecap="round"></path><g class="mo-pop" style="animation-delay:0.8s"><rect x="248" y="30" width="56" height="44" rx="9" fill="#E9EAFD" stroke="#1A1FB0" stroke-width="2"></rect><path d="M248 52h56M276 30v44" stroke="#1A1FB0" stroke-width="2" opacity=".4"></path></g><text class="mo-in" style="animation-delay:1.0s" x="276" y="94" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">Kuryer</text><path class="mo-in" style="animation-delay:1.4s" d="M276 102v16" stroke="#A6A7BC" stroke-width="2.2" stroke-linecap="round"></path><rect x="40" y="128" width="280" height="22" rx="11" fill="#E3E4EE"></rect><rect class="mo-grow" style="animation-delay:1.8s" x="40" y="128" width="200" height="22" rx="11" fill="#1A1FB0"></rect><line x1="320" y1="120" x2="320" y2="158" stroke="#131429" stroke-width="2" stroke-dasharray="3 3"></line><text x="320" y="176" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">$200</text><text class="mo-in" style="animation-delay:2.6s" x="140" y="176" text-anchor="middle" font-size="12" font-weight="700" fill="#1A1FB0">bitta hisob</text></svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m0s3 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px">
                   <g class="mo-in"><rect x="40" y="46" width="70" height="30" rx="10" fill="#E9EAFD"></rect><text x="75" y="66" text-anchor="middle" font-size="13" font-weight="700" fill="#1A1FB0">$50</text></g>
                   <text class="mo-in" style="animation-delay:.4s" x="122" y="66" text-anchor="middle" font-size="16" font-weight="700" fill="#6B6C85">+</text>
                   <g class="mo-in" style="animation-delay:.6s"><rect x="134" y="46" width="70" height="30" rx="10" fill="#E9EAFD"></rect><text x="169" y="66" text-anchor="middle" font-size="13" font-weight="700" fill="#1A1FB0">$70</text></g>
@@ -1733,8 +1745,8 @@
                   <g class="mo-pop" style="animation-delay:2.6s"><text x="180" y="163" text-anchor="middle" font-size="15" font-weight="800" fill="#0F7B3E">$180</text><circle cx="222" cy="158" r="9" fill="#E9F8EF"></circle><path d="M217.5 158l3 3 5.5-6" fill="none" stroke="#0F7B3E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></g>
                 </svg>
               </sc-if>
-              <sc-if value="{{ moScene.m0s2 }}" hint-placeholder-val="{{ false }}">
-                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;inset:0;width:100%;height:100%">
+              <sc-if value="{{ moScene.m0s4 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px">
                   <g class="mo-pop"><rect x="145" y="30" width="70" height="34" rx="10" fill="#FDF3E3" stroke="#B45309" stroke-width="2"></rect><text x="180" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="#B45309">+$40</text></g>
                   <path class="mo-in" style="animation-delay:.6s" d="M180 68v22" stroke="#B45309" stroke-width="2.2" stroke-linecap="round"></path>
                   <rect x="40" y="112" width="280" height="22" rx="11" fill="#E3E4EE"></rect>
@@ -1746,16 +1758,28 @@
                   <g class="mo-pop" style="animation-delay:2.4s"><rect x="286" y="150" width="60" height="26" rx="8" fill="#FCEAEA"></rect><text x="316" y="168" text-anchor="middle" font-size="12" font-weight="700" fill="#B42318">+$20</text></g>
                 </svg>
               </sc-if>
-              <sc-if value="{{ moScene.m0s3 }}" hint-placeholder-val="{{ false }}">
-                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;inset:0;width:100%;height:100%">
+              <sc-if value="{{ moScene.m0s5 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px">
                   <text class="mo-in" x="180" y="52" text-anchor="middle" font-size="26" font-weight="800" fill="#131429">$220</text>
                   <path class="mo-in" style="animation-delay:.5s" d="M150 64l-60 34M210 64l60 34" fill="none" stroke="#A6A7BC" stroke-width="2" stroke-linecap="round"></path>
                   <g class="mo-in" style="animation-delay:1s"><rect x="40" y="104" width="120" height="60" rx="14" fill="#F1F1F8"></rect><text x="100" y="130" text-anchor="middle" font-size="18" font-weight="800" fill="#6B6C85">$200</text><text x="100" y="152" text-anchor="middle" font-size="11" font-weight="600" fill="#6B6C85">bojsiz</text></g>
                   <g class="mo-pop" style="animation-delay:1.7s"><rect x="200" y="104" width="120" height="60" rx="14" fill="#FCEAEA" stroke="#B42318" stroke-width="2"></rect><text x="260" y="130" text-anchor="middle" font-size="18" font-weight="800" fill="#B42318">$20</text><text x="260" y="152" text-anchor="middle" font-size="11" font-weight="600" fill="#B42318">boj shundan</text></g>
                 </svg>
               </sc-if>
-              <sc-if value="{{ moScene.m0s4 }}" hint-placeholder-val="{{ false }}">
-                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;inset:0;width:100%;height:100%">
+              <sc-if value="{{ moScene.m0s6 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-in"><rect x="145" y="18" width="70" height="30" rx="10" fill="#E9EAFD"></rect><text x="180" y="38" text-anchor="middle" font-size="13" font-weight="700" fill="#1A1FB0">$300</text></g><path class="mo-in" style="animation-delay:0.5s" d="M168 54l-58 26M192 54l58 26" fill="none" stroke="#A6A7BC" stroke-width="2" stroke-linecap="round"></path><g class="mo-pop" style="animation-delay:0.9s"><rect x="60" y="84" width="70" height="30" rx="10" fill="#E9EAFD" stroke="#1A1FB0" stroke-width="2"></rect><text x="95" y="104" text-anchor="middle" font-size="13" font-weight="700" fill="#1A1FB0">$150</text></g><g class="mo-pop" style="animation-delay:1.1s"><rect x="230" y="84" width="70" height="30" rx="10" fill="#E9EAFD" stroke="#1A1FB0" stroke-width="2"></rect><text x="265" y="104" text-anchor="middle" font-size="13" font-weight="700" fill="#1A1FB0">$150</text></g><path class="mo-in" style="animation-delay:1.5s" d="M95 118v14M265 118v14" stroke="#A6A7BC" stroke-width="2.2" stroke-linecap="round"></path><rect x="40" y="138" width="280" height="22" rx="11" fill="#E3E4EE"></rect><rect class="mo-grow" style="animation-delay:1.8s" x="40" y="138" width="252" height="22" rx="11" fill="#1A1FB0"></rect><rect class="mo-grow" style="animation-delay:2.5s" x="292" y="138" width="52" height="22" rx="11" fill="#B42318"></rect><line x1="320" y1="130" x2="320" y2="168" stroke="#131429" stroke-width="2" stroke-dasharray="3 3"></line><text x="320" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">$200</text><g class="mo-pop" style="animation-delay:3.0s"><rect x="226" y="168" width="60" height="24" rx="8" fill="#FCEAEA"></rect><text x="256" y="185" text-anchor="middle" font-size="12" font-weight="700" fill="#B42318">+$100</text></g></svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m0s7 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-in"><rect x="70" y="50" width="44" height="76" rx="10" fill="#131429"></rect><rect x="76" y="58" width="32" height="60" rx="6" fill="#FFFFFF"></rect></g><g class="mo-pop" style="animation-delay:0.6s"><circle cx="114" cy="50" r="12" fill="#E9F8EF"></circle><path d="M108 50l4.15385 4.15385 7.84615-8.30769" fill="none" stroke="#0F7B3E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></g><text class="mo-in" style="animation-delay:0.8s" x="92" y="158" text-anchor="middle" font-size="11" font-weight="700" fill="#0F7B3E">shaxsiy · 1 ta</text><g class="mo-in" style="animation-delay:1.0s"><rect x="196" y="50" width="18" height="32" rx="4" fill="#E3E4EE" stroke="#A6A7BC" stroke-width="2"></rect><rect x="222" y="50" width="18" height="32" rx="4" fill="#E3E4EE" stroke="#A6A7BC" stroke-width="2"></rect><rect x="248" y="50" width="18" height="32" rx="4" fill="#E3E4EE" stroke="#A6A7BC" stroke-width="2"></rect><rect x="274" y="50" width="18" height="32" rx="4" fill="#E3E4EE" stroke="#A6A7BC" stroke-width="2"></rect><rect x="300" y="50" width="18" height="32" rx="4" fill="#E3E4EE" stroke="#A6A7BC" stroke-width="2"></rect><rect x="196" y="90" width="18" height="32" rx="4" fill="#E3E4EE" stroke="#A6A7BC" stroke-width="2"></rect><rect x="222" y="90" width="18" height="32" rx="4" fill="#E3E4EE" stroke="#A6A7BC" stroke-width="2"></rect><rect x="248" y="90" width="18" height="32" rx="4" fill="#E3E4EE" stroke="#A6A7BC" stroke-width="2"></rect><rect x="274" y="90" width="18" height="32" rx="4" fill="#E3E4EE" stroke="#A6A7BC" stroke-width="2"></rect><rect x="300" y="90" width="18" height="32" rx="4" fill="#E3E4EE" stroke="#A6A7BC" stroke-width="2"></rect></g><g class="mo-pop" style="animation-delay:1.8s"><circle cx="318" cy="50" r="12" fill="#B42318"></circle><text x="318" y="55" text-anchor="middle" font-size="14" font-weight="800" fill="#FFFFFF">!</text></g><text class="mo-in" style="animation-delay:2.2s" x="248" y="158" text-anchor="middle" font-size="11" font-weight="700" fill="#B42318">tijorat? · 10 ta</text><text class="mo-in" style="animation-delay:2.8s" x="180" y="186" text-anchor="middle" font-size="11" font-weight="600" fill="#6B6C85">bir xil tovar ko'p bo'lsa</text></svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m0s8 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-in"><rect x="100" y="18" width="160" height="140" rx="12" fill="#FFFFFF" stroke="#E3E4EE" stroke-width="2"></rect><rect x="116" y="38" width="80" height="6" rx="3" fill="#E3E4EE"></rect><rect x="116" y="52" width="60" height="6" rx="3" fill="#E3E4EE"></rect><rect x="116" y="66" width="90" height="6" rx="3" fill="#E3E4EE"></rect><line x1="116" y1="92" x2="244" y2="92" stroke="#E3E4EE" stroke-width="2" stroke-dasharray="4 4"></line><text x="116" y="118" font-size="11" font-weight="600" fill="#6B6C85">Jami</text><text x="244" y="118" text-anchor="end" font-size="14" font-weight="800" fill="#131429">$120</text></g><g class="mo-pop" style="animation-delay:1.2s"><circle cx="236" cy="112" r="22" fill="none" stroke="#1A1FB0" stroke-width="3"></circle><path d="M252 128l16 16" stroke="#1A1FB0" stroke-width="4" stroke-linecap="round"></path></g><text class="mo-in" style="animation-delay:2.2s" x="180" y="184" text-anchor="middle" font-size="12" font-weight="600" fill="#6B6C85">chek yoki invoys · saqlab qo'ying</text></svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m0s9 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-in"><rect x="116" y="14" width="128" height="172" rx="18" fill="#131429"></rect><rect x="124" y="28" width="112" height="144" rx="12" fill="#FFFFFF"></rect><rect x="166" y="20" width="28" height="4" rx="2" fill="#4E4F6B"></rect></g><g class="mo-in" style="animation-delay:0.5s"><rect x="132" y="40" width="96" height="22" rx="6" fill="#F1F1F8"></rect><text x="140" y="55" font-size="11" font-weight="700" fill="#131429">$50</text><rect x="186" y="47" width="34" height="8" rx="4" fill="#E3E4EE"></rect></g><g class="mo-in" style="animation-delay:0.9s"><rect x="132" y="70" width="96" height="22" rx="6" fill="#F1F1F8"></rect><text x="140" y="85" font-size="11" font-weight="700" fill="#131429">$70</text><rect x="186" y="77" width="34" height="8" rx="4" fill="#E3E4EE"></rect></g><g class="mo-in" style="animation-delay:1.3s"><rect x="132" y="100" width="96" height="22" rx="6" fill="#F1F1F8"></rect><text x="140" y="115" font-size="11" font-weight="700" fill="#131429">$60</text><rect x="186" y="107" width="34" height="8" rx="4" fill="#E3E4EE"></rect></g><g class="mo-pop" style="animation-delay:2.0s"><rect x="132" y="134" width="96" height="26" rx="8" fill="#E9EAFD"></rect><text x="180" y="151" text-anchor="middle" font-size="11" font-weight="800" fill="#1A1FB0">$180 / $200</text></g><text class="mo-in" style="animation-delay:0.3s" x="56" y="100" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">my.gov.uz</text><text class="mo-in" style="animation-delay:0.3s" x="304" y="100" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">YIDXP</text></svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m0s10 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px">
                   <g class="mo-in"><rect x="40" y="30" width="130" height="44" rx="12" fill="#F1F1F8"></rect><text x="105" y="57" text-anchor="middle" font-size="13" font-weight="700" fill="#A6A7BC">Sentabr · $220</text></g>
                   <path class="mo-in" style="animation-delay:.5s" d="M178 52h24" stroke="#A6A7BC" stroke-width="2.2" stroke-linecap="round"></path><path class="mo-in" style="animation-delay:.5s" d="M196 46l7 6-7 6" fill="none" stroke="#A6A7BC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
                   <g class="mo-pop" style="animation-delay:.9s"><rect x="212" y="30" width="108" height="44" rx="12" fill="#1A1FB0"></rect><text x="266" y="57" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">1 oktabr</text></g>
@@ -1767,7 +1791,13 @@
 
               <!-- M1 · Yagona bojxona to'lovi -->
               <sc-if value="{{ moScene.m1s0 }}" hint-placeholder-val="{{ false }}">
-                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;inset:0;width:100%;height:100%">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><rect x="40" y="86" width="280" height="26" rx="13" fill="#E3E4EE"></rect><rect class="mo-grow" x="40" y="86" width="200" height="26" rx="13" fill="#1A1FB0"></rect><rect class="mo-grow" style="animation-delay:1.0s" x="240" y="86" width="80" height="26" rx="13" fill="#B42318"></rect><line x1="240" y1="76" x2="240" y2="122" stroke="#131429" stroke-width="2" stroke-dasharray="3 3"></line><text x="240" y="140" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">$200</text><text class="mo-in" style="animation-delay:1.6s" x="140" y="140" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1FB0">bojsiz</text><text class="mo-in" style="animation-delay:2.0s" x="294" y="140" text-anchor="middle" font-size="11" font-weight="700" fill="#B42318">boj shundan</text><text class="mo-in" style="animation-delay:0.6s" x="120" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#0F7B3E">to'lov yo'q</text><g class="mo-pop" style="animation-delay:0.8s"><circle cx="176" cy="56" r="11" fill="#E9F8EF"></circle><path d="M170.5 56l3.80769 3.80769 7.19231-7.61538" fill="none" stroke="#0F7B3E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></g><text class="mo-in" style="animation-delay:2.2s" x="280" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#B42318">to'lov</text><text class="mo-in" style="animation-delay:2.8s" x="180" y="176" text-anchor="middle" font-size="12" font-weight="600" fill="#6B6C85">faqat ortiqcha qismdan</text></svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m1s1 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-pop"><rect x="44" y="60" width="92" height="80" rx="15" fill="#FDF3E3" stroke="#B45309" stroke-width="2"></rect><path d="M44 100h92M90 60v80" stroke="#B45309" stroke-width="2" opacity=".4"></path></g><g class="mo-pop" style="animation-delay:0.6s"><rect x="160" y="44" width="152" height="34" rx="10" fill="#FFFFFF" stroke="#E3E4EE" stroke-width="2"></rect><text x="236" y="66" text-anchor="middle" font-size="13" font-weight="700" fill="#131429">tovar · $320</text></g><g class="mo-pop" style="animation-delay:1.1s"><rect x="160" y="86" width="152" height="34" rx="10" fill="#FFFFFF" stroke="#E3E4EE" stroke-width="2"></rect><text x="236" y="108" text-anchor="middle" font-size="13" font-weight="700" fill="#131429">vazn · 2,5 kg</text></g><g class="mo-pop" style="animation-delay:1.6s"><rect x="160" y="128" width="152" height="34" rx="10" fill="#FFFFFF" stroke="#E3E4EE" stroke-width="2"></rect><text x="236" y="150" text-anchor="middle" font-size="13" font-weight="700" fill="#131429">yetkazish · $9 / kg</text></g></svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m1s2 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px">
                   <g class="mo-in"><rect x="44" y="60" width="92" height="80" rx="16" fill="#E9EAFD" stroke="#1A1FB0" stroke-width="2"></rect><path d="M44 88h92M90 60v80" stroke="#1A1FB0" stroke-width="2" opacity=".35"></path></g>
                   <g class="mo-pop" style="animation-delay:.5s"><rect x="150" y="56" width="80" height="32" rx="10" fill="#FFFFFF" stroke="#E3E4EE"></rect><text x="190" y="77" text-anchor="middle" font-size="14" font-weight="800" fill="#131429">$320</text></g>
                   <g class="mo-pop" style="animation-delay:.9s"><rect x="150" y="100" width="80" height="32" rx="10" fill="#FFFFFF" stroke="#E3E4EE"></rect><text x="190" y="121" text-anchor="middle" font-size="14" font-weight="800" fill="#131429">2,5 kg</text></g>
@@ -1775,8 +1805,8 @@
                   <g class="mo-pop" style="animation-delay:2.3s"><rect x="248" y="100" width="84" height="32" rx="10" fill="#FCEAEA"></rect><text x="290" y="121" text-anchor="middle" font-size="14" font-weight="800" fill="#B42318">$120</text></g>
                 </svg>
               </sc-if>
-              <sc-if value="{{ moScene.m1s1 }}" hint-placeholder-val="{{ false }}">
-                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;inset:0;width:100%;height:100%">
+              <sc-if value="{{ moScene.m1s3 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px">
                   <text class="mo-in" x="40" y="58" font-size="13" font-weight="700" fill="#6B6C85">2,5 kg</text>
                   <text class="mo-in" x="320" y="58" text-anchor="end" font-size="13" font-weight="700" fill="#6B6C85">120 / 320</text>
                   <rect class="mo-in" x="40" y="74" width="280" height="30" rx="12" fill="#E3E4EE"></rect>
@@ -1785,8 +1815,8 @@
                   <g class="mo-in" style="animation-delay:2.2s"><rect x="196" y="126" width="124" height="40" rx="12" fill="#F1F1F8"></rect><text x="258" y="151" text-anchor="middle" font-size="13" font-weight="700" fill="#6B6C85">1,6 kg bojsiz</text></g>
                 </svg>
               </sc-if>
-              <sc-if value="{{ moScene.m1s2 }}" hint-placeholder-val="{{ false }}">
-                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;inset:0;width:100%;height:100%">
+              <sc-if value="{{ moScene.m1s4 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px">
                   <g class="mo-in"><rect x="40" y="70" width="84" height="44" rx="12" fill="#FCEAEA"></rect><text x="82" y="97" text-anchor="middle" font-size="15" font-weight="800" fill="#B42318">$120</text></g>
                   <text class="mo-in" style="animation-delay:.5s" x="138" y="97" text-anchor="middle" font-size="18" font-weight="700" fill="#6B6C85">+</text>
                   <g class="mo-in" style="animation-delay:.8s"><rect x="152" y="70" width="104" height="44" rx="12" fill="#FDF3E3"></rect><text x="204" y="88" text-anchor="middle" font-size="11" font-weight="700" fill="#B45309">0,9 kg × $9</text><text x="204" y="105" text-anchor="middle" font-size="13" font-weight="800" fill="#B45309">= $8</text></g>
@@ -1795,11 +1825,11 @@
                   <text class="mo-in" style="animation-delay:2.6s" x="180" y="150" text-anchor="middle" font-size="12" font-weight="600" fill="#6B6C85">bojxona qiymati</text>
                 </svg>
               </sc-if>
-              <sc-if value="{{ moScene.m1s3 }}" hint-placeholder-val="{{ false }}">
-                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;inset:0;width:100%;height:100%">
+              <sc-if value="{{ moScene.m1s5 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px">
                   <line x1="40" y1="150" x2="320" y2="150" stroke="#E3E4EE" stroke-width="2"></line>
                   <rect class="mo-rise" style="animation-delay:.3s" x="80" y="40" width="80" height="110" rx="12" fill="#1A1FB0"></rect>
-                  <text class="mo-pop" style="animation-delay:1.2s" x="120" y="30" text-anchor="middle" font-size="15" font-weight="800" fill="#1A1FB0">$38</text>
+                  
                   <text x="120" y="172" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">30%</text>
                   <rect class="mo-rise" style="animation-delay:.8s" x="200" y="136" width="80" height="14" rx="7" fill="#A6A7BC"></rect>
                   <text class="mo-pop" style="animation-delay:1.6s" x="240" y="126" text-anchor="middle" font-size="15" font-weight="800" fill="#6B6C85">$3</text>
@@ -1807,26 +1837,41 @@
                   <g class="mo-pop" style="animation-delay:2.4s"><circle cx="160" cy="46" r="13" fill="#E9F8EF"></circle><path d="M153.5 46l4.5 4.5 8.5-9" fill="none" stroke="#0F7B3E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></g>
                 </svg>
               </sc-if>
-              <sc-if value="{{ moScene.m1s4 }}" hint-placeholder-val="{{ false }}">
-                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;inset:0;width:100%;height:100%">
+              <sc-if value="{{ moScene.m1s6 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><text class="mo-in" x="180" y="30" text-anchor="middle" font-size="12" font-weight="700" fill="#6B6C85">20 kg ortiqcha</text><line x1="40" y1="150" x2="320" y2="150" stroke="#E3E4EE" stroke-width="2"></line><rect class="mo-rise" style="animation-delay:0.3s" x="80" y="110" width="80" height="40" rx="8" fill="#A6A7BC"></rect><text class="mo-pop" style="animation-delay:1.0s" x="120" y="100" text-anchor="middle" font-size="15" font-weight="800" fill="#6B6C85">$24</text><text x="120" y="172" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">30%</text><rect class="mo-rise" style="animation-delay:0.8s" x="200" y="50" width="80" height="100" rx="12" fill="#1A1FB0"></rect><text class="mo-pop" style="animation-delay:1.4s" x="240" y="40" text-anchor="middle" font-size="15" font-weight="800" fill="#1A1FB0">$60</text><text x="240" y="172" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">$3 / kg</text><g class="mo-pop" style="animation-delay:2.2s"><circle cx="280" cy="56" r="13" fill="#E9F8EF"></circle><path d="M273.5 56l4.5 4.5 8.5-9" fill="none" stroke="#0F7B3E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m1s7 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-in"><rect x="32" y="60" width="116" height="80" rx="14" fill="#F1F1F8"></rect><text x="90" y="88" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">BHM</text></g><text class="mo-in" style="animation-delay:0.8s" x="180" y="104" text-anchor="middle" font-size="14" font-weight="700" fill="#6B6C85">× 25%</text><g class="mo-pop" style="animation-delay:1.6s"><rect x="212" y="60" width="116" height="80" rx="14" fill="#E9EAFD" stroke="#1A1FB0" stroke-width="2"></rect><text x="270" y="88" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1FB0">yig'im</text></g><text class="mo-in" style="animation-delay:2.4s" x="180" y="174" text-anchor="middle" font-size="12" font-weight="600" fill="#6B6C85">har rasmiylashtirish uchun bir xil</text></svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m1s8 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-in"><rect x="40" y="70" width="80" height="44" rx="12" fill="#FCEAEA"></rect></g><text class="mo-in" style="animation-delay:0.5s" x="138" y="97" text-anchor="middle" font-size="18" font-weight="700" fill="#6B6C85">×</text><g class="mo-in" style="animation-delay:0.8s"><rect x="152" y="70" width="90" height="44" rx="12" fill="#FFFFFF" stroke="#E3E4EE" stroke-width="2"></rect><text x="197" y="87" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">kurs</text></g><text class="mo-in" style="animation-delay:1.4s" x="256" y="97" text-anchor="middle" font-size="18" font-weight="700" fill="#6B6C85">=</text><g class="mo-pop" style="animation-delay:1.9s"><rect x="268" y="70" width="72" height="44" rx="12" fill="#1A1FB0"></rect><text x="304" y="106" text-anchor="middle" font-size="10" font-weight="700" fill="#DCDDFA">so'm</text></g><text class="mo-in" style="animation-delay:2.6s" x="180" y="150" text-anchor="middle" font-size="12" font-weight="600" fill="#6B6C85">Markaziy bank kursi bo'yicha</text></svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m1s9 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px">
                   <rect class="mo-in" x="70" y="22" width="220" height="156" rx="16" fill="#FFFFFF" stroke="#E3E4EE"></rect>
-                  <g class="mo-in" style="animation-delay:.5s"><text x="90" y="58" font-size="12" font-weight="600" fill="#6B6C85">Boj $38</text><text x="270" y="58" text-anchor="end" font-size="13" font-weight="700" fill="#131429">487 000</text></g>
-                  <g class="mo-in" style="animation-delay:1.1s"><text x="90" y="88" font-size="12" font-weight="600" fill="#6B6C85">Yig'im 25% BHM</text><text x="270" y="88" text-anchor="end" font-size="13" font-weight="700" fill="#131429">110 000</text></g>
+                  <g class="mo-in" style="animation-delay:.5s"><text x="90" y="58" font-size="12" font-weight="600" fill="#6B6C85">Boj</text></g>
+                  <g class="mo-in" style="animation-delay:1.1s"><text x="90" y="88" font-size="12" font-weight="600" fill="#6B6C85">Yig'im 25% BHM</text></g>
                   <line class="mo-in" style="animation-delay:1.5s" x1="90" y1="106" x2="270" y2="106" stroke="#E3E4EE" stroke-width="2" stroke-dasharray="4 4"></line>
-                  <g class="mo-pop" style="animation-delay:2s"><text x="90" y="146" font-size="13" font-weight="700" fill="#131429">Jami</text><text x="270" y="148" text-anchor="end" font-size="20" font-weight="800" fill="#1A1FB0">≈ 597 000</text></g>
+                  <g class="mo-pop" style="animation-delay:2s"><text x="90" y="146" font-size="13" font-weight="700" fill="#131429">Jami</text></g>
                 </svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m1s10 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-in"><rect x="60" y="16" width="240" height="168" rx="16" fill="#FFFFFF" stroke="#E3E4EE" stroke-width="2"></rect></g><g class="mo-in" style="animation-delay:0.4s"><rect x="76" y="34" width="208" height="28" rx="8" fill="#F1F1F8"></rect><text x="88" y="52" font-size="11" font-weight="600" fill="#6B6C85">Oy summasi</text><text x="272" y="52" text-anchor="end" font-size="12" font-weight="800" fill="#131429">$320</text></g><g class="mo-in" style="animation-delay:0.8s"><rect x="76" y="70" width="208" height="28" rx="8" fill="#F1F1F8"></rect><text x="88" y="88" font-size="11" font-weight="600" fill="#6B6C85">Vazn</text><text x="272" y="88" text-anchor="end" font-size="12" font-weight="800" fill="#131429">2,5 kg</text></g><g class="mo-in" style="animation-delay:1.2000000000000002s"><rect x="76" y="106" width="208" height="28" rx="8" fill="#F1F1F8"></rect><text x="88" y="124" font-size="11" font-weight="600" fill="#6B6C85">Yetkazish</text><text x="272" y="124" text-anchor="end" font-size="12" font-weight="800" fill="#131429">$9 / kg</text></g><g class="mo-pop" style="animation-delay:2.0s"><rect x="76" y="146" width="208" height="28" rx="10" fill="#1A1FB0"></rect><text x="226" y="165" font-size="12" font-weight="700" fill="#DCDDFA">so'm</text></g><circle class="mo-tap" style="animation-delay:2.6s" cx="180" cy="160" r="16" fill="rgba(255,255,255,.35)"></circle></svg>
               </sc-if>
 
               <!-- M3 · Rasmiylashtirish tartibi -->
               <sc-if value="{{ moScene.m3s0 }}" hint-placeholder-val="{{ false }}">
-                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;inset:0;width:100%;height:100%">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px">
                   <g class="mo-in"><rect x="214" y="58" width="110" height="96" rx="14" fill="#E9EAFD" stroke="#1A1FB0" stroke-width="2"></rect><rect x="254" y="112" width="30" height="42" rx="6" fill="#1A1FB0"></rect><rect x="228" y="74" width="20" height="16" rx="4" fill="#FFFFFF"></rect><rect x="258" y="74" width="20" height="16" rx="4" fill="#FFFFFF"></rect><rect x="288" y="74" width="20" height="16" rx="4" fill="#FFFFFF"></rect><text x="269" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#1A1FB0">Bojxona</text></g>
                   <g class="mo-drive"><rect x="30" y="104" width="86" height="44" rx="10" fill="#1A1FB0"></rect><rect x="116" y="118" width="30" height="30" rx="8" fill="#494FE9"></rect><circle cx="52" cy="152" r="9" fill="#131429"></circle><circle cx="124" cy="152" r="9" fill="#131429"></circle><rect x="48" y="112" width="40" height="30" rx="6" fill="#FDF3E3" stroke="#B45309" stroke-width="2"></rect></g>
                   <g class="mo-pop" style="animation-delay:2.4s"><rect x="150" y="30" width="76" height="26" rx="13" fill="#E9F8EF"></rect><text x="188" y="47" text-anchor="middle" font-size="11" font-weight="700" fill="#0F7B3E">№ 48213</text></g>
                 </svg>
               </sc-if>
               <sc-if value="{{ moScene.m3s1 }}" hint-placeholder-val="{{ false }}">
-                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;inset:0;width:100%;height:100%">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-in" style="animation-delay:0.3s"><rect x="40" y="80" width="80" height="40" rx="12" fill="#E9F8EF"></rect><text x="80" y="105" text-anchor="middle" font-size="13" font-weight="700" fill="#0F7B3E">past</text></g><g class="mo-in" style="animation-delay:0.6s"><rect x="140" y="80" width="80" height="40" rx="12" fill="#FDF3E3"></rect><text x="180" y="105" text-anchor="middle" font-size="13" font-weight="700" fill="#B45309">o'rta</text></g><g class="mo-in" style="animation-delay:0.8999999999999999s"><rect x="240" y="80" width="80" height="40" rx="12" fill="#FCEAEA"></rect><text x="280" y="105" text-anchor="middle" font-size="13" font-weight="700" fill="#B42318">yuqori</text></g><g class="mo-pop" style="animation-delay:1.4s"><rect x="160" y="18" width="40" height="34" rx="6" fill="#FDF3E3" stroke="#B45309" stroke-width="2"></rect><path d="M160 35h40M180 18v34" stroke="#B45309" stroke-width="2" opacity=".4"></path></g><path class="mo-in" style="animation-delay:1.8s" d="M180 58v18" stroke="#A6A7BC" stroke-width="2" stroke-dasharray="3 3"></path><text class="mo-in" style="animation-delay:2.4s" x="180" y="160" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">tovar turi · qiymat · takrorlanish</text></svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m3s2 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px">
                   <g class="mo-in"><rect x="136" y="16" width="88" height="170" rx="18" fill="#131429"></rect><rect x="144" y="30" width="72" height="142" rx="12" fill="#FFFFFF"></rect><rect x="166" y="22" width="28" height="4" rx="2" fill="#4E4F6B"></rect></g>
                   <g class="mo-pop" style="animation-delay:.9s"><rect x="150" y="44" width="60" height="42" rx="10" fill="#E9EAFD"></rect><circle cx="163" cy="58" r="6" fill="#1A1FB0"></circle><rect x="173" y="54" width="30" height="4" rx="2" fill="#1A1FB0"></rect><rect x="173" y="62" width="22" height="4" rx="2" fill="#A6A7BC"></rect><rect x="156" y="74" width="48" height="4" rx="2" fill="#A6A7BC"></rect></g>
                   <circle class="mo-ring" style="animation-delay:.9s" cx="180" cy="65" r="30" fill="none" stroke="#1A1FB0" stroke-width="2"></circle>
@@ -1834,8 +1879,11 @@
                   <g class="mo-in" style="animation-delay:2.2s"><rect x="244" y="96" width="76" height="34" rx="10" fill="#FFFFFF" stroke="#E3E4EE"></rect><text x="282" y="118" text-anchor="middle" font-size="12" font-weight="700" fill="#1A1FB0">ilova</text></g>
                 </svg>
               </sc-if>
-              <sc-if value="{{ moScene.m3s2 }}" hint-placeholder-val="{{ false }}">
-                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;inset:0;width:100%;height:100%">
+              <sc-if value="{{ moScene.m3s3 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-in"><rect x="60" y="14" width="240" height="172" rx="16" fill="#FFFFFF" stroke="#E3E4EE" stroke-width="2"></rect><text x="76" y="40" text-anchor="middle" font-size="13" font-weight="700" fill="#1A1FB0">Xabarnoma</text></g><g class="mo-in" style="animation-delay:0.5s"><text x="76" y="70" font-size="11" font-weight="600" fill="#6B6C85">Tovar</text><rect x="200" y="61" width="84" height="10" rx="5" fill="#E3E4EE"></rect></g><g class="mo-in" style="animation-delay:0.8s"><text x="76" y="96" font-size="11" font-weight="600" fill="#6B6C85">Qiymat</text><text x="284" y="96" text-anchor="end" font-size="12" font-weight="800" fill="#131429">$220</text></g><g class="mo-in" style="animation-delay:1.1s"><text x="76" y="122" font-size="11" font-weight="600" fill="#6B6C85">Vazn</text><rect x="200" y="113" width="84" height="10" rx="5" fill="#E3E4EE"></rect></g><g class="mo-in" style="animation-delay:1.4s"><text x="76" y="148" font-size="11" font-weight="600" fill="#6B6C85">Boj</text><rect x="200" y="139" width="84" height="10" rx="5" fill="#E3E4EE"></rect></g><g class="mo-in" style="animation-delay:1.7s"><text x="76" y="174" font-size="11" font-weight="600" fill="#6B6C85">Muddat</text><rect x="200" y="165" width="84" height="10" rx="5" fill="#E3E4EE"></rect></g></svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m3s4 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px">
                   <g class="mo-in"><rect x="60" y="40" width="240" height="60" rx="14" fill="#FFFFFF" stroke="#E3E4EE"></rect><rect x="76" y="56" width="120" height="8" rx="4" fill="#E3E4EE"></rect><rect x="76" y="72" width="80" height="8" rx="4" fill="#E3E4EE"></rect><text x="284" y="76" text-anchor="end" font-size="13" font-weight="800" fill="#131429">$220</text></g>
                   <g class="mo-in" style="animation-delay:.6s"><rect x="60" y="116" width="112" height="44" rx="14" fill="#1A1FB0"></rect><text x="116" y="143" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">Tasdiqlash</text></g>
                   <g class="mo-in" style="animation-delay:.9s"><rect x="188" y="116" width="112" height="44" rx="14" fill="#F1F1F8"></rect><text x="244" y="143" text-anchor="middle" font-size="13" font-weight="700" fill="#6B6C85">Rad etish</text></g>
@@ -1843,16 +1891,25 @@
                   <g class="mo-pop" style="animation-delay:2.6s"><circle cx="164" cy="116" r="12" fill="#E9F8EF"></circle><path d="M158 116l4 4 8-8" fill="none" stroke="#0F7B3E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></g>
                 </svg>
               </sc-if>
-              <sc-if value="{{ moScene.m3s3 }}" hint-placeholder-val="{{ false }}">
-                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;inset:0;width:100%;height:100%">
-                  <g class="mo-in"><rect x="40" y="52" width="120" height="96" rx="14" fill="#FFFFFF" stroke="#E3E4EE"></rect><text x="100" y="80" text-anchor="middle" font-size="11" font-weight="600" fill="#6B6C85">Boj + yig'im</text><text x="100" y="108" text-anchor="middle" font-size="15" font-weight="800" fill="#131429">597 000</text><rect class="mo-pop" style="animation-delay:.9s" x="58" y="118" width="84" height="18" rx="9" fill="#E9F8EF"></rect><text class="mo-pop" style="animation-delay:.9s" x="100" y="131" text-anchor="middle" font-size="10" font-weight="700" fill="#0F7B3E">to'landi</text></g>
+              <sc-if value="{{ moScene.m3s5 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-in"><rect x="60" y="30" width="240" height="108" rx="16" fill="#FFFFFF" stroke="#E3E4EE" stroke-width="2"></rect><text x="76" y="58" font-size="11" font-weight="600" fill="#6B6C85">Tovar</text><rect x="200" y="49" width="84" height="10" rx="5" fill="#E3E4EE"></rect><text x="76" y="92" font-size="11" font-weight="600" fill="#6B6C85">Qiymat</text></g><g class="mo-pop" style="animation-delay:0.8s"><rect x="200" y="74" width="84" height="26" rx="8" fill="#FCEAEA"></rect><text x="242" y="92" text-anchor="middle" font-size="12" font-weight="800" fill="#B42318">$2 200</text></g><g class="mo-pop" style="animation-delay:1.2s"><circle cx="296" cy="74" r="11" fill="#B42318"></circle><text x="296" y="79" text-anchor="middle" font-size="13" font-weight="800" fill="#FFFFFF">!</text></g><g class="mo-in" style="animation-delay:1.8s"><rect x="60" y="150" width="112" height="36" rx="12" fill="#E9EAFD"></rect><text x="116" y="173" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1FB0">Kuryerga yozing</text></g><g class="mo-in" style="animation-delay:2.2s"><rect x="188" y="150" width="112" height="36" rx="12" fill="#E9EAFD"></rect><text x="244" y="173" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1FB0">Bojxona organi</text></g></svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m3s6 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><rect x="40" y="60" width="200" height="22" rx="11" fill="#E3E4EE"></rect><rect class="mo-grow" x="40" y="60" width="180" height="22" rx="11" fill="#1A1FB0"></rect><line x1="240" y1="52" x2="240" y2="90" stroke="#131429" stroke-width="2" stroke-dasharray="3 3"></line><text x="240" y="106" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">$200</text><text class="mo-pop" style="animation-delay:1.0s" x="130" y="50" text-anchor="middle" font-size="13" font-weight="800" fill="#0F7B3E">$180</text><g class="mo-pop" style="animation-delay:1.4s"><circle cx="270" cy="71" r="13" fill="#E9F8EF"></circle><path d="M263.5 71l4.5 4.5 8.5-9" fill="none" stroke="#0F7B3E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></g><g class="mo-out" style="animation-delay:1.8s"><rect x="150" y="126" width="56" height="44" rx="9" fill="#FDF3E3" stroke="#B45309" stroke-width="2"></rect><path d="M150 148h56M178 126v44" stroke="#B45309" stroke-width="2" opacity=".4"></path></g><g class="mo-in" style="animation-delay:2.4s"><path d="M248 152l26-24 26 24v24h-52z" fill="#E9EAFD" stroke="#1A1FB0" stroke-width="2" stroke-linejoin="round"></path><rect x="266" y="160" width="16" height="16" rx="3" fill="#1A1FB0"></rect></g><text class="mo-in" style="animation-delay:1.6s" x="80" y="156" text-anchor="middle" font-size="12" font-weight="700" fill="#0F7B3E">to'lov yo'q</text></svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m3s7 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px">
+                  <g class="mo-in"><rect x="40" y="52" width="120" height="96" rx="14" fill="#FFFFFF" stroke="#E3E4EE"></rect><text x="100" y="80" text-anchor="middle" font-size="11" font-weight="600" fill="#6B6C85">Boj + yig'im</text><rect class="mo-pop" style="animation-delay:.9s" x="58" y="118" width="84" height="18" rx="9" fill="#E9F8EF"></rect><text class="mo-pop" style="animation-delay:.9s" x="100" y="131" text-anchor="middle" font-size="10" font-weight="700" fill="#0F7B3E">to'landi</text></g>
                   <path class="mo-in" style="animation-delay:1.4s" d="M172 100h40" stroke="#A6A7BC" stroke-width="2.2" stroke-linecap="round"></path><path class="mo-in" style="animation-delay:1.4s" d="M206 94l7 6-7 6" fill="none" stroke="#A6A7BC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
                   <g class="mo-out" style="animation-delay:1.8s"><rect x="230" y="76" width="56" height="48" rx="10" fill="#FDF3E3" stroke="#B45309" stroke-width="2"></rect><path d="M230 96h56M258 76v48" stroke="#B45309" stroke-width="2" opacity=".4"></path></g>
                   <g class="mo-pop" style="animation-delay:2.6s"><circle cx="300" cy="72" r="13" fill="#E9F8EF"></circle><path d="M293.5 72l4.5 4.5 8.5-9" fill="none" stroke="#0F7B3E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></g>
                 </svg>
               </sc-if>
-              <sc-if value="{{ moScene.m3s4 }}" hint-placeholder-val="{{ false }}">
-                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;inset:0;width:100%;height:100%">
+              <sc-if value="{{ moScene.m3s8 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-in"><rect x="40" y="40" width="130" height="120" rx="14" fill="#F1F1F8"></rect><line x1="56" y1="96" x2="154" y2="96" stroke="#E3E4EE" stroke-width="3"></line><line x1="56" y1="144" x2="154" y2="144" stroke="#E3E4EE" stroke-width="3"></line><text x="105" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">Saqlov</text></g><g class="mo-pop" style="animation-delay:0.6s"><rect x="66" y="104" width="44" height="38" rx="7" fill="#FDF3E3" stroke="#B45309" stroke-width="2"></rect><path d="M66 123h44M88 104v38" stroke="#B45309" stroke-width="2" opacity=".4"></path></g><g class="mo-in" style="animation-delay:1.0s"><circle cx="210" cy="48" r="13" fill="#FDF3E3"></circle><rect x="204" y="41" width="12" height="14" rx="2" fill="none" stroke="#B45309" stroke-width="2"></rect><text x="232" y="52" font-size="11" font-weight="700" fill="#131429">hujjat yetmaydi</text></g><g class="mo-in" style="animation-delay:1.4s"><circle cx="210" cy="80" r="13" fill="#FDF3E3"></circle><text x="210" y="85" text-anchor="middle" font-size="13" font-weight="800" fill="#B45309">?</text><text x="232" y="84" font-size="11" font-weight="700" fill="#131429">maqsad bahsli</text></g><g class="mo-in" style="animation-delay:1.8s"><circle cx="210" cy="112" r="13" fill="#FDF3E3"></circle><circle cx="208" cy="111" r="5" fill="none" stroke="#B45309" stroke-width="2"></circle><path d="M212 115l4 4" stroke="#B45309" stroke-width="2.2" stroke-linecap="round"></path><text x="232" y="116" font-size="11" font-weight="700" fill="#131429">ko'rik tugamagan</text></g><g class="mo-in" style="animation-delay:2.2s"><circle cx="210" cy="144" r="13" fill="#FDF3E3"></circle><path d="M210 135l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10v-5z" fill="none" stroke="#B45309" stroke-width="2" stroke-linejoin="round"></path><text x="232" y="148" font-size="11" font-weight="700" fill="#131429">xavf tizimi</text></g></svg>
+              </sc-if>
+              <sc-if value="{{ moScene.m3s9 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px">
                   <g class="mo-in"><rect x="40" y="40" width="150" height="120" rx="14" fill="#F1F1F8"></rect><line x1="56" y1="96" x2="174" y2="96" stroke="#E3E4EE" stroke-width="3"></line><line x1="56" y1="144" x2="174" y2="144" stroke="#E3E4EE" stroke-width="3"></line><text x="115" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">Saqlov</text></g>
                   <g class="mo-pop" style="animation-delay:.6s"><rect x="72" y="104" width="44" height="38" rx="8" fill="#FDF3E3" stroke="#B45309" stroke-width="2"></rect><path d="M72 120h44M94 104v38" stroke="#B45309" stroke-width="2" opacity=".4"></path></g>
                   <g class="mo-in" style="animation-delay:1.2s"><circle cx="150" cy="122" r="13" fill="#FFFFFF" stroke="#B45309" stroke-width="2"></circle><path d="M150 114v8l5 3" fill="none" stroke="#B45309" stroke-width="2.2" stroke-linecap="round"></path></g>
@@ -1860,9 +1917,40 @@
                   <g class="mo-pop" style="animation-delay:2.6s"><circle cx="292" cy="132" r="13" fill="#E9F8EF"></circle><path d="M285.5 132l4.5 4.5 8.5-9" fill="none" stroke="#0F7B3E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></g>
                 </svg>
               </sc-if>
+              <sc-if value="{{ moScene.m3s10 }}" hint-placeholder-val="{{ false }}">
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-in"><rect x="50" y="58" width="110" height="96" rx="14" fill="#E9EAFD" stroke="#1A1FB0" stroke-width="2"></rect><rect x="90" y="112" width="30" height="42" rx="6" fill="#1A1FB0"></rect><rect x="64" y="74" width="20" height="16" rx="4" fill="#FFFFFF"></rect><rect x="94" y="74" width="20" height="16" rx="4" fill="#FFFFFF"></rect><rect x="124" y="74" width="20" height="16" rx="4" fill="#FFFFFF"></rect><text x="105" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#1A1FB0">Bojxona</text></g><g class="mo-in" style="animation-delay:1.0s"><rect x="186" y="62" width="134" height="40" rx="12" fill="#FFFFFF" stroke="#E3E4EE" stroke-width="2"></rect><text x="253" y="87" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1FB0">Manzil · telefon</text></g><g class="mo-in" style="animation-delay:1.5s"><rect x="186" y="112" width="134" height="40" rx="12" fill="#FFFFFF" stroke="#E3E4EE" stroke-width="2"></rect><text x="253" y="137" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1FB0">Mutaxassis</text></g><g class="mo-pop" style="animation-delay:2.2s"><circle cx="320" cy="62" r="12" fill="#E9F8EF"></circle><path d="M314 62l4.15385 4.15385 7.84615-8.30769" fill="none" stroke="#0F7B3E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></g><text class="mo-in" style="animation-delay:2.8s" x="180" y="184" text-anchor="middle" font-size="12" font-weight="600" fill="#6B6C85">Bojxona organlari bo'limida</text></svg>
+              </sc-if>
+
+              <!-- Tirik raqamlar (moEx): SVG <text> ichida shablon o'rinbosari
+                   ko'rinmaydi, shuning uchun ular HTML qatlamida, xuddi shu
+                   koordinatalarda va shu animatsiya sinfi bilan. -->
+              <sc-if value="{{ moScene.m1s5 }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px;pointer-events:none" aria-hidden="true"><span style="position:absolute;top:30px;left:120px;transform:translate(-50%,-80%);font-size:15px;font-weight:700;color:#1A1FB0;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums"><span class="mo-pop" style="animation-delay:1.2s" style="display:inline-block">{{ moEx.duty }}</span></span></div>
+              </sc-if>
+              <sc-if value="{{ moScene.m1s7 }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px;pointer-events:none" aria-hidden="true"><span style="position:absolute;top:116px;left:90px;transform:translate(-50%,-80%);font-size:15px;font-weight:700;color:#131429;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums"><span class="mo-in" style="display:inline-block">{{ moEx.bhm }}</span></span><span style="position:absolute;top:116px;left:270px;transform:translate(-50%,-80%);font-size:15px;font-weight:700;color:#1A1FB0;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums"><span class="mo-pop" style="animation-delay:1.6s" style="display:inline-block">{{ moEx.fee }}</span></span></div>
+              </sc-if>
+              <sc-if value="{{ moScene.m1s8 }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px;pointer-events:none" aria-hidden="true"><span style="position:absolute;top:97px;left:80px;transform:translate(-50%,-80%);font-size:15px;font-weight:700;color:#B42318;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums"><span class="mo-in" style="display:inline-block">{{ moEx.duty }}</span></span><span style="position:absolute;top:105px;left:197px;transform:translate(-50%,-80%);font-size:13px;font-weight:700;color:#131429;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums"><span class="mo-in" style="animation-delay:0.8s" style="display:inline-block">{{ moEx.rate }}</span></span><span style="position:absolute;top:90px;left:304px;transform:translate(-50%,-80%);font-size:13px;font-weight:700;color:#FFFFFF;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums"><span class="mo-pop" style="animation-delay:1.9s" style="display:inline-block">{{ moEx.dutySum }}</span></span></div>
+              </sc-if>
+              <sc-if value="{{ moScene.m1s9 }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px;pointer-events:none" aria-hidden="true"><span style="position:absolute;top:58px;left:118px;transform:translateY(-80%);font-size:13px;font-weight:700;color:#131429;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums"><span class="mo-in" style="animation-delay:.5s" style="display:inline-block">{{ moEx.duty }}</span></span><span style="position:absolute;top:58px;right:90px;transform:translateY(-80%);font-size:13px;font-weight:700;color:#131429;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums"><span class="mo-in" style="animation-delay:.5s" style="display:inline-block">{{ moEx.dutySum }}</span></span><span style="position:absolute;top:88px;right:90px;transform:translateY(-80%);font-size:13px;font-weight:700;color:#131429;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums"><span class="mo-in" style="animation-delay:1.1s" style="display:inline-block">{{ moEx.fee }}</span></span><span style="position:absolute;top:148px;right:90px;transform:translateY(-80%);font-size:22px;font-weight:800;color:#1A1FB0;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums"><span class="mo-pop" style="animation-delay:2s" style="display:inline-block">≈ {{ moEx.total }}</span></span></div>
+              </sc-if>
+              <sc-if value="{{ moScene.m1s10 }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px;pointer-events:none" aria-hidden="true"><span style="position:absolute;top:165px;left:150px;transform:translate(-50%,-80%);font-size:13px;font-weight:700;color:#FFFFFF;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums"><span class="mo-pop" style="animation-delay:2.0s" style="display:inline-block">≈ {{ moEx.total }}</span></span></div>
+              </sc-if>
+              <sc-if value="{{ moScene.m3s7 }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px;pointer-events:none" aria-hidden="true"><span style="position:absolute;top:108px;left:100px;transform:translate(-50%,-80%);font-size:15px;font-weight:700;color:#131429;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums"><span class="mo-in" style="display:inline-block">{{ moEx.total }}</span></span></div>
+              </sc-if>
             </div>
             <div style="padding:12px 16px 14px;display:flex;flex-direction:column;gap:10px">
-              <div style="font-size:15px;color:#282944;line-height:1.5;min-height:46px;text-wrap:pretty" role="status" aria-live="polite">{{ moCaption }}</div>
+              <div role="status" aria-live="polite" style="display:flex;flex-direction:column;gap:4px;min-height:92px">
+                <div style="font-size:13px;font-weight:700;color:#1A1FB0">{{ moTitle }}</div>
+                <div style="font-size:15px;color:#282944;line-height:1.5;text-wrap:pretty">{{ moCaption }}</div>
+              </div>
+              <sc-if value="{{ moEnded }}" hint-placeholder-val="{{ false }}">
+                <button sc-camel-on-click="{{ moCtaGo }}" style="min-height:44px;border-radius:14px;border:none;background:#E9EAFD;color:#13189D;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;padding:0 16px" style-hover="background:#DCDDFA">{{ moCtaLabel }}</button>
+              </sc-if>
               <div style="display:flex;align-items:center;gap:8px">
                 <button sc-camel-on-click="{{ moToggle }}" aria-label="{{ moPlayLabel }}" style="width:44px;height:44px;border-radius:22px;border:none;flex:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:#E9EAFD" style-hover="background:#DCDDFA">
                   <sc-if value="{{ moPlaying }}" hint-placeholder-val="{{ true }}">
@@ -1875,12 +1963,16 @@
                     <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 4v5h5"></path></svg>
                   </sc-if>
                 </button>
-                <sc-for list="{{ moDots }}" as="d" hint-placeholder-count="5">
-                  <button sc-camel-on-click="{{ d.go }}" aria-label="{{ d.label }}" style="height:44px;padding:0 4px;border:none;background:none;cursor:pointer;flex:none;display:flex;align-items:center">
-                    <span style="display:block;height:8px;border-radius:4px;width:{{ d.w }};background:{{ d.bg }};transition:width .25s,background .25s"></span>
-                  </button>
-                </sc-for>
-                <span style="flex:1"></span>
+                <!-- Segmentli vaqt chizig'i: har qadam bitta segment (bosib o'tish
+                     mumkin), joriy segment qadam davomiyligida to'ladi. Nuqtalar
+                     11 qadamda tor ekranga sig'may qolgan edi. -->
+                <div style="flex:1;min-width:0;display:flex;gap:4px" role="group" aria-label="Qadamlar">
+                  <sc-for list="{{ moDots }}" as="d" hint-placeholder-count="11">
+                    <button sc-camel-on-click="{{ d.go }}" aria-label="{{ d.label }}" style="flex:1;min-width:0;height:44px;padding:0;border:none;background:none;cursor:pointer;display:flex;align-items:center">
+                      <span style="display:block;width:100%;height:4px;border-radius:2px;background:#E3E4EE;overflow:hidden"><span style="display:block;height:100%;background:#1A1FB0;width:{{ d.w }};animation:{{ d.anim }} {{ d.ms }}ms linear both;animation-play-state:{{ d.state }}"></span></span>
+                    </button>
+                  </sc-for>
+                </div>
                 <span style="font-size:11px;font-weight:600;color:#6B6C85;font-variant-numeric:tabular-nums">{{ moStepLabel }}</span>
                 <button sc-camel-on-click="{{ moClose }}" aria-label="Yopish" style="width:36px;height:36px;border-radius:18px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none" style-hover="background:#F1F1F8">
                   <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6B6C85" stroke-width="2.7" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
@@ -3378,7 +3470,7 @@ const RU = {
   "Bu hisob taxminiy. Yakuniy summa bojxona organi aniqlagan bojxona qiymati va to'lov kunidagi kurs bo'yicha belgilanadi.":'Расчёт приблизительный. Итоговая сумма определяется по таможенной стоимости, установленной таможенным органом, и курсу на день оплаты.',
   "Bojsiz me'yor":'Беспошлинный лимит',
   /* Motion-tushuntirish */
-  'Qanday ishlaydi':'Как это работает', '{0} soniya · {1} qadam':'{0} секунд · {1} шагов', '{0}-qadam':'Шаг {0}',
+  'Qanday ishlaydi':'Как это работает', '{0} soniya · {1} qadam':'{0} секунд · {1} шагов', '≈ {0} daqiqa · {1} qadam':'≈ {0} мин · {1} шагов', 'Qadamlar':'Шаги', '{0}-qadam':'Шаг {0}',
   'Pauza':'Пауза', "Qayta ko'rish":'Смотреть снова', 'Yopish':'Закрыть',
   "Bir kalendar oyda kelgan barcha jo'natmalar bitta hisobga qo'shiladi.":'Все отправления за один календарный месяц складываются в один счёт.',
   "$50 + $70 + $60 = $180 — me'yor ichida, boj yo'q.":'$50 + $70 + $60 = $180 — в пределах лимита, пошлины нет.',
@@ -3398,6 +3490,47 @@ const RU = {
   'Sentabr':'Сентябрь', 'Sentabr · $220':'Сентябрь · $220', '1 oktabr':'1 октября', 'bojsiz':'без пошлины', 'boj shundan':'пошлина с этого',
   '1,6 kg bojsiz':'1,6 кг без пошлины', 'bojxona qiymati':'таможенная стоимость', 'Boj $38':'Пошлина $38', "Yig'im 25% BHM":'Сбор 25% БРВ', 'Jami':'Итого',
   'ilova':'приложение', 'Tasdiqlash':'Подтвердить', 'Rad etish':'Отклонить', "Boj + yig'im":'Пошлина + сбор', "to'landi":'оплачено', 'Saqlov':'Хранение',
+  /* Motion-tushuntirish (bojxona): sarlavhalar, izohlar va sahna so'zlari */
+  "Oyiga $200 bojsiz":'$200 в месяц без пошлины', "Davlat shaxsiy ehtiyoj uchun chet eldan olingan tovarlarni oyiga $200 gacha bojsiz olib kirishga ruxsat beradi. Bu summa har bir qabul qiluvchi uchun alohida hisoblanadi.":'Государство разрешает ввозить товары для личных нужд без пошлины на сумму до $200 в месяц. Лимит считается отдельно для каждого получателя.',
+  'Kalendar oy':'Календарный месяц', "Hisob oyning 1-sanasidan oxirgi sanasigacha yuritiladi. Jo'natmaning buyurtma qilingan kuni emas, bojxonaga kelgan kuni hisobga olinadi.":'Учёт ведётся с 1-го по последнее число месяца. Считается день поступления отправления на таможню, а не день заказа.',
+  'Hammasi bitta hisobda':'Всё в одном счёте', "Qaysi kuryer yoki pochta orqali kelganidan qat'i nazar, shu oyda nomingizga kelgan barcha jo'natmalar qiymati qo'shib boriladi.":'Независимо от курьера или почты, стоимость всех отправлений на ваше имя за месяц суммируется.',
+  "Misol: uchta jo'natma":'Пример: три отправления', "$50 + $70 + $60 = $180. Me'yor ichida — boj ham, yig'im ham yo'q, jo'natmalar to'g'ridan-to'g'ri qo'lingizga keladi.":'$50 + $70 + $60 = $180. В пределах лимита — ни пошлины, ни сбора, отправления приходят прямо к вам.',
+  "To'rtinchi jo'natma":'Четвёртое отправление', "Oy oxirida yana $40 lik jo'natma keldi: jami $220. Bu me'yordan $20 ortiq.":'В конце месяца пришло ещё одно на $40: итого $220. Это на $20 больше лимита.',
+  'Boj faqat ortiqchasidan':'Пошлина только с превышения', "To'lov butun $220 dan emas, faqat me'yordan oshgan $20 dan hisoblanadi. Qanday hisoblanishi «Yagona bojxona to'lovi» bo'limida ko'rsatilgan.":'Платёж считается не со всех $220, а только с $20 сверх лимита. Как именно — в разделе «Единый таможенный платёж».',
+  "Bo'lib yuborish yordam bermaydi":'Разделить посылку не поможет', "Katta xaridni ikkiga bo'lib yuborsangiz ham, ikkalasi bir oyda kelsa hisob baribir qo'shiladi. Me'yor jo'natma soniga emas, oyga bog'liq.":'Даже если разбить крупную покупку на две посылки, обе придут в одном месяце — и сложатся. Лимит привязан к месяцу, а не к числу посылок.',
+  'Shaxsiy ehtiyoj sharti':'Условие личного пользования', "Imtiyoz faqat shaxsiy va oilaviy foydalanish uchun. Bir xil tovar ko'p miqdorda bo'lsa (masalan, 10 ta bir xil telefon), bojxona uni tijorat deb hisoblashi mumkin.":'Льгота только для личного и семейного пользования. Если одинакового товара много (например, 10 одинаковых телефонов), таможня может признать ввоз коммерческим.',
+  'Narx qanday aniqlanadi':'Как определяется стоимость', "Qiymat chek yoki invoys bo'yicha olinadi. Narx bozor narxidan ancha past ko'rinsa, bojxona uni qayta baholashi mumkin — chekni saqlab qo'ying.":'Стоимость берётся по чеку или инвойсу. Если цена заметно ниже рыночной, таможня может переоценить товар — сохраните чек.',
+  "Hisobni qayerda ko'rish mumkin":'Где посмотреть счёт', "Nomingizga kelgan jo'natmalar va oylik hisobni my.gov.uz (YIDXP) shaxsiy kabinetida ko'rasiz. Ilovadagi «Bu oyda» bloki ham shu hisobni yuritishga yordam beradi.":'Отправления на ваше имя и месячный счёт видны в личном кабинете my.gov.uz (ЕПИГУ). Блок «В этом месяце» в приложении помогает вести тот же учёт.',
+  'Yangi oy — yangi hisob':'Новый месяц — новый счёт', "Keyingi oyning 1-sanasida hisob noldan boshlanadi: yana $200 bojsiz. Katta xaridni oy boshiga rejalashtirish foyda beradi.":'1-го числа следующего месяца счёт обнуляется: снова $200 без пошлины. Крупную покупку выгодно планировать на начало месяца.',
+  "Qachon to'lanadi":'Когда платится', "Oylik $200 me'yordan oshganda. To'lov butun summadan emas, faqat ortiqcha qismdan olinadi. Me'yor ichida bo'lsa hech narsa to'lanmaydi.":'При превышении месячного лимита $200. Платёж берётся не со всей суммы, а только с превышения. В пределах лимита не платится ничего.',
+  'Misol':'Пример', "Bitta jo'natma: tovar $320, vazn 2,5 kg, yetkazish $9 har kilogramm uchun. Shu oyda boshqa jo'natma bo'lmagan.":'Одно отправление: товар $320, вес 2,5 кг, доставка $9 за килограмм. Других отправлений в этом месяце не было.',
+  '1-qadam: ortiqcha summa':'Шаг 1: сумма превышения', "$320 − $200 = $120. Boj faqat shu $120 ga hisoblanadi, $200 lik qism bojsiz qoladi.":'$320 − $200 = $120. Пошлина считается только с этих $120, часть в $200 остаётся без пошлины.',
+  '2-qadam: ortiqcha vazn':'Шаг 2: вес превышения', "Vazn ham shu ulushda bo'linadi: 2,5 kg × 120/320 ≈ 0,9 kg «ortiqcha», qolgan 1,6 kg bojsiz.":'Вес делится в той же пропорции: 2,5 кг × 120/320 ≈ 0,9 кг «сверх», остальные 1,6 кг без пошлины.',
+  '3-qadam: bojxona qiymati':'Шаг 3: таможенная стоимость', "Ortiqcha $120 ga shu qismning yetkazish haqi qo'shiladi: 0,9 kg × $9 ≈ $8. Bojxona qiymati ≈ $128. Ha, yetkazish ham hisobga kiradi.":'К $120 добавляется доставка этой части: 0,9 кг × $9 ≈ $8. Таможенная стоимость ≈ $128. Да, доставка тоже входит в расчёт.',
+  '4-qadam: ikki usul':'Шаг 4: два способа', "Boj ikki usulda hisoblanadi: qiymatning 30% i ({0}) yoki har ortiqcha kilogramm uchun $3 (≈ $3). Qaysi biri katta bo'lsa, o'sha olinadi — {0}.":'Пошлина считается двумя способами: 30% стоимости ({0}) или $3 за каждый килограмм сверх (≈ $3). Берётся большее — {0}.',
+  "Og'ir, arzon tovarda":'Тяжёлый дешёвый товар', "Tovar og'ir va arzon bo'lsa, $3/kg usuli kattaroq chiqadi. Masalan, 20 kg ortiqcha vazn — kamida $60 boj, narxi past bo'lsa ham.":'Если товар тяжёлый и дешёвый, способ $3/кг даёт больше. Например, 20 кг сверх лимита — минимум $60 пошлины, даже при низкой цене.',
+  "5-qadam: bojxona yig'imi":'Шаг 5: таможенный сбор', "Bojdan tashqari rasmiylashtirish yig'imi bor: BHM ning 25% i = {0} so'm. U qat'iy — summa katta yoki kichik bo'lishidan qat'i nazar bir xil.":'Кроме пошлины есть сбор за оформление: 25% БРВ = {0} сум. Он фиксированный — одинаков при любой сумме.',
+  "6-qadam: so'mga o'tkazish":'Шаг 6: перевод в сумы', "Boj dollarda hisoblanib, Markaziy bank kursi bo'yicha so'mga o'tkaziladi: {0} × {1} ≈ {2} so'm.":'Пошлина считается в долларах и переводится в сумы по курсу Центрального банка: {0} × {1} ≈ {2} сум.',
+  "Jami to'lov":'Итого к оплате', "Boj {0} + yig'im {1} ≈ {2} so'm. Bu $320 lik jo'natma uchun taxminiy to'lov; kurs o'zgarsa summa ham biroz o'zgaradi.":'Пошлина {0} + сбор {1} ≈ {2} сум. Это примерный платёж за отправление на $320; при изменении курса сумма немного изменится.',
+  "O'zingiznikini hisoblang":'Посчитайте своё', "Kalkulyatorga oylik summa, vazn va yetkazish narxini kiriting — ilova shu qadamlarni siz uchun bajaradi va hisob bosqichlarini ko'rsatadi.":'Введите в калькулятор сумму за месяц, вес и цену доставки — приложение выполнит эти шаги за вас и покажет этапы расчёта.',
+  "Jo'natma chegaraga keldi":'Отправление на границе', "Kuryer yoki pochta jo'natmani bojxona nazoratiga topshiradi. Deklaratsiya tizimda ro'yxatga olinadi — bu avtomatik, sizdan hech narsa talab qilinmaydi.":'Курьер или почта передаёт отправление на таможенный контроль. Декларация регистрируется в системе автоматически — от вас ничего не требуется.',
+  'Xavf darajasi':'Уровень риска', "Tizim har jo'natmaga xavf darajasini belgilaydi: past, o'rta yoki yuqori. Bunga tovar turi, qiymati va jo'natmalar takrorlanishi ta'sir qiladi.":'Система присваивает каждому отправлению уровень риска: низкий, средний или высокий. На него влияют тип товара, стоимость и повторяемость отправлений.',
+  'Xabarnoma keladi':'Приходит уведомление', "Sizga YIDXP (my.gov.uz) yoki mobil ilova orqali xabarnoma yuboriladi. Kuryerlar ko'pincha Telegram yoki SMS orqali ham ogohlantiradi.":'Уведомление приходит через ЕПИГУ (my.gov.uz) или мобильное приложение. Курьеры часто дублируют его в Telegram или по SMS.',
+  'Xabarnomada nima bor':'Что в уведомлении', "Tovar tavsifi, qiymati, vazni, hisoblangan boj (agar bo'lsa) va javob berish muddati. Hammasini diqqat bilan tekshiring.":'Описание товара, стоимость, вес, рассчитанная пошлина (если есть) и срок ответа. Внимательно проверьте всё.',
+  'Tasdiqlash yoki rad etish':'Подтвердить или отклонить', "Ma'lumot to'g'ri bo'lsa tasdiqlaysiz. Past va o'rta xavfda bu ixtiyoriy, yuqori xavfda majburiy. Rad etsangiz, jo'natma rasmiylashtirilmaydi.":'Если данные верны — подтверждаете. При низком и среднем риске это по желанию, при высоком — обязательно. Если отклонить, отправление не оформляется.',
+  "Xato ko'rsangiz":'Если видите ошибку', "Qiymat yoki tovar noto'g'ri yozilgan bo'lsa, darhol tasdiqlamang: kuryerga xabar bering yoki eng yaqin bojxona organiga chek bilan murojaat qiling.":'Если стоимость или товар указаны неверно, не подтверждайте сразу: сообщите курьеру или обратитесь с чеком в ближайший таможенный орган.',
+  "Me'yor ichida":'В пределах лимита', "Oylik hisobingiz $200 dan oshmasa, to'lov yo'q: jo'natma chiqariladi va kuryer uni sizga yetkazadi.":'Если месячный счёт не превышает $200, платить не нужно: отправление выпускается, и курьер доставляет его вам.',
+  "Me'yordan ortiq":'Сверх лимита', "Boj va yig'im hisoblanadi — misolda {0} so'm. Xabarnomadagi rekvizitlar bo'yicha to'laysiz, to'lov tasdiqlangach jo'natma chiqariladi.":'Начисляются пошлина и сбор — в примере {0} сум. Платите по реквизитам из уведомления; после подтверждения оплаты отправление выпускается.',
+  'Qachon ushlab qolinadi':'Когда задерживают', "Hujjat yetishmasa, tovar maqsadi bahsli bo'lsa, ko'rik yoki ekspertiza tugamagan bo'lsa yoki xavf tizimi topshiriq bergan bo'lsa jo'natma vaqtincha saqlovga olinadi.":'Если не хватает документов, назначение товара спорно, не завершены досмотр или экспертиза либо есть задание системы рисков — отправление временно помещают на хранение.',
+  'Saqlovda nima qilish kerak':'Что делать при хранении', "Muddat ichida so'ralgan hujjatni topshiring: chek, invoys, to'lov tasdig'i yoki sertifikat. Saqlov uzoq cho'zilsa, ombor haqi hisoblanishi mumkin.":'В срок подайте запрошенный документ: чек, инвойс, подтверждение оплаты или сертификат. При долгом хранении может начисляться плата за склад.',
+  "Yordam kerak bo'lsa":'Если нужна помощь', "Bojxona organlarining manzil va telefonlari «Bojxona organlari» bo'limida. Murakkab holatda mutaxassis konsultatsiyasi ham bor.":'Адреса и телефоны таможенных органов — в разделе «Таможенные органы». В сложном случае есть консультация специалиста.',
+  'oyiga · bojsiz':'в месяц · без пошлины', 'har bir qabul qiluvchi uchun':'для каждого получателя', 'Kuryer':'Курьер', 'Pochta':'Почта', 'bitta hisob':'один счёт',
+  'shaxsiy · 1 ta':'личное · 1 шт.', 'tijorat? · 10 ta':'коммерция? · 10 шт.', "bir xil tovar ko'p bo'lsa":'если одинакового товара много', "chek yoki invoys · saqlab qo'ying":'чек или инвойс · сохраните',
+  "to'lov yo'q":'без оплаты', "to'lov":'оплата', 'faqat ortiqcha qismdan':'только с превышения', 'tovar · $320':'товар · $320', 'vazn · 2,5 kg':'вес · 2,5 кг', 'yetkazish · $9 / kg':'доставка · $9 / кг',
+  'kg ortiqcha':'кг сверх', '≈ 0,9 kg':'≈ 0,9 кг', '0,9 kg × $9':'0,9 кг × $9', '$3 / kg':'$3 / кг', '$9 / kg':'$9 / кг', 'BHM':'БРВ', "yig'im":'сбор', 'har rasmiylashtirish uchun bir xil':'одинаков для каждого оформления', 'kurs':'курс', "Markaziy bank kursi bo'yicha":'по курсу Центрального банка',
+  'Oy summasi':'Сумма за месяц', 'Vazn':'Вес', 'Yetkazish':'Доставка', 'past':'низкий', "o'rta":'средний', 'yuqori':'высокий', 'tovar turi · qiymat · takrorlanish':'тип товара · стоимость · повторяемость',
+  'Xabarnoma':'Уведомление', 'Tovar':'Товар', 'Qiymat':'Стоимость', 'Boj':'Пошлина', 'Kuryerga yozing':'Напишите курьеру', 'Bojxona organi':'Таможенный орган',
+  'hujjat yetmaydi':'не хватает документа', 'maqsad bahsli':'спорное назначение', "ko'rik tugamagan":'досмотр не завершён', 'xavf tizimi':'система рисков', 'Manzil · telefon':'Адрес · телефон', 'Mutaxassis':'Специалист', "Bojxona organlari bo'limida":'в разделе «Таможенные органы»',
   "Bir kalendar oy uchun. Kalendar oy — oyning 1-sanasidan so'nggi sanasigacha bo'lgan uzluksiz davr, masalan 1-yanvardan 31-yanvargacha.":'На один календарный месяц. Календарный месяц — непрерывный период с 1-го по последнее число месяца, например с 1 по 31 января.',
   "Miqdoriy me'yorlar":'Количественные нормы', 'Bojsiz olib kiriladigan ayrim tovarlar uchun alohida chegara':'Отдельный предел для некоторых товаров, ввозимых без пошлины',
   'Atir va ifor taratuvchi suvlar':'Духи и туалетная вода', 'dona':'шт.', '300 ml dan oshmagan miqdorda.':'В объёме не более 300 мл.',
@@ -4162,30 +4295,66 @@ const FEAT_ICONS = {
   'Marketplace mosligi':'M3 4h18v4H3zM5 8v12h14V8M9 12h6'
 };
 
-/* Motion-tushuntirish sarlavhalari: bo'lim indeksi -> qadamlar. Sahnalar
-   shablonda (moScene.mNsK), sarlavhalar shu yerda — tarjima lug'atdan. */
-const MO_STEP_MS = 4000;
+/* Motion-tushuntirish: bo'lim indeksi -> qadamlar (t — sarlavha, c — izoh,
+   v — izohdagi {0} o'rinbosarlari uchun tirik qiymatlar). Sahnalar shablonda
+   (moScene.mNsK). Qadam davomiyligi matn uzunligiga qarab: o'qishga ulgurish
+   kerak, lekin qisqa qadamda kutib qolmaslik ham. */
+const MO_MIN_MS = 4500, MO_MAX_MS = 8500;
+const moMs = st => st.ms || Math.min(MO_MAX_MS, Math.max(MO_MIN_MS, 2500 + st.c.length * 45));
+/* Misol raqamlari kalkulyator bilan bir xil formuladan: $320, 2,5 kg, $9/kg,
+   me'yorlar normsAt() dan, kurs USD_RATE dan. So'mdagi summalar shuning
+   uchun ilovada ko'rsatilgan kurs bilan mos tushadi. */
+const moExample = () => {
+  const N = normsAt(), price = 320, weight = 2.5, ship = 9;
+  const eg = Math.max(0, price - N.freeUsd), ew = weight * eg / price, cv = eg + ew * ship;
+  const dutyUsd = Math.max(cv * N.dutyPct, ew * N.minPerKg), fee = N.bhm * N.feeShare;
+  const d1 = (Math.round(dutyUsd * 10) / 10).toString().replace('.', ',');
+  return { bhm: money(N.bhm), fee: money(fee), rate: money(USD_RATE), duty: '$' + d1,
+    dutySum: money(dutyUsd * USD_RATE), total: money(dutyUsd * USD_RATE + fee) };
+};
+const MO_CTA = {
+  calc: { label: 'Kalkulyatorda hisoblash', go: app => app.setState({ customsSec: 4 }) },
+  offices: { label: 'Bojxona organlari', go: app => app.setState({ customsSec: 5 }) }
+};
 const MOTION = {
-  0: { caps: [
-    "Bir kalendar oyda kelgan barcha jo'natmalar bitta hisobga qo'shiladi.",
-    "$50 + $70 + $60 = $180 — me'yor ichida, boj yo'q.",
-    "To'rtinchi jo'natma $40: jami $220 — me'yordan $20 ortiq.",
-    "Boj faqat ortiqcha $20 dan hisoblanadi — butun summadan emas.",
-    "Yangi oyning 1-sanasida hisob noldan boshlanadi."
+  0: { cta: 'calc', steps: [
+    { t: "Oyiga $200 bojsiz", c: "Davlat shaxsiy ehtiyoj uchun chet eldan olingan tovarlarni oyiga $200 gacha bojsiz olib kirishga ruxsat beradi. Bu summa har bir qabul qiluvchi uchun alohida hisoblanadi." },
+    { t: "Kalendar oy", c: "Hisob oyning 1-sanasidan oxirgi sanasigacha yuritiladi. Jo'natmaning buyurtma qilingan kuni emas, bojxonaga kelgan kuni hisobga olinadi." },
+    { t: "Hammasi bitta hisobda", c: "Qaysi kuryer yoki pochta orqali kelganidan qat'i nazar, shu oyda nomingizga kelgan barcha jo'natmalar qiymati qo'shib boriladi." },
+    { t: "Misol: uchta jo'natma", c: "$50 + $70 + $60 = $180. Me'yor ichida — boj ham, yig'im ham yo'q, jo'natmalar to'g'ridan-to'g'ri qo'lingizga keladi." },
+    { t: "To'rtinchi jo'natma", c: "Oy oxirida yana $40 lik jo'natma keldi: jami $220. Bu me'yordan $20 ortiq." },
+    { t: "Boj faqat ortiqchasidan", c: "To'lov butun $220 dan emas, faqat me'yordan oshgan $20 dan hisoblanadi. Qanday hisoblanishi «Yagona bojxona to'lovi» bo'limida ko'rsatilgan." },
+    { t: "Bo'lib yuborish yordam bermaydi", c: "Katta xaridni ikkiga bo'lib yuborsangiz ham, ikkalasi bir oyda kelsa hisob baribir qo'shiladi. Me'yor jo'natma soniga emas, oyga bog'liq." },
+    { t: "Shaxsiy ehtiyoj sharti", c: "Imtiyoz faqat shaxsiy va oilaviy foydalanish uchun. Bir xil tovar ko'p miqdorda bo'lsa (masalan, 10 ta bir xil telefon), bojxona uni tijorat deb hisoblashi mumkin." },
+    { t: "Narx qanday aniqlanadi", c: "Qiymat chek yoki invoys bo'yicha olinadi. Narx bozor narxidan ancha past ko'rinsa, bojxona uni qayta baholashi mumkin — chekni saqlab qo'ying." },
+    { t: "Hisobni qayerda ko'rish mumkin", c: "Nomingizga kelgan jo'natmalar va oylik hisobni my.gov.uz (YIDXP) shaxsiy kabinetida ko'rasiz. Ilovadagi «Bu oyda» bloki ham shu hisobni yuritishga yordam beradi." },
+    { t: "Yangi oy — yangi hisob", c: "Keyingi oyning 1-sanasida hisob noldan boshlanadi: yana $200 bojsiz. Katta xaridni oy boshiga rejalashtirish foyda beradi." }
   ] },
-  1: { caps: [
-    "Jo'natma $320 va 2,5 kg. Ortiqcha: $320 − $200 = $120.",
-    "Ortiqcha ulushga mos vazn: 2,5 kg × 120/320 ≈ 0,9 kg.",
-    "Bojxona qiymati: $120 + 0,9 kg × $9 yetkazish = $128.",
-    "Boj: 30% dan $38 yoki $3/kg dan $3 — kattasi olinadi, $38.",
-    "Ustiga yig'im: BHM ning 25% = 110 000 so'm. Jami ≈ 597 000 so'm."
+  1: { cta: 'calc', steps: [
+    { t: "Qachon to'lanadi", c: "Oylik $200 me'yordan oshganda. To'lov butun summadan emas, faqat ortiqcha qismdan olinadi. Me'yor ichida bo'lsa hech narsa to'lanmaydi." },
+    { t: "Misol", c: "Bitta jo'natma: tovar $320, vazn 2,5 kg, yetkazish $9 har kilogramm uchun. Shu oyda boshqa jo'natma bo'lmagan." },
+    { t: "1-qadam: ortiqcha summa", c: "$320 − $200 = $120. Boj faqat shu $120 ga hisoblanadi, $200 lik qism bojsiz qoladi." },
+    { t: "2-qadam: ortiqcha vazn", c: "Vazn ham shu ulushda bo'linadi: 2,5 kg × 120/320 ≈ 0,9 kg «ortiqcha», qolgan 1,6 kg bojsiz." },
+    { t: "3-qadam: bojxona qiymati", c: "Ortiqcha $120 ga shu qismning yetkazish haqi qo'shiladi: 0,9 kg × $9 ≈ $8. Bojxona qiymati ≈ $128. Ha, yetkazish ham hisobga kiradi." },
+    { t: "4-qadam: ikki usul", c: "Boj ikki usulda hisoblanadi: qiymatning 30% i ({0}) yoki har ortiqcha kilogramm uchun $3 (≈ $3). Qaysi biri katta bo'lsa, o'sha olinadi — {0}.", v: ex => [ex.duty] },
+    { t: "Og'ir, arzon tovarda", c: "Tovar og'ir va arzon bo'lsa, $3/kg usuli kattaroq chiqadi. Masalan, 20 kg ortiqcha vazn — kamida $60 boj, narxi past bo'lsa ham." },
+    { t: "5-qadam: bojxona yig'imi", c: "Bojdan tashqari rasmiylashtirish yig'imi bor: BHM ning 25% i = {0} so'm. U qat'iy — summa katta yoki kichik bo'lishidan qat'i nazar bir xil.", v: ex => [ex.fee] },
+    { t: "6-qadam: so'mga o'tkazish", c: "Boj dollarda hisoblanib, Markaziy bank kursi bo'yicha so'mga o'tkaziladi: {0} × {1} ≈ {2} so'm.", v: ex => [ex.duty, ex.rate, ex.dutySum] },
+    { t: "Jami to'lov", c: "Boj {0} + yig'im {1} ≈ {2} so'm. Bu $320 lik jo'natma uchun taxminiy to'lov; kurs o'zgarsa summa ham biroz o'zgaradi.", v: ex => [ex.dutySum, ex.fee, ex.total] },
+    { t: "O'zingiznikini hisoblang", c: "Kalkulyatorga oylik summa, vazn va yetkazish narxini kiriting — ilova shu qadamlarni siz uchun bajaradi va hisob bosqichlarini ko'rsatadi." }
   ] },
-  3: { caps: [
-    "Jo'natma bojxona nazoratiga keladi va tizimda ro'yxatga olinadi.",
-    "Sizga xabarnoma keladi — YIDXP yoki mobil ilova orqali.",
-    "Tasdiqlaysiz yoki rad etasiz. Past xavfda ixtiyoriy, yuqori xavfda majburiy.",
-    "Me'yordan ortiq bo'lsa boj va yig'im to'lanadi — jo'natma chiqariladi.",
-    "Hujjat yetmasa jo'natma vaqtincha saqlovga olinadi — muddat ichida hujjat topshiring."
+  3: { cta: 'offices', steps: [
+    { t: "Jo'natma chegaraga keldi", c: "Kuryer yoki pochta jo'natmani bojxona nazoratiga topshiradi. Deklaratsiya tizimda ro'yxatga olinadi — bu avtomatik, sizdan hech narsa talab qilinmaydi." },
+    { t: "Xavf darajasi", c: "Tizim har jo'natmaga xavf darajasini belgilaydi: past, o'rta yoki yuqori. Bunga tovar turi, qiymati va jo'natmalar takrorlanishi ta'sir qiladi." },
+    { t: "Xabarnoma keladi", c: "Sizga YIDXP (my.gov.uz) yoki mobil ilova orqali xabarnoma yuboriladi. Kuryerlar ko'pincha Telegram yoki SMS orqali ham ogohlantiradi." },
+    { t: "Xabarnomada nima bor", c: "Tovar tavsifi, qiymati, vazni, hisoblangan boj (agar bo'lsa) va javob berish muddati. Hammasini diqqat bilan tekshiring." },
+    { t: "Tasdiqlash yoki rad etish", c: "Ma'lumot to'g'ri bo'lsa tasdiqlaysiz. Past va o'rta xavfda bu ixtiyoriy, yuqori xavfda majburiy. Rad etsangiz, jo'natma rasmiylashtirilmaydi." },
+    { t: "Xato ko'rsangiz", c: "Qiymat yoki tovar noto'g'ri yozilgan bo'lsa, darhol tasdiqlamang: kuryerga xabar bering yoki eng yaqin bojxona organiga chek bilan murojaat qiling." },
+    { t: "Me'yor ichida", c: "Oylik hisobingiz $200 dan oshmasa, to'lov yo'q: jo'natma chiqariladi va kuryer uni sizga yetkazadi." },
+    { t: "Me'yordan ortiq", c: "Boj va yig'im hisoblanadi — misolda {0} so'm. Xabarnomadagi rekvizitlar bo'yicha to'laysiz, to'lov tasdiqlangach jo'natma chiqariladi.", v: ex => [ex.total] },
+    { t: "Qachon ushlab qolinadi", c: "Hujjat yetishmasa, tovar maqsadi bahsli bo'lsa, ko'rik yoki ekspertiza tugamagan bo'lsa yoki xavf tizimi topshiriq bergan bo'lsa jo'natma vaqtincha saqlovga olinadi." },
+    { t: "Saqlovda nima qilish kerak", c: "Muddat ichida so'ralgan hujjatni topshiring: chek, invoys, to'lov tasdig'i yoki sertifikat. Saqlov uzoq cho'zilsa, ombor haqi hisoblanishi mumkin." },
+    { t: "Yordam kerak bo'lsa", c: "Bojxona organlarining manzil va telefonlari «Bojxona organlari» bo'limida. Murakkab holatda mutaxassis konsultatsiyasi ham bor." }
   ] }
 };
 const CUSTOMS_SECTIONS = ["Bojsiz me'yor", "Yagona bojxona to'lovi", 'Taqiqlangan tovarlar', 'Rasmiylashtirish tartibi', 'Bojxona kalkulyatori', 'Bojxona organlari'];
@@ -5128,25 +5297,26 @@ class Component extends DCLogic {
 
   openSec(i) { this.setState({ customsSec: i }); this.push('csec'); }
 
-  /* --- Motion-tushuntirish: 5 qadam, har biri MO_STEP_MS. Ekran yoki bo'lim
+  /* --- Motion-tushuntirish: 11 qadam, har biri moMs(qadam). Ekran yoki bo'lim
      almashganda to'xtaydi va yopiladi. --- */
   moClear() { clearTimeout(this._moT); }
   moDef() { return this.cur() === 'csec' ? (MOTION[this.state.customsSec] || null) : null; }
   moStart() { haptic('light'); this.moClear(); this.setState({ moOpen: true, moStep: 0, moPlaying: true }); this.moTick(); }
   moTick() {
     this.moClear();
+    const def0 = this.moDef(); if (!def0) return;
     this._moT = setTimeout(() => {
       const def = this.moDef();
       if (!def || !this.state.moPlaying) return;
-      if (this.state.moStep >= def.caps.length - 1) { this.setState({ moPlaying: false }); return; }
+      if (this.state.moStep >= def.steps.length - 1) { this.setState({ moPlaying: false }); return; }
       this.setState(st => ({ moStep: st.moStep + 1 }));
       this.moTick();
-    }, MO_STEP_MS);
+    }, moMs(def0.steps[Math.min(this.state.moStep, def0.steps.length - 1)]));
   }
   moToggle() {
     const def = this.moDef(); if (!def) return;
     if (this.state.moPlaying) { this.moClear(); this.setState({ moPlaying: false }); return; }
-    const atEnd = this.state.moStep >= def.caps.length - 1;
+    const atEnd = this.state.moStep >= def.steps.length - 1;
     this.setState({ moPlaying: true, moStep: atEnd ? 0 : this.state.moStep }); this.moTick();
   }
   moGo(i) { this.moClear(); this.setState({ moStep: i, moPlaying: true }); this.moTick(); }
@@ -6090,17 +6260,26 @@ class Component extends DCLogic {
       goCalcSec: () => (this.cur() === 'csec' ? this.setState({ customsSec: 4 }) : this.openSec(4)),
       ...(() => {
         const def = this.moDef();
-        if (!def) return { moHas: false, moClosed: true, moOn: false, moScene: {}, moDots: [] };
-        const n = def.caps.length, step = Math.min(st.moStep, n - 1), ended = !st.moPlaying && step === n - 1;
+        if (!def) return { moHas: false, moClosed: true, moOn: false, moScene: {}, moDots: [], moEx: {} };
+        const ex = moExample();
+        const n = def.steps.length, step = Math.min(st.moStep, n - 1), sd = def.steps[step], ended = !st.moPlaying && step === n - 1;
         const scene = {}; scene['m' + st.customsSec + 's' + step] = true;
+        const total = def.steps.reduce((a, x) => a + moMs(x), 0);
+        const cta = MO_CTA[def.cta];
         return {
           moHas: true, moClosed: !st.moOpen, moOn: st.moOpen,
-          moSub: tx(st.lang, '{0} soniya · {1} qadam', Math.round(n * MO_STEP_MS / 1000), n),
-          moCaption: def.caps[step], moStepLabel: (step + 1) + ' / ' + n,
+          moSub: total >= 60000 ? tx(st.lang, '≈ {0} daqiqa · {1} qadam', (Math.round(total / 30000) / 2).toString().replace('.', ','), n) : tx(st.lang, '{0} soniya · {1} qadam', Math.round(total / 1000), n),
+          moTitle: tr(st.lang, sd.t), moCaption: tx(st.lang, sd.c, ...(sd.v ? sd.v(ex) : [])), moStepLabel: (step + 1) + ' / ' + n,
+          /* Vaqt chizig'i: qadam almashganda animatsiya qaytadan boshlansin
+             deb nomi juft/toq qadamda almashadi (element qayta ishlatiladi). */
           moPlaying: st.moPlaying, moPaused: !st.moPlaying && !ended, moEnded: ended,
           moPlayLabel: st.moPlaying ? 'Pauza' : (ended ? 'Qayta ko\'rish' : 'Boshlash'),
-          moScene: scene,
-          moDots: def.caps.map((_, i) => ({ go: () => this.moGo(i), w: i === step ? '22px' : '8px', bg: i === step ? PRI : '#DCDDFA', label: tx(st.lang, '{0}-qadam', i + 1) })),
+          moCtaLabel: tr(st.lang, cta.label), moCtaGo: () => { haptic('light'); this.moStop(); cta.go(this); },
+          moEx: ex, moScene: scene,
+          moDots: def.steps.map((x, i) => ({ go: () => this.moGo(i), label: tx(st.lang, '{0}-qadam', i + 1),
+            w: i < step || (i === step && ended) ? '100%' : '0', ms: moMs(x),
+            anim: i === step && !ended ? (step % 2 ? 'mo-bar-b' : 'mo-bar-a') : 'none',
+            state: st.moPlaying ? 'running' : 'paused' })),
           moOpenIt: () => this.moStart(), moToggle: () => this.moToggle(), moClose: () => this.moStop()
         };
       })(),
