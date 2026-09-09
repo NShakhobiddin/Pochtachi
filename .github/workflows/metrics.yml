@@ -1,0 +1,98 @@
+name: O'lchovni yoqish (Cloudflare Worker)
+
+# Terminalsiz o'rnatish: GitHub → Actions → shu workflow → "Run workflow".
+# Kerak bo'ladigan sirlar (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN  — Cloudflare'da "Edit Cloudflare Workers" shablonidan
+#   CLOUDFLARE_ACCOUNT_ID — Cloudflare → Workers & Pages → o'ng ustunda Account ID
+#   METRICS_READ_TOKEN    — o'zingiz o'ylab topgan uzun parol (hisobotni o'qish uchun)
+# Nima qiladi: worker/ ni Cloudflare'ga joylaydi, READ_TOKEN sirini o'rnatadi,
+# chiqqan manzilni ilovadagi METRICS_URL ga yozadi, index.html ni qayta quradi
+# va commit qilib push qiladi — shundan keyin sayt sanoqni yubora boshlaydi.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Sirlar borligini tekshirish
+        env:
+          T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          A: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          R: ${{ secrets.METRICS_READ_TOKEN }}
+        run: |
+          [ -n "$T" ] || { echo "::error::CLOUDFLARE_API_TOKEN siri yo'q"; exit 1; }
+          [ -n "$A" ] || { echo "::error::CLOUDFLARE_ACCOUNT_ID siri yo'q"; exit 1; }
+          [ -n "$R" ] || { echo "::error::METRICS_READ_TOKEN siri yo'q"; exit 1; }
+
+      - name: Worker bog'liqliklari
+        working-directory: worker
+        run: npm install --no-audit --no-fund
+
+      - name: Worker testlari
+        working-directory: worker
+        run: npm test
+
+      - name: Cloudflare'ga joylash
+        id: deploy
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx wrangler deploy 2>&1 | tee deploy.log
+          URL=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -1)
+          [ -n "$URL" ] || { echo "::error::Worker manzili topilmadi — deploy.log ni ko'ring"; exit 1; }
+          echo "url=$URL/" >> "$GITHUB_OUTPUT"
+          echo "Worker manzili: $URL/"
+
+      - name: Hisobot parolini o'rnatish (READ_TOKEN)
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          R: ${{ secrets.METRICS_READ_TOKEN }}
+        run: printf '%s' "$R" | npx wrangler secret put READ_TOKEN
+
+      - name: Serverni sinash
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+          R: ${{ secrets.METRICS_READ_TOKEN }}
+        run: |
+          sleep 5
+          curl -sf "$URL" | grep -q ok
+          curl -sf -X POST "$URL" -H 'origin: https://nshakhobiddin.github.io' -H 'content-type: text/plain' \
+            -d '{"v":"ci","l":"uz","e":[{"n":"screen","k":"ci"}]}' -o /dev/null
+          curl -sf -H "authorization: Bearer $R" "${URL}stats?days=1" | grep -q '"screen"'
+          echo "Server javob beryapti."
+
+      - name: Ilovaga manzilni yozish va qurish
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          F="Xarid Yordamchisi v2.dc.html"
+          if grep -q "const METRICS_URL = '$URL'" "$F"; then echo "Manzil allaqachon yozilgan"; exit 0; fi
+          node -e "
+            const fs=require('fs'); const f=process.argv[1]; let s=fs.readFileSync(f,'utf8');
+            s=s.replace(/const METRICS_URL = '[^']*';/, \"const METRICS_URL = '\" + process.env.URL + \"';\");
+            fs.writeFileSync(f, s);" "$F"
+          npm install --no-audit --no-fund
+          npm run build
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m "O'lchov yoqildi: METRICS_URL = $URL"
+          git push origin HEAD:${{ github.ref_name }}
+          echo "Ilova yangilandi. Hisobot: ${URL}stats?days=30&token=<METRICS_READ_TOKEN>"

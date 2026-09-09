@@ -108,10 +108,14 @@ page.on('response', r => { if (r.status() >= 400 && r.url().startsWith(base)) mi
    uchinchi tomon serveriga bog'liq bo'lmasligi kerak. */
 const tgRequests = [];
 const thirdParty = [];
+/* O'lchov manzili: bo'sh (o'chiq) yoki loyihaning o'z Cloudflare Worker'i.
+   To'ldirilgan bo'lsa u "uchinchi tomon" hisoblanmaydi — sanoq bizniki. */
+const METRICS_URL = (/const METRICS_URL = '([^']*)'/.exec(src) || [])[1] || '';
+const metricsHost = METRICS_URL ? new URL(METRICS_URL).host : '';
 page.on('request', r => {
   const u = r.url();
   if (u.includes('telegram.org')) tgRequests.push(u);
-  if (!u.startsWith(base) && !u.startsWith('data:') && !u.includes('cbu.uz')) thirdParty.push(new URL(u).host);
+  if (!u.startsWith(base) && !u.startsWith('data:') && !u.includes('cbu.uz') && !(metricsHost && new URL(u).host === metricsHost)) thirdParty.push(new URL(u).host);
 });
 
 try {
@@ -1082,20 +1086,23 @@ try {
      to'planmaydi ham, yuborilmaydi ham. Shu sabab "cbu.uz dan boshqa tashqi
      so'rov yo'q" qoidasi buzilmaydi. Manzil to'ldirilsa — u loyihaning o'z
      hisoblagichi bo'lishi kerak, README da yozilgan. */
-  check('o\'lchash sukut bo\'yicha o\'chiq', /const METRICS_URL = '';/.test(src));
+  check('o\'lchash manzili: bo\'sh yoki o\'z Worker\'imiz',
+    METRICS_URL === '' || /^https:\/\/[a-z0-9-]+\.[a-z0-9-]+\.workers\.dev\/$/.test(METRICS_URL), METRICS_URL || "bo'sh");
   /* Modul ichkarida, global emas — shuning uchun uni chaqirib emas,
      natijasi bo'yicha tekshiramiz: bir necha ekran aylanib, sahifa fonga
      o'tganda ham hech qanday beacon jo'natilmasin. */
   const beacon = await page.evaluate(async () => {
     let n = 0;
     const asl = navigator.sendBeacon;
-    navigator.sendBeacon = function () { n++; return true; };
+    navigator.sendBeacon = function (u) { n++; window.__beaconTo = String(u); return true; };
     document.dispatchEvent(new Event('visibilitychange', { bubbles: true }));
     await new Promise(r => setTimeout(r, 300));
     navigator.sendBeacon = asl;
     return n;
   });
-  check('o\'chiq holatda hech narsa jo\'natilmaydi', beacon === 0, beacon + ' ta beacon');
+  if (!METRICS_URL) check('o\'chiq holatda hech narsa jo\'natilmaydi', beacon === 0, beacon + ' ta beacon');
+  else check('o\'lchov faqat o\'z Worker\'imizga ketadi', beacon === 0 || (await page.evaluate(() => window.__beaconTo)) === METRICS_URL,
+    beacon + ' ta beacon -> ' + (await page.evaluate(() => window.__beaconTo)));
 
   /* Kulrang shkala uch pog'onadan iborat: kuchli, passiv, bezak. */
   const kulrang = [...new Set((src.match(/#[0-9A-F]{6}/gi) || []).map(h => h.toUpperCase()))]

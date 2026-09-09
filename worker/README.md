@@ -11,7 +11,25 @@ Nega Cloudflare: bepul tarif kuniga 100 000 so'rov beradi, server
 boshqarish yo'q, Durable Object (SQLite) sanoqni atomar yuritadi va KV ning
 "kuniga 1 000 yozuv" chegarasi bu yerda yo'q.
 
-## O'rnatish (bir marta, 10 daqiqa)
+## Terminalsiz o'rnatish (tavsiya)
+
+`.github/workflows/metrics.yml` hammasini o'zi qiladi. Kerak: Cloudflare
+hisobi va GitHub'da uchta sir (Settings → Secrets and variables → Actions →
+New repository secret):
+
+| Sir | Qayerdan |
+|---|---|
+| `CLOUDFLARE_API_TOKEN` | dash.cloudflare.com → profil → API Tokens → Create Token → "Edit Cloudflare Workers" shabloni → Continue → Create → nusxalang |
+| `CLOUDFLARE_ACCOUNT_ID` | dash.cloudflare.com → Workers & Pages → o'ng ustunda "Account ID" |
+| `METRICS_READ_TOKEN` | o'zingiz o'ylab topgan uzun parol — hisobotni o'qish uchun |
+
+Avval Workers & Pages sahifasini bir marta ochib `workers.dev` subdomen
+nomini tanlab qo'ying (birinchi ochilishda so'raydi). Keyin GitHub →
+Actions → "O'lchovni yoqish (Cloudflare Worker)" → Run workflow. Workflow
+Worker'ni joylaydi, parolni o'rnatadi, serverni sinaydi, manzilni ilovaga
+yozib qayta quradi va push qiladi. Hisobot manzili log oxirida.
+
+## Terminal orqali o'rnatish (10 daqiqa)
 
 1. Cloudflare hisobi oching (bepul) va Node 18+ o'rnatilgan bo'lsin.
 2. Shu papkada:
