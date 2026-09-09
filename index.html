@@ -3339,7 +3339,7 @@ const RU = {
   "Pochtam \u2014 mustaqil ma'lumot xizmati. Bu rasmiy davlat portali emas va bojxona organlari bilan bog'liq emas. Barcha hisob-kitoblar taxminiy.":'Pochtam \u2014 независимый информационный сервис. Это не официальный государственный портал и он не связан с таможенными органами. Все расчёты приблизительные.',
   'Global xaridlar':'Глобальные покупки',
   'biz bilan oson.':'с нами — просто.', 'Boshlash':'Начать',
-  'Oflayn zaxira kurs':'Офлайн резервный курс', 'Bugungi':'Сегодняшний',
+  'Oflayn zaxira kurs':'Офлайн резервный курс', 'Bugungi':'Сегодняшний', 'Markaziy bank · {0}':'Центральный банк · {0}', 'bugungi kurs':'курс на сегодня', 'Markaziy bank kursi yuklanmoqda…':'Курс Центрального банка загружается…',
   "5 qadamda yo'lni ko'rsataman — do'kondan bojgacha.":'Покажу путь за 5 шагов — от магазина до таможни.',
   'Hisob':'Расчёт',
   "Kategoriyani tanlang — shunga qarab do'kon tavsiya qilaman.":'Выберите категорию — по ней подберу магазин.',
@@ -6390,9 +6390,12 @@ class Component extends DCLogic {
          "$120 me'yordan ortiq" esa hech qachon kalit bo'la olmaydi. */
       calcRate: money(USD_RATE),
       rateValue: money(USD_RATE),
+      /* Tirik kurs yorlig'i sana bilan: lug'at butun satrni qidiradi, shuning
+         uchun sana o'rinbosar orqali qo'yiladi — CI da (cbu.uz ochiq)
+         "Markaziy bank · 09.09.2026" ruschada tarjimasiz qolgan edi. */
       rateSrcLabel: RATE_META.loading
-        ? 'Markaziy bank kursi yuklanmoqda…'
-        : (RATE_META.live ? 'Markaziy bank · ' + (RATE_META.date || 'bugungi kurs') : 'Oflayn zaxira kurs'),
+        ? tr(st.lang, 'Markaziy bank kursi yuklanmoqda…')
+        : (RATE_META.live ? tx(st.lang, 'Markaziy bank · {0}', RATE_META.date || tr(st.lang, 'bugungi kurs')) : tr(st.lang, 'Oflayn zaxira kurs')),
       rateLive: RATE_META.live && !RATE_META.loading,
       rateDiffLabel: RATE_META.live && RATE_META.diff ? (RATE_META.diff > 0 ? '+' : '') + RATE_META.diff.toFixed(2) : '',
       rateHasDiff: !!(RATE_META.live && RATE_META.diff),

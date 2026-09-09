@@ -826,6 +826,10 @@ try {
   const ATAYLAB = /^(O'zbekcha|Ўзбекча|Русский|VMQ|BHM|SALES TAX|Telegram|Instagram|App Store|Google Play|v\d|USD|EUR|GBP|iOS|Android|Nike|Adidas|Puma|Apple|Samsung|Xiaomi|Lenovo|Tmall|Walmart|Noon|AliExpress|Buy for me|Door delivery|Marketplace|Tracking|Powerbank|Black Friday|Pochtam|[\w.+-]+@[\w.-]+|[\w-]+\.(uz|com|ru|org)(\/|$))/i;
   const tarjimaSkan = async (lang) => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+    /* Tirik kurs holati ham skanerlansin: CI da cbu.uz ochiq, lokalda yopiq
+       bo'lishi mumkin — ikkalasida ham bir xil natija uchun javob soxta. */
+    await ctx.route('**cbu.uz/**', r => r.fulfill({ status: 200, contentType: 'application/json',
+      headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify([{ Rate: '12650.00', Date: '09.09.2026', Diff: '0.50' }]) }));
     const p = await ctx.newPage();
     await p.goto(base + '/', { waitUntil: 'load' });
     await p.waitForTimeout(1500);
