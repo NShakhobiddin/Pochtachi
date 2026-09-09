@@ -1,0 +1,17 @@
+{
+  "name": "pochtam-metrics",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Pochtam ilovasi uchun o'lchov serveri (Cloudflare Worker + Durable Object)",
+  "scripts": {
+    "test": "node test.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "token": "wrangler secret put READ_TOKEN"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

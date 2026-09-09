@@ -1,0 +1,27 @@
+# Pochtam o'lchov serveri. O'rnatish: worker/README.md
+name = "pochtam-metrics"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+workers_dev = true
+
+[vars]
+# Faqat shu saytdan kelgan beacon qabul qilinadi (Origin sarlavhasi).
+# Bo'sh qoldirilsa hamma joydan qabul qiladi — tavsiya etilmaydi.
+ALLOW_ORIGIN = "https://nshakhobiddin.github.io"
+# "1" bo'lsa GET /public tokensiz ochiladi (oxirgi 7 kunning eng ko'p
+# ochilgan do'kon/kuryer/qo'llanmalari) — ilovadagi "tirik signal" uchun.
+PUBLIC_STATS = "0"
+
+# READ_TOKEN — sir, toml ga yozilmaydi:  wrangler secret put READ_TOKEN
+
+[[durable_objects.bindings]]
+name = "COUNTER"
+class_name = "Counter"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Counter"]
+
+# Har kuni 03:00 UTC da 90 kundan eski sanoq o'chiriladi.
+[triggers]
+crons = ["0 3 * * *"]
