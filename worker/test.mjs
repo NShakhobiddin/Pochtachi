@@ -1,6 +1,6 @@
 /* Worker'ning sof qismlari uchun test: beacon tahlili va Durable Object
    sanog'i (SQLite o'rniga xotiradagi soxta storage). `node test.mjs`. */
-import { parseBeacon, Counter } from './src/index.js';
+import worker, { parseBeacon, Counter } from './src/index.js';
 
 let fails = 0;
 const check = (name, ok, info = '') => { console.log(`${ok ? '  ok  ' : ' XATO '} ${name}${info ? ' — ' + info : ''}`); if (!ok) fails++; };
@@ -48,6 +48,23 @@ check('kalitlar kamayish tartibida', Object.keys(st.byName.guide)[0] === 'a'.rep
 await c.fetch(new Request('https://counter/purge', { method: 'DELETE' }));
 const st2 = await (await c.fetch(new Request('https://counter/stats?days=90'))).json();
 check('purge eski qatorni o\'chiradi', !Object.values(st2.byName).some(o => 'old' in o));
+
+/* --- Butun Worker: yo'llar (soxta env, Counter yuqoridagi soxta SQLite bilan) --- */
+const env = { ALLOW_ORIGIN: 'https://x', READ_TOKEN: 'sir', PUBLIC_STATS: '0', COUNTER: { idFromName: () => 'main', get: () => ({ fetch: (u, i) => c.fetch(new Request(u, i)) }) } };
+const ctx = { waitUntil: p => p };
+const hit = (path, init) => worker.fetch(new Request('https://w' + path, init), env, ctx);
+check('GET / — ok', (await (await hit('/')).text()) === 'ok');
+check('POST / begona Origin — 403', (await hit('/', { method: 'POST', headers: { origin: 'https://boshqa' }, body })).status === 403);
+check('POST / o\'z Origin — 204', (await hit('/', { method: 'POST', headers: { origin: 'https://x' }, body })).status === 204);
+check('/stats tokensiz — 401', (await hit('/stats')).status === 401);
+check('/stats ?token= bilan — 200', (await hit('/stats?token=sir')).status === 200);
+const hs = await hit('/hisobot');
+const html = await hs.text();
+check('/hisobot — HTML sahifa', hs.status === 200 && /text\/html/.test(hs.headers.get('content-type')) && html.includes('<title>Pochtam hisobot</title>'));
+check('/hisobot tashqi resurssiz', !/src="http|href="http/.test(html));
+check('/hisobot parolni manzilda saqlamaydi', html.includes("history.replaceState(null,'',location.pathname)"));
+check('/hisobot yorliqlar to\'liq', ['Do\'konga o\'tish', 'Pullik xizmat', 'Boj hisobini tekshirish', 'Bosh sahifa'].every(t => html.includes(t)));
+check('/hisobot indekslanmaydi', hs.headers.get('x-robots-tag') === 'noindex');
 
 console.log(fails ? `\n${fails} ta tekshiruv o'tmadi.` : '\nWorker testlari o\'tdi.');
 process.exit(fails ? 1 : 0);

@@ -308,11 +308,12 @@ Hamkorlikni va ilovada joylashishni sotish uchun bitta savolga javob kerak:
 qaysi ekran ochiladi va qaysi do'kon/kuryerga o'tiladi. Shusiz hamkorga
 aytadigan raqam bo'lmaydi.
 
-Uchinchi tomon xizmati yo'q. Manzil `METRICS_URL` da va u **bo'sh** — shu
-holatda hech qanday so'rov ketmaydi va ilovaning "cbu.uz dan boshqa tashqi
-so'rov yo'q" qoidasi buzilmaydi (`tests/smoke.mjs` ikkalasini ham
-tekshiradi). Yoqish uchun `METRICS_URL` ga **o'zingizning** hisoblagichingiz
-manzilini yozing.
+Uchinchi tomon xizmati yo'q. Manzil `METRICS_URL` da: **bo'sh** bo'lsa hech
+qanday so'rov ketmaydi, to'ldirilsa faqat o'sha manzilga — ilovaning
+"cbu.uz va o'z o'lchov serveridan boshqa tashqi so'rov yo'q" qoidasi
+shunday saqlanadi (`tests/smoke.mjs` tekshiradi). Server `worker/` da
+(Cloudflare Worker + Durable Object); uni `.github/workflows/metrics.yml`
+bir tugma bilan joylaydi va manzilni ilovaga yozadi.
 
 **Nima yuboriladi.** Hodisa nomi, qo'pol kalit, ilova versiyasi va til:
 
@@ -334,32 +335,15 @@ umuman hech narsa yuborilmaydi.
 o'tganda yoki yopilganda bitta `sendBeacon` bilan ketadi (20 ta to'plansa
 ham). Ya'ni har bosishda so'rov qilinmaydi.
 
-**Server tomoni.** Eng arzon yo'l — Cloudflare Worker (bepul tarif yetadi).
-Minimal ko'rinishi:
-
-```js
-export default {
-  async fetch(req, env) {
-    const cors = { 'Access-Control-Allow-Origin': 'https://nshakhobiddin.github.io',
-                   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                   'Access-Control-Allow-Headers': 'content-type' };
-    if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
-    if (req.method !== 'POST') return new Response('', { status: 405, headers: cors });
-    const { e = [] } = await req.json().catch(() => ({}));
-    const kun = new Date().toISOString().slice(0, 10);
-    for (const x of e.slice(0, 60)) {
-      const kalit = `${kun}|${x.n}|${String(x.k).slice(0, 40)}`;
-      const bor = Number(await env.HISOB.get(kalit)) || 0;
-      await env.HISOB.put(kalit, String(bor + 1));
-    }
-    return new Response(null, { status: 204, headers: cors });
-  }
-};
-```
-
-`HISOB` — Workers KV ombori. Faqat sanoq saqlanadi, IP ham, xom hodisa ham
-yozilmaydi. `Access-Control-Allow-Origin` ni o'z domeningizga qo'ying, aks
-holda boshqa saytlar ham sanoqni shishira oladi.
+**Server tomoni.** `worker/` — Cloudflare Worker (bepul tarif yetadi).
+Faqat sanoq saqlanadi: kun · hodisa · kalit → nechta; IP ham, xom hodisa ham
+yozilmaydi, 90 kundan eski qatorlar o'chiriladi. Beacon faqat
+`ALLOW_ORIGIN` dan qabul qilinadi, aks holda boshqa saytlar sanoqni
+shishira oladi. Hisobot ikki ko'rinishda: `GET /stats?days=N` (JSON, token
+bilan) va `GET /hisobot` — brauzerda ochiladigan sahifa: parol bir marta
+kiritiladi, bugun/7/30/90 kun, ekranlar, do'kon va kuryerga o'tishlar,
+qo'llanmalar, pullik xizmat murojaatlari chiziq bilan. Tafsilot:
+`worker/README.md`.
 
 ## Pullik xizmatlar
 

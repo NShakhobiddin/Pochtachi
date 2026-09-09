@@ -108,4 +108,4 @@ jobs:
           git add -A
           git commit -m "O'lchov yoqildi: METRICS_URL = $URL"
           git push origin HEAD:${{ github.ref_name }}
-          echo "Ilova yangilandi. Hisobot: ${URL}stats?days=30&token=<METRICS_READ_TOKEN>"
+          echo "Ilova yangilandi. Hisobot sahifasi: ${URL}hisobot (paroli — METRICS_READ_TOKEN)"

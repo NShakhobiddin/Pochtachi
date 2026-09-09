@@ -19,8 +19,11 @@
  *   GET  /public       — PUBLIC_STATS="1" bo'lsa: oxirgi 7 kunning eng ko'p
  *                        ochilgan do'kon/kuryer/qo'llanmalari, tokensiz,
  *                        1 soat keshlanadi (ilovadagi "tirik signal" uchun)
+ *   GET  /hisobot      — o'qiladigan hisobot sahifasi (parol sahifada so'raladi)
  *   GET  /             — "ok"
  */
+
+import { hisobotHtml } from './hisobot.js';
 
 const NAMES = new Set(['screen', 'store', 'courier', 'guide', 'wizard', 'svcAsk', 'hamkor']);
 const MAX_EVENTS = 60, MAX_BODY = 8192, MAX_KEY = 40, MAX_DAYS = 90;
@@ -167,6 +170,11 @@ export default {
       return new Response(null, { status: 204, headers: cors(env) });
     }
 
+    if (request.method === 'GET' && (url.pathname === '/hisobot' || url.pathname === '/hisobot/')) {
+      /* Sahifaning o'zi ochiq (unda ma'lumot yo'q); sanoqni u /stats dan
+         token bilan oladi. */
+      return new Response(hisobotHtml(), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
+    }
     if (request.method === 'GET' && url.pathname === '/') return new Response('ok', { headers: cors(env) });
     return new Response('not found', { status: 404, headers: cors(env) });
   },

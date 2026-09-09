@@ -57,7 +57,18 @@ yozib qayta quradi va push qiladi. Hisobot manzili log oxirida.
 `wrangler.toml` dagi `ALLOW_ORIGIN` — ilova turgan sayt. Boshqa domenga
 ko'chsangiz o'zgartiring, aks holda beacon 403 bilan qaytadi.
 
-## Tekshirish
+## Hisobot sahifasi
+
+`https://pochtam-metrics.<hisob>.workers.dev/hisobot` — brauzerda ochiladigan
+oddiy hisobot: parolni (READ_TOKEN) bir marta kiritasiz, u brauzerning o'zida
+saqlanadi (manzilda emas, xatcho'p qilsa bo'ladi). Bugun / 7 / 30 / 90 kun
+tugmalari, uchta jamlama (ekran ochilishi, do'kon va kuryerga o'tishlar,
+murojaatlar), so'ng bo'limlar: ekranlar, do'konga o'tish, kuryerga o'tish,
+qo'llanmalar, pullik xizmat, reja, hamkorlik, til, versiya — har biri
+chiziq bilan. Sahifa tashqi resurs yuklamaydi va indekslanmaydi. "Chiqish"
+parolni brauzerdan o'chiradi.
+
+## Tekshirish (terminal)
 
 ```bash
 # server tirikmi
