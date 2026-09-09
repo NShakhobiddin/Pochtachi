@@ -14,6 +14,11 @@ PUBLIC_STATS = "0"
 
 # READ_TOKEN — sir, toml ga yozilmaydi:  wrangler secret put READ_TOKEN
 
+# Cloudflare panelida (Workers & Pages → pochtam-metrics → Logs) so'rovlar
+# va xatolar ko'rinsin.
+[observability]
+enabled = true
+
 [[durable_objects.bindings]]
 name = "COUNTER"
 class_name = "Counter"

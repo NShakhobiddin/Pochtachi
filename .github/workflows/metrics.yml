@@ -72,10 +72,23 @@ jobs:
           R: ${{ secrets.METRICS_READ_TOKEN }}
         run: |
           sleep 5
-          curl -sf "$URL" | grep -q ok
-          curl -sf -X POST "$URL" -H 'origin: https://nshakhobiddin.github.io' -H 'content-type: text/plain' \
-            -d '{"v":"ci","l":"uz","e":[{"n":"screen","k":"ci"}]}' -o /dev/null
-          curl -sf -H "authorization: Bearer $R" "${URL}stats?days=1" | grep -q '"screen"'
+          set +e
+          echo "== GET /"
+          code=$(curl -s -o /tmp/r1 -w '%{http_code}' "$URL"); echo "[$code] $(cat /tmp/r1)"
+          [ "$code" = "200" ] || { echo "::error::Server ochilmadi (GET / -> $code)"; exit 1; }
+          echo "== POST / (sinov beacon)"
+          code=$(curl -s -o /tmp/r2 -w '%{http_code}' -X POST "$URL" -H 'origin: https://nshakhobiddin.github.io' -H 'content-type: text/plain' \
+            -d '{"v":"ci","l":"uz","e":[{"n":"screen","k":"ci"}]}'); echo "[$code] $(cat /tmp/r2)"
+          [ "$code" = "204" ] || { echo "::error::Beacon qabul qilinmadi (POST / -> $code)"; exit 1; }
+          echo "== GET /stats"
+          ok=0
+          for i in 1 2 3 4 5; do
+            code=$(curl -s -o /tmp/r3 -w '%{http_code}' -H "authorization: Bearer $R" "${URL}stats?days=1")
+            echo "[$code] $(head -c 400 /tmp/r3)"
+            if [ "$code" = "200" ] && grep -q '"screen"' /tmp/r3; then ok=1; break; fi
+            sleep 3
+          done
+          [ "$ok" = "1" ] || { echo "::error::Hisobot o'qilmadi (GET /stats -> $code). Parol (METRICS_READ_TOKEN) to'g'rimi?"; exit 1; }
           echo "Server javob beryapti."
 
       - name: Ilovaga manzilni yozish va qurish
