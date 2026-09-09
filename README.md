@@ -226,15 +226,37 @@ gzip bilan ~25 KB), oflayn ishlaydi, shuning uchun index.html chegarasi
 
 ### Qo'llanmalarda
 
-Har bir qo'llanmaning birinchi paneli tepasida ham shunday karta bor
-(`guides/guide-motion.js`, uslublar `guide-common.css` dagi `.gm-*`).
-Sahnalar do'konga qarab `MOTION` obyektidan chiziladi (har `guides/inline/*.html`
-da `const TABS=` oldida): `store`, `color`, `from`, `flow` (`courier` — ombor
-manzili va ID kod, `direct` — checkout'da O'zbekiston), `days`, `id`, `free`/`val`
-(bojxona sahnasi) va `caps` (5 ta sarlavha). Karta faqat faol panelda o'ynaydi:
-boshqa tabga o'tilsa (`xy:panel` hodisasi) to'xtab, yopiq holatga qaytadi.
-`tests/guides.mjs` har qo'llanmada kartani ochib, 5-qadamga o'tib, tab almashib
-va yopib tekshiradi.
+Har qo'llanmada beshta (Poizon va eBay'da oltita) video, har biri o'z
+paneli tepasida (`guides/guide-motion.js`, uslublar `guide-common.css` dagi
+`.gm-*`):
+
+- **Boshlash** — "Qanday ishlaydi", 11 qadam, do'konga xos: nima bu, yo'llar,
+  kuryer va ID, ro'yxat, qidiruv, manzil, to'lov, ombor, yo'l, bojxona, qabul.
+- **Bosqichlar** — "Bosqichma-bosqich", qo'llanmaning o'z `STEPS` ro'yxatiga
+  mos 10–12 qadam (Taobao'da 我的淘宝 → 我的地址 kabi aniq yo'llar, Trendyol'da
+  turk maydonlari, Amazon'da ASIN va suite, eBay'da auksion va MBG).
+- **Bojxona** — standart 9 qadam + do'konga xos `customsNote` (SHEIN'da pochta
+  $100, Poizon'da ikki juft krossovka, Amazon'da sales tax, eBay'da ishlatilgan
+  tovar qiymati).
+- **Yetkazish** — standart 8 qadam + `cargoNote` (avia/avto, hajmiy vazn,
+  konsolidatsiya, qayta qadoq, foto-hisobot, bosqichlar, qabul).
+- **O'lchamlar** (`sizeKind: cloth|shoe`), eBay'da **Xavfsizlik**, Poizon'da
+  **Originallik** — 6 qadam.
+
+Sahnalar umumiy kutubxonadan (`SC`, ~40 ta parametrli sahna: brand, routes,
+idcard, register, search, seller, address, pay, payFail, track, warehouse,
+repack, fly, modes, weight, customs, customsOver, lanes, notify, unbox, size,
+group, sku, auth, auction, listing, mbg, tax…), do'kon nomi, rangi, davlat, ID
+va misol raqamlari `MOTION` dan (har `guides/inline/*.html` da `const TABS=`
+oldida). Qadam: `{t, c, s, p}` — sarlavha, izoh, sahna nomi, sahna
+parametrlari; davomiyligi matn uzunligiga qarab 4,5–8,5 s. Segmentli vaqt
+chizig'i, oxirida keyingi tabga o'tuvchi tugma (`cta.tab`). Faqat faol
+panelda o'ynaydi, boshqa tabga o'tilsa to'xtaydi. `tests/guides.mjs` har
+qo'llanmada to'rt asosiy panelda karta borligini, Boshlash videosining 11
+qadamini, tab almashishini va yopilishini tekshiradi.
+Har qo'llanmaga ≈ 8 KB ssenariy matni qo'shildi, shuning uchun guides/inline
+chegarasi 660 → 700 KB (gzip bittasi hali 30 KB dan kam); `guide-motion.js`
+≈ 50 KB (gzip 15 KB), SW keshida.
 
 ## Kuzatuv va xizmatlar
 

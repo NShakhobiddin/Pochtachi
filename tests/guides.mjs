@@ -270,36 +270,44 @@ for (const file of guides) {
     miniState.bor && miniState.yuqorida && miniState.ochdi && miniState.ulush < 0.2,
     miniState.bor ? `${miniState.matn.slice(0, 34)} · ekranning ${Math.round(miniState.ulush * 100)}%` : 'tasma yo\'q');
 
-  /* "Qanday ishlaydi" motion-tushuntirishi: birinchi panel tepasida yopiq
-     karta, bosilganda 5 qadamlik sahna, nuqta bilan qadamga o'tish, tab
-     almashganda to'xtaydi, yopish tugmasi yopiq kartaga qaytaradi. */
+  /* Motion-tushuntirishlar: har asosiy panel tepasida karta (Boshlash,
+     Bosqichlar, Bojxona, Yetkazish + O'lchamlar/Xavfsizlik/Originallik).
+     Boshlash videosi: 11 qadam, sarlavha va izoh, segmentli chiziq tor
+     ekranga sig'adi, oxirgi qadam, tab almashganda to'xtaydi, yopiladi. */
   const mo = await page.evaluate(async () => {
     const wait = () => new Promise(r => setTimeout(r, 60));
     const tabs = [...document.querySelectorAll('.tab')];
     tabs[0].click(); await wait();
-    const card = document.querySelector('.panel .gm-card');
-    if (!card) return { card: false };
+    const cards = [...document.querySelectorAll('.gm-card')].map(c => c.closest('.panel').id);
+    const card = document.querySelector('#p-start .gm-card');
+    if (!card) return { cards };
     const tepada = card.parentElement.firstElementChild === card;
     const yopiqMatn = card.textContent.replace(/\s+/g, ' ').trim();
     card.querySelector('.gm-open').click(); await wait();
-    const s0 = (document.querySelector('.gm-stage svg[data-step]') || {}).dataset?.step;
-    const cap0 = (document.querySelector('.gm-cap') || {}).textContent || '';
-    document.querySelector('.gm-dot[data-i="4"]').click(); await wait();
-    const s4 = (document.querySelector('.gm-stage svg[data-step]') || {}).dataset?.step;
-    const n4 = (document.querySelector('.gm-n') || {}).textContent || '';
-    const cap4 = (document.querySelector('.gm-cap') || {}).textContent || '';
+    const s0 = (card.querySelector('.gm-stage svg[data-step]') || {}).dataset?.step;
+    const t0 = (card.querySelector('.gm-title') || {}).textContent || '';
+    const cap0 = (card.querySelector('.gm-cap') || {}).textContent || '';
+    const n = card.querySelectorAll('.gm-dot').length;
+    const ctl = card.querySelector('.gm-ctl');
+    const sigadi = ctl.scrollWidth <= ctl.clientWidth;
+    card.querySelector('.gm-dot[data-i="' + (n - 1) + '"]').click(); await wait();
+    const sN = (card.querySelector('.gm-stage svg[data-step]') || {}).dataset?.step;
+    const nN = (card.querySelector('.gm-n') || {}).textContent || '';
+    const capN = (card.querySelector('.gm-cap') || {}).textContent || '';
     tabs[1].click(); await wait();
-    const tabdaTo = !document.querySelector('.gm-stage') && !!document.querySelector('.gm-open');
+    const tabdaTo = !card.querySelector('.gm-stage') && !!card.querySelector('.gm-open');
     tabs[0].click(); await wait();
-    document.querySelector('.gm-open').click(); await wait();
-    document.querySelector('.gm-x').click(); await wait();
-    const yopildi = !document.querySelector('.gm-stage') && !!document.querySelector('.gm-open');
-    return { card: true, tepada, yopiqMatn, s0, cap0, s4, n4, cap4, tabdaTo, yopildi };
+    card.querySelector('.gm-open').click(); await wait();
+    card.querySelector('.gm-x').click(); await wait();
+    const yopildi = !card.querySelector('.gm-stage') && !!card.querySelector('.gm-open');
+    return { cards, tepada, yopiqMatn, s0, t0, cap0, n, sigadi, sN, nN, capN, tabdaTo, yopildi };
   });
-  check(`${name}: motion-tushuntirish (karta, qadam, tab, yopish)`,
-    mo.card && mo.tepada && /Qanday ishlaydi/.test(mo.yopiqMatn) && mo.s0 === '0' && mo.cap0.length > 20 &&
-    mo.s4 === '4' && mo.n4.replace(/\s/g, '') === '5/5' && mo.cap4 !== mo.cap0 && mo.tabdaTo && mo.yopildi,
-    mo.card ? `${mo.yopiqMatn.slice(0, 32)} · ${mo.s0}→${mo.s4} · ${mo.n4} · tab ${mo.tabdaTo} · yopish ${mo.yopildi}` : 'karta yo\'q');
+  const kerak = ['p-start', 'p-steps', 'p-customs', 'p-cargo'];
+  check(`${name}: motion-tushuntirishlar (panellar, qadamlar, tab, yopish)`,
+    kerak.every(id => mo.cards.includes(id)) && mo.cards.length >= 5 && mo.tepada && /Qanday ishlaydi/.test(mo.yopiqMatn) &&
+    mo.s0 === '0' && mo.t0.length > 3 && mo.cap0.length > 60 && mo.n === 11 && mo.sigadi &&
+    mo.sN === '10' && mo.nN.replace(/\s/g, '') === '11/11' && mo.capN !== mo.cap0 && mo.tabdaTo && mo.yopildi,
+    mo.cards ? `${mo.cards.join(',')} · ${mo.yopiqMatn.slice(0, 40)} · ${mo.s0}→${mo.sN} · ${mo.nN} · sig'adi ${mo.sigadi} · tab ${mo.tabdaTo} · yopish ${mo.yopildi}` : 'karta yo\'q');
 
   check(`${name}: konsol toza`, errors.length === 0, errors.slice(0, 2).join(' | '));
   check(`${name}: 404 yo'q`, missing.length === 0, missing.join(', '));

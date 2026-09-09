@@ -44,7 +44,7 @@ const BUDGETS = [
      Foydalanuvchi bir vaqtda bitta qo'llanmani ochadi, shuning uchun
      haqiqiy chegara — bitta faylning gzip hajmi. */
   { name: 'qo\'llanmalar (guides/inline/)', dir: 'guides/inline', ext: ['.html'],
-    maxTotalKb: 660, maxFileKb: 95, gzipMaxFileKb: 30 }
+    maxTotalKb: 700, maxFileKb: 100, gzipMaxFileKb: 30 }
 ];
 
 const kb = bytes => Math.round(bytes / 1024);
