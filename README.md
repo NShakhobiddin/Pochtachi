@@ -302,6 +302,34 @@ Telegram ichida ilova o'zi:
 
 Oddiy brauzerda bu kodning ta'siri yo'q — sayt avvalgidek ishlayveradi.
 
+## O'z domeningizni ulash
+
+Sayt GitHub Pages'da qolaveradi, faqat manzil o'zgaradi. Kod ichida
+`nshakhobiddin.github.io/Pochtachi` deb yozilgan joy yo'q — hamma manzil
+`tools/site.mjs` dan chiqadi: ildizda `CNAME` fayli bo'lsa (GitHub uni
+o'zi yaratadi) sayt o'sha domenning ildizida deb hisoblanadi, bo'lmasa
+GitHub Pages manzilida. Yo'llar nisbiy (`./`), shuning uchun `/Pochtachi/`
+dan `/` ga ko'chishda hech narsa sinmaydi.
+
+1. **Domen boshqaruvida (registrator) DNS yozuvlari.** Ildiz domen uchun
+   4 ta `A` yozuv: `185.199.108.153`, `185.199.109.153`, `185.199.110.153`,
+   `185.199.111.153`; `www` uchun `CNAME` → `nshakhobiddin.github.io`.
+   Faqat `www` yoki `app.` kabi subdomen ishlatilsa bitta `CNAME` yetadi.
+2. **GitHub → Settings → Pages → Custom domain** ga domenni yozib Save.
+   GitHub ildizga `CNAME` faylini commit qiladi (branch shu bo'lgani uchun
+   push qilish shart emas). DNS tarqalgach (5 daqiqadan bir necha soatgacha)
+   **Enforce HTTPS** ni belgilang.
+3. **Qayta qurish.** Keyingi har qanday push (yoki `npm run build` + push)
+   `index.html`, `sitemap.xml`, `robots.txt` va qo'llanmalardagi kanonik/OG
+   manzillarni yangi domenga o'tkazadi. Workflow orqali o'lchov serverini
+   qayta joylasangiz (Actions → "O'lchovni yoqish" → Run workflow) yangi
+   domen `ALLOW_ORIGIN` ga o'zi qo'shiladi; eski GitHub manzili ham qoladi.
+4. **Telegram.** BotFather'dagi Menu Button / Mini App manzilini yangi
+   domenga almashtiring.
+
+Eski manzil ishlayveradi: GitHub `nshakhobiddin.github.io/Pochtachi/` ni
+yangi domenga yo'naltiradi.
+
 ## O'lchash
 
 Hamkorlikni va ilovada joylashishni sotish uchun bitta savolga javob kerak:

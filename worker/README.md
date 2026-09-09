@@ -54,8 +54,10 @@ yozib qayta quradi va push qiladi. Hisobot manzili log oxirida.
    keyin `npm run build` va push. Shu paytdan boshlab sahifa fonga o'tganda
    yoki yopilganda bitta beacon ketadi (har bosishda emas).
 
-`wrangler.toml` dagi `ALLOW_ORIGIN` — ilova turgan sayt. Boshqa domenga
-ko'chsangiz o'zgartiring, aks holda beacon 403 bilan qaytadi.
+`wrangler.toml` dagi `ALLOW_ORIGIN` — ilova turgan sayt(lar), vergul bilan.
+Boshqa domenga ko'chsangiz o'zgartiring, aks holda beacon 403 bilan
+qaytadi. Workflow orqali joylansa ildizdagi `CNAME` dagi domen o'zi
+qo'shiladi.
 
 ## Hisobot sahifasi
 

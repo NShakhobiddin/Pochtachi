@@ -12,9 +12,9 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { SITE, BASE } from './site.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const SITE = 'https://nshakhobiddin.github.io/Pochtachi/';
 const OG_IMAGE = SITE + 'icons/og-cover.png';
 
 const GUIDES = [
@@ -174,7 +174,7 @@ writeFileSync(join(ROOT, 'sitemap.xml'),
 
 writeFileSync(join(ROOT, 'robots.txt'),
   `User-agent: *\nAllow: /\n\n# Dizayn manbasi va logotiplarning asl nusxalari indekslanmasin\n` +
-  `Disallow: /Pochtachi/Xarid%20Yordamchisi%20v2.dc.html\nDisallow: /Pochtachi/logos/src/\n\n` +
+  `Disallow: ${BASE}Xarid%20Yordamchisi%20v2.dc.html\nDisallow: ${BASE}logos/src/\n\n` +
   `Sitemap: ${SITE}sitemap.xml\n`);
 
 console.log(`${touched} ta qo'llanmaga meta qo'shildi; guides/index.html, sitemap.xml, robots.txt yangilandi.`);

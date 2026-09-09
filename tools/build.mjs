@@ -11,6 +11,7 @@ import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { SITE, DEFAULT_SITE } from './site.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SOURCE = 'Xarid Yordamchisi v2.dc.html';
@@ -36,6 +37,9 @@ function build(src) {
     if (!src.includes(marker)) throw new Error('Manbada STORE_LOGO_IDS belgisi topilmadi');
     src = src.replace(marker, 'const STORE_LOGO_IDS = ' + JSON.stringify(list) + ';');
   }
+  /* Kanonik va OG manzillar: manbada GitHub Pages manzili turadi; o'z domen
+     ulangan bo'lsa (CNAME) index.html da o'sha domen yoziladi. */
+  if (SITE !== DEFAULT_SITE) src = src.split(DEFAULT_SITE).join(SITE);
   return BANNER + src;
 }
 

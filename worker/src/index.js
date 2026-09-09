@@ -13,7 +13,7 @@
  *
  * Yo'llar:
  *   OPTIONS *          — CORS preflight
- *   POST /             — beacon (faqat ALLOW_ORIGIN dan)
+ *   POST /             — beacon (faqat ALLOW_ORIGIN dan; vergul bilan bir nechta)
  *   GET  /stats?days=7 — jamlangan sanoq, `Authorization: Bearer <READ_TOKEN>`
  *                        yoki `?token=` bilan
  *   GET  /public       — PUBLIC_STATS="1" bo'lsa: oxirgi 7 kunning eng ko'p
@@ -59,9 +59,15 @@ export function parseBeacon(text, today) {
 const isoDay = (d = new Date()) => d.toISOString().slice(0, 10);
 const daysBack = n => { const d = new Date(); d.setUTCDate(d.getUTCDate() - n); return isoDay(d); };
 
-function cors(env, extra = {}) {
+/* ALLOW_ORIGIN — bitta yoki vergul bilan bir nechta manzil (GitHub Pages va
+   o'z domen birga yashaganda). Javobda so'rov kelgan manzil qaytariladi,
+   ro'yxatda bo'lmasa — birinchisi. */
+const origins = env => String(env.ALLOW_ORIGIN || '').split(',').map(s => s.trim()).filter(Boolean);
+const originOk = (env, origin) => { const l = origins(env); return !l.length || l.includes(origin); };
+function cors(env, extra = {}, origin = '') {
+  const l = origins(env);
   return {
-    'Access-Control-Allow-Origin': env.ALLOW_ORIGIN || '*',
+    'Access-Control-Allow-Origin': !l.length ? '*' : (l.includes(origin) ? origin : l[0]),
     'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
     'Access-Control-Allow-Headers': 'content-type, authorization',
     'Access-Control-Max-Age': '86400',
@@ -125,23 +131,23 @@ function authorized(request, url, env) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors(env) });
+    const origin = request.headers.get('origin') || '';
+    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors(env, {}, origin) });
     const counter = env.COUNTER.get(env.COUNTER.idFromName('main'));
 
     if (request.method === 'POST' && url.pathname === '/') {
       /* Faqat o'z saytimizdan: aks holda boshqa saytlar sanoqni shishiradi.
          sendBeacon ham, fetch(no-cors) ham Origin sarlavhasini yuboradi. */
-      const origin = request.headers.get('origin') || '';
-      if (env.ALLOW_ORIGIN && origin !== env.ALLOW_ORIGIN) return new Response(null, { status: 403, headers: cors(env) });
+      if (!originOk(env, origin)) return new Response(null, { status: 403, headers: cors(env, {}, origin) });
       const len = +(request.headers.get('content-length') || 0);
-      if (len > MAX_BODY) return new Response(null, { status: 413, headers: cors(env) });
+      if (len > MAX_BODY) return new Response(null, { status: 413, headers: cors(env, {}, origin) });
       let text = await request.text();
       if (text.length > MAX_BODY) text = text.slice(0, MAX_BODY);
       const rows = parseBeacon(text, isoDay());
       if (rows.length) {
         ctx.waitUntil(counter.fetch('https://counter/add', { method: 'POST', body: JSON.stringify(rows) }));
       }
-      return new Response(null, { status: 204, headers: cors(env) });
+      return new Response(null, { status: 204, headers: cors(env, {}, origin) });
     }
 
     if (request.method === 'GET' && url.pathname === '/stats') {
