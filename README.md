@@ -255,7 +255,7 @@ panelda o'ynaydi, boshqa tabga o'tilsa to'xtaydi. `tests/guides.mjs` har
 qo'llanmada to'rt asosiy panelda karta borligini, Boshlash videosining 11
 qadamini, tab almashishini va yopilishini tekshiradi.
 Har qo'llanmaga ≈ 8 KB ssenariy matni qo'shildi, shuning uchun guides/inline
-chegarasi 660 → 700 KB (gzip bittasi hali 30 KB dan kam); `guide-motion.js`
+chegarasi 660 → 700 KB, bitta fayl 95 → 110 KB (gzip bittasi hali 30 KB dan kam); `guide-motion.js`
 ≈ 50 KB (gzip 15 KB), SW keshida.
 
 ## Kuzatuv va xizmatlar
