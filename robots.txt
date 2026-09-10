@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Dizayn manbasi va logotiplarning asl nusxalari indekslanmasin
-Disallow: /Pochtachi/Xarid%20Yordamchisi%20v2.dc.html
-Disallow: /Pochtachi/logos/src/
+Disallow: /Xarid%20Yordamchisi%20v2.dc.html
+Disallow: /logos/src/
 
-Sitemap: https://nshakhobiddin.github.io/Pochtachi/sitemap.xml
+Sitemap: https://pochtam.uz/sitemap.xml
