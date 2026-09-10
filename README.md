@@ -288,12 +288,19 @@ Ilova Telegram Mini App sifatida to'liq ekranda ochiladi. Botga ulash:
 
 1. [@BotFather](https://t.me/BotFather) da botni tanlang.
 2. **Bot Settings → Menu Button → Configure menu button** ni bosing va manzil sifatida
-   `https://nshakhobiddin.github.io/Pochtachi/` ni kiriting (tugma nomi, masalan, "Pochtam").
-3. Yoki `/newapp` orqali alohida Mini App yarating va shu manzilni bering.
+   `https://pochtam.uz/` ni kiriting (tugma nomi, masalan, "Pochtam").
+3. Tarqatish uchun to'g'ridan-to'g'ri havola: `/newapp` bilan Mini App
+   yarating (qisqa nom, masalan `app`), manzil — o'sha. Keyin havola
+   `https://t.me/<bot>/app?mode=fullscreen` — Telegram 11+ da ilova darhol
+   butun ekranda ochiladi, ilovaning o'z so'rovini kutmasdan.
 
 Telegram ichida ilova o'zi:
 
-- `ready` + `expand` va (Bot API 8.0 dan boshlab) `requestFullscreen` bilan butun ekranni egallaydi;
+- `ready` + `expand` va (Bot API 8.0 dan boshlab) `requestFullscreen` bilan
+  butun ekranni egallaydi. So'rov versiya tekshiruvi bilan chaqiriladi
+  (eski mijozda xato bermaydi) va birinchi urinish rad etilsa
+  `isFullscreen` bo'lguncha 0,7 s oraliq bilan qayta so'raladi; oynani
+  pastga tortib kichraytirsa barqarorlashgach yana yoyiladi;
 - pastga tortganda yopilib ketmasligi uchun vertikal svaypni o'chiradi;
 - Telegramning tepadagi tugmalari ostiga tushmaslik uchun `safeAreaInset` va
   `contentSafeAreaInset` qiymatlarini hisobga oladi;

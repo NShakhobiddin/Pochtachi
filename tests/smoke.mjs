@@ -1891,12 +1891,21 @@ try {
       : 'uchinchi tomon serveri yo\'q (do\'kon logotiplaridan tashqari)',
     unexpected.length === 0, unexpected.join(', ') || (logosVendored ? '' : 'logotiplar: npm run store-logos'));
 
+  /* Soxta Telegram SDK: chaqiriqlarni yozib boradi. `modern` — 8.0+ mijoz;
+     requestFullscreen birinchi marta rad etadi (isFullscreen o'zgarmaydi),
+     ikkinchisida rozi bo'ladi. */
+  const tgSdkMock = (version, modern) => `window.__tgCalls=[];window.Telegram={WebApp:{version:"${version}",isExpanded:true,isFullscreen:false,
+    safeAreaInset:{top:0,bottom:0},contentSafeAreaInset:{top:0,bottom:0},
+    isVersionAtLeast(v){return ${modern}},ready(){window.__ready=1},expand(){__tgCalls.push('expand')},
+    requestFullscreen(){__tgCalls.push('fullscreen');if(__tgCalls.filter(c=>c==='fullscreen').length>=2)this.isFullscreen=true},
+    disableVerticalSwipes(){},setHeaderColor(){},setBackgroundColor(){},setBottomBarColor(){},onEvent(){},offEvent(){},
+    HapticFeedback:{selectionChanged(){},impactOccurred(){}},BackButton:{show(){},hide(){},onClick(){},offClick(){}}}};`;
   const tgUrlPage = await context.newPage();
   const tgUrlHits = [];
   tgUrlPage.on('request', r => { if (r.url().includes('telegram.org')) tgUrlHits.push(r.url()); });
   await tgUrlPage.route('**telegram.org/js/telegram-web-app.js', r => r.fulfill({
     status: 200, contentType: 'text/javascript',
-    body: 'window.Telegram={WebApp:{version:"8.0",safeAreaInset:{top:0,bottom:0},contentSafeAreaInset:{top:0,bottom:0},ready(){window.__ready=1},expand(){},requestFullscreen(){},disableVerticalSwipes(){},setHeaderColor(){},setBackgroundColor(){},setBottomBarColor(){},onEvent(){},offEvent(){},HapticFeedback:{selectionChanged(){},impactOccurred(){}},BackButton:{show(){},hide(){},onClick(){},offClick(){}}}};'
+    body: tgSdkMock('8.0', true)
   }));
   await tgUrlPage.goto(base + '/#tgWebAppPlatform=android&tgWebAppVersion=8.0', { waitUntil: 'load' });
   await tgUrlPage.waitForTimeout(1200);
@@ -1904,7 +1913,27 @@ try {
     window.__ready === 1 && document.documentElement.classList.contains('in-telegram'));
   check('Telegram manzili bilan ochilganda SDK yuklanadi', tgUrlOk && tgUrlHits.length === 1,
     `so'rovlar: ${tgUrlHits.length}`);
+  /* To'liq ekran: yangi mijozda expand va requestFullscreen chaqiriladi;
+     birinchi so'rov rad etilsa (soxta SDK ikkinchisida rozi bo'ladi) qayta
+     so'raladi va isFullscreen bo'lgach to'xtaydi. */
+  await tgUrlPage.waitForTimeout(1600);
+  const tgFsCalls = await tgUrlPage.evaluate(() => window.__tgCalls);
+  check('Telegram: to\'liq ekran so\'raladi (rad etilsa qayta)',
+    tgFsCalls.includes('expand') && tgFsCalls.filter(c => c === 'fullscreen').length === 2, tgFsCalls.join(','));
   await tgUrlPage.close();
+
+  /* Eski mijoz (Bot API < 8.0): requestFullscreen chaqirilmaydi — u yerda
+     bu chaqiriq xato beradi; expand yetarli. */
+  const tgOldPage = await context.newPage();
+  await tgOldPage.route('**telegram.org/js/telegram-web-app.js', r => r.fulfill({
+    status: 200, contentType: 'text/javascript', body: tgSdkMock('7.10', false)
+  }));
+  await tgOldPage.goto(base + '/#tgWebAppPlatform=ios&tgWebAppVersion=7.10', { waitUntil: 'load' });
+  await tgOldPage.waitForTimeout(1200);
+  const tgOldCalls = await tgOldPage.evaluate(() => window.__tgCalls);
+  check('Telegram (eski mijoz): faqat expand, requestFullscreen yo\'q',
+    tgOldCalls.includes('expand') && !tgOldCalls.includes('fullscreen'), tgOldCalls.join(','));
+  await tgOldPage.close();
 
   // 14. Qo'llanma tez ochiladi va ichida siljish bo'lmaydi
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();

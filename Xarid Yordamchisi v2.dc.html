@@ -50,6 +50,24 @@
       root.style.setProperty('--xy-safe-bottom', px((safe.bottom || 0) + (content.bottom || 0)));
     }
 
+    /* Haqiqiy to'liq ekran (Bot API 8.0, Telegram 11+): bot sarlavhasi ham
+       yo'qoladi, ilova butun ekranni oladi. Eski mijoz buni bilmaydi — u
+       yerda expand() bilan cheklanamiz (versiyani tekshirmasdan chaqirilsa
+       mijoz xato beradi). Ba'zi mijozlar birinchi so'rovni viewport hali
+       barqarorlashmaganda rad etadi, shuning uchun bir necha marta
+       urinamiz; isFullscreen bo'lgach to'xtaymiz. */
+    function goFullscreen(tg) {
+      var can = typeof tg.requestFullscreen === 'function' &&
+        (typeof tg.isVersionAtLeast !== 'function' || tg.isVersionAtLeast('8.0'));
+      if (!can) return;
+      var tries = 0;
+      (function attempt() {
+        if (tg.isFullscreen || tries++ >= 4) return;
+        try { tg.requestFullscreen(); } catch (e) {}
+        setTimeout(attempt, 700);
+      })();
+    }
+
     function setup() {
       var tg = window.Telegram && window.Telegram.WebApp;
       if (!tg) return;
@@ -57,8 +75,7 @@
       try {
         tg.ready();
         tg.expand && tg.expand();
-        // Bot API 8.0: haqiqiy to'liq ekran (eski mijozlarda bo'lmasligi mumkin)
-        tg.requestFullscreen && tg.requestFullscreen();
+        goFullscreen(tg);
         // Pastga tortganda ilova yopilib ketmasin
         tg.disableVerticalSwipes && tg.disableVerticalSwipes();
         tg.setHeaderColor && tg.setHeaderColor('#1A1FB0');
@@ -70,6 +87,13 @@
       ['safeAreaChanged', 'contentSafeAreaChanged', 'viewportChanged', 'fullscreenChanged'].forEach(function (ev) {
         try { tg.onEvent(ev, applyInsets); } catch (e) {}
       });
+      /* Foydalanuvchi oynani pastga tortib kichraytirsa yoki mijoz uni
+         dastlab yarim ochsa — barqarorlashgach yana yoyamiz. */
+      try {
+        tg.onEvent('viewportChanged', function (e) {
+          if (e && e.isStateStable && tg.isExpanded === false && tg.expand) tg.expand();
+        });
+      } catch (e) {}
     }
 
     /* Telegram ichidamizmi? Mini App manziliga tgWebApp... parametrlari
