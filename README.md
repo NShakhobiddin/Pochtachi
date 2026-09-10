@@ -609,6 +609,24 @@ o'nlab marta takrorlanadi, har biri alohida rasm so'rovi bo'lib ketardi.
 Smoke test ikkalasini ham tekshiradi. Asl nusxalar `flags/src/` da
 (512x384); yangilash: `npm run flag-icons`.
 
+## Kompyuter ko'rinishi
+
+1024 px dan keng ekranda ilova telefon ramkasi emas, ish stoli tartibida
+ochiladi: pastki menyu chapdagi 248 px ustunga aylanadi (brend, ikonka va
+nom yonma-yon, faol bo'lim yorug' fonda), sarlavha va kontent o'ngda.
+Kontent ustuni 760 px dan keng bo'lmaydi — kartalar va matn o'qilishi
+uchun shu yetadi; qo'llanma (iframe) o'zining web-tartibiga (uch ustun,
+960 px) o'tadi. Pastdan chiqadigan varaqlar (filtr) markazda oyna bo'lib
+ochiladi, toast kontent ustuni ustida turadi, reja sehrgarining pastki
+tugmalari menyu ustuniga kirmaydi. Brend introsi yotiq ekranda balandlik
+bo'yicha sig'diriladi (ilgari kenglik bo'yicha "cover" edi va logotip
+ekrandan katta chiqardi).
+
+Hammasi bitta `@media (min-width: 1024px)` blokida — ekranlarning o'zi
+o'zgarmaydi, faqat qobiq (`header`, `main`, `nav`) grid bo'lib qayta
+joylashadi. 900–1023 px oralig'i (planshet) avvalgidek: markazdagi telefon
+ramkasi. Smoke testda 1280 px uchun alohida tekshiruv bor.
+
 ## Tezlik
 
 Sayt birinchi bo'yog'ini uchinchi tomon serverlariga bog'lamaydi: shrift ham,

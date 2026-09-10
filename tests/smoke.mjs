@@ -1935,6 +1935,32 @@ try {
     tgOldCalls.includes('expand') && !tgOldCalls.includes('fullscreen'), tgOldCalls.join(','));
   await tgOldPage.close();
 
+  // 13b. Kompyuter ko'rinishi (1024 px dan): menyu chapdagi ustun,
+  // kontent o'ngda; sarlavhadagi logotip yashirin, menyuda brend; yon
+  // tomonga siljish yo'q. Telefon ko'rinishiga ta'sir qilmasligi shu
+  // faylning qolgan tekshiruvlaridan ma'lum.
+  const deskPage = await context.newPage();
+  await deskPage.setViewportSize({ width: 1280, height: 800 });
+  await deskPage.goto(base + '/', { waitUntil: 'load' });
+  await deskPage.waitForTimeout(1500);
+  const desk = await deskPage.evaluate(() => {
+    const r = el => { const b = el.getBoundingClientRect(); return { x: Math.round(b.x), y: Math.round(b.y), w: Math.round(b.width), h: Math.round(b.height) }; };
+    const nav = document.querySelector('.app-shell > nav'), main = document.querySelector('.app-shell > main'), header = document.querySelector('.app-shell > header');
+    const btns = [...nav.querySelectorAll('button')].map(r);
+    const brand = getComputedStyle(nav, '::before').backgroundImage;
+    /* Logotipli h1 ko'zdan yashirin (1 px, clip) — rasmning o'zi emas, h1 o'lchanadi:
+       clip rasm to'rtburchagini o'zgartirmaydi. */
+    const h1img = header.querySelector('h1 img');
+    return { nav: r(nav), main: r(main), header: r(header), btns, brand, h1img: h1img ? r(h1img.parentElement) : null,
+      overflow: document.documentElement.scrollWidth > innerWidth || document.querySelector('.app-shell').scrollWidth > document.querySelector('.app-shell').clientWidth };
+  });
+  const deskOk = desk.nav.x < desk.main.x && desk.nav.w >= 200 && desk.nav.w <= 260 && desk.nav.h >= 700 &&
+    desk.main.w >= 600 && desk.header.y < desk.main.y && desk.btns.length === 5 &&
+    desk.btns.every((b, i) => b.h >= 44 && (i === 0 || b.y > desk.btns[i - 1].y)) &&
+    /brand\.webp/.test(desk.brand) && (!desk.h1img || desk.h1img.w <= 1) && !desk.overflow;
+  check('kompyuterda: chap menyu ustuni, keng kontent, siljishsiz', deskOk, JSON.stringify({ nav: desk.nav, main: desk.main, btn: desk.btns[0], brand: /brand/.test(desk.brand), h1: desk.h1img, overflow: desk.overflow }));
+  await deskPage.close();
+
   // 14. Qo'llanma tez ochiladi va ichida siljish bo'lmaydi
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(400);

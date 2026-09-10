@@ -242,7 +242,11 @@
       document.body.appendChild(root);
 
       function fit() {
-        var s = Math.max(innerWidth / 1080, innerHeight / 1920);
+        /* Telefonda sahna ekranni to'ldiradi (cover). Yotiq ekranda
+           (kompyuter) kenglik bo'yicha to'ldirish logotipni ekrandan katta
+           qilib yuborardi — u yerda balandlik bo'yicha sig'diriladi. */
+        var w = innerWidth > innerHeight ? Math.min(innerWidth, innerHeight * 9 / 16) : innerWidth;
+        var s = Math.max(w / 1080, innerHeight / 1920);
         stage.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
       }
       fit(); addEventListener('resize', fit);
@@ -408,9 +412,9 @@
       transition-duration:.01ms !important; scroll-behavior:auto !important;
     }
   }
-  /* Katta ekranda ilova cho'zilib ketmasin: markazda telefon formatidagi
-     ramka bo'lib turadi, atrofi brend fonida. */
-  @media (min-width: 900px) {
+  /* Planshet (900–1023 px): ilova cho'zilib ketmasin — markazda telefon
+     formatidagi ramka bo'lib turadi, atrofi brend fonida. */
+  @media (min-width: 900px) and (max-width: 1023px) {
     .app-bg {
       background: radial-gradient(120% 90% at 50% 0%, #F1F1F8 0%, #E9EAFD 55%, #D8D8E5 100%) !important;
       padding: 26px 0 !important;
@@ -421,6 +425,93 @@
       border-radius: 36px !important;
       box-shadow: 0 2px 6px rgba(20,19,43,.06),0 34px 80px -32px rgba(20,19,43,.5) !important;
     }
+  }
+
+  /* ---- Kompyuter (1024 px dan) ----
+     Telefon ramkasi o'rniga haqiqiy ish stoli ko'rinishi: pastki menyu
+     chapdagi ustunga aylanadi (ikonka + nom yonma-yon), sarlavha va kontent
+     o'ng tomonda kengroq ustunda. Ekranlarning o'zi o'zgarmaydi — faqat
+     qobiq (header, main, nav) qayta joylashadi, shuning uchun telefon
+     ko'rinishiga ta'sir yo'q. Kontent 760 px dan keng bo'lmaydi: kartalar
+     va matn o'qilishi uchun shu yetadi; qo'llanma (iframe) esa o'zining
+     960 px li web-tartibiga o'tadi. */
+  @media (min-width: 1024px) {
+    .app-bg {
+      background: linear-gradient(180deg, #F1F1F8 0%, #E9EAFD 100%) !important;
+    }
+    .app-shell {
+      max-width: 1280px !important;
+      display: grid !important;
+      grid-template-columns: 248px minmax(0, 1fr) !important;
+      grid-template-rows: auto minmax(0, 1fr) !important;
+      border-left: 1px solid #E3E4EE;
+      border-right: 1px solid #E3E4EE;
+    }
+    .app-shell > header {
+      grid-column: 2; grid-row: 1;
+      padding: 24px 40px 12px !important;
+    }
+    .app-shell > main {
+      grid-column: 2; grid-row: 2;
+      padding: 0 40px 40px !important;
+    }
+    .app-shell > main > * { max-width: 760px; margin-left: 0; margin-right: 0; }
+    .app-shell > header > * { max-width: 760px; }
+    /* Sarlavhadagi markazlangan nom kontent ustuni bo'yicha markazlansin. */
+    .app-shell > header > h1[style*="text-align:center"], .app-shell > header > h1[style*="text-align: center"] { flex: 0 0 auto !important; width: 760px !important; box-sizing: border-box; }
+
+    /* Chap menyu */
+    .app-shell > nav {
+      grid-column: 1; grid-row: 1 / 3;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      justify-content: flex-start !important;
+      gap: 4px;
+      padding: 28px 16px !important;
+      border-top: none !important;
+      border-right: 1px solid #E3E4EE;
+      background: #FFFFFF !important;
+    }
+    .app-shell > nav > button {
+      flex: none !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 12px !important;
+      padding: 6px 8px !important;
+      border-radius: 16px !important;
+      min-height: 48px;
+      text-align: left;
+    }
+    .app-shell > nav > button:hover { background: #F6F7FB !important; }
+    .app-shell > nav > button:active { transform: none; }
+    .app-shell > nav > button > div {
+      width: 44px !important; height: 36px !important;
+      margin-top: 0 !important; border-radius: 12px !important;
+      box-shadow: none !important; transform: none !important;
+    }
+    .app-shell > nav > button > div > svg { width: 22px; height: 22px; }
+    .app-shell > nav > button > span { font-size: 15px !important; }
+
+    /* Chap menyu tepasida brend; sarlavhadagi logotip esa ko'zdan
+       yashiriladi (ekran o'quvchi uchun qoladi) — ikki logotip yonma-yon
+       turmasin. */
+    .app-shell > nav::before {
+      content: ''; display: block; width: 159px; height: 36px; margin: 4px 8px 24px;
+      background: url(icons/brand.webp) left center / contain no-repeat;
+    }
+    .app-shell > header > h1:has(> img) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    /* Reja sehrgarining pastki tugmalar qatori: menyu ustuniga emas,
+       kontent ustuniga tegishli; pastdagi dumaloq tugma yo'q — bo'sh joy ham. */
+    .app-shell > div[style*="padding:32px 18px 118px"], .app-shell > div[style*="padding: 32px 18px 118px"] {
+      left: 248px !important; right: auto !important; width: 840px; max-width: calc(100% - 248px);
+      padding: 24px 40px 32px !important;
+    }
+    /* Toast kontent ustuni ustida, menyuga tegmasin. */
+    .app-shell > [role="status"] { left: 288px !important; right: auto !important; width: 440px; bottom: 32px !important; }
+    /* Pastdan chiqadigan varaqlar (filtr va h.k.) markazda oyna bo'lib ochiladi. */
+    .app-shell > div[style*="align-items:flex-end"], .app-shell > div[style*="align-items: flex-end"] { align-items: center !important; justify-content: center !important; }
+    .app-shell > div[style*="align-items:flex-end"] > div, .app-shell > div[style*="align-items: flex-end"] > div { max-width: 520px; border-radius: 24px !important; }
   }
   ::-webkit-scrollbar { width:0; height:0; }
   * { scrollbar-width:none; }
