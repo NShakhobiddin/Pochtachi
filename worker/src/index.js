@@ -25,7 +25,8 @@
 
 import { hisobotHtml } from './hisobot.js';
 
-const NAMES = new Set(['screen', 'store', 'courier', 'guide', 'wizard', 'svcAsk', 'hamkor']);
+const NAMES = new Set(['screen', 'store', 'courier', 'guide', 'wizard', 'svcAsk', 'hamkor',
+  /* bosh sahifa va yangi funksiyalar */ 'hero', 'quick', 'courier_compare', 'calc_open', 'calc_done', 'add_to_plan', 'consult_click', 'ai_question']);
 const MAX_EVENTS = 60, MAX_BODY = 8192, MAX_KEY = 40, MAX_DAYS = 90;
 
 /* Beacon matnini tekshirib, (kun, nom, kalit) uchliklariga sanoq beradi.

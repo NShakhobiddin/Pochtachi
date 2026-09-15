@@ -1,6 +1,6 @@
 # Pochtam.uz — texnik topshiriq bo'yicha audit va rivojlantirish rejasi
 
-Sana: 2026-09-15. Holat: 1-bosqich (audit) va 2-bosqich (Pochtam Core) tugadi.
+Sana: 2026-09-15. Holat: 1 (audit), 2 (Pochtam Core), 3 (bosh sahifa) va 4 (universal kalkulyator) bosqichlari tugadi.
 Tamoyil: **EXTEND, DO NOT REBUILD** — mavjud ilova saqlanadi, funksiyalar
 bir-biriga bog'lanadi, ustiga aqlli qatlam qo'shiladi.
 
@@ -163,8 +163,8 @@ talabining texnik kafolati.
 |---|---|---|---|
 | 1 | Audit | shu hujjat | ✓ |
 | 2 | Pochtam Core ✓ (2026-09-15) | `core/customs.js`, 5 ta chaqiruv shu modulga; `data/norms.json` yagona manba (build ilova va qo'llanmalarga yozadi); tariflar tuzilgan (`data/tariffs.json`, 68/68), `core/tariffs.js`; `data/categories.json`; `core/landed.js`; `tests/core.mjs` (50 tekshiruv) | ✓ 14 oltin holat bir xil; guide-engine'da hardcode yo'q |
-| 3 | Bosh sahifa UX | hero + aqlli input (havola → do'kon, so'z → qidiruv), tez o'tish, bloklar tartibi; mavjud bloklar qoladi | smoke: mavjud bloklar bor, yangi input ishlaydi, 390/1280 px |
-| 4 | Universal kalkulyator | `landed` ekrani, jami tannarx kartasi, "foydalimi" maydoni, "Rejaga qo'shish" | reja saqlanadi va Xaridlarim'da ko'rinadi; eski reja buzilmagan |
+| 3 | Bosh sahifa UX ✓ (2026-09-15) | hero + aqlli input (havola → do'kon, qisqa havola → alias, noma'lum domen → qidiruv, so'z → qidiruv), 4 ta tez o'tish, mashhur do'konlar tasmasi, kuryerlarni solishtirish bloki (core/tariffs), bloklar tartibi; mavjud bloklar qoladi; RU tarjimalar; byudjet 720 KB | ✓ smoke: 7 yangi tekshiruv, 390/1280 px |
+| 4 | Universal kalkulyator ✓ (2026-09-15) | `landed` ekrani: narx/valyuta, miqdor, kategoriya, yo'nalish, og'irlik, quti (hajmiy), ichki yetkazish, kuryer takliflari (arzon/tez/optimal), jami tannarx, "foydalimi", `savePlanFrom` (name/qty/source); do'kon sahifasidan kirish | ✓ smoke: 5 tekshiruv; eski reja o'zgarmagan |
 | 5 | Kuryer taqqoslash | filtrlar, ustuvorlik, hisoblangan summa; `compare` kengayadi | 3 kuryer uchun summa va sabab ko'rinadi |
 | 6 | Xaridlarim + jo'natmalar | `mine` ekrani (Rejalar, Jo'natmalar, Sevimlilar, Hisob-kitoblar), "Bojxona" holati | eski ma'lumot o'z joyida |
 | 7 | Pochtam AI | worker `/ai`, kalit sirda, limit; tool'lar `core/` dan; panel `ai/index.html`; tezkor variantlar; xato holati | AI hisobni o'zi yozmaydi (test); kalit repo va brauzerda yo'q |

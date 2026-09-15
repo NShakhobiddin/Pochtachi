@@ -188,6 +188,51 @@ kuryer ekranlarida kuryer filtrlarini (yuborish turi, saralash; yo'nalish
 papkasidan tashqarida davlat ham) ko'rsatadi. Escape avval ochiq varaqni
 yopadi, keyingina ekranni.
 
+## Bosh sahifa (3-bosqich)
+
+Sahifa vazifadan boshlanadi: **universal maydon** ("Nima olib
+kelmoqchisiz?") havola, mahsulot nomi yoki savolni qabul qiladi.
+`heroGo()`: havola bo'lsa domen bo'yicha do'kon topiladi (`STORES.domain`
+yoki `DOMAIN_ALIAS` — `tb.cn`, `amzn.to`, `dewu.com` kabi qisqa va mobil
+manzillar) va do'kon sahifasi ochiladi; ro'yxatda yo'q domen — domen so'zi
+bilan qidiruvga; oddiy so'z — qidiruv ekrani. Oqim hech qachon to'xtab
+qolmaydi (TZ 21). Savol rejimi AI bosqichida qo'shiladi.
+
+Ostida **tez o'tish** (boj hisoblash, kuryer tanlash, taqiqni tekshirish,
+qo'llanmalar), **mashhur do'konlar** tasmasi (`POPULAR_STORES`, o'lchov
+ishlagach haqiqiy bosishlar bilan almashtiriladi) va **kuryerlarni
+solishtirish** bloki: yo'nalish (Xitoy, AQSh, Turkiya, Angliya, Koreya) va
+og'irlik (1/2/5/10 kg) bo'yicha uchta eng arzon taklif —
+`PochtamCore.courierQuotes` + `rankQuotes('cheap')`, tariflar
+`data/tariffs.json` dan ilova ochilgach yuklanadi (`loadTariffs`, SW
+keshida). Qolgan bloklar o'z joyida: to'rt bo'lim kartasi, "Birinchi
+marta" (reja), mutaxassis, kurs, "Bugungi foydali", sevimlilar, yaqinda.
+O'lchov hodisalari: `hero` (link:<do'kon> | link:? | text), `quick`,
+`courier_compare`.
+
+## Universal kalkulyator — Jami narx (4-bosqich)
+
+Ekran `landed` (tez o'tishdagi "Jami narx", do'kon sahifasidagi "Shu
+do'kondan xarajatni hisoblash", keyinroq AI). Kirish: nom (ixtiyoriy),
+narx va valyuta (USD / EUR / GBP / so'm — EUR va GBP `data/tariffs.json`
+dagi zaxira kurslar, so'm — joriy kurs), miqdor, kategoriya
+(`data/categories.json`, build `CATEGORIES` ga yozadi), yo'nalish (7 davlat),
+og'irlik (yozilmasa kategoriya bo'yicha taxmin), do'kon ichida yetkazish,
+quti o'lchami (hajmiy og'irlik = uzunlik×kenglik×balandlik/5000, kattasi
+olinadi). Kuryer: yo'nalish va hisob og'irligi bo'yicha uchta eng arzon
+taklif + eng tez (`courierQuotes`, `rankQuotes`), "Eng arzon / Eng tez /
+Optimal" belgilari, birinchisi tanlangan. Natija: `landedCost` — mahsulot,
+ichki yetkazish, kargo, boj, yig'im, jami ($ va so'm), boj sababi.
+"Olish foydalimi?" — O'zbekistondagi narx kiritilsa tejash so'm va foizda.
+
+**Rejaga qo'shish** — `savePlanFrom()`: sehrgar va kalkulyator uchun bitta
+yo'l. Reja obyektining eski maydonlari o'zgarmagan; kalkulyator qo'shimcha
+`name`, `qty`, `source:'landed'` beradi (sehrgar `source:'wizard'`). Reja
+sarlavhasi `name || cat`. Eski rejalar avvalgidek chiziladi.
+
+Holat `st.lc` (LC_DEFAULT) — saqlanmaydi. Hodisalar: `calc_open`
+(quick | store:<id>), `calc_done`, `add_to_plan`.
+
 ## Pochtam Core
 
 Biznes mantiq UI dan ajratilgan, `core/` da, oddiy skript sifatida
@@ -765,4 +810,4 @@ bilan ishga tushadi.
 
 ## O'lcham byudjeti
 
-`npm run check` quyidagilarni tekshiradi: kuryer logotiplari ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 120 KB, do'kon logotiplari ≤ 260 KB, qo'llanmalar ≤ 470 KB, `index.html` ≤ 560 KB. Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.
+`npm run check` quyidagilarni tekshiradi: kuryer logotiplari ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 120 KB, do'kon logotiplari ≤ 260 KB, qo'llanmalar ≤ 700 KB, `index.html` ≤ 720 KB (2026-09-15: bosh sahifaning yangi bloklari uchun 680 dan oshirildi; gzip ~160 KB). Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.

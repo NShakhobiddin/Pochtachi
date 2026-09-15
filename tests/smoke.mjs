@@ -93,6 +93,9 @@ await context.addInitScript(() => {
   } catch (e) {}
 });
 const page = await context.newPage();
+/* Bosh sahifadagi bo'lim kartasi (h2 sarlavhasi bo'yicha): "Mashhur do'konlar"
+   kabi yangi sarlavhalar getByText'ni chalg'itmasin. */
+const homeCard = t => page.locator('main button').filter({ has: page.locator('h2', { hasText: new RegExp('^' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$') }) }).first();
 
 const errors = [];
 const missing = [];
@@ -265,11 +268,12 @@ try {
     wizLogo.bor ? `${wizLogo.w}x${wizLogo.h}, ${wizLogo.fit}` : 'topilmadi');
 
   /* 4. Qidiruv o'z ekranida: sarlavhadagi lupa tugmasi ochadi. Bosh
-     sahifada maydon yo'q, shuning uchun yozganda sahifa qimirlamaydi. */
+     sahifada faqat universal maydon (TZ 4) — u natija panelini chizmaydi,
+     shuning uchun yozganda sahifa qimirlamaydi. */
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(500);
-  check('bosh sahifada qidiruv maydoni yo\'q',
-    await page.evaluate(() => document.querySelectorAll('main input').length === 0));
+  check('bosh sahifada faqat universal maydon',
+    await page.evaluate(() => { const i = document.querySelectorAll('main input'); return i.length === 1 && i[0].getAttribute('aria-label') === 'Mahsulot havolasi yoki nomi' && i[0].type !== 'search'; }));
   await page.locator('button[aria-label="Qidirish"]').first().click();
   await page.waitForTimeout(600);
   /* Ochilganda maydon fokusda: telefonda klaviatura o'zi chiqadi. */
@@ -465,7 +469,7 @@ try {
   // 9. "Orqaga" ilovadan chiqarib yubormaydi
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(400);
-  await page.getByText("Do'konlar", { exact: true }).first().click();
+  await homeCard("Do'konlar").click();
   await page.waitForTimeout(600);
   await page.goBack();
   await page.waitForTimeout(600);
@@ -481,7 +485,7 @@ try {
   // 10b. Do'konlar bo'limi papka ko'rinishida ochiladi
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(400);
-  await page.getByText("Do'konlar", { exact: false }).first().click();
+  await homeCard("Do'konlar").click();
   await page.waitForTimeout(600);
   const folders = await page.evaluate(() => ({
     chooser: /Bo'lim tanlang/.test(document.body.innerText),
@@ -554,6 +558,77 @@ try {
   check('bosh kartochkalarda raqam yirik',
     yirikSon.length === 4 && yirikSon.every(x => /\d/.test(x.son)),
     yirikSon.map(x => x.nom + ':' + x.son).join(' · '));
+
+  /* 3-bosqich: bosh sahifadagi universal maydon, tez o'tish, mashhur
+     do'konlar va kuryerlarni solishtirish bloki. */
+  {
+    const hero = page.locator('input[aria-label="Mahsulot havolasi yoki nomi"]');
+    check('bosh sahifada universal maydon va "Boshlash"', await hero.count() === 1 && await page.locator('form button[type="submit"]', { hasText: 'Boshlash' }).count() === 1);
+    const quick = await page.evaluate(() => [...document.querySelectorAll('main button')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).filter(t => /^(Jami narx|Kuryer tanlash|Taqiqni tekshirish|Qo'llanmalar)$/.test(t)).length);
+    check('tez o\'tish: 4 ta tugma', quick === 4, quick + ' ta');
+    const pop = await page.evaluate(() => { const t = document.querySelector('main').innerText; const i = t.indexOf("Mashhur do'konlar"); return t.slice(i, i + 120).replace(/\s+/g, ' '); });
+    check('mashhur do\'konlar tasmasi', /Taobao/.test(pop) && /Pinduoduo/.test(pop) && /Amazon/.test(pop), pop.slice(0, 60));
+    /* Solishtirish: tariflar yuklangach 3 ta taklif, dollar summasi bilan, arzonidan. */
+    await page.waitForFunction(() => /\$\d/.test((document.querySelector('main').innerText.split('Kuryerlarni solishtirish')[1] || '').slice(0, 400)), { timeout: 8000 }).catch(() => {});
+    const cmp = await page.evaluate(() => {
+      const t = (document.querySelector('main').innerText.split('Kuryerlarni solishtirish')[1] || '').split('Taxminiy:')[0];
+      const prices = [...t.matchAll(/\$(\d+(?:\.\d+)?)/g)].map(m => +m[1]);
+      return { prices, xitoy: /Xitoy/.test(t), kg: /2 kg/.test(t) };
+    });
+    check('kuryerlarni solishtirish: 3 ta taklif, arzonidan', cmp.prices.length === 3 && cmp.prices.every((v, i) => i === 0 || v >= cmp.prices[i - 1]) && cmp.xitoy && cmp.kg, JSON.stringify(cmp));
+    await page.getByRole('button', { name: 'AQSh', exact: true }).first().click();
+    await page.getByRole('button', { name: '5 kg', exact: true }).first().click();
+    await page.waitForTimeout(300);
+    const cmp2 = await page.evaluate(() => { const t = (document.querySelector('main').innerText.split('Kuryerlarni solishtirish')[1] || '').split('Taxminiy:')[0]; return [...t.matchAll(/\$(\d+(?:\.\d+)?)/g)].map(m => +m[1]); });
+    check('solishtirish: AQSh · 5 kg da boshqa summalar', cmp2.length === 3 && JSON.stringify(cmp2) !== JSON.stringify(cmp.prices), JSON.stringify(cmp2));
+    /* Havola → do'kon sahifasi (domen va qisqa manzil), noma'lum domen → qidiruv, so'z → qidiruv. */
+    const heroGo = async v => { await hero.fill(v); await page.locator('form button[type="submit"]', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(500); return (await page.locator('header').innerText()).replace(/\s+/g, ' ').trim(); };
+    const back = async () => { await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(400); };
+    const h1 = await heroGo('https://item.taobao.com/item.htm?id=1'); await back();
+    const h2 = await heroGo('amzn.to/3x'); await back();
+    const h3 = await heroGo('https://noname-shop.xyz/p/1'); const q3 = await page.locator('input[type="search"]').first().inputValue(); await back();
+    const h4 = await heroGo('krossovka'); const r4 = /Poyabzal|Nike|Adidas/.test(await page.locator('main').innerText()); await back();
+    check('universal maydon: havola → Taobao, qisqa havola → Amazon', /Taobao/.test(h1) && /Amazon/.test(h2), h1 + ' / ' + h2);
+    check('universal maydon: noma\'lum domen → qidiruv (domen so\'z sifatida)', /Qidiruv/.test(h3) && q3 === 'noname-shop', h3 + ' / ' + q3);
+    check('universal maydon: so\'z → qidiruv natijalari', /Qidiruv/.test(h4) && r4, h4);
+
+    /* 4-bosqich: universal kalkulyator (Jami narx). Tez o'tishdan ochiladi,
+       narx va vazn yoziladi, kargo eng arzon kuryerdan, boj core'dan;
+       "Xarid rejasiga qo'shish" reja ekranini ochadi va localStorage'da
+       yangi maydonlar (name, qty, source) bilan reja paydo bo'ladi. */
+    const plansBefore = await page.evaluate(() => (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || []).length);
+    await page.locator('main button').filter({ hasText: 'Jami narx' }).first().click(); await page.waitForTimeout(500);
+    const lcHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
+    const lcFill = async (label, v) => { const el = page.locator(`input[aria-label="${label}"]`); await el.fill(String(v)); await el.dispatchEvent('change'); await page.waitForTimeout(150); };
+    await lcFill('Mahsulot narxi', 320); await lcFill("Og'irligi, kilogrammda", 2.5);
+    const lcText = () => page.locator('main').innerText().then(t => t.replace(/\s+/g, ' '));
+    let lt = await lcText();
+    const lcTotal = /Jami \$(\d+\.\d\d)/.exec(lt), lcDuty = /Bojxona to'lovi \$(\d+\.\d\d)/.exec(lt), lcFee = /Yagona yig'im \$(\d+\.\d\d)/.exec(lt);
+    check('jami narx: ekran ochiladi, eng arzon kuryer va boj hisoblanadi', /Jami narx/.test(lcHead) && /Eng arzon/.test(lt) && lcDuty && lcFee && lcTotal && +lcDuty[1] > 30 && +lcFee[1] > 8 && +lcTotal[1] > 320,
+      `${lcHead} · boj ${lcDuty && lcDuty[1]} · yig'im ${lcFee && lcFee[1]} · jami ${lcTotal && lcTotal[1]}`);
+    await lcFill("O'zbekistondagi narx, so'mda", 6000000); lt = await lcText();
+    check('jami narx: "olish foydalimi?" tejashni ko\'rsatadi', /tejash [\d ]+ so'm \(\d+%\)/.test(lt), lt.slice(lt.indexOf('Chetdan'), lt.indexOf('Chetdan') + 60));
+    await lcFill('Quti uzunligi, sm', 50); await lcFill('Quti kengligi, sm', 40); await lcFill('Quti balandligi, sm', 40); lt = await lcText();
+    check('jami narx: hajmiy og\'irlik (16 kg) hisobga olinadi', /Hajmiy og'irlik 16,0 kg/.test(lt) && /\(16,0 kg\)/.test(lt));
+    await lcFill('Mahsulot nomi', 'Sinov mahsulot');
+    await page.locator('main button').filter({ hasText: "Xarid rejasiga qo'shish" }).first().click(); await page.waitForTimeout(800);
+    const planHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
+    const planSaved = await page.evaluate(() => { const p = (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || [])[0] || {}; return { name: p.name, source: p.source, qty: p.qty, total: p.total, kg: p.kg }; });
+    const plansAfter = await page.evaluate(() => (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || []).length);
+    check('jami narx → xarid rejasi (name, qty, source, 16 kg)', /Xarid rejasi/.test(planHead) && plansAfter === plansBefore + 1 && planSaved.name === 'Sinov mahsulot' && planSaved.source === 'landed' && planSaved.qty === 1 && planSaved.total > 320 && Math.abs(planSaved.kg - 16) < 0.01, JSON.stringify(planSaved));
+    /* Sinov rejasi o'chiriladi — keyingi tekshiruvlar bo'sh holatga tayanadi. */
+    await page.locator('main button').filter({ hasText: "Rejani o'chirish" }).first().click(); await page.waitForTimeout(400);
+    const plansGone = await page.evaluate(() => (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || []).length);
+    check('sinov rejasi o\'chirildi', plansGone === plansBefore, plansGone + ' ta');
+    /* Do'kon sahifasidan: do'kon va davlat oldindan to'ldirilgan. */
+    await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
+    await page.getByText('Taobao', { exact: true }).first().click(); await page.waitForTimeout(500);
+    await page.locator('main button').filter({ hasText: "Shu do'kondan xarajatni hisoblash" }).first().click(); await page.waitForTimeout(500);
+    lt = await lcText();
+    const xitoyOn = await page.getByRole('button', { name: 'Xitoy', exact: true }).first().getAttribute('aria-pressed');
+    check('do\'kon sahifasidan jami narx: do\'kon va davlat tayyor', /Do'kon: Taobao/.test(lt) && xitoyOn === 'true');
+    await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
+  }
 
   /* Qidiruv orqali do'kon ochilsa: so'rov tarixga, do'kon "yaqinda"ga tushadi. */
   await page.locator('button[aria-label="Qidirish"]').first().click();
@@ -1290,7 +1365,7 @@ try {
   /* Kuryer kartochkasidagi havola chiplarida belgi bo'lsin. */
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(450);
-  await page.getByText('Kuryerlar', { exact: false }).first().click();
+  await homeCard('Kuryerlar').click();
   await page.waitForTimeout(700);
   await page.getByText('Barcha kuryerlar', { exact: false }).first().click();
   await page.waitForTimeout(700);
@@ -1570,7 +1645,7 @@ try {
   // Keyingi tekshiruvlar papkalar ekranidan davom etadi.
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(400);
-  await page.getByText("Do'konlar", { exact: false }).first().click();
+  await homeCard("Do'konlar").click();
   await page.waitForTimeout(700);
 
   await page.getByText('Elektronika', { exact: false }).first().click();
@@ -1664,7 +1739,7 @@ try {
   // 10c. Kuryerlar bo'limi ham papka ko'rinishida
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(400);
-  await page.getByText('Kuryerlar', { exact: false }).first().click();
+  await homeCard('Kuryerlar').click();
   await page.waitForTimeout(600);
   const cFolders = await page.evaluate(() => ({
     chooser: /Yo'nalishni tanlang/.test(document.body.innerText),
@@ -1829,7 +1904,7 @@ try {
   // Papkalar va papka ichi ham 360 px da siljimasin
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click().catch(() => {});
   await page.waitForTimeout(400);
-  await page.getByText("Do'konlar", { exact: false }).first().click().catch(() => {});
+  await homeCard("Do'konlar").click().catch(() => {});
   await page.waitForTimeout(500);
   for (const label of ['papkalar', 'papka ichi']) {
     if (label === 'papka ichi') {

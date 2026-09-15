@@ -48,6 +48,15 @@ function build(src) {
     if (!re.test(src)) throw new Error('Manbada NORMS ro\'yxati topilmadi');
     src = src.replace(re, lit);
   }
+  /* Kategoriyalar: data/categories.json → const CATEGORIES (universal
+     kalkulyator, AI). Manbada bo'sh massiv turadi. */
+  const catPath = join(ROOT, 'data', 'categories.json');
+  if (existsSync(catPath)) {
+    const cats = JSON.parse(readFileSync(catPath, 'utf8')).categories;
+    const re = /const CATEGORIES = \[[^\]]*\];/;
+    if (!re.test(src)) throw new Error('Manbada CATEGORIES belgisi topilmadi');
+    src = src.replace(re, 'const CATEGORIES = ' + JSON.stringify(cats) + ';');
+  }
   /* Kanonik va OG manzillar: manbada GitHub Pages manzili turadi; o'z domen
      ulangan bo'lsa (CNAME) index.html da o'sha domen yoziladi. */
   if (SITE !== DEFAULT_SITE) src = src.split(DEFAULT_SITE).join(SITE);
@@ -68,12 +77,12 @@ function build(src) {
 const SHELL_ICONS = ['icons/brand.webp', 'icons/brand-full.webp', 'icons/stores-3d.webp', 'icons/courier-3d.webp',
   'icons/customs-3d.webp', 'icons/guides-3d.webp', 'icons/mutaxassis-3d.webp', 'icons/icon-192.png', 'icons/apple-touch-icon.png'];
 function precacheList() {
-  const files = ['./', 'support.js', 'manifest.webmanifest', 'data/norms.json', 'core/customs.js',
+  const files = ['./', 'support.js', 'manifest.webmanifest', 'data/norms.json', 'core/customs.js', 'core/tariffs.js', 'core/landed.js', 'data/tariffs.json',
     'vendor/react.production.min.js', 'vendor/react-dom.production.min.js'];
   const later = ['guides/guide-base.css', 'guides/guide-common.css', 'guides/guide-engine.js', 'guides/guide-motion.js', 'guides/guide.js',
     /* Pochtam Core'ning qolgan modullari va ma'lumotlari: universal
        kalkulyator va kuryer taqqoslash oflaynda ham ishlashi uchun. */
-    'core/tariffs.js', 'core/landed.js', 'data/tariffs.json', 'data/categories.json'];
+    'data/categories.json'];
   /* Shriftlar o'z domenimizda turadi, shuning uchun ular ham qobiq bilan
      birga keshlanadi — ikkinchi ochilishda umuman tarmoq kerak emas. */
   for (const f of readdirSync(join(ROOT, 'fonts')).sort()) {

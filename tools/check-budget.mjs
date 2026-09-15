@@ -90,8 +90,10 @@ const index = join(ROOT, 'index.html');
 if (existsSync(index)) {
   const size = kb(statSync(index).size);
   const gz = kb(gzipSync(readFileSync(index), { level: 9 }).length);
-  const ok = size <= 680;
-  console.log(`${ok ? '  ok  ' : ' XATO '} index.html: ${size} KB (chegara 680 KB), gzip ${gz} KB`);
+  /* 720 KB: 3-bosqichda (bosh sahifa: universal maydon, tez o'tish, mashhur
+     do'konlar, kuryer solishtirish) 680 dan oshirildi — README, "O'lcham byudjeti". */
+  const ok = size <= 720;
+  console.log(`${ok ? '  ok  ' : ' XATO '} index.html: ${size} KB (chegara 720 KB), gzip ${gz} KB`);
   if (!ok) failed = true;
 }
 

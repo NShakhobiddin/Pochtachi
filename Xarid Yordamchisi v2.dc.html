@@ -129,6 +129,8 @@
      hisoblaydi — stavka va me'yor bu yerda yozilmaydi, data/norms.json dan
      keladi. -->
 <script src="core/customs.js"></script>
+<script src="core/tariffs.js"></script>
+<script src="core/landed.js"></script>
 <script>
   /* Brend introsi. Claude Design'dagi "Pochtam Telegram Intro" sahnasining
      xoreografiyasi — vaqtlar, easing'lar va o'lchamlar o'sha faylda qanday
@@ -666,10 +668,29 @@
   <sc-if value="{{ sHome }}" hint-placeholder-val="{{ true }}">
     <div style="display:flex;flex-direction:column;gap:20px">
 
-      <!-- Sahifaning eng katta matni shu yerda: ko'z avval nima uchun
-           kelganini o'qiydi, keyin qidiruvga tushadi. Urg'u so'zi brend
-           rangida — logotipdagi yashil `m` bilan bir xil vazifa. -->
-      <h2 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.1;color:#131429;text-wrap:balance">Global xaridlar <span style="color:#1A1FB0">biz bilan oson.</span></h2>
+      <!-- Universal kirish: bitta maydon havola, mahsulot nomi yoki savolni
+           qabul qiladi. Havola → domen bo'yicha do'kon ochiladi, so'z →
+           qidiruv, savol → (keyingi bosqichda) AI. Sahifaning eng katta
+           matni shu yerda: foydalanuvchi nima uchun kelganini darrov
+           ko'radi. -->
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <h2 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.1;color:#131429;text-wrap:balance">Nima olib <span style="color:#1A1FB0">kelmoqchisiz?</span></h2>
+        <div style="font-size:15px;color:#6B6C85;font-weight:500;line-height:1.5;text-wrap:pretty">Mahsulot havolasini yoki nomini yozing — do'kon, kuryer va bojni ko'rsatib beraman.</div>
+        <form sc-camel-on-submit="{{ heroSubmit }}" style="display:flex;align-items:center;gap:8px;background:#FFFFFF;border-radius:20px;padding:6px 6px 6px 14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6B6C85" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+          <input value="{{ hq }}" sc-camel-on-input="{{ onHq }}" placeholder="Havola yoki mahsulot nomi" type="text" enterkeyhint="go" aria-label="Mahsulot havolasi yoki nomi" style="flex:1;min-width:0;height:40px;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;font-weight:500;color:#131429">
+          <button type="submit" style="height:40px;padding:0 16px;border-radius:14px;border:none;background:linear-gradient(155deg,#494FE9,#13189D);color:#FFFFFF;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;flex:none">Boshlash</button>
+        </form>
+        <!-- Tez o'tish: eng ko'p kerak bo'ladigan to'rt harakat. -->
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
+          <sc-for list="{{ quickActs }}" as="qa" hint-placeholder-count="4">
+            <button sc-camel-on-click="{{ qa.go }}" style="display:flex;flex-direction:column;align-items:center;gap:8px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 6px;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="background:#F6F7FB">
+              <div aria-hidden="true" style="width:36px;height:36px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ qa.iconCss }}"></div>
+              <span style="font-size:11px;font-weight:600;color:#131429;line-height:1.3;text-align:center">{{ qa.t }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
 
 
 
@@ -731,27 +752,73 @@
         </div>
       </sc-if>
 
-      <sc-if value="{{ wizardBig }}" hint-placeholder-val="{{ true }}">
-        <button sc-camel-on-click="{{ goWizard }}" style="border:none;border-radius:24px;overflow:hidden;background:linear-gradient(148deg,#5C61EB 0%,#1A1FB0 48%,#0E127B 100%);cursor:pointer;padding:0;text-align:left;display:block;width:100%;position:relative;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)" style-hover="box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">
-          <div style="position:absolute;top:-58px;right:-40px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.20),rgba(255,255,255,0) 70%)"></div>
-          <!-- O'ng tomondagi bo'sh joyni to'ldiradigan yengil bezak: matn
-               eni cheklangani uchun u yerda hech narsa turmasdi. -->
-          <div aria-hidden="true" style="position:absolute;right:-46px;bottom:-56px;width:184px;height:184px;border-radius:50%;border:1.5px solid rgba(255,255,255,.16)"></div>
-          <div aria-hidden="true" style="position:absolute;right:-14px;bottom:-24px;width:120px;height:120px;border-radius:50%;border:1.5px solid rgba(255,255,255,.14)"></div>
-          <div style="padding:18px 20px;display:flex;flex-direction:column;gap:14px;position:relative">
-            <div style="display:flex;flex-direction:column;gap:6px;max-width:250px">
-              <div style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#FFFFFF;line-height:1.3;text-wrap:pretty">Birinchi marta buyurtma qilyapsizmi?</div>
-              <div style="font-size:13px;color:rgba(255,255,255,.86);line-height:1.5">5 qadamda yo'lni ko'rsataman — do'kondan bojgacha.</div>
-            </div>
-            <!-- Bitta aniq harakat: qadam yorliqlari o'rniga bitta tugma.
-                 Ular hech qachon bosilmasdi, lekin kartani band qilardi. -->
-            <div style="display:flex;align-items:center;gap:8px;background:#FFFFFF;border-radius:999px;padding:10px 16px;align-self:flex-start">
-              <span style="font-size:13px;font-weight:700;color:#13189D">Boshlash</span>
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#13189D" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-            </div>
+
+      <!-- Mashhur do'konlar: logotip tasmasi, "Barchasi" — do'konlar bo'limi. -->
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;padding:0 2px">
+          <h2 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Mashhur do'konlar</h2>
+          <div style="flex:1"></div>
+          <button sc-camel-on-click="{{ goStores }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:6px 2px">Barchasi</button>
+        </div>
+        <div style="display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;margin:0 -18px;padding:2px 18px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch">
+          <sc-for list="{{ popRow }}" as="ps" hint-placeholder-count="5">
+            <button sc-camel-on-click="{{ ps.open }}" style="flex:none;width:104px;display:flex;flex-direction:column;align-items:center;gap:8px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="background:#F6F7FB">
+              <div style="width:44px;height:44px;border-radius:12px;position:relative;display:flex;align-items:center;justify-content:center;background:{{ ps.tint }}">
+                <sc-if value="{{ ps.showMono }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:15px;font-weight:700;color:{{ ps.color }}">{{ ps.mono }}</span>
+                </sc-if>
+                <div style="position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ ps.logoCss }}"></div>
+              </div>
+              <span style="font-size:13px;font-weight:700;color:#131429;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ps.name }}</span>
+              <span style="font-size:11px;font-weight:600;color:#6B6C85;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ps.sub }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- Kuryerlarni solishtirish: yo'nalish va og'irlik bo'yicha uchta eng
+           arzon taklif, summasi core/tariffs.js va data/tariffs.json dan. -->
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;padding:0 2px">
+          <h2 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Kuryerlarni solishtirish</h2>
+          <div style="flex:1"></div>
+          <button sc-camel-on-click="{{ goCouriers }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:6px 2px">Hammasini ko'rish</button>
+        </div>
+        <div style="background:#FFFFFF;border-radius:20px;padding:14px 16px 12px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+          <div style="display:flex;gap:8px;overflow-x:auto;margin:0 -16px;padding:0 16px 2px">
+            <sc-for list="{{ cmpCountries }}" as="cc" hint-placeholder-count="4">
+              <button sc-camel-on-click="{{ cc.pick }}" aria-pressed="{{ cc.on }}" style="flex:none;height:34px;padding:0 12px;border-radius:999px;border:1.5px solid {{ cc.bd }};background:{{ cc.bg }};color:{{ cc.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ cc.t }}</button>
+            </sc-for>
           </div>
-        </button>
-      </sc-if>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:13px;font-weight:700;color:#6B6C85">Og'irlik</span>
+            <sc-for list="{{ cmpKgs }}" as="ck" hint-placeholder-count="4">
+              <button sc-camel-on-click="{{ ck.pick }}" aria-pressed="{{ ck.on }}" style="height:34px;padding:0 12px;border-radius:999px;border:1.5px solid {{ ck.bd }};background:{{ ck.bg }};color:{{ ck.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;font-variant-numeric:tabular-nums">{{ ck.t }}</button>
+            </sc-for>
+          </div>
+          <sc-if value="{{ cmpHas }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column">
+              <sc-for list="{{ cmpRows }}" as="cr" hint-placeholder-count="3">
+                <button sc-camel-on-click="{{ cr.open }}" style="display:flex;align-items:center;gap:12px;background:none;border:none;border-top:1px solid #F1F1F8;padding:10px 0;cursor:pointer;text-align:left;font-family:inherit;width:100%">
+                  <span style="width:26px;height:26px;border-radius:999px;background:{{ cr.badgeBg }};color:{{ cr.badgeFg }};font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;font-variant-numeric:tabular-nums">{{ cr.n }}</span>
+                  <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                    <span style="font-size:15px;font-weight:700;color:#131429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ cr.name }}</span>
+                    <span style="font-size:11px;font-weight:600;color:#6B6C85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ cr.sub }}</span>
+                  </span>
+                  <span style="font-size:17px;font-weight:700;color:#1A1FB0;font-variant-numeric:tabular-nums;white-space:nowrap">{{ cr.price }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ cmpLoading }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:13px;font-weight:500;color:#6B6C85;padding:6px 0">Tariflar yuklanmoqda…</div>
+          </sc-if>
+          <sc-if value="{{ cmpEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:13px;font-weight:500;color:#6B6C85;padding:6px 0">Bu yo'nalish uchun tarif topilmadi.</div>
+          </sc-if>
+          <div style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">Taxminiy: kuryer saytidagi tarif bo'yicha, hisob og'irligi uchun. Yakuniy narxni kuryer belgilaydi.</div>
+        </div>
+      </div>
 
       <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
         <button sc-camel-on-click="{{ goStores }}" style="background:#FFFFFF;border:none;border-radius:20px;padding:18px;cursor:pointer;text-align:left;display:flex;flex-direction:column;justify-content:space-between;gap:14px;min-height:164px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
@@ -823,6 +890,28 @@
           </div>
         </button>
       </div>
+
+      <sc-if value="{{ wizardBig }}" hint-placeholder-val="{{ true }}">
+        <button sc-camel-on-click="{{ goWizard }}" style="border:none;border-radius:24px;overflow:hidden;background:linear-gradient(148deg,#5C61EB 0%,#1A1FB0 48%,#0E127B 100%);cursor:pointer;padding:0;text-align:left;display:block;width:100%;position:relative;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)" style-hover="box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">
+          <div style="position:absolute;top:-58px;right:-40px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.20),rgba(255,255,255,0) 70%)"></div>
+          <!-- O'ng tomondagi bo'sh joyni to'ldiradigan yengil bezak: matn
+               eni cheklangani uchun u yerda hech narsa turmasdi. -->
+          <div aria-hidden="true" style="position:absolute;right:-46px;bottom:-56px;width:184px;height:184px;border-radius:50%;border:1.5px solid rgba(255,255,255,.16)"></div>
+          <div aria-hidden="true" style="position:absolute;right:-14px;bottom:-24px;width:120px;height:120px;border-radius:50%;border:1.5px solid rgba(255,255,255,.14)"></div>
+          <div style="padding:18px 20px;display:flex;flex-direction:column;gap:14px;position:relative">
+            <div style="display:flex;flex-direction:column;gap:6px;max-width:250px">
+              <div style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#FFFFFF;line-height:1.3;text-wrap:pretty">Birinchi marta buyurtma qilyapsizmi?</div>
+              <div style="font-size:13px;color:rgba(255,255,255,.86);line-height:1.5">5 qadamda yo'lni ko'rsataman — do'kondan bojgacha.</div>
+            </div>
+            <!-- Bitta aniq harakat: qadam yorliqlari o'rniga bitta tugma.
+                 Ular hech qachon bosilmasdi, lekin kartani band qilardi. -->
+            <div style="display:flex;align-items:center;gap:8px;background:#FFFFFF;border-radius:999px;padding:10px 16px;align-self:flex-start">
+              <span style="font-size:13px;font-weight:700;color:#13189D">Boshlash</span>
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#13189D" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+            </div>
+          </div>
+        </button>
+      </sc-if>
 
       <!-- Pullik xizmatlar: ilovadagi ma'lumot yetmagan holatlar uchun -->
       <sc-if value="{{ hasContact }}" hint-placeholder-val="{{ true }}">
@@ -1219,6 +1308,11 @@
             <button sc-camel-on-click="{{ store.allCouriers }}" style="align-self:flex-start;display:flex;align-items:center;gap:8px;background:#E9EAFD;border:none;border-radius:14px;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:8px 14px;text-align:left;min-height:38px" style-hover="background:#DCDDFA">
               Shu yo'nalishdagi {{ store.courierCount }} kuryerni ko'rish
               <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 12h13M13 7l5 5-5 5"></path></svg>
+            </button>
+            <!-- Universal kalkulyatorga do'kon, davlat va kategoriya bilan o'tish. -->
+            <button sc-camel-on-click="{{ store.calcFrom }}" style="display:flex;align-items:center;justify-content:center;gap:8px;height:48px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;font-size:15px;font-weight:700;color:#FFFFFF;background:linear-gradient(155deg,#494FE9,#13189D)">
+              Shu do'kondan xarajatni hisoblash
+              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 12h13M13 7l5 5-5 5"></path></svg>
             </button>
           </div>
         </sc-if>
@@ -2814,6 +2908,151 @@
     </div>
   </sc-if>
 
+  <sc-if value="{{ sLanded }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <!-- 1. Mahsulot: nom (ixtiyoriy), narx va valyuta, miqdor, kategoriya -->
+      <div style="background:#FFFFFF;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+        <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Mahsulot</span>
+        <input value="{{ lc.name }}" sc-camel-on-change="{{ lcName }}" placeholder="Nomi (ixtiyoriy), masalan: Nike Air Max" type="text" autocomplete="off" aria-label="Mahsulot nomi" style="height:48px;border-radius:14px;border:1.5px solid #DCDDFA;padding:0 14px;font-family:inherit;font-size:15px;font-weight:500;color:#131429;outline:none;background:#FFFFFF;min-width:0">
+        <div style="display:flex;gap:12px">
+          <div style="flex:1.3;min-width:0;display:flex;flex-direction:column;gap:8px">
+            <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85">Narxi</span>
+            <div style="display:flex;align-items:center;gap:8px;background:#F1F1F8;border-radius:20px;padding:0 14px;height:56px;box-shadow:inset 0 0 0 1px #E3E4EE">
+              <input value="{{ lc.price }}" sc-camel-on-change="{{ lcPrice }}" inputmode="decimal" size="1" placeholder="0" aria-label="Mahsulot narxi" autocomplete="off" style="flex:1;min-width:0;width:100%;border:none;background:transparent;outline:none;font-family:inherit;font-size:22px;font-weight:800;color:#131429">
+              <span style="font-size:15px;font-weight:700;color:#6B6C85">{{ lcCurLabel }}</span>
+            </div>
+          </div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+            <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85">Miqdor</span>
+            <div style="display:flex;align-items:center;gap:8px;background:#F1F1F8;border-radius:20px;padding:0 14px;height:56px;box-shadow:inset 0 0 0 1px #E3E4EE">
+              <input value="{{ lc.qty }}" sc-camel-on-change="{{ lcQty }}" inputmode="numeric" size="1" aria-label="Miqdor, dona" autocomplete="off" style="flex:1;min-width:0;width:100%;border:none;background:transparent;outline:none;font-family:inherit;font-size:22px;font-weight:800;color:#131429">
+              <span style="font-size:15px;font-weight:700;color:#6B6C85">dona</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <sc-for list="{{ lcCurs }}" as="cu" hint-placeholder-count="4">
+            <button sc-camel-on-click="{{ cu.pick }}" aria-pressed="{{ cu.on }}" style="height:34px;padding:0 12px;border-radius:999px;border:1.5px solid {{ cu.bd }};background:{{ cu.bg }};color:{{ cu.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ cu.t }}</button>
+          </sc-for>
+        </div>
+        <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85">Kategoriya</span>
+        <div style="display:flex;gap:8px;overflow-x:auto;margin:0 -18px;padding:0 18px 2px">
+          <sc-for list="{{ lcCats }}" as="ct" hint-placeholder-count="6">
+            <button sc-camel-on-click="{{ ct.pick }}" aria-pressed="{{ ct.on }}" style="flex:none;height:34px;padding:0 12px;border-radius:999px;border:1.5px solid {{ ct.bd }};background:{{ ct.bg }};color:{{ ct.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ ct.t }}</button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ lcCautionOn }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;gap:10px;background:#FDF3E3;border-radius:14px;padding:10px 12px">
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:2px"><path d="M12 9v4M12 17h.01"></path><circle cx="12" cy="12" r="9"></circle></svg>
+            <span style="font-size:13px;color:#B45309;line-height:1.5;font-weight:500">{{ lcCaution }}</span>
+          </div>
+        </sc-if>
+      </div>
+
+      <!-- 2. Yo'nalish, og'irlik, quti, do'kon ichidagi yetkazish -->
+      <div style="background:#FFFFFF;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+        <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Qayerdan va qancha</span>
+        <sc-if value="{{ lcHasStore }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:#6B6C85">Do'kon: <span style="font-weight:700;color:#131429">{{ lcStoreName }}</span></div>
+        </sc-if>
+        <div style="display:flex;gap:8px;overflow-x:auto;margin:0 -18px;padding:0 18px 2px">
+          <sc-for list="{{ lcCountries }}" as="lco" hint-placeholder-count="5">
+            <button sc-camel-on-click="{{ lco.pick }}" aria-pressed="{{ lco.on }}" style="flex:none;height:34px;padding:0 12px;border-radius:999px;border:1.5px solid {{ lco.bd }};background:{{ lco.bg }};color:{{ lco.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ lco.t }}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:12px">
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+            <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85">Og'irligi, 1 dona</span>
+            <div style="display:flex;align-items:center;gap:8px;background:#F1F1F8;border-radius:20px;padding:0 14px;height:56px;box-shadow:inset 0 0 0 1px #E3E4EE">
+              <input value="{{ lc.kg }}" sc-camel-on-change="{{ lcKg }}" inputmode="decimal" size="1" placeholder="{{ lcKgHint }}" aria-label="Og'irligi, kilogrammda" autocomplete="off" style="flex:1;min-width:0;width:100%;border:none;background:transparent;outline:none;font-family:inherit;font-size:22px;font-weight:800;color:#131429">
+              <span style="font-size:15px;font-weight:700;color:#6B6C85">kg</span>
+            </div>
+          </div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+            <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85">Do'kon ichida yetkazish</span>
+            <div style="display:flex;align-items:center;gap:8px;background:#F1F1F8;border-radius:20px;padding:0 14px;height:56px;box-shadow:inset 0 0 0 1px #E3E4EE">
+              <span style="font-size:22px;font-weight:800;color:#6B6C85">$</span>
+              <input value="{{ lc.domestic }}" sc-camel-on-change="{{ lcDomestic }}" inputmode="decimal" size="1" placeholder="0" aria-label="Do'kon ichida yetkazish, dollarda" autocomplete="off" style="flex:1;min-width:0;width:100%;border:none;background:transparent;outline:none;font-family:inherit;font-size:22px;font-weight:800;color:#131429">
+            </div>
+          </div>
+        </div>
+        <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85">Quti o'lchami, sm (ixtiyoriy)</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input value="{{ lc.l }}" sc-camel-on-change="{{ lcL }}" inputmode="decimal" size="1" placeholder="uzunlik" aria-label="Quti uzunligi, sm" autocomplete="off" style="flex:1;min-width:0;height:44px;border-radius:14px;border:1.5px solid #DCDDFA;padding:0 12px;font-family:inherit;font-size:15px;font-weight:500;color:#131429;outline:none;background:#FFFFFF;text-align:center">
+          <span style="font-size:13px;font-weight:700;color:#A6A7BC">×</span>
+          <input value="{{ lc.w }}" sc-camel-on-change="{{ lcW }}" inputmode="decimal" size="1" placeholder="kenglik" aria-label="Quti kengligi, sm" autocomplete="off" style="flex:1;min-width:0;height:44px;border-radius:14px;border:1.5px solid #DCDDFA;padding:0 12px;font-family:inherit;font-size:15px;font-weight:500;color:#131429;outline:none;background:#FFFFFF;text-align:center">
+          <span style="font-size:13px;font-weight:700;color:#A6A7BC">×</span>
+          <input value="{{ lc.h }}" sc-camel-on-change="{{ lcH }}" inputmode="decimal" size="1" placeholder="balandlik" aria-label="Quti balandligi, sm" autocomplete="off" style="flex:1;min-width:0;height:44px;border-radius:14px;border:1.5px solid #DCDDFA;padding:0 12px;font-family:inherit;font-size:15px;font-weight:500;color:#131429;outline:none;background:#FFFFFF;text-align:center">
+        </div>
+        <span style="font-size:13px;color:#6B6C85;font-weight:500;line-height:1.5">{{ lcKgNote }}</span>
+      </div>
+
+      <!-- 3. Kuryer: yo'nalish va hisob og'irligi bo'yicha takliflar -->
+      <div style="background:#FFFFFF;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Kuryer</span>
+          <div style="flex:1"></div>
+          <button sc-camel-on-click="{{ goCouriers }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:6px 2px">Hammasi</button>
+        </div>
+        <sc-if value="{{ lcQuoteHas }}" hint-placeholder-val="{{ true }}">
+          <sc-for list="{{ lcQuotes }}" as="lq" hint-placeholder-count="3">
+            <button sc-camel-on-click="{{ lq.pick }}" aria-pressed="{{ lq.on }}" style="display:flex;align-items:center;gap:12px;background:{{ lq.bg }};border:1.5px solid {{ lq.bd }};border-radius:14px;padding:10px 12px;cursor:pointer;text-align:left;font-family:inherit;width:100%">
+              <span style="width:20px;height:20px;border-radius:999px;border:2px solid {{ lq.dotBd }};background:#FFFFFF;flex:none;display:flex;align-items:center;justify-content:center"><span style="width:10px;height:10px;border-radius:999px;background:{{ lq.dotBg }}"></span></span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                <span style="display:flex;align-items:center;gap:6px;min-width:0"><span style="font-size:15px;font-weight:700;color:#131429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ lq.name }}</span><sc-if value="{{ lq.hasBadge }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;color:{{ lq.badgeFg }};background:{{ lq.badgeBg }};padding:2px 8px;border-radius:999px;white-space:nowrap">{{ lq.badge }}</span></sc-if></span>
+                <span style="font-size:11px;font-weight:600;color:#6B6C85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ lq.sub }}</span>
+              </span>
+              <span style="font-size:15px;font-weight:700;color:#1A1FB0;font-variant-numeric:tabular-nums;white-space:nowrap">{{ lq.price }}</span>
+            </button>
+          </sc-for>
+        </sc-if>
+        <sc-if value="{{ lcQuoteNone }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">Bu yo'nalish uchun jadvalda tarif yo'q — kargo qatorisiz hisoblanadi. Kuryer bo'limida "narx so'raladi" belgili kuryerlarni ko'ring.</div>
+        </sc-if>
+      </div>
+
+      <!-- 4. Natija: jami tannarx, foydalimi, harakatlar -->
+      <div style="background:#FFFFFF;border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:16px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+        <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Jami tannarx</span>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <sc-for list="{{ lcRows }}" as="r" hint-placeholder-count="5">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+              <span style="flex:1;font-size:15px;color:#6B6C85;font-weight:500;min-width:0">{{ r.k }}</span>
+              <span style="font-size:15px;font-weight:700;color:{{ r.c }};flex:none;font-variant-numeric:tabular-nums">{{ r.v }}</span>
+            </div>
+          </sc-for>
+          <div style="height:1px;background:#F1F1F8"></div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+            <span style="font-size:15px;color:#131429;font-weight:700">Jami</span>
+            <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:26px;letter-spacing:-.03em;font-weight:800;color:#1A1FB0;font-variant-numeric:tabular-nums">{{ lcTotal }}</span>
+          </div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+            <span style="font-size:13px;color:#6B6C85;font-weight:500">Milliy valyutada</span>
+            <span style="font-size:13px;color:#131429;font-weight:700;font-variant-numeric:tabular-nums">{{ lcTotalUzs }}</span>
+          </div>
+          <div style="font-size:13px;color:#6B6C85;font-weight:500;line-height:1.5;text-wrap:pretty">{{ lcNote }}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;background:#F1F1F8;border-radius:20px;padding:12px 14px">
+          <span style="font-size:13px;font-weight:700;color:#131429">Olish foydalimi? O'zbekistondagi narxini yozing</span>
+          <div style="display:flex;align-items:center;gap:8px;background:#FFFFFF;border-radius:14px;padding:0 12px;height:44px;box-shadow:inset 0 0 0 1px #E3E4EE">
+            <input value="{{ lc.local }}" sc-camel-on-change="{{ lcLocal }}" inputmode="numeric" size="1" placeholder="masalan 4 300 000" aria-label="O'zbekistondagi narx, so'mda" autocomplete="off" style="flex:1;min-width:0;width:100%;border:none;background:transparent;outline:none;font-family:inherit;font-size:15px;font-weight:700;color:#131429">
+            <span style="font-size:13px;font-weight:700;color:#6B6C85">so'm</span>
+          </div>
+          <sc-if value="{{ lcWorthOn }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:15px;font-weight:700;color:{{ lcWorthFg }};line-height:1.5">{{ lcWorthText }}</span>
+          </sc-if>
+        </div>
+        <button sc-camel-on-click="{{ lcAddPlan }}" style="height:54px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(155deg,#494FE9,#13189D);color:#fff;font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">
+          Xarid rejasiga qo'shish
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </button>
+        <button sc-camel-on-click="{{ goCouriers }}" style="height:48px;border-radius:20px;border:1.5px solid #DCDDFA;cursor:pointer;background:#FFFFFF;color:#1A1FB0;font-size:15px;font-weight:700;font-family:inherit">Kuryerlarni solishtirish</button>
+        <div style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">Taxminiy hisob. Boj — VMQ 244-son bo'yicha, kargo — kuryer saytidagi tarif. Yakuniy summani bojxona va kuryer belgilaydi.</div>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ sPlan }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:14px;padding-bottom:24px">
       <!-- Sehrgar endigina tugagan bo'lsa: nima chiqqanini bitta qatorda
@@ -3299,6 +3538,40 @@ const toCyr = s => {
 };
 
 const RU = {
+  /* Bosh sahifa: universal maydon, tez o'tish, mashhur do'konlar, kuryer solishtirish */
+  'Nima olib':'Что хотите', 'kelmoqchisiz?':'привезти?',
+  "Mahsulot havolasini yoki nomini yozing — do'kon, kuryer va bojni ko'rsatib beraman.":'Вставьте ссылку на товар или напишите его название — покажу магазин, курьера и пошлину.',
+  'Havola yoki mahsulot nomi':'Ссылка или название товара', 'Mahsulot havolasi yoki nomi':'Ссылка или название товара', 'Boshlash':'Начать',
+  'Boj hisoblash':'Рассчитать пошлину', 'Kuryer tanlash':'Выбрать курьера', 'Taqiqni tekshirish':'Проверить запреты',
+  "Mashhur do'konlar":'Популярные магазины', 'Barchasi':'Все', 'Kuryerlarni solishtirish':'Сравнить курьеров', "Hammasini ko'rish":'Смотреть все',
+  "Og'irlik":'Вес', 'dan':'от', 'Tariflar yuklanmoqda…':'Загружаем тарифы…', "Bu yo'nalish uchun tarif topilmadi.":'Для этого направления тариф не найден.',
+  "Taxminiy: kuryer saytidagi tarif bo'yicha, hisob og'irligi uchun. Yakuniy narxni kuryer belgilaydi.":'Ориентировочно: по тарифу с сайта курьера, за расчётный вес. Итоговую цену определяет курьер.',
+  '{0} topildi — narx va vaznni kiritib bojni hisoblang':'{0} найден — введите цену и вес, чтобы рассчитать пошлину',
+  "Bu do'kon hali ro'yxatda yo'q — o'xshashini qidiruvda ko'ring":'Этого магазина пока нет в списке — посмотрите похожие в поиске',
+  'Angliya':'Англия', 'Koreya':'Корея', 'Germaniya':'Германия',
+  /* Universal kalkulyator (Jami narx) */
+  'Jami narx':'Итоговая цена', 'Mahsulot':'Товар', 'Nomi (ixtiyoriy), masalan: Nike Air Max':'Название (необязательно), например: Nike Air Max', 'Mahsulot nomi':'Название товара',
+  'Narxi':'Цена', 'Miqdor':'Количество', 'Miqdor, dona':'Количество, шт', 'dona':'шт', 'Kategoriya':'Категория', 'Qayerdan va qancha':'Откуда и сколько',
+  "Og'irligi, 1 dona":'Вес, 1 шт', "Do'kon ichida yetkazish":'Доставка внутри магазина', "Do'kon ichida yetkazish, dollarda":'Доставка внутри магазина, в долларах',
+  "Quti o'lchami, sm (ixtiyoriy)":'Размер коробки, см (необязательно)', 'uzunlik':'длина', 'kenglik':'ширина', 'balandlik':'высота',
+  'Quti uzunligi, sm':'Длина коробки, см', 'Quti kengligi, sm':'Ширина коробки, см', 'Quti balandligi, sm':'Высота коробки, см',
+  'Kuryer':'Курьер', 'Hammasi':'Все', 'Jami tannarx':'Итоговая стоимость', 'Jami':'Итого', "Xarid rejasiga qo'shish":'Добавить в план покупки',
+  "Olish foydalimi? O'zbekistondagi narxini yozing":'Выгодно ли? Укажите цену в Узбекистане', "O'zbekistondagi narx, so'mda":'Цена в Узбекистане, в сумах', 'masalan 4 300 000':'например 4 300 000',
+  "Bu yo'nalish uchun jadvalda tarif yo'q — kargo qatorisiz hisoblanadi. Kuryer bo'limida \"narx so'raladi\" belgili kuryerlarni ko'ring.":'Для этого направления в таблице нет тарифа — расчёт без строки карго. В разделе курьеров смотрите курьеров с пометкой «цена по запросу».',
+  'Taxminiy hisob. Boj — VMQ 244-son bo\'yicha, kargo — kuryer saytidagi tarif. Yakuniy summani bojxona va kuryer belgilaydi.':'Ориентировочный расчёт. Пошлина — по ПКМ №244, карго — по тарифу с сайта курьера. Итоговую сумму определяют таможня и курьер.',
+  'Narxni yozing — jami tannarx shu yerda chiqadi.':'Введите цену — итоговая стоимость появится здесь.',
+  "Tovar qiymati ${0} me'yor ichida — boj va yig'im yo'q.":'Стоимость товара в пределах нормы ${0} — пошлины и сбора нет.',
+  "Me'yordan oshgan qism uchun vazn bo'yicha hisob (har kg ${0}) ustun keldi.":'Для части сверх нормы расчёт по весу (${0} за кг) оказался больше.',
+  '{0} dona × {1}':'{0} шт × {1}', 'Kargo · {0} ({1} kg)':'Карго · {0} ({1} кг)', 'Kargo':'Карго',
+  "Hajmiy og'irlik {0} kg haqiqiy {1} kg dan katta — kargo shu bo'yicha.":'Объёмный вес {0} кг больше фактического {1} кг — карго считается по нему.',
+  "Hisob og'irligi: {0} kg.":'Расчётный вес: {0} кг.',
+  "Og'irlik yozilmadi — kategoriya bo'yicha taxmin: {0} kg/dona. Aniq vazn kiritsangiz hisob aniqroq bo'ladi.":'Вес не указан — оценка по категории: {0} кг/шт. Укажите точный вес, чтобы расчёт был точнее.',
+  'Eng arzon':'Самый дешёвый', 'Eng tez':'Самый быстрый', 'Optimal':'Оптимальный',
+  "Chetdan olish foydali — tejash {0} so'm ({1}%).":'Покупать за рубежом выгодно — экономия {0} сум ({1}%).',
+  "O'zbekistonda arzonroq — farq {0} so'm.":'В Узбекистане дешевле — разница {0} сум.',
+  'Avval mahsulot narxini yozing':'Сначала введите цену товара', "Do'kon tanlanmagan":'Магазин не выбран',
+  "Shu do'kondan xarajatni hisoblash":'Рассчитать расходы из этого магазина',
+  'Kiyim va moda':'Одежда и мода', 'Poyabzal va krossovka':'Обувь и кроссовки', 'Elektronika va texnika':'Электроника и техника', 'Kosmetika va parfyumeriya':'Косметика и парфюмерия', "Bolalar va o'yinchoq":'Детское и игрушки', 'Universal':'Универсальные',
   'Qo\'llanma yuklanmoqda…':'Инструкция загружается…',
   'Ilovani telefonga o\'rnatish':'Установить приложение',
   'Interfeys tili':'Язык интерфейса',
@@ -4553,6 +4826,22 @@ const normsAt = (d = new Date()) => {
 };
 let BHM = normsAt().bhm, FREE_USD = normsAt().freeUsd;
 const NORMS_META = { checked: '', live: false };
+/* Kuryer tariflari (data/tariffs.json) — ilova ochilgach yuklanadi,
+   core/tariffs.js bilan hisoblanadi. */
+let TARIFFS = null;
+/* Havoladagi domen → do'kon: qisqartirilgan va mobil manzillar. */
+const DOMAIN_ALIAS = { 'tb.cn': 'taobao', 'tmall.com': 'tmall', 'yangkeduo.com': 'pinduoduo', 'pinduoduo.com': 'pinduoduo', 'pddpic.com': 'pinduoduo',
+  'dewu.com': 'poizon', 'poizon.com': 'poizon', 'a.co': 'amazon', 'amzn.to': 'amazon', 'amzn.com': 'amazon', 'amzn.eu': 'amazon', 'amazon.de': 'amazon', 'amazon.co.uk': 'amazon',
+  'ty.gl': 'trendyol', 'trendyol-milla.com': 'trendyol', 'shein.co.uk': 'shein', 'sheinoutlet.com': 'shein', 'ebay.de': 'ebay', 'ebay.co.uk': 'ebay', 'aliexpress.ru': 'aliexpress', 'aliexpress.us': 'aliexpress', 'mi.com': 'xiaomi' };
+/* Bosh sahifadagi "Mashhur do'konlar" tasmasi — tartib mashhurlik bo'yicha;
+   o'lchov ishlagach haqiqiy bosishlar bilan almashtiriladi. */
+/* Kategoriyalar — build vaqtida data/categories.json dan yoziladi
+   (id, label, kgPerItem, caution). */
+const CATEGORIES = [];
+/* Universal kalkulyatorning boshlang'ich kirishlari. */
+const LC_DEFAULT = { name: '', price: '', cur: 'USD', qty: '1', cat: 'universal', country: 'Xitoy', storeId: null, kg: '', l: '', w: '', h: '', domestic: '', courierKey: '', local: '' };
+const LC_COUNTRIES = ['Xitoy', 'AQSh', 'Turkiya', 'Angliya', 'Koreya', 'Germaniya', 'BAA'];
+const POPULAR_STORES = ['taobao', 'pinduoduo', 'amazon', 'trendyol', 'poizon', 'shein', 'aliexpress', 'ebay'];
 const RATE_META = { date:'', diff:0, live:false, loading:false, at:0 };
 /* Ilova versiyasi — sozlamalar ekranida ko'rsatiladi. */
 const APP_VERSION = 'v1.0.0 · 19.08.2026';
@@ -4906,6 +5195,10 @@ class Component extends DCLogic {
     /* Kuryerlar papkasi: 'from:Xitoy' kabi, ochilmagan bo'lsa null. */
     courierFolder: null,
     homeQuery: '',
+    /* Bosh sahifadagi kuryer solishtirish bloki: yo'nalish va og'irlik. */
+    cmpCountry: 'Xitoy', cmpKg: 2, tariffsOn: false,
+    /* Universal kalkulyator (jami tannarx) kirishlari — LC_DEFAULT nusxasi. */
+    lc: { ...LC_DEFAULT },
     storeCountries: SAVED.storeCountries || [], storeCats: SAVED.storeCats || [],
     storeDirect: !!SAVED.storeDirect, storeGroup: SAVED.storeGroup || 'cat',
     courierCountries: SAVED.courierCountries || [], courierMode: SAVED.courierMode || null,
@@ -5281,6 +5574,7 @@ class Component extends DCLogic {
   componentDidMount() {
     this.applyLang();
     this.loadNorms();
+    this.loadTariffs();
     this.loadStoreLogos();
     this.warmIcons();
     /* Brauzer "ilovani o'rnatish" taklifini bersa, uni sozlamalardagi tugmaga
@@ -5434,6 +5728,19 @@ class Component extends DCLogic {
     } catch (e) { this.useRemoteLogos(); }
   }
 
+  /* Kuryer tariflari: bosh sahifadagi solishtirish bloki uchun. Fayl SW
+     keshida, shuning uchun oflaynda ham keladi. */
+  async loadTariffs() {
+    try {
+      const r = await fetch('data/tariffs.json', { cache: 'no-cache' });
+      if (!r.ok) return;
+      const d = await r.json();
+      if (!d || !d.couriers) return;
+      TARIFFS = d;
+      this.setState({ tariffsOn: true });
+    } catch (e) {}
+  }
+
   async loadNorms() {
     try {
       const r = await fetch('data/norms.json', { cache: 'no-cache' });
@@ -5527,30 +5834,69 @@ class Component extends DCLogic {
     return (list.length ? list : [...COURIERS]).slice().sort((a, b) => a.price - b.price);
   }
   openCourierId(id) { this.setState({ courierId: id }); this.push('courier'); }
+
+  /* Universal maydon. Havola bo'lsa domen bo'yicha do'kon topiladi (STORES
+     domeni yoki DOMAIN_ALIAS) va do'kon sahifasi ochiladi; ro'yxatda yo'q
+     domen — qidiruvga; oddiy so'z — qidiruv ekrani. Foydalanuvchi oqimi
+     hech qachon to'xtab qolmaydi. */
+  heroGo() {
+    const raw = String(this.state.homeQuery || '').trim();
+    const lang = this.state.lang;
+    if (!raw) { this.push('search'); return; }
+    const m = /^(?:https?:\/\/)?(?:[a-z0-9-]+\.)*?([a-z0-9-]+\.(?:com|net|org|cn|ru|uz|tr|de|co\.uk|co|us|eu|to|kr|jp|shop|store|cn\.com|com\.tr))(?:[\/?#:]|$)/i.exec(raw);
+    const full = /^(?:https?:\/\/)?(?:www\.)?([a-z0-9.-]+\.[a-z]{2,})(?:[\/?#:]|$)/i.exec(raw);
+    if (m || full) {
+      const host = (full ? full[1] : m[1]).toLowerCase();
+      const base = m ? m[1].toLowerCase() : host;
+      const alias = Object.keys(DOMAIN_ALIAS).find(d => host === d || host.endsWith('.' + d));
+      const store = STORES.find(x => alias ? x.id === DOMAIN_ALIAS[alias] : (host === x.domain || host.endsWith('.' + x.domain) || base === x.domain));
+      metrics.hit('hero', store ? 'link:' + store.id : 'link:?');
+      if (store) {
+        this.noteSearch(store.name); this.warmGuide(store.id);
+        this.setState({ storeId: store.id, homeQuery: '' });
+        this.push('store');
+        this.toast(tx(lang, '{0} topildi — narx va vaznni kiritib bojni hisoblang', store.name));
+        return;
+      }
+      this.setState({ homeQuery: base.split('.')[0] });
+      this.push('search');
+      this.toast(tr(lang, "Bu do'kon hali ro'yxatda yo'q — o'xshashini qidiruvda ko'ring"));
+      return;
+    }
+    metrics.hit('hero', 'text');
+    this.push('search');
+  }
   savePlan(wz) {
     const st = this.state;
     const sObj = STORES.find(x => x.name === st.wizStore) || null;
     const kObj = COURIERS.find(x => x.name === (st.wizCourier || wz.courierName)) || null;
-    const d = new Date();
-    const stamp = planStamp(st.plans, d);
-    const id = 'p' + d.getTime();
-    const plan = {
-      id, step: 0, track: '',
-      date: stamp.date,
-      num: stamp.num,
+    this.savePlanFrom({
       cat: (st.wizCat || 'Xarid').replace(/^[^\p{L}]+/u, ''),
       country: (st.wizCountry || '').replace(/^[^\p{L}]+/u, ''),
       storeId: sObj ? sObj.id : null, storeName: st.wizStore || '—',
       logoCss: sObj ? sObj.logoCss : 'none',
       courierId: kObj ? kObj.id : null, courierName: wz.courierName, days: wz.days,
       rate: wz.perKgLabel, price: wz.price, kg: wz.kg,
-      ship: wz.ship, dutyUsd: wz.dutyUsd, feeUsd: wz.feeUsd, total: wz.total
-    };
+      ship: wz.ship, dutyUsd: wz.dutyUsd, feeUsd: wz.feeUsd, total: wz.total,
+      source: 'wizard'
+    });
+  }
+
+  /* Rejani saqlash — sehrgar va universal kalkulyator uchun bitta yo'l.
+     Reja obyektining eski maydonlari o'zgarmaydi (eski rejalar avvalgidek
+     chiziladi); universal kalkulyator qo'shimcha ixtiyoriy maydonlar beradi:
+     name, qty, url, source. */
+  savePlanFrom(p) {
+    const st = this.state;
+    const d = new Date();
+    const stamp = planStamp(st.plans, d);
+    const id = 'p' + d.getTime();
+    const plan = { id, step: 0, track: '', date: stamp.date, num: stamp.num, ...p };
     /* Reja bojxona me'yoriga ham qo'shiladi: me'yor kalendar oyga beriladi
        va foydalanuvchi jo'natmalarini qo'lda qo'shib chiqmasligi kerak.
        Reja identifikatori yoziladi, shuning uchun qayta saqlansa ikki
        marta sanalmaydi. */
-    const mEntry = { id: 'm' + id, plan: id, date: todayIso(), usd: num(wz.price), kg: num(wz.kg) };
+    const mEntry = { id: 'm' + id, plan: id, date: todayIso(), usd: num(p.price), kg: num(p.kg) };
     /* Ilgari 5 qadamdan keyin foydalanuvchi bosh sahifaga tashlanardi va
        nima chiqqanini ko'rmasdi. Endi reja ekrani ochiladi: yakun, jami
        summa va keyingi bosqichlar bir joyda turadi. */
@@ -5561,6 +5907,14 @@ class Component extends DCLogic {
     }));
     this.push('plan');
     this.celebrate();
+  }
+
+  /* Universal kalkulyatorni ochish: prefill — do'kon sahifasidan (storeId,
+     country, cat) yoki bo'sh. */
+  openLanded(prefill) {
+    metrics.hit('calc_open', prefill && prefill.storeId ? 'store:' + prefill.storeId : 'quick');
+    this.setState({ lc: { ...LC_DEFAULT, ...(prefill || {}) } });
+    this.push('landed');
   }
 
   /* 5 qadam tugagani — ilovadagi yagona "tabriklaymiz" lahzasi. Bir marta
@@ -5661,7 +6015,7 @@ class Component extends DCLogic {
       return f.indexOf('from:') === 0
         ? (COURIER_ORIGINS.find(d => d[0] === f.slice(5)) || null) : null;
     })();
-    const titles = { plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? tx(st.lang, '{0} yo\'nalishi', tr(st.lang, courierFolderDef[1])) : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', search:'Qidiruv', wizard:'Reja tuzish', settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
+    const titles = { landed:'Jami narx', plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? tx(st.lang, '{0} yo\'nalishi', tr(st.lang, courierFolderDef[1])) : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', search:'Qidiruv', wizard:'Reja tuzish', settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
     /* Saralash tugmasi faqat ro'yxat ko'rinib turganda kerak: papkalar
        ekranida saralanadigan narsa yo'q. */
     const showSortBtn = cur === 'courierfolder' ||
@@ -5852,11 +6206,12 @@ class Component extends DCLogic {
       sCustoms: cur === 'customs', sCsec: cur === 'csec', sGuides: cur === 'guides',
       sShip: cur === 'shipments', sWizard: cur === 'wizard', sSettings: cur === 'settings',
       sPlan: cur === 'plan' && !!pl,
+      sLanded: cur === 'landed',
       hasPlans: st.plans.length > 0,
       planCount: st.plans.length + ' ta',
       wizShowPlans: cur === 'wizard' && st.wizStep === 0 && st.plans.length > 0,
       myPlans: st.plans.map(p => ({
-        title: p.cat, sub: p.storeName + ' · ' + p.courierName,
+        title: p.name || p.cat, sub: p.storeName + ' · ' + p.courierName,
         total: '$' + p.total.toFixed(0), logoCss: p.logoCss,
         plate: p.logoCss && p.logoCss !== 'none' ? 'transparent' : '#F1F1F8',
         stLabel: PLAN_STATUS[p.step].label, stBg: PLAN_STATUS[p.step].bg, stFg: PLAN_STATUS[p.step].fg,
@@ -5868,7 +6223,7 @@ class Component extends DCLogic {
       planPlate: pl && pl.logoCss && pl.logoCss !== 'none' ? 'transparent' : '#F1F1F8',
       planJustSaved: !!st.justSaved,
       planDoneLine: pl ? [pl.country, pl.storeName, pl.courierName, pl.days].filter(Boolean).join(' · ') : '',
-      planTitleBig: pl ? pl.cat : '',
+      planTitleBig: pl ? (pl.name || pl.cat) : '',
       planSub: pl ? pl.storeName + (pl.country ? ' · ' + pl.country : '') + ' · ' + pl.kg.toFixed(1) + ' kg' : '',
       planNum: pl ? pl.num + ' · ' + pl.date : '',
       planTotalBig: pl ? '$' + pl.total.toFixed(2) : '',
@@ -5984,6 +6339,132 @@ class Component extends DCLogic {
 
       hq: st.homeQuery,
       onHq: e => this.setState({ homeQuery: e.target.value }),
+      /* Universal maydon: havola → do'kon, aks holda qidiruv ekrani. */
+      heroSubmit: e => { e.preventDefault(); this.heroGo(); },
+      quickActs: [
+        { t: 'Jami narx', iconCss: "url('icons/boj-kalkulyator.webp')", go: () => { metrics.hit('quick', 'landed'); this.openLanded(); } },
+        { t: 'Kuryer tanlash', iconCss: "url('icons/courier-3d.webp')", go: () => { metrics.hit('quick', 'couriers'); this.push('couriers'); } },
+        { t: 'Taqiqni tekshirish', iconCss: "url('icons/boj-taqiq.webp')", go: () => { metrics.hit('quick', 'banned'); this.openSec(2); } },
+        { t: "Qo'llanmalar", iconCss: "url('icons/guides-3d.webp')", go: () => { metrics.hit('quick', 'guides'); this.push('guides'); } }
+      ],
+      /* Mashhur do'konlar tasmasi. */
+      popRow: POPULAR_STORES.map(id => STORES.find(x => x.id === id)).filter(Boolean).map(x => {
+        const bor = !!(x.logoCss && x.logoCss !== 'none');
+        return { name: x.name, sub: tr(st.lang, x.country), mono: x.mono, color: x.color, logoCss: x.logoCss,
+          showMono: !bor, tint: bor ? 'transparent' : '#F1F1F8',
+          open: () => { this.warmGuide(x.id); this.setState({ storeId: x.id }); this.push('store'); } };
+      }),
+      /* Universal kalkulyator (landed) — faqat o'z ekranida hisoblanadi. */
+      ...(() => {
+        if (cur !== 'landed') return {};
+        const lc = st.lc || LC_DEFAULT;
+        const setLc = patch => this.setState(x => ({ lc: { ...(x.lc || LC_DEFAULT), ...patch } }));
+        const onF = key => e => setLc({ [key]: e.target.value });
+        const chip = on => on ? { on: true, bg: '#1A1FB0', fg: '#FFFFFF', bd: '#1A1FB0' } : { on: false, bg: '#FFFFFF', fg: '#131429', bd: '#DCDDFA' };
+        const fx = TARIFFS && TARIFFS.fx || {};
+        const curs = [['USD', '$'], ['EUR', '€'], ['GBP', '£'], ['UZS', "so'm"]];
+        const fxOf = c => c === 'USD' ? 1 : c === 'UZS' ? (USD_RATE > 0 ? 1 / USD_RATE : 0) : (num(fx[c]) || 0);
+        const priceUsd = Math.max(0, num(lc.price)) * fxOf(lc.cur);
+        const qty = Math.max(1, Math.round(num(lc.qty) || 1));
+        const catDef = CATEGORIES.find(c => c.id === lc.cat) || { id: lc.cat, label: lc.cat, kgPerItem: 1, caution: '' };
+        const kgIn = num(lc.kg);
+        const kg = kgIn > 0 ? kgIn : num(catDef.kgPerItem) || 1;
+        const dims = (num(lc.l) > 0 && num(lc.w) > 0 && num(lc.h) > 0) ? { l: num(lc.l), w: num(lc.w), h: num(lc.h), divisor: 5000 } : null;
+        const volKg = dims ? PochtamCore.volumetricKg(dims.l, dims.w, dims.h, 5000) : 0;
+        const billKg = Math.max(kg * qty, volKg);
+        const store = lc.storeId ? STORES.find(x => x.id === lc.storeId) : null;
+        let quotes = [];
+        if (TARIFFS && PochtamCore.courierQuotes) {
+          quotes = PochtamCore.rankQuotes(PochtamCore.courierQuotes({ couriers: COURIERS, tariffs: TARIFFS, country: lc.country, kg: billKg, usdRate: USD_RATE }), 'cheap').filter(q => q.ok);
+        }
+        const keyOf = q => q.id + '|' + q.country + '|' + q.text;
+        const fast = PochtamCore.rankQuotes(quotes, 'fast')[0] || null;
+        const optq = PochtamCore.rankQuotes(quotes, 'optimal')[0] || null;
+        const top = quotes.slice(0, 3);
+        if (fast && !top.includes(fast)) top.push(fast);
+        const sel = top.find(q => keyOf(q) === lc.courierKey) || top[0] || null;
+        const L = PochtamCore.landedCost({ priceUsd, qty, domesticUsd: num(lc.domestic), kg, dims, shipUsd: sel ? sel.usd : 0, norms: normsAt(), usdRate: USD_RATE, localPriceUzs: num(lc.local) });
+        const rows = [
+          { k: qty > 1 ? tx(st.lang, '{0} dona × {1}', qty, usd(priceUsd)) : tr(st.lang, 'Mahsulot narxi'), v: usd(L.goodsUsd), c: '#131429' }
+        ];
+        if (L.domesticUsd > 0) rows.push({ k: tr(st.lang, "Do'kon ichida yetkazish"), v: usd(L.domesticUsd), c: '#131429' });
+        rows.push({ k: sel ? tx(st.lang, 'Kargo · {0} ({1} kg)', sel.name, billKg.toFixed(1).replace('.', ',')) : tr(st.lang, 'Kargo'), v: '$' + L.shipUsd.toFixed(2), c: '#131429' });
+        rows.push({ k: tr(st.lang, 'Bojxona to\'lovi'), v: L.dutyUsd > 0 ? '$' + L.dutyUsd.toFixed(2) : '$0', c: L.dutyUsd > 0 ? '#B45309' : '#0F7B3E' });
+        rows.push({ k: tr(st.lang, 'Yagona yig\'im'), v: L.feeUsd > 0 ? '$' + L.feeUsd.toFixed(2) : '$0', c: L.feeUsd > 0 ? '#B45309' : '#0F7B3E' });
+        const N = normsAt();
+        const note = priceUsd <= 0 ? tr(st.lang, 'Narxni yozing — jami tannarx shu yerda chiqadi.')
+          : L.basis === 'none' ? tx(st.lang, "Tovar qiymati ${0} me'yor ichida — boj va yig'im yo'q.", N.freeUsd)
+          : L.basis === 'weight' ? tx(st.lang, "Me'yordan oshgan qism uchun vazn bo'yicha hisob (har kg ${0}) ustun keldi.", N.minPerKg)
+          : tx(st.lang, "Me'yordan ($" + N.freeUsd + ") oshgan qismdan {0}% boj va BHM ning {1}% yig'imi.", Math.round(N.dutyPct * 100), Math.round(N.feeShare * 100));
+        const badgeOf = q => q === quotes[0] ? ['Eng arzon', '#E9F8EF', '#0F7B3E'] : q === fast ? ['Eng tez', '#E9EAFD', '#1A1FB0'] : q === optq ? ['Optimal', '#FDF3E3', '#B45309'] : null;
+        return {
+          lc,
+          lcName: onF('name'), lcPrice: onF('price'), lcQty: onF('qty'), lcKg: onF('kg'), lcDomestic: onF('domestic'), lcL: onF('l'), lcW: onF('w'), lcH: onF('h'), lcLocal: onF('local'),
+          lcCurLabel: (curs.find(c => c[0] === lc.cur) || curs[0])[1],
+          lcCurs: curs.filter(c => c[0] === 'USD' || c[0] === 'UZS' || fxOf(c[0]) > 0).map(c => ({ t: c[1], ...chip(lc.cur === c[0]), pick: () => setLc({ cur: c[0] }) })),
+          lcCats: CATEGORIES.map(c => ({ t: tr(st.lang, c.label), ...chip(lc.cat === c.id), pick: () => setLc({ cat: c.id }) })),
+          lcCautionOn: !!catDef.caution, lcCaution: catDef.caution || '',
+          lcHasStore: !!store, lcStoreName: store ? store.name : '',
+          lcCountries: LC_COUNTRIES.map(c => ({ t: tr(st.lang, c), ...chip(lc.country === c), pick: () => setLc({ country: c, courierKey: '' }) })),
+          lcKgHint: '≈ ' + String(catDef.kgPerItem).replace('.', ','),
+          lcKgNote: kgIn > 0
+            ? (volKg > kg * qty ? tx(st.lang, 'Hajmiy og\'irlik {0} kg haqiqiy {1} kg dan katta — kargo shu bo\'yicha.', volKg.toFixed(1).replace('.', ','), (kg * qty).toFixed(1).replace('.', ',')) : tx(st.lang, 'Hisob og\'irligi: {0} kg.', billKg.toFixed(1).replace('.', ',')))
+            : tx(st.lang, "Og'irlik yozilmadi — kategoriya bo'yicha taxmin: {0} kg/dona. Aniq vazn kiritsangiz hisob aniqroq bo'ladi.", String(catDef.kgPerItem).replace('.', ',')),
+          lcQuoteHas: top.length > 0, lcQuoteNone: !!TARIFFS && top.length === 0,
+          lcQuotes: top.map(q => { const on = q === sel; const b = badgeOf(q); return {
+            name: q.name, sub: [q.days ? tr(st.lang, q.days) : '', q.mode].filter(Boolean).join(' · '),
+            price: '$' + q.usd.toFixed(2) + (q.from ? ' ' + tr(st.lang, 'dan') : ''),
+            on, bg: on ? '#E9EAFD' : '#FFFFFF', bd: on ? '#1A1FB0' : '#F1F1F8', dotBd: on ? '#1A1FB0' : '#DCDDFA', dotBg: on ? '#1A1FB0' : '#FFFFFF',
+            hasBadge: !!b, badge: b ? tr(st.lang, b[0]) : '', badgeBg: b ? b[1] : '', badgeFg: b ? b[2] : '',
+            pick: () => setLc({ courierKey: keyOf(q) }) }; }),
+          lcRows: rows,
+          lcTotal: '$' + L.totalUsd.toFixed(2), lcTotalUzs: money(Math.round(L.totalUzs)) + ' so\'m',
+          lcNote: note,
+          lcWorthOn: L.localPriceUzs > 0 && priceUsd > 0,
+          lcWorthFg: L.worth ? '#0F7B3E' : '#B42318',
+          lcWorthText: L.worth
+            ? tx(st.lang, 'Chetdan olish foydali — tejash {0} so\'m ({1}%).', money(Math.round(L.savingUzs)), Math.round(L.savingPct * 100))
+            : tx(st.lang, "O'zbekistonda arzonroq — farq {0} so'm.", money(Math.round(-L.savingUzs))),
+          lcAddPlan: () => {
+            if (!(priceUsd > 0)) { this.toast(tr(st.lang, 'Avval mahsulot narxini yozing')); return; }
+            metrics.hit('calc_done', lc.country); metrics.hit('add_to_plan', 'landed');
+            const cObj = sel ? COURIERS.find(x => x.id === sel.id) : null;
+            this.savePlanFrom({
+              name: String(lc.name || '').trim().slice(0, 60), qty, source: 'landed',
+              cat: tr('uz', catDef.label), country: lc.country,
+              storeId: store ? store.id : null, storeName: store ? store.name : tr(st.lang, 'Do\'kon tanlanmagan'),
+              logoCss: store ? store.logoCss : 'none',
+              courierId: cObj ? cObj.id : null, courierName: sel ? sel.name : '—', days: sel ? sel.days : '',
+              rate: sel && billKg > 0 ? '$' + (sel.usd / billKg).toFixed(2) + '/kg' : '—',
+              price: L.goodsUsd + L.domesticUsd, kg: billKg, ship: L.shipUsd,
+              dutyUsd: L.dutyUsd, feeUsd: L.feeUsd, total: L.totalUsd
+            });
+          }
+        };
+      })(),
+      /* Kuryerlarni solishtirish bloki. */
+      ...(() => {
+        const countries = ['Xitoy', 'AQSh', 'Turkiya', 'Angliya', 'Koreya'];
+        const chip = (on) => on ? { on: true, bg: '#1A1FB0', fg: '#FFFFFF', bd: '#1A1FB0' } : { on: false, bg: '#FFFFFF', fg: '#131429', bd: '#DCDDFA' };
+        const kgs = [1, 2, 5, 10];
+        let rows = [];
+        if (TARIFFS && window.PochtamCore && PochtamCore.courierQuotes) {
+          const all = PochtamCore.courierQuotes({ couriers: COURIERS, tariffs: TARIFFS, country: st.cmpCountry, kg: st.cmpKg, usdRate: USD_RATE });
+          rows = PochtamCore.rankQuotes(all, 'cheap').filter(q => q.ok).slice(0, 3);
+        }
+        const badge = ['#E9F8EF', '#E9EAFD', '#FDF3E3'], badgeFg = ['#0F7B3E', '#1A1FB0', '#B45309'];
+        return {
+          cmpCountries: countries.map(c => ({ t: tr(st.lang, c), ...chip(st.cmpCountry === c), pick: () => { metrics.hit('courier_compare', c); this.setState({ cmpCountry: c }); } })),
+          cmpKgs: kgs.map(k => ({ t: k + ' kg', ...chip(st.cmpKg === k), pick: () => this.setState({ cmpKg: k }) })),
+          cmpRows: rows.map((q, i) => ({
+            n: i + 1, name: q.name, badgeBg: badge[i], badgeFg: badgeFg[i],
+            sub: [q.days ? tr(st.lang, q.days) : '', q.mode].filter(Boolean).join(' · '),
+            price: '$' + q.usd.toFixed(2) + (q.from ? ' ' + tr(st.lang, 'dan') : ''),
+            open: () => this.openCourierId(q.id)
+          })),
+          cmpHas: rows.length > 0, cmpLoading: !TARIFFS, cmpEmpty: !!TARIFFS && rows.length === 0
+        };
+      })(),
 
       /* --- Shaxsiy bloklar: sevimlilar, yaqinda ko'rilgan, qidiruv tarixi.
          Uchalasi ham faqat to'lgan bo'lsa chiziladi — bo'sh blok bosh
@@ -6267,6 +6748,8 @@ class Component extends DCLogic {
       })(),
 
       store: { ...store, apps: storeApps, hasApps: storeApps.length > 0,
+        calcFrom: () => this.openLanded({ storeId: store.id, cat: CATEGORIES.some(c => c.id === store.cat) ? store.cat : 'universal',
+          country: LC_COUNTRIES.find(c => (STORE_ROUTE[c === 'Angliya' ? 'Buyuk Britaniya' : c] || /$^/).test(store.country || '')) || 'Xitoy' }),
         linkLabel: store.isAff ? store.domain + ' · ' + tr(st.lang, 'hamkorlik havolasi') : store.domain,
         plate: (store.logoCss && store.logoCss !== 'none') ? 'transparent' : store.tint,
         hasFullGuide: !!storeFull,
