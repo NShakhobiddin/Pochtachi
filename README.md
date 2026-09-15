@@ -188,9 +188,47 @@ kuryer ekranlarida kuryer filtrlarini (yuborish turi, saralash; yo'nalish
 papkasidan tashqarida davlat ham) ko'rsatadi. Escape avval ochiq varaqni
 yopadi, keyingina ekranni.
 
+## Pochtam Core
+
+Biznes mantiq UI dan ajratilgan, `core/` da, oddiy skript sifatida
+(brauzerda `PochtamCore`, Node va Cloudflare Worker'da modul — bir xil
+kod). Qoida raqamlari bu yerda yozilmaydi, `data/` dan keladi:
+
+| Modul | Vazifa | Ma'lumot |
+|---|---|---|
+| `core/customs.js` | `customsDuty()` — boj va yig'im; `normsAt()`, `volumetricKg()`, `billableKg()` | `data/norms.json` |
+| `core/tariffs.js` | `tariffCost()` — bitta tarif qatori uchun summa; `courierQuotes()` — yo'nalish va vazn bo'yicha barcha kuryerlar; `rankQuotes()` — arzon / tez / optimal | `data/tariffs.json` |
+| `core/landed.js` | `landedCost()` — tovar + ichki yetkazish + kargo + boj + yig'im, hajmiy og'irlik, "olish foydalimi?" | — |
+
+**Bitta formula, beshta chaqiruv.** Ilgari boj arifmetikasi beshta joyda
+alohida yozilgan edi (kalkulyator, reja sehrgari, motion-namuna, bosh
+sahifa misoli, qo'llanma dvigateli — oxirgisida zaxira stavkalar kodda).
+Endi hammasi `customsDuty()` ni chaqiradi. Refaktor oltin qiymatlar
+bilan tekshirildi: 14 ta holat (kalkulyator 6, motion, sehrgar 3,
+qo'llanma 3) oldin va keyin aynan bir xil. `data/norms.json` — yagona
+manba: build uni ilovadagi `NORMS` ro'yxatiga va har qo'llanmaga
+(`window.XY_NORMS`) yozadi, `--check` farqni ushlaydi.
+
+**Tariflar tuzilgan.** `data/tariffs.json` — 20 kuryerning 68 tarif
+qatori: `text` (saytdagi asl yozuv, ko'rsatish uchun) va hisob uchun
+`kind`: `brackets` (vazn oralig'i: posilka / kg / 100 g uchun narx),
+`perkg` (`from` — "dan", ya'ni eng kam), `quote` (narx so'raladi;
+hozir yo'q). Valyuta USD/EUR/GBP/UZS; EUR va GBP `fx` zaxira kurslari
+bilan, UZS joriy kurs bilan dollarga o'giriladi. Ikkilanadigan qatorlar
+(masalan saytda ikki qiymat) kattasi olinib `note` da izohlangan.
+`perkg` tarifda eng kam 0,5 kg hisoblanadi (reja sehrgari qoidasi).
+Test har qatorning jadvalda borligini va matni o'zgarmaganini tekshiradi.
+
+`data/categories.json` — 6 kategoriya (ilovadagi `WIZ_CATS` va
+`STORE_CATS` kalitlari bilan bir xil), odatiy og'irlik va cheklov izohi.
+
+Testlar: `node tests/core.mjs` (tarmoqsiz, brauzersiz; `npm test` ning
+birinchi qadami).
+
 ## Bojxona kalkulyatori
 
-`calc()`: oylik summa − $200 = ortiqcha; ortiqcha ulushiga mos vazn
+Formula `core/customs.js` da (yuqoriga qarang); bu bo'lim natijaning
+ko'rsatilishi haqida. Qoida: oylik summa − $200 = ortiqcha; ortiqcha ulushiga mos vazn
 nisbat bilan ajratiladi; bojxona qiymati = ortiqcha + shu vaznning
 yetkazish xarajati; boj = max(qiymatning 30%, ortiqcha vazn × $3);
 yig'im = BHM ning 25% (faqat ortiqcha bo'lganda). Maydonlar `num()` dan

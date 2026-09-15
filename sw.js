@@ -17,7 +17,7 @@
  *   - Do'kon logotiplari: versiyadan qat'i nazar saqlanadigan alohida keshda.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
  */
-const VERSION = 'c74fbce1c627';
+const VERSION = '680faacd6a7c';
 const CACHE = 'xarid-' + VERSION;
 /* Logotiplar keshi ilova versiyasiga bog'lanmaydi: yangilanish chiqqanda
    ular qaytadan yuklanmaydi. */
@@ -27,6 +27,7 @@ const PRECACHE = [
   "support.js",
   "manifest.webmanifest",
   "data/norms.json",
+  "core/customs.js",
   "vendor/react.production.min.js",
   "vendor/react-dom.production.min.js",
   "fonts/flags.woff2",
@@ -179,6 +180,10 @@ const LATER = [
   "icons/norm/meyor.webp",
   "icons/norm/tolov.webp",
   "icons/norm/yigim.webp",
+  "core/landed.js",
+  "core/tariffs.js",
+  "data/categories.json",
+  "data/tariffs.json",
   "guides/guide-base.css",
   "guides/guide-common.css",
   "guides/guide-engine.js",

@@ -1,0 +1,961 @@
+{
+ "updated_at": "2026-09-15",
+ "note": "Kuryer tariflari tuzilgan ko'rinishda. `text` — kuryer saytidagi asl yozuv, `rows`/`price` — hisob uchun. kind: brackets (vazn oralig'i bo'yicha), perkg (kg uchun narx; `from` — 'dan', ya'ni eng kam), quote (narx so'raladi). Valyuta USD/EUR/GBP/UZS; EUR va GBP `fx` orqali dollarga o'giriladi, UZS — joriy kurs bilan.",
+ "fx": {
+  "note": "USD ga o'girish zaxira kurslari (CBU dan olinsa almashtiriladi)",
+  "EUR": 1.08,
+  "GBP": 1.27
+ },
+ "couriers": {
+  "mymeest": [
+   {
+    "i": 0,
+    "c": "Angliya",
+    "text": "0.05–0.5 kg: 7 GBP/posilka; 0.501–1 kg: 8.25 GBP/posilka; 1.001–30 kg: 9.50 GBP/kg",
+    "days": "5 kundan boshlab",
+    "dnum": 5,
+    "kind": "brackets",
+    "currency": "GBP",
+    "rows": [
+     {"upTo": 0.5,
+      "price": 7,
+      "per": "parcel"
+     },
+     {"upTo": 1,
+      "price": 8.25,
+      "per": "parcel"
+     },
+     {"upTo": 30,
+      "price": 9.5,
+      "per": "kg"
+     }
+    ]
+   },
+   {
+    "i": 1,
+    "c": "Gretsiya",
+    "text": "0.05–0.5 kg: 5.50 EUR; 0.501–1 kg: 6.50 EUR; 1.001–30 kg: 8 EUR/kg",
+    "days": "",
+    "dnum": null,
+    "kind": "brackets",
+    "currency": "EUR",
+    "rows": [
+     {"upTo": 0.5,
+      "price": 5.5,
+      "per": "parcel"
+     },
+     {"upTo": 1,
+      "price": 6.5,
+      "per": "parcel"
+     },
+     {"upTo": 30,
+      "price": 8,
+      "per": "kg"
+     }
+    ]
+   },
+   {
+    "i": 2,
+    "c": "Ispaniya",
+    "text": "0.05–0.5 kg: 5.50 EUR; 0.501–1 kg: 6.50 EUR; 1.001–30 kg: 8 EUR/kg",
+    "days": "10 kundan boshlab",
+    "dnum": 10,
+    "kind": "brackets",
+    "currency": "EUR",
+    "rows": [
+     {"upTo": 0.5,
+      "price": 5.5,
+      "per": "parcel"
+     },
+     {"upTo": 1,
+      "price": 6.5,
+      "per": "parcel"
+     },
+     {"upTo": 30,
+      "price": 8,
+      "per": "kg"
+     }
+    ]
+   },
+   {
+    "i": 3,
+    "c": "Italiya",
+    "text": "0.05–0.5 kg: 5.50 EUR; 0.501–1 kg: 6.50 EUR; 1.001–30 kg: 8 EUR/kg",
+    "days": "10 kundan boshlab",
+    "dnum": 10,
+    "kind": "brackets",
+    "currency": "EUR",
+    "rows": [
+     {"upTo": 0.5,
+      "price": 5.5,
+      "per": "parcel"
+     },
+     {"upTo": 1,
+      "price": 6.5,
+      "per": "parcel"
+     },
+     {"upTo": 30,
+      "price": 8,
+      "per": "kg"
+     }
+    ]
+   },
+   {
+    "i": 4,
+    "c": "Germaniya",
+    "text": "0.05–0.5 kg: 5.50 EUR; 0.501–1 kg: 6.50 EUR; 1.001–30 kg: 8 EUR/kg",
+    "days": "10 kundan boshlab",
+    "dnum": 10,
+    "kind": "brackets",
+    "currency": "EUR",
+    "rows": [
+     {"upTo": 0.5,
+      "price": 5.5,
+      "per": "parcel"
+     },
+     {"upTo": 1,
+      "price": 6.5,
+      "per": "parcel"
+     },
+     {"upTo": 30,
+      "price": 8,
+      "per": "kg"
+     }
+    ]
+   },
+   {
+    "i": 5,
+    "c": "Kanada",
+    "text": "0.05–1 kg: 16.65 USD/posilka; 1.001–30 kg qatorida 7.70 va 8.95 USD qiymatlari ko'rsatilgan",
+    "days": "",
+    "dnum": null,
+    "kind": "brackets",
+    "currency": "USD",
+    "rows": [
+     {"upTo": 1,
+      "price": 16.65,
+      "per": "parcel"
+     },
+     {"upTo": 30,
+      "price": 8.95,
+      "per": "kg"
+     }
+    ],
+    "note": "1 kg dan yuqorida saytda 7.70 va 8.95 USD ko'rsatilgan — kattasi olindi"
+   },
+   {
+    "i": 6,
+    "c": "Polsha",
+    "text": "0.05–0.5 kg: 7 EUR; 0.501–1 kg: 8 EUR; 1.001–30 kg: 9.50 EUR/kg",
+    "days": "5 kundan boshlab",
+    "dnum": 5,
+    "kind": "brackets",
+    "currency": "EUR",
+    "rows": [
+     {"upTo": 0.5,
+      "price": 7,
+      "per": "parcel"
+     },
+     {"upTo": 1,
+      "price": 8,
+      "per": "parcel"
+     },
+     {"upTo": 30,
+      "price": 9.5,
+      "per": "kg"
+     }
+    ]
+   },
+   {
+    "i": 7,
+    "c": "Portugaliya",
+    "text": "0.05–0.5 kg: 5.50 EUR; 0.501–1 kg: 6.50 EUR; 1.001–30 kg: 8 EUR/kg",
+    "days": "10 kundan boshlab",
+    "dnum": 10,
+    "kind": "brackets",
+    "currency": "EUR",
+    "rows": [
+     {"upTo": 0.5,
+      "price": 5.5,
+      "per": "parcel"
+     },
+     {"upTo": 1,
+      "price": 6.5,
+      "per": "parcel"
+     },
+     {"upTo": 30,
+      "price": 8,
+      "per": "kg"
+     }
+    ]
+   },
+   {
+    "i": 8,
+    "c": "AQSh",
+    "text": "0.05–0.5 kg: 4.75 USD/posilka; 0.501–30 kg: 0.95 USD har 100 g",
+    "days": "taxm. 10 kun",
+    "dnum": 10,
+    "kind": "brackets",
+    "currency": "USD",
+    "rows": [
+     {"upTo": 0.5,
+      "price": 4.75,
+      "per": "parcel"
+     },
+     {"upTo": 30,
+      "price": 0.95,
+      "per": "100g"
+     }
+    ]
+   },
+   {
+    "i": 9,
+    "c": "Ukraina",
+    "text": "0.05–1 kg: 10.75 EUR/posilka; 1.001–30 kg: 7.75 EUR/kg",
+    "days": "10 kundan boshlab",
+    "dnum": 10,
+    "kind": "brackets",
+    "currency": "EUR",
+    "rows": [
+     {"upTo": 1,
+      "price": 10.75,
+      "per": "parcel"
+     },
+     {"upTo": 30,
+      "price": 7.75,
+      "per": "kg"
+     }
+    ]
+   },
+   {
+    "i": 10,
+    "c": "Fransiya",
+    "text": "0.05–0.5 kg: 5.50 EUR; 0.501–1 kg: 6.50 EUR; 1.001–30 kg: 8 EUR/kg",
+    "days": "",
+    "dnum": null,
+    "kind": "brackets",
+    "currency": "EUR",
+    "rows": [
+     {"upTo": 0.5,
+      "price": 5.5,
+      "per": "parcel"
+     },
+     {"upTo": 1,
+      "price": 6.5,
+      "per": "parcel"
+     },
+     {"upTo": 30,
+      "price": 8,
+      "per": "kg"
+     }
+    ]
+   },
+   {
+    "i": 11,
+    "c": "Chexiya",
+    "text": "0.05–0.5 kg: 5.50 EUR; 0.501–1 kg: 6.50 EUR; 1.001–30 kg: 8 EUR/kg",
+    "days": "",
+    "dnum": null,
+    "kind": "brackets",
+    "currency": "EUR",
+    "rows": [
+     {"upTo": 0.5,
+      "price": 5.5,
+      "per": "parcel"
+     },
+     {"upTo": 1,
+      "price": 6.5,
+      "per": "parcel"
+     },
+     {"upTo": 30,
+      "price": 8,
+      "per": "kg"
+     }
+    ]
+   }
+  ],
+  "meestchina": [
+   {
+    "i": 0,
+    "c": "Xitoy",
+    "text": "10 USD/kg dan",
+    "days": "8 kundan boshlab",
+    "dnum": 8,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 10,
+    "from": true
+   },
+   {
+    "i": 1,
+    "c": "Xitoy",
+    "text": "6 USD/kg dan",
+    "days": "17 kundan boshlab",
+    "dnum": 17,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 6,
+    "from": true
+   },
+   {
+    "i": 2,
+    "c": "Koreya",
+    "text": "11.7 USD/kg dan",
+    "days": "10 kundan boshlab",
+    "dnum": 10,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 11.7,
+    "from": true
+   }
+  ],
+  "ethnologistics": [
+   {
+    "i": 0,
+    "c": "Qirg'iziston",
+    "text": "8 USD/kg",
+    "days": "3–5 ish kuni",
+    "dnum": 5,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 8,
+    "from": false
+   },
+   {
+    "i": 1,
+    "c": "Qirg'iziston",
+    "text": "30 USD/kg",
+    "days": "36 soat",
+    "dnum": 2,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 30,
+    "from": false
+   },
+   {
+    "i": 2,
+    "c": "Qirg'iziston",
+    "text": "5 USD/kg",
+    "days": "10 ish kunidan",
+    "dnum": 10,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 5,
+    "from": false
+   },
+   {
+    "i": 3,
+    "c": "Tojikiston",
+    "text": "8 USD/kg",
+    "days": "3–5 ish kuni",
+    "dnum": 5,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 8,
+    "from": false
+   },
+   {
+    "i": 4,
+    "c": "Tojikiston",
+    "text": "30 USD/kg",
+    "days": "36 soat",
+    "dnum": 2,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 30,
+    "from": false
+   },
+   {
+    "i": 5,
+    "c": "Tojikiston",
+    "text": "5 USD/kg",
+    "days": "10 ish kunidan",
+    "dnum": 10,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 5,
+    "from": false
+   },
+   {
+    "i": 6,
+    "c": "Qozog'iston",
+    "text": "8 USD/kg",
+    "days": "3–5 ish kuni",
+    "dnum": 5,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 8,
+    "from": false
+   },
+   {
+    "i": 7,
+    "c": "Qozog'iston",
+    "text": "30 USD/kg",
+    "days": "36 soat",
+    "dnum": 2,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 30,
+    "from": false
+   },
+   {
+    "i": 8,
+    "c": "Qozog'iston",
+    "text": "5 USD/kg",
+    "days": "10 ish kunidan",
+    "dnum": 10,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 5,
+    "from": false
+   },
+   {
+    "i": 9,
+    "c": "Rossiya",
+    "text": "12 USD/kg",
+    "days": "3–5 ish kuni",
+    "dnum": 5,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 12,
+    "from": false
+   },
+   {
+    "i": 10,
+    "c": "Rossiya",
+    "text": "30 USD/kg",
+    "days": "36 soat",
+    "dnum": 2,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 30,
+    "from": false
+   },
+   {
+    "i": 11,
+    "c": "Rossiya",
+    "text": "5 USD/kg",
+    "days": "10 ish kunidan",
+    "dnum": 10,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 5,
+    "from": false
+   },
+   {
+    "i": 12,
+    "c": "BAA",
+    "text": "8 USD/kg",
+    "days": "3–5 ish kuni",
+    "dnum": 5,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 8,
+    "from": false
+   },
+   {
+    "i": 13,
+    "c": "Turkiya",
+    "text": "8 USD/kg",
+    "days": "3–5 ish kuni",
+    "dnum": 5,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 8,
+    "from": false
+   },
+   {
+    "i": 14,
+    "c": "Turkiya",
+    "text": "30 USD/kg",
+    "days": "36 soat",
+    "dnum": 2,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 30,
+    "from": false
+   },
+   {
+    "i": 15,
+    "c": "Turkiya",
+    "text": "5 USD/kg",
+    "days": "10 ish kunidan",
+    "dnum": 10,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 5,
+    "from": false
+   }
+  ],
+  "tezparcel": [
+   {
+    "i": 0,
+    "c": "Angliya",
+    "text": "7 GBP/kg (UKda to'lov) yoki 9.5 USD/kg (O'zbekistonda to'lov)",
+    "days": "7–14 ish kuni",
+    "dnum": 14,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 9.5,
+    "note": "O'zbekistonda to'lov varianti; UK da to'lansa 7 GBP/kg"
+   },
+   {
+    "i": 1,
+    "c": "AQSh",
+    "text": "9 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 9,
+    "from": false
+   },
+   {
+    "i": 2,
+    "c": "Germaniya",
+    "text": "7,5 EUR",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "EUR",
+    "price": 7.5,
+    "from": false
+   }
+  ],
+  "abuexpress": [
+   {
+    "i": 0,
+    "c": "AQSh",
+    "text": "6 USD",
+    "days": "7–10 kun (sayt umumiy va'da)",
+    "dnum": 10,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 6,
+    "from": false
+   },
+   {
+    "i": 1,
+    "c": "Turkiya",
+    "text": "10 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 10,
+    "from": false
+   }
+  ],
+  "silkroad": [
+   {
+    "i": 0,
+    "c": "AQSh",
+    "text": "9,9 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 9.9,
+    "from": false
+   }
+  ],
+  "spacexpress": [
+   {
+    "i": 0,
+    "c": "Xitoy",
+    "text": "9,5 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 9.5,
+    "from": false
+   },
+   {
+    "i": 1,
+    "c": "Xitoy",
+    "text": "5,9 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 5.9,
+    "from": false
+   }
+  ],
+  "yellowpochta": [
+   {
+    "i": 0,
+    "c": "AQSh",
+    "text": "10 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 10,
+    "from": false
+   }
+  ],
+  "globbing": [
+   {
+    "i": 0,
+    "c": "AQSh",
+    "text": "12 USD/kg",
+    "days": "5–10 ish kuni",
+    "dnum": 10,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 12,
+    "from": false
+   },
+   {
+    "i": 1,
+    "c": "Xitoy",
+    "text": "13–14 USD/kg (sayt jadvalida ikki qiymat)",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 14,
+    "note": "Sayt jadvalida 13–14 USD/kg — kattasi olindi"
+   },
+   {
+    "i": 2,
+    "c": "Angliya",
+    "text": "13 USD/kg",
+    "days": "7–10 ish kuni",
+    "dnum": 10,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 13,
+    "from": false
+   },
+   {
+    "i": 3,
+    "c": "Germaniya",
+    "text": "13 USD/kg",
+    "days": "7–9 ish kuni",
+    "dnum": 9,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 13,
+    "from": false
+   },
+   {
+    "i": 4,
+    "c": "Italiya",
+    "text": "13 USD/kg",
+    "days": "7–9 ish kuni",
+    "dnum": 9,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 13,
+    "from": false
+   },
+   {
+    "i": 5,
+    "c": "Ispaniya",
+    "text": "13 USD/kg",
+    "days": "7–9 ish kuni",
+    "dnum": 9,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 13,
+    "from": false
+   }
+  ],
+  "teztezdelivery": [
+   {
+    "i": 0,
+    "c": "Xitoy",
+    "text": "9 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 9,
+    "from": false
+   },
+   {
+    "i": 1,
+    "c": "Xitoy",
+    "text": "5,88 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 5.88,
+    "from": false
+   }
+  ],
+  "smartpostus": [
+   {
+    "i": 0,
+    "c": "AQSh",
+    "text": "8,3 USD",
+    "days": "3–7 ish kuni",
+    "dnum": 7,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 8.3,
+    "from": false
+   }
+  ],
+  "cpost": [
+   {
+    "i": 0,
+    "c": "Xitoy",
+    "text": "10 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 10,
+    "from": false
+   }
+  ],
+  "yumecs": [
+   {
+    "i": 0,
+    "c": "Rossiya",
+    "text": "10 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 10,
+    "from": false
+   },
+   {
+    "i": 1,
+    "c": "Turkiya",
+    "text": "10 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 10,
+    "from": false
+   },
+   {
+    "i": 2,
+    "c": "Xitoy",
+    "text": "10 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 10,
+    "from": false
+   },
+   {
+    "i": 3,
+    "c": "Koreya",
+    "text": "10 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 10,
+    "from": false
+   },
+   {
+    "i": 4,
+    "c": "BAA",
+    "text": "9 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 9,
+    "from": false
+   },
+   {
+    "i": 5,
+    "c": "Malayziya",
+    "text": "10 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 10,
+    "from": false
+   }
+  ],
+  "d2d": [
+   {
+    "i": 0,
+    "c": "Xitoy",
+    "text": "9.49 USD/kg; Avia Seriya 11.5; Avia Brand 13",
+    "days": "4–7 kun",
+    "dnum": 7,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 9.49,
+    "note": "Oddiy tovar; Avia Seriya 11.5, Avia Brand 13 USD/kg"
+   },
+   {
+    "i": 1,
+    "c": "Xitoy",
+    "text": "5.5 USD/kg Toshkent; 5.8 USD/kg viloyatlar; Seriya/Brand 7.5",
+    "days": "20–25 kun",
+    "dnum": 25,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 5.5,
+    "note": "Toshkent; viloyatlar 5.8, Seriya/Brand 7.5 USD/kg"
+   }
+  ],
+  "humodelivery": [
+   {
+    "i": 0,
+    "c": "Xitoy",
+    "text": "10 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 10,
+    "from": false
+   },
+   {
+    "i": 1,
+    "c": "Xitoy",
+    "text": "7 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 7,
+    "from": false
+   }
+  ],
+  "wikishopus": [
+   {
+    "i": 0,
+    "c": "AQSh",
+    "text": "13.49 USD/kg",
+    "days": "5–7 ish kuni",
+    "dnum": 7,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 13.49,
+    "from": false
+   },
+   {
+    "i": 1,
+    "c": "AQSh",
+    "text": "10.49 USD/kg",
+    "days": "5–7 ish kuni",
+    "dnum": 7,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 10.49,
+    "from": false
+   }
+  ],
+  "greenpost": [
+   {
+    "i": 0,
+    "c": "Xitoy",
+    "text": "9,5 USD",
+    "days": "7–10 kun Xitoy omboridan Toshkentgacha",
+    "dnum": 10,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 9.5,
+    "from": false
+   }
+  ],
+  "boxette": [
+   {
+    "i": 0,
+    "c": "AQSh",
+    "text": "160 000 UZS/kg",
+    "days": "3–9 ish kuni",
+    "dnum": 9,
+    "kind": "perkg",
+    "currency": "UZS",
+    "price": 160000,
+    "from": false
+   },
+   {
+    "i": 1,
+    "c": "AQSh",
+    "text": "130 000 UZS/kg",
+    "days": "9–16 ish kuni",
+    "dnum": 16,
+    "kind": "perkg",
+    "currency": "UZS",
+    "price": 130000,
+    "from": false
+   },
+   {
+    "i": 2,
+    "c": "Turkiya",
+    "text": "130 000 UZS/kg",
+    "days": "9–16 ish kuni",
+    "dnum": 16,
+    "kind": "perkg",
+    "currency": "UZS",
+    "price": 130000,
+    "from": false
+   }
+  ],
+  "ase": [
+   {
+    "i": 0,
+    "c": "Turkiya",
+    "text": "0–0.5kg 60 000; 0.5–0.6kg 75 000; 0.6–1kg 125 000; 1–1.1kg 135 000; 1.1–1.5kg 175 000; 1.5–1.6kg 185 000; 1.6–2kg 225 000 UZS",
+    "days": "2–3 ish kuni (Istanbul ombori → Toshkent)",
+    "dnum": 3,
+    "kind": "brackets",
+    "currency": "UZS",
+    "rows": [
+     {"upTo": 0.5,
+      "price": 60000,
+      "per": "parcel"
+     },
+     {"upTo": 0.6,
+      "price": 75000,
+      "per": "parcel"
+     },
+     {"upTo": 1,
+      "price": 125000,
+      "per": "parcel"
+     },
+     {"upTo": 1.1,
+      "price": 135000,
+      "per": "parcel"
+     },
+     {"upTo": 1.5,
+      "price": 175000,
+      "per": "parcel"
+     },
+     {"upTo": 1.6,
+      "price": 185000,
+      "per": "parcel"
+     },
+     {"upTo": 2,
+      "price": 225000,
+      "per": "parcel"
+     }
+    ],
+    "note": "2 kg dan og'ir posilka uchun narx so'raladi"
+   }
+  ],
+  "janapost": [
+   {
+    "i": 0,
+    "c": "Xitoy",
+    "text": "6,10 USD",
+    "days": "",
+    "dnum": null,
+    "kind": "perkg",
+    "currency": "USD",
+    "price": 6.1,
+    "from": false
+   }
+  ]
+ }
+}

@@ -124,6 +124,11 @@
     'https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js': 'vendor/react-dom.production.min.js'
   };
 </script>
+<!-- Pochtam Core: boj formulasi bitta joyda (core/customs.js). Kalkulyator,
+     reja sehrgari, motion-namuna, qo'llanmalar va AI yordamchisi shundan
+     hisoblaydi — stavka va me'yor bu yerda yozilmaydi, data/norms.json dan
+     keladi. -->
+<script src="core/customs.js"></script>
 <script>
   /* Brend introsi. Claude Design'dagi "Pochtam Telegram Intro" sahnasining
      xoreografiyasi — vaqtlar, easing'lar va o'lchamlar o'sha faylda qanday
@@ -4478,11 +4483,10 @@ const moMs = st => st.ms || Math.min(MO_MAX_MS, Math.max(MO_MIN_MS, 2500 + st.c.
    uchun ilovada ko'rsatilgan kurs bilan mos tushadi. */
 const moExample = () => {
   const N = normsAt(), price = 320, weight = 2.5, ship = 9;
-  const eg = Math.max(0, price - N.freeUsd), ew = weight * eg / price, cv = eg + ew * ship;
-  const dutyUsd = Math.max(cv * N.dutyPct, ew * N.minPerKg), fee = N.bhm * N.feeShare;
-  const d1 = (Math.round(dutyUsd * 10) / 10).toString().replace('.', ',');
-  return { bhm: money(N.bhm), fee: money(fee), rate: money(USD_RATE), duty: '$' + d1,
-    dutySum: money(dutyUsd * USD_RATE), total: money(dutyUsd * USD_RATE + fee) };
+  const c = PochtamCore.customsDuty({ goodsUsd: price, shipUsd: weight * ship, kg: weight, norms: N, usdRate: USD_RATE });
+  const d1 = (Math.round(c.dutyUsd * 10) / 10).toString().replace('.', ',');
+  return { bhm: money(N.bhm), fee: money(c.feeUzs), rate: money(USD_RATE), duty: '$' + d1,
+    dutySum: money(c.dutyUzs), total: money(c.totalUzs) };
 };
 const MO_CTA = {
   calc: { label: 'Kalkulyatorda hisoblash', go: app => app.setState({ customsSec: 4 }) },
@@ -5592,20 +5596,9 @@ class Component extends DCLogic {
     const price = Math.max(0, num(this.state.calcPrice));
     const weight = Math.max(0, num(this.state.calcWeight));
     const shipKg = Math.max(0, num(this.state.calcShip));
-    const excessGoods = Math.max(0, price - N.freeUsd);
-    const ratio = price > 0 ? excessGoods / price : 0;
-    const excessWeight = weight * ratio;
-    const cv = excessGoods + excessWeight * shipKg;
-    const byValue = cv * N.dutyPct;
-    const byWeight = excessWeight * N.minPerKg;
-    const dutyUsd = cv > 0 ? Math.max(byValue, byWeight) : 0;
-    const fee = cv > 0 ? N.bhm * N.feeShare : 0;
-    return {
-      cv, excessGoods, excessWeight, byValue, byWeight, dutyUsd, fee, norms: N,
-      basis: cv <= 0 ? 'none' : (byWeight > byValue ? 'weight' : 'value'),
-      duty: dutyUsd * USD_RATE,
-      total: dutyUsd * USD_RATE + fee
-    };
+    /* Formula Pochtam Core'da (core/customs.js): cv, excessGoods,
+       excessWeight, byValue, byWeight, dutyUsd, fee, basis, duty, total. */
+    return PochtamCore.customsDuty({ goodsUsd: price, shipUsd: weight * shipKg, kg: weight, norms: N, usdRate: USD_RATE });
   }
 
   renderVals() {
@@ -5781,11 +5774,10 @@ class Component extends DCLogic {
       const kg = Math.max(num(st.wizWeight), 0);
       const perKg = k.price && k.price < 900 ? k.price : 0;
       const ship = perKg * Math.max(kg, 0.5);
-      const excessGoods = Math.max(0, price - NW.freeUsd);
-      const ratio = price > 0 ? excessGoods / price : 0;
-      const cv = excessGoods + kg * ratio * perKg;
-      const dutyUsd = cv > 0 ? Math.max(cv * NW.dutyPct, kg * ratio * NW.minPerKg) : 0;
-      const feeUsd = cv > 0 ? (NW.bhm * NW.feeShare) / USD_RATE : 0;
+      /* Boj — Pochtam Core; bojxona qiymatiga yetkazishning kg bo'yicha
+         summasi kiradi (eng kam 0,5 kg qoidasi faqat kuryer haqiga). */
+      const c = PochtamCore.customsDuty({ goodsUsd: price, shipUsd: kg * perKg, kg, norms: NW, usdRate: USD_RATE });
+      const dutyUsd = c.dutyUsd, feeUsd = c.feeUsd;
       return {
         courierName: k.name, days: k.days, kg, price, ship, dutyUsd, feeUsd,
         perKgLabel: perKg ? '$' + perKg.toFixed(2) + '/kg' : 'tarif so\'rov bo\'yicha',

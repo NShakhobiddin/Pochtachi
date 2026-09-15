@@ -1,6 +1,6 @@
 # Pochtam.uz — texnik topshiriq bo'yicha audit va rivojlantirish rejasi
 
-Sana: 2026-09-15. Holat: audit tugadi, kodga tegilmagan (TZ 40-band, 1-bosqich).
+Sana: 2026-09-15. Holat: 1-bosqich (audit) va 2-bosqich (Pochtam Core) tugadi.
 Tamoyil: **EXTEND, DO NOT REBUILD** — mavjud ilova saqlanadi, funksiyalar
 bir-biriga bog'lanadi, ustiga aqlli qatlam qo'shiladi.
 
@@ -84,7 +84,7 @@ Bular kod emas, huquqiy manbaga tayangan matn — buyurtmachidan manba kerak.
 | 6. Kuryer taqqoslash | 3 ta kuryer, yorliqlar | Tariflar tuzilgach: davlat, vazn, hajmiy vazn, ustuvorlik (arzon/tez/optimal), har kuryer uchun **hisoblangan** summa. "So'rov bo'yicha" tarifli kuryerlar ro'yxat oxirida, halol yorliq bilan |
 | 7. Pochtam Score | yo'q | Faqat maydon va formula joyi (`score: null`); ma'lumot bo'lmasa ko'rsatilmaydi |
 | 8. Bojxona tuzilmasi | 6 bo'lim | Mavjud 6 tasi qoladi; yangi bo'limlar kontent kelgach qo'shiladi; AI yordamchisi 6-bosqichda |
-| 9. Rules engine | `data/norms.json` | `data/customs-rules.json` (norms + prohibited + restricted + updated_at) va `core/customs.js` — bitta formula, hamma joy shundan chaqiradi |
+| 9. Rules engine | `data/norms.json` | Qaror: `norms.json` yagona manba bo'lib qoladi (nom o'zgarsa SW va yuklovchilar sinadi); `core/customs.js` — bitta formula, hamma joy shundan chaqiradi. Taqiqlar (`BANNED`, red/amber) manbada, keyingi bosqichda `data/` ga ✓ |
 | 10. Universal kalkulyator | kalkulyator + sehrgar | Yangi ekran `landed`: narx, valyuta, davlat, do'kon, kategoriya, miqdor, vazn, hajmiy vazn, ichki yetkazish, kuryer → jami tannarx kartasi + 3 kuryer |
 | 11. Rejaga qo'shish | `savePlan` | Reja obyektiga ixtiyoriy maydonlar: `name, url, image, qty, domestic, volumetric, source:'landed'`. Eski rejalar o'zgarmaydi |
 | 12. Xaridlarim | reja, kuzatuv, sevimlilar alohida | Bitta ekran `mine`, ichida tablar; holat kalitlari o'zgarmaydi |
@@ -162,7 +162,7 @@ talabining texnik kafolati.
 | # | Bosqich | Nima qilinadi | Qabul mezoni |
 |---|---|---|---|
 | 1 | Audit | shu hujjat | ✓ |
-| 2 | Pochtam Core | `data/customs-rules.json`, `core/customs.js`, 5 ta chaqiruv shu modulga; tariflar tuzilgan, `core/tariffs.js`; `data/categories.json`; oltin testlar | barcha eski natijalar bir xil; guide-engine'da hardcode yo'q |
+| 2 | Pochtam Core ✓ (2026-09-15) | `core/customs.js`, 5 ta chaqiruv shu modulga; `data/norms.json` yagona manba (build ilova va qo'llanmalarga yozadi); tariflar tuzilgan (`data/tariffs.json`, 68/68), `core/tariffs.js`; `data/categories.json`; `core/landed.js`; `tests/core.mjs` (50 tekshiruv) | ✓ 14 oltin holat bir xil; guide-engine'da hardcode yo'q |
 | 3 | Bosh sahifa UX | hero + aqlli input (havola → do'kon, so'z → qidiruv), tez o'tish, bloklar tartibi; mavjud bloklar qoladi | smoke: mavjud bloklar bor, yangi input ishlaydi, 390/1280 px |
 | 4 | Universal kalkulyator | `landed` ekrani, jami tannarx kartasi, "foydalimi" maydoni, "Rejaga qo'shish" | reja saqlanadi va Xaridlarim'da ko'rinadi; eski reja buzilmagan |
 | 5 | Kuryer taqqoslash | filtrlar, ustuvorlik, hisoblangan summa; `compare` kengayadi | 3 kuryer uchun summa va sabab ko'rinadi |

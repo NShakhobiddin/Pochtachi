@@ -148,32 +148,19 @@ function calc(){
 
   const limit=num('channel');
   const remain=Math.max(0,limit-num('used'));
-  /* Me'yor tovar qiymatiga qo'llanadi; yetkazishning ortiqcha qismga to'g'ri
-     keladigan ulushi nisbat bo'yicha qo'shiladi — ilovadagi hisob bilan bir xil.
-     Ilgari yetkazish ham me'yordan chegirilib, boj oshib ketardi. */
-  const goodsTotal=Math.max(0,customsValue-shipUsd);
-  const excessGoods=Math.max(0,goodsTotal-remain);
-  const ratio=goodsTotal>0 ? excessGoods/goodsTotal : 0;
-  const excess=excessGoods+shipUsd*ratio;
-
-  /* Me'yorlar ilovadagi bilan bir xil manbadan keladi (guide.js ularni
-     data/norms.json dan oladi), topilmasa amaldagi qiymatlar ishlatiladi. */
+  /* Boj — Pochtam Core (../../core/customs.js), ilova bilan bitta formula.
+     Me'yorlar window.XY_NORMS da: build vaqtida data/norms.json dan
+     yoziladi, guide.js esa ochilganda yangisini oladi. Kodda zaxira
+     raqam yo'q — me'yor bo'lmasa boj 0 va "me'yor yuklanmadi" izohi. */
   const N = (typeof window !== 'undefined' && window.XY_NORMS) || {};
-  const DUTY_PCT = N.dutyPct > 0 ? N.dutyPct : 0.30;
-  const MIN_PER_KG = N.minPerKg >= 0 ? N.minPerKg : 3;
-  const FEE_SHARE = N.feeShare >= 0 ? N.feeShare : 0.25;
-  const FEE_UZS = (N.bhm > 0 ? N.bhm : 412000) * FEE_SHARE;
-
-  let duty=0, dutyNote='', fee=0;
-  if(excess>0){
-    // Ortiqcha qiymatga to'g'ri keladigan vazn ulushi (ilovadagi kabi)
-    const excessKg = billed*ratio;
-    const pct = excess*DUTY_PCT;
-    const perKg = excessKg*MIN_PER_KG;
-    duty = Math.max(pct,perKg);
-    dutyNote = perKg>pct ? ('min $'+MIN_PER_KG+'/kg qoidasi qo’llandi') : (Math.round(DUTY_PCT*100)+'% stavka');
-    fee = FEE_UZS;
-  }
+  const core = (typeof window !== 'undefined' && window.PochtamCore) || null;
+  const C = core ? core.customsDuty({ goodsUsd: goodsUsd+innerUsd+localTax, shipUsd, kg: billed, freeUsd: remain, norms: N, usdRate: usdUzs })
+                 : { cv:0, dutyUsd:0, feeUzs:0, basis:'none' };
+  const excess=C.cv;
+  const duty=C.dutyUsd, fee=C.feeUzs;
+  const FEE_SHARE = N.feeShare || 0, MIN_PER_KG = N.minPerKg || 0, DUTY_PCT = N.dutyPct || 0;
+  const dutyNote = !(N.dutyPct > 0) ? 'me’yor yuklanmadi'
+    : (C.basis==='weight' ? ('min $'+MIN_PER_KG+'/kg qoidasi qo’llandi') : (Math.round(DUTY_PCT*100)+'% stavka'));
   const totalUsd=goodsUsd+innerUsd+localTax+shipUsd+duty;
   // Bojxona yig'imi so'mda undiriladi, shuning uchun yakuniy summaga qo'shiladi.
   const totalUzs=totalUsd*usdUzs+fee;

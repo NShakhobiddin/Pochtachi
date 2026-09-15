@@ -37,6 +37,17 @@ function build(src) {
     if (!src.includes(marker)) throw new Error('Manbada STORE_LOGO_IDS belgisi topilmadi');
     src = src.replace(marker, 'const STORE_LOGO_IDS = ' + JSON.stringify(list) + ';');
   }
+  /* Bojxona me'yorlari: yagona manba data/norms.json. Manbadagi NORMS
+     ro'yxati dizayn ko'rinishi uchun turadi, index.html ga fayldagi
+     qatorlar yoziladi — ikkisi farq qilsa `--check` buni ko'rsatadi. */
+  const normsPath = join(ROOT, 'data', 'norms.json');
+  if (existsSync(normsPath)) {
+    const rows = JSON.parse(readFileSync(normsPath, 'utf8')).norms;
+    const lit = 'const NORMS = [\n' + rows.map(r => '  ' + JSON.stringify(r)).join(',\n') + '\n];';
+    const re = /const NORMS = \[[\s\S]*?\n\];/;
+    if (!re.test(src)) throw new Error('Manbada NORMS ro\'yxati topilmadi');
+    src = src.replace(re, lit);
+  }
   /* Kanonik va OG manzillar: manbada GitHub Pages manzili turadi; o'z domen
      ulangan bo'lsa (CNAME) index.html da o'sha domen yoziladi. */
   if (SITE !== DEFAULT_SITE) src = src.split(DEFAULT_SITE).join(SITE);
@@ -57,9 +68,12 @@ function build(src) {
 const SHELL_ICONS = ['icons/brand.webp', 'icons/brand-full.webp', 'icons/stores-3d.webp', 'icons/courier-3d.webp',
   'icons/customs-3d.webp', 'icons/guides-3d.webp', 'icons/mutaxassis-3d.webp', 'icons/icon-192.png', 'icons/apple-touch-icon.png'];
 function precacheList() {
-  const files = ['./', 'support.js', 'manifest.webmanifest', 'data/norms.json',
+  const files = ['./', 'support.js', 'manifest.webmanifest', 'data/norms.json', 'core/customs.js',
     'vendor/react.production.min.js', 'vendor/react-dom.production.min.js'];
-  const later = ['guides/guide-base.css', 'guides/guide-common.css', 'guides/guide-engine.js', 'guides/guide-motion.js', 'guides/guide.js'];
+  const later = ['guides/guide-base.css', 'guides/guide-common.css', 'guides/guide-engine.js', 'guides/guide-motion.js', 'guides/guide.js',
+    /* Pochtam Core'ning qolgan modullari va ma'lumotlari: universal
+       kalkulyator va kuryer taqqoslash oflaynda ham ishlashi uchun. */
+    'core/tariffs.js', 'core/landed.js', 'data/tariffs.json', 'data/categories.json'];
   /* Shriftlar o'z domenimizda turadi, shuning uchun ular ham qobiq bilan
      birga keshlanadi — ikkinchi ochilishda umuman tarmoq kerak emas. */
   for (const f of readdirSync(join(ROOT, 'fonts')).sort()) {

@@ -36,6 +36,13 @@ const fontLinks = prefix => [
   `<link rel="stylesheet" href="${prefix}fonts/text.css">`
 ];
 
+/* Bugungi kunga mos me'yor qatori (data/norms.json). */
+function activeNorms() {
+  const rows = JSON.parse(readFileSync(join(ROOT, 'data', 'norms.json'), 'utf8')).norms;
+  const today = new Date().toISOString().slice(0, 10);
+  return rows.filter(n => n.from <= today).pop() || rows[0];
+}
+
 const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const MARK_START = '<!-- seo:start -->';
 const MARK_END = '<!-- seo:end -->';
@@ -58,6 +65,12 @@ function guideMeta(g) {
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta name="theme-color" content="#1A1FB0">`,
     ...fontLinks('../../'),
+    /* Pochtam Core va amaldagi me'yorlar (data/norms.json dan, build
+       vaqtida): qo'llanma kalkulyatori ilova bilan bitta formuladan
+       hisoblaydi, kodda zaxira raqam yo'q. guide.js ochilganda faylni
+       qayta o'qib yangilaydi. */
+    `<script src="../../core/customs.js"></script>`,
+    `<script>window.XY_NORMS=${JSON.stringify(activeNorms())};</script>`,
     /* Ilova ichida ochilganini birinchi chizishdan OLDIN belgilaymiz: aks holda
        avval to'liq sarlavha chizilib, keyin ixchamlashadi va butun matn
        sakrab tushadi (o'lchangan siljish 0,24 edi). */
