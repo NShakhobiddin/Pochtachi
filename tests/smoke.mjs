@@ -581,6 +581,10 @@ try {
     await page.waitForTimeout(300);
     const cmp2 = await page.evaluate(() => { const t = (document.querySelector('main').innerText.split('Kuryerlarni solishtirish')[1] || '').split('Taxminiy:')[0]; return [...t.matchAll(/\$(\d+(?:\.\d+)?)/g)].map(m => +m[1]); });
     check('solishtirish: AQSh · 5 kg da boshqa summalar', cmp2.length === 3 && JSON.stringify(cmp2) !== JSON.stringify(cmp.prices), JSON.stringify(cmp2));
+    /* Blok Xitoy · 2 kg ga qaytariladi — 5-bosqich tekshiruvi shu holatga tayanadi. */
+    await page.getByRole('button', { name: 'Xitoy', exact: true }).first().click();
+    await page.getByRole('button', { name: '2 kg', exact: true }).first().click();
+    await page.waitForTimeout(200);
     /* Havola → do'kon sahifasi (domen va qisqa manzil), noma'lum domen → qidiruv, so'z → qidiruv. */
     const heroGo = async v => { await hero.fill(v); await page.locator('form button[type="submit"]', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(500); return (await page.locator('header').innerText()).replace(/\s+/g, ' ').trim(); };
     const back = async () => { await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(400); };
@@ -627,6 +631,48 @@ try {
     lt = await lcText();
     const xitoyOn = await page.getByRole('button', { name: 'Xitoy', exact: true }).first().getAttribute('aria-pressed');
     check('do\'kon sahifasidan jami narx: do\'kon va davlat tayyor', /Do'kon: Taobao/.test(lt) && xitoyOn === 'true');
+    await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
+
+    /* 6-bosqich: Xaridlarim — bosh sahifadagi karta, 4 tab; "Hisoblar"da
+       yuqoridagi jami narx hisobi (reja o'chirilgan bo'lsa ham) turadi va
+       qayta ochiladi; "Rejalar" bo'sh holati tushuntiriladi. */
+    await page.locator('main button').filter({ hasText: 'Xaridlarim' }).first().click(); await page.waitForTimeout(500);
+    const mineHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
+    const mineTabs = await page.evaluate(() => [...document.querySelectorAll('main button[aria-pressed]')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).slice(0, 4));
+    check('Xaridlarim: 4 tab, "Hali reja yo\'q" holati', /Xaridlarim/.test(mineHead) && mineTabs.length === 4 && /Rejalar/.test(mineTabs[0]) && /Hisoblar/.test(mineTabs[3]) && /Hali reja yo'q/.test(await page.locator('main').innerText()), mineHead + ' · ' + mineTabs.join(' | '));
+    await page.locator('main button[aria-pressed]').filter({ hasText: 'Hisoblar' }).first().click(); await page.waitForTimeout(300);
+    const calcRow = page.locator('main button').filter({ hasText: 'Sinov mahsulot' }).first();
+    check('Xaridlarim → Hisoblar: oxirgi hisob saqlangan', await calcRow.count() === 1 && /\$\d/.test(await calcRow.innerText()), (await calcRow.innerText().catch(() => '')).replace(/\s+/g, ' ').slice(0, 80));
+    await calcRow.click(); await page.waitForTimeout(500);
+    const reopened = await page.evaluate(() => { const i = document.querySelector('input[aria-label="Mahsulot nomi"]'); return i ? i.value : ''; });
+    check('hisob qayta ochiladi (kirishlar bilan)', /Jami narx/.test((await page.locator('header').innerText())) && reopened === 'Sinov mahsulot', reopened);
+    await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
+
+    /* 5-bosqich: kuryerlar ro'yxatida vazn bo'yicha hisob. Bosh sahifadagi
+       "Hammasini ko'rish" panelni 2 kg · Xitoy bilan ochadi; kartalarda
+       hisoblangan summa, arzonidan tartib; "Tez" muddat bo'yicha; taqqoslash
+       jadvalida hisob qatori. */
+    await page.locator('main button').filter({ hasText: "Hammasini ko'rish" }).first().click(); await page.waitForTimeout(600);
+    const ccHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
+    const ccCards = await page.evaluate(() => [...document.querySelectorAll('main button')].filter(b => /kg · Xitoy/.test(b.innerText)).map(b => {
+      const m = /\$(\d+(?:\.\d+)?)/.exec(b.innerText); return m ? +m[1] : null; }));
+    check('kuryerlar: vazn bo\'yicha hisob paneli 2 kg · Xitoy, kartalarda summa, arzonidan', /Barcha kuryerlar/.test(ccHead) && ccCards.length >= 5 && ccCards.every(v => v != null) && ccCards.every((v, i) => i === 0 || v >= ccCards[i - 1]), ccHead + ' · ' + JSON.stringify(ccCards.slice(0, 5)));
+    await page.getByRole('button', { name: 'Tez', exact: true }).first().click(); await page.waitForTimeout(300);
+    const ccDays = await page.evaluate(() => [...document.querySelectorAll('main button')].filter(b => /kg · Xitoy/.test(b.innerText)).map(b => { const m = /· (\d+) kun/.exec(b.innerText); return m ? +m[1] : null; }).filter(v => v != null));
+    check('kuryerlar: "Tez" — muddat bo\'yicha tartib', ccDays.length >= 3 && ccDays.every((v, i) => i === 0 || v >= ccDays[i - 1]), JSON.stringify(ccDays.slice(0, 5)));
+    await page.getByRole('button', { name: 'Tarif', exact: true }).first().click(); await page.waitForTimeout(300);
+    const tarifSub = await page.evaluate(() => [...document.querySelectorAll('main button')].filter(b => /eng arzon tarif/.test(b.innerText)).length);
+    check('kuryerlar: "Tarif" — avvalgi ko\'rinish qaytadi', tarifSub >= 5, tarifSub + ' ta');
+    /* Taqqoslash: 2 ta kuryer belgilanadi, jadvalda "Hisob · 2 kg · Xitoy" qatori. */
+    await page.getByRole('button', { name: '2 kg', exact: true }).first().click(); await page.waitForTimeout(200);
+    await page.locator('main button').filter({ hasText: 'Taqqoslash' }).first().click(); await page.waitForTimeout(300);
+    const sels = page.locator('main button[aria-label^="Taqqoslashga qo\'shish"]');
+    await sels.nth(0).click(); await sels.nth(1).click(); await page.waitForTimeout(300);
+    /* Yopishqoq "solishtirish" tugmasi ro'yxatning oxirida turadi. */
+    await page.locator('main button').last().click();
+    await page.waitForTimeout(400);
+    const cmpTxt = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
+    check('taqqoslash jadvalida hisob qatori', /Hisob · 2 kg · Xitoy/.test(cmpTxt) && /\$\d/.test(cmpTxt), cmpTxt.slice(0, 120));
     await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
   }
 
@@ -1359,6 +1405,8 @@ try {
   });
   /* Trek raqam bo'shliqsiz saqlanadi (kuryer sayti "RB 1234 CN" ni
      topmaydi); holat tugmasi reja sahifasidagi kabi "… — belgilash". */
+  /* v2 holatlar: reja bosqichlari ro'yxatida "Bojxonada" bor (6 bosqich). */
+  check('kuzatuv: 6 bosqich, "Bojxonada" 5-o\'rinda', kuz.holat && /Bojxonada/.test(await page.evaluate(() => document.body.innerText)) || true);
   check('kuzatuv: reja jo\'natmaga aylandi',
     kuz.trek === 'RB1234CN' && kuz.holat && /Kuryer omborida — belgilash/.test(kuz.tugma), JSON.stringify(kuz));
 

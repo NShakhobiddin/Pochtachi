@@ -233,6 +233,39 @@ sarlavhasi `name || cat`. Eski rejalar avvalgidek chiziladi.
 Holat `st.lc` (LC_DEFAULT) — saqlanmaydi. Hodisalar: `calc_open`
 (quick | store:<id>), `calc_done`, `add_to_plan`.
 
+## Kuryerlarni solishtirish (5-bosqich)
+
+Kuryerlar ro'yxatida **"Vazn bo'yicha hisob"** paneli: Tarif (avvalgi
+ko'rinish) yoki 1 / 2 / 5 / 10 kg; kg tanlansa davlat chiplari (papkadan
+kelgan yo'nalish birinchi: `FOLDER_COUNTRY`) va ustuvorlik (Arzon / Tez /
+Optimal). Har kartada shu yo'nalish uchun hisoblangan summa
+(`courierQuotes` + `rankQuotes`, kuryerning eng yaxshi taklifi), ro'yxat
+ustuvorlik bo'yicha tartiblanadi, jadvalda tarifi yo'q kuryerlar oxirida
+"narx so'raladi" bilan. Taqqoslash jadvalida birinchi qator — "Hisob · N kg
+· Davlat". Bosh sahifadagi blokning "Hammasini ko'rish"i va jami narx
+ekranidagi "Kuryerlarni solishtirish" ro'yxatni panel yoqilgan holda
+ochadi (`openCourierCalc`). Holat `ccKg/ccCountry/ccPri` saqlanmaydi.
+Pochtam Score uchun joy: `score` maydoni yo'q — ma'lumot bo'lmaguncha
+reyting chiqmaydi (TZ 7).
+
+## Xaridlarim va jo'natma holatlari (6-bosqich)
+
+`mine` ekrani (bosh sahifadagi "Xaridlarim" kartasi): tablar **Rejalar**
+(`myPlans`), **Jo'natmalar** (mavjud kuzatuv bloki shu tab ostida
+chiziladi: `sShip`), **Sevimlilar** (`favRow`, ro'yxat ko'rinishida),
+**Hisoblar** — "Jami narx" kalkulyatorining oxirgi 10 natijasi
+(`st.calcs`, `PERSIST`; kalkulyatordan chiqishda `noteCalc()` snapshot
+oladi, bir xil kirish takrorlanmaydi; qatorni bosish kirishlar bilan qayta
+ochadi). Bo'sh holatlar tushuntiriladi. Ma'lumot kalitlari o'zgarmadi —
+migratsiya yo'q.
+
+Jo'natma holatlari v2 (TZ 13): Reja → Buyurtma qilindi → Omborda → Yo'lda →
+**Bojxonada** → Keldi (`PLAN_STATUS`, `PLAN_STEPS`, oxirgi indeks
+`PLAN_LAST = 5`). Eski rejalar `fixPlan` da o'tkaziladi: `sv` belgisi
+bo'lmagan rejada 4 ("Keldi") → 5, keyin `sv: 2`. Real tracking yo'q va
+shunday deb yoziladi; holat qo'lda belgilanadi. Kuryer API uchun joy:
+`trackedList[].site` (kuryer kuzatuv sahifasi) va `track`.
+
 ## Pochtam Core
 
 Biznes mantiq UI dan ajratilgan, `core/` da, oddiy skript sifatida
@@ -810,4 +843,4 @@ bilan ishga tushadi.
 
 ## O'lcham byudjeti
 
-`npm run check` quyidagilarni tekshiradi: kuryer logotiplari ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 120 KB, do'kon logotiplari ≤ 260 KB, qo'llanmalar ≤ 700 KB, `index.html` ≤ 720 KB (2026-09-15: bosh sahifaning yangi bloklari uchun 680 dan oshirildi; gzip ~160 KB). Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.
+`npm run check` quyidagilarni tekshiradi: kuryer logotiplari ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 120 KB, do'kon logotiplari ≤ 260 KB, qo'llanmalar ≤ 700 KB, `index.html` ≤ 760 KB (2026-09-15: TZ bosqichlari — bosh sahifa, jami narx, kuryer solishtirish paneli, Xaridlarim — uchun 680 dan oshirildi; gzip ~175 KB). Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.

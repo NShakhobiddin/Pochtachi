@@ -1,6 +1,6 @@
 # Pochtam.uz — texnik topshiriq bo'yicha audit va rivojlantirish rejasi
 
-Sana: 2026-09-15. Holat: 1 (audit), 2 (Pochtam Core), 3 (bosh sahifa) va 4 (universal kalkulyator) bosqichlari tugadi.
+Sana: 2026-09-15. Holat: 1–6 bosqichlar tugadi (audit, Pochtam Core, bosh sahifa, universal kalkulyator, kuryer solishtirish, Xaridlarim). Navbat: 7 (Pochtam AI).
 Tamoyil: **EXTEND, DO NOT REBUILD** — mavjud ilova saqlanadi, funksiyalar
 bir-biriga bog'lanadi, ustiga aqlli qatlam qo'shiladi.
 
@@ -88,7 +88,7 @@ Bular kod emas, huquqiy manbaga tayangan matn — buyurtmachidan manba kerak.
 | 10. Universal kalkulyator | kalkulyator + sehrgar | Yangi ekran `landed`: narx, valyuta, davlat, do'kon, kategoriya, miqdor, vazn, hajmiy vazn, ichki yetkazish, kuryer → jami tannarx kartasi + 3 kuryer |
 | 11. Rejaga qo'shish | `savePlan` | Reja obyektiga ixtiyoriy maydonlar: `name, url, image, qty, domestic, volumetric, source:'landed'`. Eski rejalar o'zgarmaydi |
 | 12. Xaridlarim | reja, kuzatuv, sevimlilar alohida | Bitta ekran `mine`, ichida tablar; holat kalitlari o'zgarmaydi |
-| 13. Jo'natmalar | 5 holat | "Bojxona" holati **oxiriga emas, ketma-ketlikka** qo'shiladi; eski `step` indekslari xaritalanadi (3→3, 4→5) |
+| 13. Jo'natmalar | 5 holat | "Bojxonada" 4-o'ringa qo'shildi; eski `step` 4 → 5 (`sv:2` belgisi) ✓ |
 | 14. Qo'llanmalarda CTA | kalkulyator tab bor | Har qo'llanmaga "Shu do'kondan hisoblash" va "Kuryerlarni solishtirish" — `postMessage` bilan ilovaga store/country uzatiladi |
 | 15–18. AI | yo'q | Alohida worker `/ai`, Claude API, tool use; **hisob-kitob faqat `core/` orqali** (o'sha modullar worker'da ham ishlaydi). Panel alohida sahifa `ai/index.html`, iframe (qo'llanmalar kabi) — bosh sahifa og'irlashmaydi |
 | 19–20. Server, xarajat | worker bor | API kaliti Cloudflare sirida; DO orqali IP/kun limiti; kesh (1 soat) va tool'lar bilan bir xabar ≈ $0.015 |
@@ -165,8 +165,8 @@ talabining texnik kafolati.
 | 2 | Pochtam Core ✓ (2026-09-15) | `core/customs.js`, 5 ta chaqiruv shu modulga; `data/norms.json` yagona manba (build ilova va qo'llanmalarga yozadi); tariflar tuzilgan (`data/tariffs.json`, 68/68), `core/tariffs.js`; `data/categories.json`; `core/landed.js`; `tests/core.mjs` (50 tekshiruv) | ✓ 14 oltin holat bir xil; guide-engine'da hardcode yo'q |
 | 3 | Bosh sahifa UX ✓ (2026-09-15) | hero + aqlli input (havola → do'kon, qisqa havola → alias, noma'lum domen → qidiruv, so'z → qidiruv), 4 ta tez o'tish, mashhur do'konlar tasmasi, kuryerlarni solishtirish bloki (core/tariffs), bloklar tartibi; mavjud bloklar qoladi; RU tarjimalar; byudjet 720 KB | ✓ smoke: 7 yangi tekshiruv, 390/1280 px |
 | 4 | Universal kalkulyator ✓ (2026-09-15) | `landed` ekrani: narx/valyuta, miqdor, kategoriya, yo'nalish, og'irlik, quti (hajmiy), ichki yetkazish, kuryer takliflari (arzon/tez/optimal), jami tannarx, "foydalimi", `savePlanFrom` (name/qty/source); do'kon sahifasidan kirish | ✓ smoke: 5 tekshiruv; eski reja o'zgarmagan |
-| 5 | Kuryer taqqoslash | filtrlar, ustuvorlik, hisoblangan summa; `compare` kengayadi | 3 kuryer uchun summa va sabab ko'rinadi |
-| 6 | Xaridlarim + jo'natmalar | `mine` ekrani (Rejalar, Jo'natmalar, Sevimlilar, Hisob-kitoblar), "Bojxona" holati | eski ma'lumot o'z joyida |
+| 5 | Kuryer taqqoslash ✓ (2026-09-15) | "Vazn bo'yicha hisob" paneli (kg, davlat, arzon/tez/optimal), kartalarda hisoblangan summa va tartib, taqqoslash jadvalida hisob qatori, bosh sahifa va jami narxdan prefill | ✓ smoke: 4 tekshiruv |
+| 6 | Xaridlarim + jo'natmalar ✓ (2026-09-15) | `mine` ekrani (Rejalar, Jo'natmalar, Sevimlilar, Hisoblar — kalkulyatorning oxirgi 10 hisobi), "Bojxonada" holati (PLAN_LAST=5, fixPlan migratsiyasi sv:2) | ✓ eski reja 4→5 ko'chadi; smoke: 4 tekshiruv |
 | 7 | Pochtam AI | worker `/ai`, kalit sirda, limit; tool'lar `core/` dan; panel `ai/index.html`; tezkor variantlar; xato holati | AI hisobni o'zi yozmaydi (test); kalit repo va brauzerda yo'q |
 | 8 | AI + funksiyalar | javob ostidagi tugmalar kalkulyator/taqqoslash/reja/qo'llanmani to'ldirilgan holda ochadi | tugmalar ishlaydi, o'lchov hodisalari keladi |
 | 9 | Keyingi | havola tahlili (ochiq do'konlar), skrinshot, Score, real tracking | alohida topshiriq |

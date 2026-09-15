@@ -753,6 +753,18 @@
       </sc-if>
 
 
+      <!-- Xaridlarim: reja, jo'natma, sevimli va hisoblar bitta joyda. -->
+      <button sc-camel-on-click="{{ goMine }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+        <div style="width:34px;height:34px;border-radius:12px;flex:none;background:#E9EAFD;display:flex;align-items:center;justify-content:center">
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12l1.5 4H4.5L6 4z"></path><path d="M4.5 8v11a1 1 0 001 1h13a1 1 0 001-1V8"></path><path d="M9 12h6"></path></svg>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
+          <span style="font-size:15px;font-weight:700;color:#131429">Xaridlarim</span>
+          <span style="font-size:11px;font-weight:600;color:#6B6C85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mineSummary }}</span>
+        </div>
+        <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
+      </button>
+
       <!-- Mashhur do'konlar: logotip tasmasi, "Barchasi" — do'konlar bo'limi. -->
       <div style="display:flex;flex-direction:column;gap:12px">
         <div style="display:flex;align-items:center;gap:10px;padding:0 2px">
@@ -782,7 +794,7 @@
         <div style="display:flex;align-items:center;gap:10px;padding:0 2px">
           <h2 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Kuryerlarni solishtirish</h2>
           <div style="flex:1"></div>
-          <button sc-camel-on-click="{{ goCouriers }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:6px 2px">Hammasini ko'rish</button>
+          <button sc-camel-on-click="{{ cmpAll }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:6px 2px">Hammasini ko'rish</button>
         </div>
         <div style="background:#FFFFFF;border-radius:20px;padding:14px 16px 12px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
           <div style="display:flex;gap:8px;overflow-x:auto;margin:0 -16px;padding:0 16px 2px">
@@ -1512,6 +1524,31 @@
         </button>
       </div>
 
+      <!-- Vazn bo'yicha hisob: kg tanlansa har kartada shu yo'nalish uchun
+           hisoblangan summa chiqadi (core/tariffs), ro'yxat ustuvorlik
+           bo'yicha tartiblanadi. "Tarif" — avvalgi ko'rinish. -->
+      <div style="background:#FFFFFF;border-radius:20px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:13px;font-weight:700;color:#6B6C85;flex:none">Vazn bo'yicha hisob</span>
+          <sc-for list="{{ ccKgs }}" as="ck" hint-placeholder-count="5">
+            <button sc-camel-on-click="{{ ck.pick }}" aria-pressed="{{ ck.on }}" style="height:32px;padding:0 12px;border-radius:999px;border:1.5px solid {{ ck.bd }};background:{{ ck.bg }};color:{{ ck.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;font-variant-numeric:tabular-nums">{{ ck.t }}</button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ ccOn }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;gap:8px;overflow-x:auto;margin:0 -14px;padding:0 14px 2px">
+            <sc-for list="{{ ccCountries }}" as="cc" hint-placeholder-count="6">
+              <button sc-camel-on-click="{{ cc.pick }}" aria-pressed="{{ cc.on }}" style="flex:none;height:32px;padding:0 12px;border-radius:999px;border:1.5px solid {{ cc.bd }};background:{{ cc.bg }};color:{{ cc.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ cc.t }}</button>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:8px">
+            <sc-for list="{{ ccPris }}" as="cp" hint-placeholder-count="3">
+              <button sc-camel-on-click="{{ cp.pick }}" aria-pressed="{{ cp.on }}" style="flex:1;height:32px;border-radius:14px;border:none;background:{{ cp.bg }};color:{{ cp.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ cp.t }}</button>
+            </sc-for>
+          </div>
+          <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">{{ ccNote }}</span>
+        </sc-if>
+      </div>
+
       <!-- Rejim yoqilganda kartochkalar yonida doiracha paydo bo'ladi, lekin
            nima qilish kerakligi hech qayerda yozilmagan edi. -->
       <sc-if value="{{ cmpOn }}" hint-placeholder-val="{{ false }}">
@@ -1554,7 +1591,7 @@
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none">
                   <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;letter-spacing:-.025em;font-weight:800;color:#131429;font-variant-numeric:tabular-nums">{{ c.priceLabel }}</span>
-                  <span style="font-size:11px;font-weight:700;color:#6B6C85">eng arzon tarif</span>
+                  <span style="font-size:11px;font-weight:700;color:#6B6C85;white-space:nowrap">{{ c.priceSub }}</span>
                 </div>
               </div>
               <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
@@ -2613,6 +2650,102 @@
     </div>
   </sc-if>
 
+  <sc-if value="{{ sMine }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:14px">
+      <div style="display:flex;gap:6px;background:#FFFFFF;border-radius:20px;padding:6px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+        <sc-for list="{{ mineTabs }}" as="mt" hint-placeholder-count="4">
+          <button sc-camel-on-click="{{ mt.pick }}" aria-pressed="{{ mt.on }}" style="flex:1;min-width:0;height:38px;border-radius:14px;border:none;background:{{ mt.bg }};color:{{ mt.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;overflow:hidden">{{ mt.t }}<span style="font-size:11px;font-weight:600;opacity:.8;font-variant-numeric:tabular-nums">{{ mt.n }}</span></button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ mnPlans }}" hint-placeholder-val="{{ true }}">
+        <sc-if value="{{ hasPlans }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ myPlans }}" as="p" hint-placeholder-count="2">
+              <button sc-camel-on-click="{{ p.open }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;width:100%;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+                <div style="width:44px;height:44px;border-radius:14px;flex:none;position:relative;background:{{ p.plate }}">
+                  <div style="position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ p.logoCss }}"></div>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
+                  <span style="font-size:15px;font-weight:700;color:#131429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.title }}</span>
+                  <span style="font-size:13px;font-weight:500;color:#6B6C85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.sub }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none">
+                  <span style="font-size:17px;font-weight:700;color:#131429;font-variant-numeric:tabular-nums">{{ p.total }}</span>
+                  <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:{{ p.stBg }};color:{{ p.stFg }}">{{ p.stLabel }}</span>
+                </div>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noPlans }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+            <span style="font-size:15px;font-weight:700;color:#131429">Hali reja yo'q</span>
+            <span style="font-size:13px;color:#6B6C85;font-weight:500;line-height:1.5">Reja — do'kon, kuryer va boj bilan bitta karta. Sehrgar orqali 5 qadamda yoki "Jami narx" kalkulyatoridan tuziladi.</span>
+            <div style="display:flex;gap:10px">
+              <button sc-camel-on-click="{{ goWizard }}" style="flex:1;height:44px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;font-size:15px;font-weight:700;color:#FFFFFF;background:linear-gradient(155deg,#494FE9,#13189D)">Reja tuzish</button>
+              <button sc-camel-on-click="{{ mnCalc }}" style="flex:1;height:44px;border-radius:14px;border:1.5px solid #DCDDFA;cursor:pointer;font-family:inherit;font-size:15px;font-weight:700;color:#1A1FB0;background:#FFFFFF">Jami narx</button>
+            </div>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{ mnFavs }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ hasFavs }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ favRow }}" as="fv" hint-placeholder-count="3">
+              <button sc-camel-on-click="{{ fv.open }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;font-family:inherit;width:100%;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+                <div style="width:44px;height:44px;border-radius:12px;position:relative;display:flex;align-items:center;justify-content:center;flex:none;background:{{ fv.tint }}">
+                  <sc-if value="{{ fv.showMono }}" hint-placeholder-val="{{ true }}">
+                    <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:15px;font-weight:700;color:{{ fv.color }}">{{ fv.mono }}</span>
+                  </sc-if>
+                  <div style="position:absolute;inset:0;background-size:{{ fv.fit }};background-repeat:no-repeat;background-position:center;background-image:{{ fv.logoCss }}"></div>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
+                  <span style="font-size:15px;font-weight:700;color:#131429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ fv.title }}</span>
+                  <span style="font-size:11px;font-weight:600;color:#6B6C85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ fv.kindLabel }} · {{ fv.sub }}</span>
+                </div>
+                <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noFavs }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:8px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+            <span style="font-size:15px;font-weight:700;color:#131429">Sevimlilar bo'sh</span>
+            <span style="font-size:13px;color:#6B6C85;font-weight:500;line-height:1.5">Do'kon, kuryer yoki qo'llanma sahifasidagi yulduzchani bosing — shu yerga tushadi.</span>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{ mnCalcs }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ hasCalcs }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ mineCalcRows }}" as="cr" hint-placeholder-count="3">
+              <button sc-camel-on-click="{{ cr.open }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;width:100%;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+                <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
+                  <span style="font-size:15px;font-weight:700;color:#131429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ cr.title }}</span>
+                  <span style="font-size:13px;font-weight:500;color:#6B6C85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ cr.sub }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none">
+                  <span style="font-size:17px;font-weight:700;color:#1A1FB0;font-variant-numeric:tabular-nums">{{ cr.total }}</span>
+                  <span style="font-size:11px;font-weight:600;color:#6B6C85;font-variant-numeric:tabular-nums">{{ cr.date }}</span>
+                </div>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noCalcs }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+            <span style="font-size:15px;font-weight:700;color:#131429">Hisoblar shu yerda saqlanadi</span>
+            <span style="font-size:13px;color:#6B6C85;font-weight:500;line-height:1.5">"Jami narx" kalkulyatorida hisoblagan oxirgi 10 ta natija — qayta ochib davom etasiz.</span>
+            <button sc-camel-on-click="{{ mnCalc }}" style="align-self:flex-start;height:44px;padding:0 16px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;font-size:15px;font-weight:700;color:#FFFFFF;background:linear-gradient(155deg,#494FE9,#13189D)">Jami narxni hisoblash</button>
+          </div>
+        </sc-if>
+      </sc-if>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ sShip }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:14px">
       <!-- Foydalanuvchining o'z jo'natmalari: saqlangan rejalardan -->
@@ -3047,7 +3180,7 @@
           Xarid rejasiga qo'shish
           <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
         </button>
-        <button sc-camel-on-click="{{ goCouriers }}" style="height:48px;border-radius:20px;border:1.5px solid #DCDDFA;cursor:pointer;background:#FFFFFF;color:#1A1FB0;font-size:15px;font-weight:700;font-family:inherit">Kuryerlarni solishtirish</button>
+        <button sc-camel-on-click="{{ lcCompare }}" style="height:48px;border-radius:20px;border:1.5px solid #DCDDFA;cursor:pointer;background:#FFFFFF;color:#1A1FB0;font-size:15px;font-weight:700;font-family:inherit">Kuryerlarni solishtirish</button>
         <div style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">Taxminiy hisob. Boj — VMQ 244-son bo'yicha, kargo — kuryer saytidagi tarif. Yakuniy summani bojxona va kuryer belgilaydi.</div>
       </div>
     </div>
@@ -3452,7 +3585,9 @@ const PERSIST = ['lang', 'onboarded', 'plans', 'monthly', 'trackNo',
   'courierCountries', 'courierMode', 'sort', 'lastTab', 'svcLane',
   /* shaxsiy iz: sevimlilar, oxirgi ko'rilganlar va qidiruv tarixi.
      Hammasi shu brauzerda qoladi — hech qayerga yuborilmaydi. */
-  'favs', 'searches'];
+  'favs', 'searches',
+  /* Universal kalkulyatorning oxirgi 10 hisobi (Xaridlarim → Hisoblar). */
+  'calcs'];
 /* Qidiruv tarixi cheksiz o'smasin: eskisi oxiridan tushib ketadi. */
 const SEARCH_MAX = 6;
 /* Qidiruv bo'sh turganda taklif qilinadigan so'rovlar: toifa sinonimlari
@@ -3461,13 +3596,19 @@ const HOT_QUERIES = ['krossovka', 'telefon', 'kiyim', 'parfyum', "o'yinchoq", 'T
 /* Eski yoki yarim yozilgan reja butun ekranni yiqitmasin: raqam maydonlari
    son ekaniga ishonch hosil qilamiz va bosqichni chegaraga kiritamiz.
    Ilgari maydoni yetishmagan reja `total.toFixed` da TypeError berardi. */
+/* Reja holatlarining oxirgi indeksi (PLAN_STATUS: 0 Reja … 4 Bojxonada, 5 Keldi).
+   Holat yuklanishida (fixPlan) ishlatiladi, shuning uchun PLAN_STATUS dan
+   oldin, oddiy son sifatida turadi; muvofiqligi core testida tekshiriladi. */
+const PLAN_LAST = 5;
 const fixPlan = p => {
   const o = p && typeof p === 'object' ? p : {};
   const n = (v, d) => { const x = Number(v); return Number.isFinite(x) ? x : d; };
   const t = (v, d) => (typeof v === 'string' && v ? v : d);
   return { ...o,
     id: t(o.id, 'p' + Date.now() + Math.floor(Math.random() * 1000)),
-    step: Math.min(4, Math.max(0, Math.round(n(o.step, 0)))),
+    /* v2: "Bojxonada" 4-o'ringa kirdi. Eski rejada (sv yo'q) 4 = Keldi → 5. */
+    sv: 2,
+    step: (() => { const r = Math.max(0, Math.round(n(o.step, 0))); return o.sv === 2 ? Math.min(PLAN_LAST, r) : (r >= 4 ? PLAN_LAST : r); })(),
     cat: t(o.cat, 'Xarid'), country: t(o.country, ''),
     storeName: t(o.storeName, '—'), courierName: t(o.courierName, '—'),
     days: t(o.days, '—'), rate: t(o.rate, '—'),
@@ -3489,6 +3630,7 @@ const loadState = () => {
     ['favs', 'searches'].forEach(k => {
       o[k] = Array.isArray(o[k]) ? o[k].filter(v => typeof v === 'string') : [];
     });
+    o.calcs = Array.isArray(o.calcs) ? o.calcs.filter(c => c && typeof c === 'object' && typeof c.id === 'string').slice(0, 10) : [];
     /* Filtr va sozlamalar ham tekshiriladi: buzuq qiymat (masalan, massiv
        o'rniga satr) ilgari birinchi chizishdayoq TypeError berib, ilova
        umuman ochilmay qolardi. Noto'g'ri qiymat shunchaki tashlab
@@ -3548,7 +3690,19 @@ const RU = {
   "Taxminiy: kuryer saytidagi tarif bo'yicha, hisob og'irligi uchun. Yakuniy narxni kuryer belgilaydi.":'Ориентировочно: по тарифу с сайта курьера, за расчётный вес. Итоговую цену определяет курьер.',
   '{0} topildi — narx va vaznni kiritib bojni hisoblang':'{0} найден — введите цену и вес, чтобы рассчитать пошлину',
   "Bu do'kon hali ro'yxatda yo'q — o'xshashini qidiruvda ko'ring":'Этого магазина пока нет в списке — посмотрите похожие в поиске',
-  'Angliya':'Англия', 'Koreya':'Корея', 'Germaniya':'Германия',
+  'Angliya':'Англия', 'Koreya':'Корея', 'Germaniya':'Германия', 'Rossiya':'Россия', "Qozog'iston":'Казахстан', 'Malayziya':'Малайзия',
+  /* Xaridlarim, jo'natma holatlari */
+  'Xaridlarim':'Мои покупки', 'Rejalar':'Планы', 'Sevimlilar':'Избранное', 'Hisoblar':'Расчёты', "Jo'natmalar":'Отправления',
+  '{0} reja':'{0} план', "{0} jo'natma":'{0} отправл.', '{0} sevimli':'{0} избр.', "Reja, jo'natma, sevimlilar va hisoblar":'Планы, отправления, избранное и расчёты',
+  "Hali reja yo'q":'Планов пока нет', "Reja — do'kon, kuryer va boj bilan bitta karta. Sehrgar orqali 5 qadamda yoki \"Jami narx\" kalkulyatoridan tuziladi.":'План — одна карточка с магазином, курьером и пошлиной. Составляется мастером за 5 шагов или из калькулятора «Итоговая цена».',
+  "Sevimlilar bo'sh":'Избранное пусто', "Do'kon, kuryer yoki qo'llanma sahifasidagi yulduzchani bosing — shu yerga tushadi.":'Нажмите звёздочку на странице магазина, курьера или инструкции — появится здесь.',
+  'Hisoblar shu yerda saqlanadi':'Расчёты сохраняются здесь', '"Jami narx" kalkulyatorida hisoblagan oxirgi 10 ta natija — qayta ochib davom etasiz.':'Последние 10 результатов калькулятора «Итоговая цена» — откройте и продолжите.',
+  'Jami narxni hisoblash':'Рассчитать итоговую цену', 'Hisob':'Расчёт',
+  'Bojxonada':'На таможне', "Rasmiylashtirish — xabarnoma tasdiqlanadi, boj bo'lsa to'lanadi":'Оформление — подтверждается уведомление, при необходимости оплачивается пошлина',
+  /* Kuryerlar: vazn bo'yicha hisob paneli */
+  "Vazn bo'yicha hisob":'Расчёт по весу', 'Tarif':'Тариф', 'Arzon':'Дешевле', 'Tez':'Быстрее', 'kun':'дн.', "narx so'raladi":'цена по запросу',
+  '{0} kg · {1}':'{0} кг · {1}', 'Hisob · {0} kg · {1}':'Расчёт · {0} кг · {1}',
+  "{0} · {1} kg uchun kuryer saytidagi tarif bo'yicha taxminiy summa. Jadvalda tarifi yo'q kuryerlar oxirida.":'{0} · {1} кг: ориентировочная сумма по тарифу с сайта курьера. Курьеры без тарифа в таблице — в конце.',
   /* Universal kalkulyator (Jami narx) */
   'Jami narx':'Итоговая цена', 'Mahsulot':'Товар', 'Nomi (ixtiyoriy), masalan: Nike Air Max':'Название (необязательно), например: Nike Air Max', 'Mahsulot nomi':'Название товара',
   'Narxi':'Цена', 'Miqdor':'Количество', 'Miqdor, dona':'Количество, шт', 'dona':'шт', 'Kategoriya':'Категория', 'Qayerdan va qancha':'Откуда и сколько',
@@ -4840,6 +4994,9 @@ const DOMAIN_ALIAS = { 'tb.cn': 'taobao', 'tmall.com': 'tmall', 'yangkeduo.com':
 const CATEGORIES = [];
 /* Universal kalkulyatorning boshlang'ich kirishlari. */
 const LC_DEFAULT = { name: '', price: '', cur: 'USD', qty: '1', cat: 'universal', country: 'Xitoy', storeId: null, kg: '', l: '', w: '', h: '', domestic: '', courierKey: '', local: '' };
+/* Kuryer papkasi (yo'nalish) → hisob uchun davlat. */
+const FOLDER_COUNTRY = { Xitoy: 'Xitoy', AQSH: 'AQSh', Turkiya: 'Turkiya', Yevropa: 'Angliya', Koreya: 'Koreya', Rossiya: 'Rossiya', BAA: 'BAA', MDH: "Qozog'iston", Malayziya: 'Malayziya' };
+const CC_COUNTRIES = ['Xitoy', 'AQSh', 'Turkiya', 'Angliya', 'Germaniya', 'Koreya', 'BAA', 'Rossiya'];
 const LC_COUNTRIES = ['Xitoy', 'AQSh', 'Turkiya', 'Angliya', 'Koreya', 'Germaniya', 'BAA'];
 const POPULAR_STORES = ['taobao', 'pinduoduo', 'amazon', 'trendyol', 'poizon', 'shein', 'aliexpress', 'ebay'];
 const RATE_META = { date:'', diff:0, live:false, loading:false, at:0 };
@@ -5158,6 +5315,7 @@ const PLAN_STEPS = [
   { t:'Buyurtma qilindi', d:'Do\'konda to\'lov amalga oshirildi' },
   { t:'Kuryer omborida', d:'Tovar chetdagi omborga yetib keldi' },
   { t:'Yo\'lda', d:'Jo\'natma O\'zbekiston tomon uchdi' },
+  { t:'Bojxonada', d:'Rasmiylashtirish — xabarnoma tasdiqlanadi, boj bo\'lsa to\'lanadi' },
   { t:'Qabul qilindi', d:'Bojxonadan chiqdi va qo\'lingizga tegdi' }
 ];
 const PLAN_STATUS = [
@@ -5165,8 +5323,12 @@ const PLAN_STATUS = [
   { label:'Buyurtma qilindi', bg:'#FDF3E3', fg:'#B45309' },
   { label:'Omborda', bg:'#FDF3E3', fg:'#B45309' },
   { label:'Yo\'lda', bg:'#FDF3E3', fg:'#B45309' },
+  /* v2 (TZ 13): bojxona bosqichi alohida — ushlanish va xabarnoma shu yerda. */
+  { label:'Bojxonada', bg:'#E9EAFD', fg:'#1A1FB0' },
   { label:'Keldi', bg:'#E9F8EF', fg:'#0F7B3E' }
 ];
+/* PLAN_LAST (=5) fixPlan yonida e'lon qilingan — u holat yuklanishida, bu
+   ro'yxatdan oldin kerak bo'ladi. */
 const STORE_ROUTE = {
   Xitoy:/xitoy|china|hitoy/i, AQSh:/aqsh|usa|amerika/i, Turkiya:/turkiya|turkey/i,
   BAA:/baa|dubay|amirlik|emirat/i, Koreya:/koreya|korea/i, Rossiya:/rossiya|russia/i,
@@ -5199,6 +5361,11 @@ class Component extends DCLogic {
     cmpCountry: 'Xitoy', cmpKg: 2, tariffsOn: false,
     /* Universal kalkulyator (jami tannarx) kirishlari — LC_DEFAULT nusxasi. */
     lc: { ...LC_DEFAULT },
+    /* Kuryerlar ro'yxatida vazn bo'yicha hisob: 0 — o'chiq (tarif yorlig'i),
+       aks holda kg; davlat va ustuvorlik (cheap | fast | optimal). */
+    ccKg: 0, ccCountry: '', ccPri: 'cheap',
+    /* Xaridlarim: faol tab va saqlangan hisoblar. */
+    mineTab: 'plans', calcs: Array.isArray(SAVED.calcs) ? SAVED.calcs : [],
     storeCountries: SAVED.storeCountries || [], storeCats: SAVED.storeCats || [],
     storeDirect: !!SAVED.storeDirect, storeGroup: SAVED.storeGroup || 'cat',
     courierCountries: SAVED.courierCountries || [], courierMode: SAVED.courierMode || null,
@@ -5357,6 +5524,7 @@ class Component extends DCLogic {
 
   /* Navigatsiyadan oldin chaqiriladi: hozirgi ekran qayerda turganini yozib qo'yadi. */
   rememberScroll() {
+    this.noteCalc();
     const main = this._mainEl();
     if (!main) return;
     this._scrollMem.set(this.state.stack.join('>'), main.scrollTop);
@@ -5909,6 +6077,29 @@ class Component extends DCLogic {
     this.celebrate();
   }
 
+  /* Kuryerlar ro'yxatini vazn bo'yicha hisob paneli yoqilgan holda ochish
+     (bosh sahifadagi blok va jami narx ekranidan). */
+  /* Universal kalkulyatordan chiqishda oxirgi hisob "Xaridlarim → Hisoblar"
+     ga yoziladi (narx bo'lsa). Bir xil kirish takrorlanmaydi, 10 ta saqlanadi. */
+  noteCalc() {
+    /* Snapshot faqat "Jami narx" ekrani chizilganda yoziladi, shuning uchun
+       qaysi ekranda turganini tekshirish shart emas: rejaga qo'shishda stack
+       avval bosh sahifaga o'tadi va tekshiruv hisobni yo'qotardi. */
+    const snap = this._lcSnap;
+    if (!snap) return;
+    this._lcSnap = null;
+    this.setState(x => {
+      const list = (x.calcs || []).filter(c => c.sig !== snap.sig);
+      return { calcs: [snap, ...list].slice(0, 10) };
+    });
+  }
+
+  openCourierCalc(country, kg) {
+    const k = [1, 2, 5, 10].reduce((a, b) => Math.abs(b - kg) < Math.abs(a - kg) ? b : a, 2);
+    this.setState({ courierFolder: 'all:', compareMode: false, selected: [], ccKg: k, ccCountry: country || 'Xitoy', ccPri: 'cheap' });
+    this.push('courierfolder');
+  }
+
   /* Universal kalkulyatorni ochish: prefill — do'kon sahifasidan (storeId,
      country, cat) yoki bo'sh. */
   openLanded(prefill) {
@@ -6015,7 +6206,7 @@ class Component extends DCLogic {
       return f.indexOf('from:') === 0
         ? (COURIER_ORIGINS.find(d => d[0] === f.slice(5)) || null) : null;
     })();
-    const titles = { landed:'Jami narx', plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? tx(st.lang, '{0} yo\'nalishi', tr(st.lang, courierFolderDef[1])) : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', search:'Qidiruv', wizard:'Reja tuzish', settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
+    const titles = { landed:'Jami narx', mine:'Xaridlarim', plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? tx(st.lang, '{0} yo\'nalishi', tr(st.lang, courierFolderDef[1])) : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', search:'Qidiruv', wizard:'Reja tuzish', settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
     /* Saralash tugmasi faqat ro'yxat ko'rinib turganda kerak: papkalar
        ekranida saralanadigan narsa yo'q. */
     const showSortBtn = cur === 'courierfolder' ||
@@ -6204,9 +6395,10 @@ class Component extends DCLogic {
       sCouriers: cur === 'couriers', sCourier: cur === 'courier', sCompare: cur === 'compare',
       sCouriersArea: cur === 'couriers' || cur === 'courierfolder',
       sCustoms: cur === 'customs', sCsec: cur === 'csec', sGuides: cur === 'guides',
-      sShip: cur === 'shipments', sWizard: cur === 'wizard', sSettings: cur === 'settings',
+      sShip: cur === 'shipments' || (cur === 'mine' && st.mineTab === 'ship'), sWizard: cur === 'wizard', sSettings: cur === 'settings',
       sPlan: cur === 'plan' && !!pl,
       sLanded: cur === 'landed',
+      sMine: cur === 'mine',
       hasPlans: st.plans.length > 0,
       planCount: st.plans.length + ' ta',
       wizShowPlans: cur === 'wizard' && st.wizStep === 0 && st.plans.length > 0,
@@ -6215,7 +6407,7 @@ class Component extends DCLogic {
         total: '$' + p.total.toFixed(0), logoCss: p.logoCss,
         plate: p.logoCss && p.logoCss !== 'none' ? 'transparent' : '#F1F1F8',
         stLabel: PLAN_STATUS[p.step].label, stBg: PLAN_STATUS[p.step].bg, stFg: PLAN_STATUS[p.step].fg,
-        pct: Math.round((p.step / 4) * 100) + '%',
+        pct: Math.round((p.step / PLAN_LAST) * 100) + '%',
         open: () => { this.setState({ planId: p.id }); this.push('plan'); }
       })),
       wizSave: () => this.savePlan(wz),
@@ -6229,7 +6421,7 @@ class Component extends DCLogic {
       planTotalBig: pl ? '$' + pl.total.toFixed(2) : '',
       planTotalUzs: pl ? money(Math.round(pl.total * USD_RATE)) + ' so\'m' : '',
       planStatusLabel: pl ? PLAN_STATUS[pl.step].label : '',
-      planPct: pl ? Math.round((pl.step / 4) * 100) + '%' : '0%',
+      planPct: pl ? Math.round((pl.step / PLAN_LAST) * 100) + '%' : '0%',
       planStepsList: PLAN_STEPS.map((s, i) => {
         const step = pl ? pl.step : 0;
         const done = i < step, now = i === step;
@@ -6247,9 +6439,9 @@ class Component extends DCLogic {
         { k:'Yagona yig\'im', v: pl.feeUsd > 0 ? '$' + pl.feeUsd.toFixed(2) : '$0', c: pl.feeUsd > 0 ? '#B45309' : '#0F7B3E' },
         { k:'Kutilgan muddat', v: pl.days, c:'#131429' }
       ] : [],
-      planCanAdvance: !!pl && pl.step < 4,
-      planNextLabel: pl && pl.step < 4 ? tx(st.lang, '{0} — belgilash', tr(st.lang, PLAN_STEPS[pl.step + 1].t)) : '',
-      planAdvance: () => { if (!pl) return; this.setState(x => ({ plans: x.plans.map(p => p.id === pl.id ? { ...p, step: Math.min(p.step + 1, 4) } : p) })); this.toast('Bosqich yangilandi'); },
+      planCanAdvance: !!pl && pl.step < PLAN_LAST,
+      planNextLabel: pl && pl.step < PLAN_LAST ? tx(st.lang, '{0} — belgilash', tr(st.lang, PLAN_STEPS[pl.step + 1].t)) : '',
+      planAdvance: () => { if (!pl) return; this.setState(x => ({ plans: x.plans.map(p => p.id === pl.id ? { ...p, step: Math.min(p.step + 1, PLAN_LAST) } : p) })); this.toast('Bosqich yangilandi'); },
       planDelete: () => { if (!pl) return; this.setState(x => ({ plans: x.plans.filter(p => p.id !== pl.id), stack: ['home'] })); this.toast('Reja o\'chirildi'); },
       planOpenStore: () => { if (pl && pl.storeId) { this.warmGuide(pl.storeId); this.setState({ storeId: pl.storeId }); this.push('store'); } else this.toast('Do\'kon topilmadi'); },
       planOpenCourier: () => { if (pl && pl.courierId) this.openCourierId(pl.courierId); else this.toast('Kuryer topilmadi'); },
@@ -6266,7 +6458,7 @@ class Component extends DCLogic {
          belgilanadi — ilovada kuryer tizimlariga ulanish yo'q va buni
          yashirmaymiz. */
       ...(() => {
-        const mine = (st.plans || []).filter(p => p.step < 4)
+        const mine = (st.plans || []).filter(p => p.step < PLAN_LAST)
           .map(p => {
             const k = COURIERS.find(c => c.id === p.courierId) || null;
             return {
@@ -6277,19 +6469,19 @@ class Component extends DCLogic {
               stLabel: PLAN_STATUS[p.step].label,
               stBg: PLAN_STATUS[p.step].bg,
               stFg: PLAN_STATUS[p.step].fg,
-              pct: Math.round((p.step / 4) * 100) + '%',
+              pct: Math.round((p.step / PLAN_LAST) * 100) + '%',
               track: p.track || '',
               hasTrack: !!p.track,
               noTrack: !p.track,
               /* Reja sahifasidagi kabi "— belgilash": yolg'iz "Buyurtma qilindi"
                  joriy holat deb o'qilardi (joriy holat o'ngdagi chipda). */
-              nextLabel: p.step < 4 ? tx(st.lang, '{0} — belgilash', tr(st.lang, PLAN_STEPS[p.step + 1].t)) : '',
-              canNext: p.step < 4,
+              nextLabel: p.step < PLAN_LAST ? tx(st.lang, '{0} — belgilash', tr(st.lang, PLAN_STEPS[p.step + 1].t)) : '',
+              canNext: p.step < PLAN_LAST,
               site: k && k.track ? k.track : '',
               hasSite: !!(k && k.track),
               /* 20 kundan ortiq "yo'lda" turgan jo'natma — ushlanib qolgan
                  bo'lishi mumkin; yordam tugmasi narx bilan, xabarda trek. */
-              stuck: HAS_CONTACT && p.step >= 1 && p.step < 4 && planAgeDays(p) >= 20,
+              stuck: HAS_CONTACT && p.step >= 1 && p.step < PLAN_LAST && planAgeDays(p) >= 20,
               stuckLabel: tx(st.lang, "{0} kun — ushlanib qoldimi?", planAgeDays(p)),
               stuckPrice: this.svcPrice('svc-ushlangan'),
               stuckAsk: () => this.askSvc('svc-ushlangan', tx(st.lang, "Jo'natma: {0}, kuryer: {1}, trek: {2}, {3} kun.", p.cat + ' · ' + p.storeName, p.courierName || '—', p.track || '—', planAgeDays(p))),
@@ -6354,6 +6546,27 @@ class Component extends DCLogic {
           showMono: !bor, tint: bor ? 'transparent' : '#F1F1F8',
           open: () => { this.warmGuide(x.id); this.setState({ storeId: x.id }); this.push('store'); } };
       }),
+      /* Xaridlarim: rejalar, jo'natmalar, sevimlilar, hisoblar — bitta ekran. */
+      ...(() => {
+        const tab = st.mineTab || 'plans';
+        const nShip = (st.plans || []).filter(p => p.step < PLAN_LAST).length;
+        const nFav = (st.favs || []).length, nCalc = (st.calcs || []).length, nPlan = (st.plans || []).length;
+        const tabs = [['plans', 'Rejalar', nPlan], ['ship', "Jo'natmalar", nShip], ['favs', 'Sevimlilar', nFav], ['calcs', 'Hisoblar', nCalc]];
+        return {
+          mineTabs: tabs.map(([k, t, n]) => ({ t: tr(st.lang, t), n: n ? String(n) : '', on: tab === k, bg: tab === k ? '#E9EAFD' : 'transparent', fg: tab === k ? '#1A1FB0' : '#6B6C85', pick: () => this.setState({ mineTab: k }) })),
+          mnPlans: tab === 'plans', mnFavs: tab === 'favs', mnCalcs: tab === 'calcs',
+          noPlans: nPlan === 0, noFavs: nFav === 0, hasCalcs: nCalc > 0, noCalcs: nCalc === 0,
+          mnCalc: () => this.openLanded(),
+          mineSummary: [nPlan ? tx(st.lang, '{0} reja', nPlan) : '', nShip ? tx(st.lang, '{0} jo\'natma', nShip) : '', nFav ? tx(st.lang, '{0} sevimli', nFav) : ''].filter(Boolean).join(' · ') || tr(st.lang, 'Reja, jo\'natma, sevimlilar va hisoblar'),
+          goMine: () => { this.setState({ mineTab: 'plans' }); this.push('mine'); },
+          mineCalcRows: (st.calcs || []).map(c => ({
+            title: c.name || tr(st.lang, c.cat || 'Hisob'),
+            sub: [tr(st.lang, c.country || ''), (c.qty > 1 ? c.qty + ' × ' : '') + usd(c.priceUsd || 0), (c.kg || 0).toFixed(1).replace('.', ',') + ' kg', c.courier].filter(Boolean).join(' · '),
+            total: '$' + (c.totalUsd || 0).toFixed(2), date: String(c.date || '').slice(5).split('-').reverse().join('.'),
+            open: () => { this.setState({ lc: { ...LC_DEFAULT, ...(c.lc || {}) } }); this.push('landed'); }
+          }))
+        };
+      })(),
       /* Universal kalkulyator (landed) — faqat o'z ekranida hisoblanadi. */
       ...(() => {
         if (cur !== 'landed') return {};
@@ -6425,6 +6638,9 @@ class Component extends DCLogic {
           lcWorthText: L.worth
             ? tx(st.lang, 'Chetdan olish foydali — tejash {0} so\'m ({1}%).', money(Math.round(L.savingUzs)), Math.round(L.savingPct * 100))
             : tx(st.lang, "O'zbekistonda arzonroq — farq {0} so'm.", money(Math.round(-L.savingUzs))),
+          lcCompare: () => this.openCourierCalc(lc.country, Math.max(1, Math.round(billKg * 10) / 10)),
+          _snap: (this._lcSnap = priceUsd > 0 ? { id: 'c' + Date.now(), sig: JSON.stringify([lc.price, lc.cur, lc.qty, lc.cat, lc.country, lc.kg, lc.l, lc.w, lc.h, lc.domestic, sel ? sel.id : '']), date: todayIso(),
+            name: String(lc.name || '').trim().slice(0, 60), cat: tr('uz', catDef.label), country: lc.country, kg: billKg, qty, priceUsd, totalUsd: L.totalUsd, courier: sel ? sel.name : '', lc: { ...lc } } : null, null),
           lcAddPlan: () => {
             if (!(priceUsd > 0)) { this.toast(tr(st.lang, 'Avval mahsulot narxini yozing')); return; }
             metrics.hit('calc_done', lc.country); metrics.hit('add_to_plan', 'landed');
@@ -6462,7 +6678,8 @@ class Component extends DCLogic {
             price: '$' + q.usd.toFixed(2) + (q.from ? ' ' + tr(st.lang, 'dan') : ''),
             open: () => this.openCourierId(q.id)
           })),
-          cmpHas: rows.length > 0, cmpLoading: !TARIFFS, cmpEmpty: !!TARIFFS && rows.length === 0
+          cmpHas: rows.length > 0, cmpLoading: !TARIFFS, cmpEmpty: !!TARIFFS && rows.length === 0,
+          cmpAll: () => this.openCourierCalc(st.cmpCountry, st.cmpKg)
         };
       })(),
 
@@ -6885,11 +7102,45 @@ class Component extends DCLogic {
         label:s.label, pick:() => this.setState({ sort:s.key }),
         bg: st.sort === s.key ? '#E9EAFD' : '#FFFFFF', fg: st.sort === s.key ? PRI : '#6B6C85'
       })),
-      filteredCouriers: list.map(k => {
+      /* Vazn bo'yicha hisob paneli. */
+      ...(() => {
+        const inList = cur === 'courierfolder' || cur === 'couriers' || cur === 'compare';
+        if (!inList) return { ccOn: false, ccKgs: [], ccCountries: [], ccPris: [], ccNote: '' };
+        const f = String(st.courierFolder || '');
+        const defCountry = f.indexOf('from:') === 0 ? (FOLDER_COUNTRY[f.slice(5)] || 'Xitoy') : 'Xitoy';
+        const country = st.ccCountry || defCountry;
+        const chip = on => on ? { on: true, bg: '#1A1FB0', fg: '#FFFFFF', bd: '#1A1FB0' } : { on: false, bg: '#FFFFFF', fg: '#131429', bd: '#DCDDFA' };
+        const pri = st.ccPri || 'cheap';
+        return {
+          ccOn: st.ccKg > 0,
+          ccKgs: [[0, tr(st.lang, 'Tarif')], [1, '1 kg'], [2, '2 kg'], [5, '5 kg'], [10, '10 kg']].map(([k, t]) => ({ t, ...chip(st.ccKg === k), pick: () => { if (k) metrics.hit('courier_compare', country + ':' + k); this.setState({ ccKg: k }); } })),
+          ccCountries: [...new Set([defCountry, ...CC_COUNTRIES])].map(c => ({ t: tr(st.lang, c), ...chip(country === c), pick: () => this.setState({ ccCountry: c }) })),
+          ccPris: [['cheap', 'Arzon'], ['fast', 'Tez'], ['optimal', 'Optimal']].map(([k, t]) => ({ t: tr(st.lang, t), on: pri === k, bg: pri === k ? '#E9EAFD' : '#F1F1F8', fg: pri === k ? '#1A1FB0' : '#6B6C85', pick: () => this.setState({ ccPri: k }) })),
+          ccNote: tx(st.lang, "{0} · {1} kg uchun kuryer saytidagi tarif bo'yicha taxminiy summa. Jadvalda tarifi yo'q kuryerlar oxirida.", tr(st.lang, country), st.ccKg)
+        };
+      })(),
+      filteredCouriers: (() => {
+        if (!(st.ccKg > 0) || !TARIFFS || !PochtamCore.courierQuotes) return list;
+        const f = String(st.courierFolder || '');
+        const country = st.ccCountry || (f.indexOf('from:') === 0 ? (FOLDER_COUNTRY[f.slice(5)] || 'Xitoy') : 'Xitoy');
+        const quotes = PochtamCore.courierQuotes({ couriers: list, tariffs: TARIFFS, country, kg: st.ccKg, usdRate: USD_RATE });
+        const ranked = PochtamCore.rankQuotes(quotes, st.ccPri || 'cheap');
+        /* Har kuryerning eng yaxshi (birinchi kelgan) taklifi; taklifsizlar oxirida. */
+        const best = new Map();
+        ranked.forEach(q => { if (q.ok && !best.has(q.id)) best.set(q.id, q); });
+        const order = [...best.keys()];
+        const rest = list.filter(k => !best.has(k.id));
+        return order.map(id => list.find(k => k.id === id)).filter(Boolean).concat(rest).map(k => {
+          const q = best.get(k.id);
+          return { ...k, _cc: q ? { priceLabel: '$' + q.usd.toFixed(2) + (q.from ? ' ' + tr(st.lang, 'dan') : ''), priceSub: tx(st.lang, '{0} kg · {1}', st.ccKg, tr(st.lang, country)) + (q.dnum != null ? ' · ' + q.dnum + ' ' + tr(st.lang, 'kun') : '') }
+            : { priceLabel: '—', priceSub: tr(st.lang, 'narx so\'raladi') } };
+        });
+      })().map(k => {
         const b = badgeOf(k);
         const feat = k.svc.filter(s => FEAT_ICONS[s.k] && !/^tracking$/i.test(s.k))
           .slice(0, 3).map(s => ({ k: s.k.replace('Return/Refundga yordam','Qaytarish').replace('Marketplace mosligi','Marketplace').replace('Door delivery UZ','Uyga yetkazish').replace('Foto/tekshiruv','Foto'), pic: strokePic(FEAT_ICONS[s.k], '#1A1FB0', 2.1) }));
         return { ...k, ...b, hasBadge: !!b.badge, feat, hasFeat: feat.length > 0,
+          priceSub: tr(st.lang, 'eng arzon tarif'), ...(k._cc || {}),
           open:() => { this.setState({ courierId:k.id }); this.push('courier'); },
           toggleSel:() => this.toggleIn('selected', k.id),
           selBg: st.selected.includes(k.id) ? PRI : '#FFFFFF',
@@ -6906,7 +7157,17 @@ class Component extends DCLogic {
       compareList: COURIERS.filter(k => st.selected.includes(k.id)).slice(0, 3),
       compareRows: (() => {
         const sel = COURIERS.filter(k => st.selected.includes(k.id)).slice(0, 3);
+        /* Hisoblangan summa: paneldagi kg (yo'q bo'lsa 2 kg) va davlat uchun. */
+        const f = String(st.courierFolder || '');
+        const country = st.ccCountry || (f.indexOf('from:') === 0 ? (FOLDER_COUNTRY[f.slice(5)] || 'Xitoy') : 'Xitoy');
+        const kg = st.ccKg > 0 ? st.ccKg : 2;
+        const costRow = (TARIFFS && PochtamCore.courierQuotes) ? (() => {
+          const q = PochtamCore.rankQuotes(PochtamCore.courierQuotes({ couriers: sel, tariffs: TARIFFS, country, kg, usdRate: USD_RATE }), 'cheap');
+          const best = new Map(); q.forEach(x => { if (x.ok && !best.has(x.id)) best.set(x.id, x); });
+          return { k: tx(st.lang, 'Hisob · {0} kg · {1}', kg, tr(st.lang, country)), vals: sel.map(k => best.has(k.id) ? '$' + best.get(k.id).usd.toFixed(2) + (best.get(k.id).from ? ' ' + tr(st.lang, 'dan') : '') : tr(st.lang, 'narx so\'raladi')) };
+        })() : null;
         return [
+          ...(costRow ? [costRow] : []),
           { k:'Eng arzon tarif', vals: sel.map(k => k.priceLabel) },
           { k:'Muddat', vals: sel.map(k => k.days) },
           { k:'Turi', vals: sel.map(k => k.mode) },
