@@ -10,6 +10,8 @@ Natija:
   icons/brand.webp          lokap — sarlavha uchun (96 px balandlikda, shiorsiz)
   icons/brand-full.webp     to'liq lokap — tanishuv ekrani uchun (560 px kenglikda)
   icons/icon-192.png        ilova ikonkasi (PWA)
+  icons/icon-512.png        ilova ikonkasi, katta (Chrome o'rnatish oynasi
+                            192 va 512 ni birga so'raydi)
   icons/apple-touch-icon.png iOS uchun
 
 Ishlatish: python3 tools/brand-logo.py [--check]
@@ -50,6 +52,7 @@ TAG_GAP_SHARE = 0.199  # so'z bilan shior orasi so'z balandligiga nisbatan
 WORD_PX = 96       # sarlavha lokapi: 36px ekranda, ~2.7x zichlikda
 FULL_W = 560       # to'liq lokap: 240px ekranda, ~2.3x zichlikda
 ICON = 192         # PWA ikonkasi
+ICON_BIG = 512     # PWA ikonkasi, katta (o'rnatish oynasi va splash uchun)
 APPLE = 180        # iOS ikonkasi
 MARK_SHARE = 0.76  # ikonka kvadratining qancha qismini belgi egallaydi
 
@@ -141,6 +144,7 @@ def main():
         ('brand.webp', to_h(lockup(), WORD_PX)),
         ('brand-full.webp', to_w(lockup(tagline=True), FULL_W)),
         ('icon-192.png', icon(mark(), ICON)),
+        ('icon-512.png', icon(mark(), ICON_BIG)),
         ('apple-touch-icon.png', icon(mark(), APPLE)),
     ]
     total = 0

@@ -17,7 +17,7 @@
  *   - Do'kon logotiplari: versiyadan qat'i nazar saqlanadigan alohida keshda.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
  */
-const VERSION = '2482a96ae041';
+const VERSION = 'c7a7c2da2779';
 const CACHE = 'xarid-' + VERSION;
 /* Logotiplar keshi ilova versiyasiga bog'lanmaydi: yangilanish chiqqanda
    ular qaytadan yuklanmaydi. */
@@ -197,7 +197,8 @@ const LATER = [
   "icons/guide-poizon.webp",
   "icons/guide-shein.webp",
   "icons/guide-taobao.webp",
-  "icons/guide-trendyol.webp"
+  "icons/guide-trendyol.webp",
+  "icons/icon-512.png"
 ];
 const LATER_STREAMS = 2;
 

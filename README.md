@@ -632,6 +632,7 @@ yig'ib to'rt faylni yasaydi:
 | `icons/brand.webp` | bosh ekran sarlavhasi — 36 px balandlikda, shiorsiz |
 | `icons/brand-full.webp` | tanishuv ekrani — 240 px kenglikda, shior bilan |
 | `icons/icon-192.png` | PWA ikonkasi |
+| `icons/icon-512.png` | PWA ikonkasi, katta (Chrome o'rnatish oynasi 192 va 512 ni so'raydi) |
 | `icons/apple-touch-icon.png` | iOS ikonkasi |
 
 Yashil `m` ortidagi ko'k quti — harfning kengligi va x-balandlikdan tayanch
