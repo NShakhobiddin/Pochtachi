@@ -109,6 +109,26 @@ jobs:
           [ "$ok" = "1" ] || { echo "::error::Hisobot o'qilmadi (GET /stats -> $code). Parol (METRICS_READ_TOKEN) to'g'rimi?"; exit 1; }
           echo "Server javob beryapti."
 
+      - name: Pochtam AI sinovi (/ai va /ai/shot)
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          set +e
+          # Kalit bo'lmasa 503 no_key — bu xato emas, AI o'chiq degani; workflow davom etadi.
+          echo "== POST /ai"
+          code=$(curl -s -m 90 -o /tmp/ai1 -w '%{http_code}' -X POST "${URL}ai" -H 'origin: https://nshakhobiddin.github.io' -H 'content-type: text/plain' \
+            -d '{"q":"320 dollarlik 2.5 kg tovar uchun boj qancha?","lang":"uz","usdRate":12650}')
+          echo "[$code] $(head -c 700 /tmp/ai1)"
+          echo "== POST /ai/shot (1x1 PNG — narx topilmasligi kutiladi, yo'l ishlashi tekshiriladi)"
+          code2=$(curl -s -m 90 -o /tmp/ai2 -w '%{http_code}' -X POST "${URL}ai/shot" -H 'origin: https://nshakhobiddin.github.io' -H 'content-type: text/plain' \
+            -d '{"image":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==","lang":"uz","usdRate":12650}')
+          echo "[$code2] $(head -c 400 /tmp/ai2)"
+          case "$code" in
+            200) echo "::notice::Pochtam AI ishlayapti: /ai 200";;
+            503) if grep -q no_key /tmp/ai1; then echo "::warning::AI o'chiq: ANTHROPIC_API_KEY siri yo'q (GitHub → Settings → Secrets)"; else echo "::warning::AI 503: Claude API javob bermadi — $(head -c 200 /tmp/ai1)"; fi;;
+            *) echo "::warning::/ai kutilmagan javob: $code";;
+          esac
+
       - name: Ilovaga manzilni yozish va qurish
         env:
           URL: ${{ steps.deploy.outputs.url }}
