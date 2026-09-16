@@ -196,27 +196,41 @@ kuryer ekranlarida kuryer filtrlarini (yuborish turi, saralash; yo'nalish
 papkasidan tashqarida davlat ham) ko'rsatadi. Escape avval ochiq varaqni
 yopadi, keyingina ekranni.
 
-## Bosh sahifa (3-bosqich)
+## Bosh sahifa (3-bosqich, 2026-09-16 da soddalashtirildi)
 
 Sahifa vazifadan boshlanadi: **universal maydon** ("Nima olib
 kelmoqchisiz?") havola, mahsulot nomi yoki savolni qabul qiladi.
 `heroGo()`: havola bo'lsa domen bo'yicha do'kon topiladi (`STORES.domain`
 yoki `DOMAIN_ALIAS` — `tb.cn`, `amzn.to`, `dewu.com` kabi qisqa va mobil
 manzillar) va do'kon sahifasi ochiladi; ro'yxatda yo'q domen — domen so'zi
-bilan qidiruvga; oddiy so'z — qidiruv ekrani. Oqim hech qachon to'xtab
-qolmaydi (TZ 21). Savol rejimi AI bosqichida qo'shiladi.
+bilan qidiruvga; savol (so'roq belgisi yoki so'roq so'zi) — Pochtam AI;
+oddiy so'z — qidiruv ekrani. Oqim hech qachon to'xtab qolmaydi (TZ 21).
 
-Ostida **tez o'tish** (boj hisoblash, kuryer tanlash, taqiqni tekshirish,
-qo'llanmalar), **mashhur do'konlar** tasmasi (`POPULAR_STORES`, o'lchov
-ishlagach haqiqiy bosishlar bilan almashtiriladi) va **kuryerlarni
-solishtirish** bloki: yo'nalish (Xitoy, AQSh, Turkiya, Angliya, Koreya) va
-og'irlik (1/2/5/10 kg) bo'yicha uchta eng arzon taklif —
-`PochtamCore.courierQuotes` + `rankQuotes('cheap')`, tariflar
-`data/tariffs.json` dan ilova ochilgach yuklanadi (`loadTariffs`, SW
-keshida). Qolgan bloklar o'z joyida: to'rt bo'lim kartasi, "Birinchi
-marta" (reja), mutaxassis, kurs, "Bugungi foydali", sevimlilar, yaqinda.
-O'lchov hodisalari: `hero` (link:<do'kon> | link:? | text), `quick`,
-`courier_compare`.
+Bosh sahifada yettita blok, har biri bitta vazifa uchun, takrori yo'q:
+
+1. universal maydon;
+2. **tez o'tish** — Jami narx, Do'konlar, Kuryerlar, Taqiqni tekshirish
+   (Qo'llanmalar va Bojxona pastki menyuda, shuning uchun bu yerda
+   takrorlanmaydi; Do'konlar va Kuryerlar bo'limlariga kirish faqat shu
+   yerdan);
+3. **Xaridlarim** kartasi — rejalar, jo'natmalar, sevimlilar, hisoblar
+   (jamlanma bilan);
+4. **Pochtam AI** kartasi;
+5. **mashhur do'konlar** tasmasi (`POPULAR_STORES`, "Barchasi" — do'konlar
+   bo'limi);
+6. mutaxassis yordami (pullik xizmatlar);
+7. kurs (bosilsa sozlamalar) va kunning maslahati (`TIPS`, ixcham karta).
+
+Olib tashlangan takrorlar (2026-09-16): to'rt bo'lim kartasi (tez o'tish
+va pastki menyu bilan bir xil), "Kuryerlarni solishtirish" bloki (kuryerlar
+ro'yxatidagi "Vazn bo'yicha hisob" paneli shu ishni qiladi), "Birinchi
+marta buyurtma qilyapsizmi?" kartasi (pastki menyuning markazidagi "Reja"
+tugmasi shu), bosh sahifadagi "Sevimlilar" tasmasi va "Mening rejalarim"
+(ikkalasi Xaridlarim ichida). Sahifa balandligi 2000 px dan 990 px ga
+tushdi. Sarlavhadagi kuzatuv tugmasi ham Xaridlarim → Jo'natmalar tabini
+ochadi — jo'natmalar bitta joyda. O'lchov hodisalari: `hero`
+(link:<do'kon> | link:? | ai | text), `quick` (landed, stores, couriers,
+banned, ai, ai:*).
 
 ## Universal kalkulyator — Jami narx (4-bosqich)
 

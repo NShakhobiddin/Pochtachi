@@ -95,7 +95,8 @@ await context.addInitScript(() => {
 const page = await context.newPage();
 /* Bosh sahifadagi bo'lim kartasi (h2 sarlavhasi bo'yicha): "Mashhur do'konlar"
    kabi yangi sarlavhalar getByText'ni chalg'itmasin. */
-const homeCard = t => page.locator('main button').filter({ has: page.locator('h2', { hasText: new RegExp('^' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$') }) }).first();
+/* Bosh sahifadagi "tez o'tish" plitkasi: matni aynan t bo'lgan tugma. */
+const homeCard = t => page.locator('main button').filter({ hasText: new RegExp('^\\s*' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*$') }).first();
 
 const errors = [];
 const missing = [];
@@ -552,46 +553,21 @@ try {
     kurs && kurs.son.replace(/\D/g, '').length >= 4 && kurs.manba,
     kurs ? `${kurs.son} · manba ${kurs.manba}` : 'blok topilmadi');
 
-  /* Bosh sahifadagi kartochkalarda son kulrang izohda emas, yirik raqamda. */
-  const yirikSon = await page.evaluate(() => {
-    const kart = [...document.querySelectorAll('main button')]
-      .filter(b => b.querySelector('img[src*="-3d.webp"]') && b.querySelector('h2'));
-    return kart.map(b => {
-      const big = [...b.querySelectorAll('span')]
-        .filter(x => x.children.length === 0 && parseFloat(getComputedStyle(x).fontSize) >= 22);
-      return { nom: b.querySelector('h2').textContent.trim(), son: big.length ? big[0].textContent.trim() : '' };
-    });
-  });
-  check('bosh kartochkalarda raqam yirik',
-    yirikSon.length === 4 && yirikSon.every(x => /\d/.test(x.son)),
-    yirikSon.map(x => x.nom + ':' + x.son).join(' · '));
+  /* Bosh sahifa ixcham: yettita blok, takror yo'q (2026-09-16 da 4 bo'lim
+     kartasi, solishtirish bloki, "Birinchi marta", sevimlilar tasmasi va
+     rejalar bloki olib tashlandi), balandligi 1300 px dan kam. */
+  const ixcham = await page.evaluate(() => { const m = document.querySelector('main'); return { bloklar: m.firstElementChild.children.length, h: m.scrollHeight, takror: /Kuryerlarni solishtirish|Birinchi marta|Mening rejalarim/.test(m.innerText) }; });
+  check('bosh sahifa ixcham: 7 blok, takror yo\'q', ixcham.bloklar === 7 && ixcham.h < 1300 && !ixcham.takror, JSON.stringify(ixcham));
 
   /* 3-bosqich: bosh sahifadagi universal maydon, tez o'tish, mashhur
      do'konlar va kuryerlarni solishtirish bloki. */
   {
     const hero = page.locator('input[aria-label="Mahsulot havolasi yoki nomi"]');
     check('bosh sahifada universal maydon va "Boshlash"', await hero.count() === 1 && await page.locator('form button[type="submit"]', { hasText: 'Boshlash' }).count() === 1);
-    const quick = await page.evaluate(() => [...document.querySelectorAll('main button')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).filter(t => /^(Jami narx|Kuryer tanlash|Taqiqni tekshirish|Qo'llanmalar)$/.test(t)).length);
+    const quick = await page.evaluate(() => [...document.querySelectorAll('main button')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).filter(t => /^(Jami narx|Do'konlar|Kuryerlar|Taqiqni tekshirish)$/.test(t)).length);
     check('tez o\'tish: 4 ta tugma', quick === 4, quick + ' ta');
     const pop = await page.evaluate(() => { const t = document.querySelector('main').innerText; const i = t.indexOf("Mashhur do'konlar"); return t.slice(i, i + 120).replace(/\s+/g, ' '); });
     check('mashhur do\'konlar tasmasi', /Taobao/.test(pop) && /Pinduoduo/.test(pop) && /Amazon/.test(pop), pop.slice(0, 60));
-    /* Solishtirish: tariflar yuklangach 3 ta taklif, dollar summasi bilan, arzonidan. */
-    await page.waitForFunction(() => /\$\d/.test((document.querySelector('main').innerText.split('Kuryerlarni solishtirish')[1] || '').slice(0, 400)), { timeout: 8000 }).catch(() => {});
-    const cmp = await page.evaluate(() => {
-      const t = (document.querySelector('main').innerText.split('Kuryerlarni solishtirish')[1] || '').split('Taxminiy:')[0];
-      const prices = [...t.matchAll(/\$(\d+(?:\.\d+)?)/g)].map(m => +m[1]);
-      return { prices, xitoy: /Xitoy/.test(t), kg: /2 kg/.test(t) };
-    });
-    check('kuryerlarni solishtirish: 3 ta taklif, arzonidan', cmp.prices.length === 3 && cmp.prices.every((v, i) => i === 0 || v >= cmp.prices[i - 1]) && cmp.xitoy && cmp.kg, JSON.stringify(cmp));
-    await page.getByRole('button', { name: 'AQSh', exact: true }).first().click();
-    await page.getByRole('button', { name: '5 kg', exact: true }).first().click();
-    await page.waitForTimeout(300);
-    const cmp2 = await page.evaluate(() => { const t = (document.querySelector('main').innerText.split('Kuryerlarni solishtirish')[1] || '').split('Taxminiy:')[0]; return [...t.matchAll(/\$(\d+(?:\.\d+)?)/g)].map(m => +m[1]); });
-    check('solishtirish: AQSh · 5 kg da boshqa summalar', cmp2.length === 3 && JSON.stringify(cmp2) !== JSON.stringify(cmp.prices), JSON.stringify(cmp2));
-    /* Blok Xitoy · 2 kg ga qaytariladi — 5-bosqich tekshiruvi shu holatga tayanadi. */
-    await page.getByRole('button', { name: 'Xitoy', exact: true }).first().click();
-    await page.getByRole('button', { name: '2 kg', exact: true }).first().click();
-    await page.waitForTimeout(200);
     /* Havola → do'kon sahifasi (domen va qisqa manzil), noma'lum domen → qidiruv, so'z → qidiruv. */
     const heroGo = async v => { await hero.fill(v); await page.locator('form button[type="submit"]', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(500); return (await page.locator('header').innerText()).replace(/\s+/g, ' ').trim(); };
     const back = async () => { await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(400); };
@@ -710,11 +686,13 @@ try {
     check('mobil pastki menyu 5 ta (Xaridlarim va AI faqat kompyuterda)', await page.locator('nav button:visible').count() === 5);
     await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
 
-    /* 5-bosqich: kuryerlar ro'yxatida vazn bo'yicha hisob. Bosh sahifadagi
-       "Hammasini ko'rish" panelni 2 kg · Xitoy bilan ochadi; kartalarda
-       hisoblangan summa, arzonidan tartib; "Tez" muddat bo'yicha; taqqoslash
-       jadvalida hisob qatori. */
-    await page.locator('main button').filter({ hasText: "Hammasini ko'rish" }).first().click(); await page.waitForTimeout(600);
+    /* 5-bosqich: kuryerlar ro'yxatida vazn bo'yicha hisob. Bosh sahifa →
+       Kuryerlar → Barcha kuryerlar; panelda "2 kg" tanlanadi (davlat —
+       Xitoy, standart); kartalarda hisoblangan summa, arzonidan tartib;
+       "Tez" muddat bo'yicha; taqqoslash jadvalida hisob qatori. */
+    await homeCard('Kuryerlar').click(); await page.waitForTimeout(600);
+    await page.getByText('Barcha kuryerlar', { exact: false }).first().click(); await page.waitForTimeout(600);
+    await page.getByRole('button', { name: '2 kg', exact: true }).first().click(); await page.waitForTimeout(400);
     const ccHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
     const ccCards = await page.evaluate(() => [...document.querySelectorAll('main button')].filter(b => /kg · Xitoy/.test(b.innerText)).map(b => {
       const m = /\$(\d+(?:\.\d+)?)/.exec(b.innerText); return m ? +m[1] : null; }));
@@ -748,26 +726,21 @@ try {
   const yulduz = page.locator('button[aria-label*="Sevimlilarga"]').first();
   const yulduzBor = await yulduz.count();
   if (yulduzBor) { await yulduz.click(); await page.waitForTimeout(500); }
+  /* Sevimlilar bosh sahifada emas, Xaridlarim → Sevimlilar tabida. */
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(800);
+  await page.locator('main button').filter({ hasText: 'Xaridlarim' }).first().click(); await page.waitForTimeout(500);
+  await page.locator('main button[aria-pressed]').filter({ hasText: 'Sevimlilar' }).first().click(); await page.waitForTimeout(400);
   const iz = await page.evaluate(() => {
     const saqlangan = JSON.parse(localStorage.getItem('xy_state_v1') || '{}');
     const t = document.body.innerText;
     return {
       favs: saqlangan.favs || [], searches: saqlangan.searches || [], recent: saqlangan.recent || [],
-      favBlok: /Sevimlilar/.test(t),
-      /* Sevimlida turgani "yaqinda" tasmasida takrorlanmasin — shuning
-         uchun butun sahifa matniga emas, aynan tasmalar ichiga qaraymiz. */
-      ...(() => {
-        const h = [...document.querySelectorAll('main h2')]
-          .find(x => x.textContent.trim() === 'Sevimlilar');
-        const el = h && [...h.closest('div').parentElement.children]
-          .find(d => d.style && d.style.overflowX === 'auto');
-        /* Do'kon "Taobao" va qo'llanma "Taobao" bir xil nomlanadi, shuning
-           uchun nomga emas, nom + tur satriga qaraymiz. */
-        return { favNom: el
-          ? [...el.children].map(b => b.innerText.split('\n').slice(0, 2).map(x => x.trim()).join(' | ')) : [] };
-      })()
+      favBlok: !/Sevimlilar bo'sh/.test(document.querySelector('main').innerText),
+      /* Do'kon "Taobao" va qo'llanma "Taobao" bir xil nomlanadi, shuning
+         uchun nomga emas, nom + tur satriga qaraymiz. */
+      favNom: [...document.querySelectorAll('main button')].filter(b => /Taobao/.test(b.innerText) && /Do'kon/.test(b.innerText))
+        .map(b => b.innerText.split('\n').slice(0, 2).map(x => x.trim()).join(' | '))
     };
   });
   check('sevimli va qidiruv tarixi yoziladi',
@@ -783,12 +756,14 @@ try {
   await page.waitForTimeout(800);
   await page.locator('button[aria-label*="olib tashlash"]').first().click();
   await page.waitForTimeout(500);
-  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
-  await page.waitForTimeout(800);
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(600);
+  await page.locator('main button').filter({ hasText: 'Xaridlarim' }).first().click(); await page.waitForTimeout(500);
+  await page.locator('main button[aria-pressed]').filter({ hasText: 'Sevimlilar' }).first().click(); await page.waitForTimeout(400);
   const ochirildi = await page.evaluate(() => ({
     favs: (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').favs) || [],
-    favBlok: /Sevimlilar/.test(document.body.innerText)
+    favBlok: !/Sevimlilar bo'sh/.test(document.querySelector('main').innerText)
   }));
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(500);
   check('sevimlidan olib tashlanadi',
     ochirildi.favs.length === 0 && !ochirildi.favBlok,
     `${ochirildi.favs.length} ta qoldi, blok ${ochirildi.favBlok}`);
@@ -810,7 +785,7 @@ try {
   await page.waitForTimeout(1600);
   const tikladi = await page.evaluate(() => ({
     bor: !!document.querySelector('main'),
-    reja: /Mening rejalarim/.test(document.body.innerText)
+    reja: /\d+ reja/.test(document.body.innerText)   /* Xaridlarim kartasidagi jamlanma */
   }));
   check('buzuq reja ilovani yiqitmaydi',
     tikladi.bor && tikladi.reja && xato.length === 0,
@@ -1740,15 +1715,15 @@ try {
   const tilRu = await tilTugma();
   /* Sozlamalarda BHM bir marta (ilgari norms.json manbasi va shablon
      ikkalasi ham qo'shib, "BHM 440 000 so'm · BHM 440 000 so'm" chiqardi);
-     bosh sahifada ruscha ko'plik: 43 магазина, 20 курьеров, 7 инструкций. */
+     bosh sahifada tez o'tish plitkalari ruscha. */
   const ruSoz = await page.evaluate(() => document.querySelector('main').innerText.replace(/\s+/g, ' '));
   check('ruscha sozlamalarda BRV bir marta', (ruSoz.match(/БРВ/g) || []).length === 1 && !/BHM/.test(ruSoz), (ruSoz.match(/Таможенные нормы:.{0,80}/) || [])[0]);
   await page.locator('nav button', { hasText: /Настройки|Sozlamalar/ }).first().click();
   await page.locator('nav button').first().click();
   await page.waitForTimeout(500);
   const ruBosh = await page.evaluate(() => document.querySelector('main').innerText.replace(/\s+/g, ' '));
-  check('ruscha ko\'plik: 43 магазина, 20 курьеров, 7 инструкций',
-    /43 магазина/.test(ruBosh) && /20 курьеров/.test(ruBosh) && /7 инструкций/.test(ruBosh), ruBosh.slice(0, 200));
+  check('ruscha bosh sahifa: tez o\'tish plitkalari tarjimada',
+    /Итоговая цена/.test(ruBosh) && /Магазины/.test(ruBosh) && /Курьеры/.test(ruBosh) && /Проверить запреты/.test(ruBosh), ruBosh.slice(0, 200));
   await page.locator('nav button:visible').last().click();
   await page.waitForTimeout(500);
   await page.locator('main button[translate="no"]').filter({ hasText: "O'zbekcha" }).first().click();
