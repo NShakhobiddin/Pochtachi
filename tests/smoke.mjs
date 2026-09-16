@@ -624,13 +624,25 @@ try {
     await lcFill('Mahsulot nomi', 'Sinov mahsulot');
     await page.locator('main button').filter({ hasText: "Xarid rejasiga qo'shish" }).first().click(); await page.waitForTimeout(800);
     const planHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
-    const planSaved = await page.evaluate(() => { const p = (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || [])[0] || {}; return { name: p.name, source: p.source, qty: p.qty, total: p.total, kg: p.kg }; });
+    const planSaved = await page.evaluate(() => { const p = (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || [])[0] || {}; return { id: p.id, name: p.name, source: p.source, qty: p.qty, total: p.total, kg: p.kg }; });
     const plansAfter = await page.evaluate(() => (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || []).length);
     check('jami narx → xarid rejasi (name, qty, source, 16 kg)', /Xarid rejasi/.test(planHead) && plansAfter === plansBefore + 1 && planSaved.name === 'Sinov mahsulot' && planSaved.source === 'landed' && planSaved.qty === 1 && planSaved.total > 320 && Math.abs(planSaved.kg - 16) < 0.01, JSON.stringify(planSaved));
-    /* Sinov rejasi o'chiriladi — keyingi tekshiruvlar bo'sh holatga tayanadi. */
+    /* Oylik me'yor: yangi reja "Bu oyda" ga yozildi, endi jami narx qoldiqni
+       hisobga oladi — $100 lik tovar ham bojli chiqadi va izohda qoldiq turadi. */
+    await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
+    await page.locator('main button').filter({ hasText: 'Jami narx' }).first().click(); await page.waitForTimeout(500);
+    await lcFill('Mahsulot narxi', 100); await lcFill("Og'irligi, kilogrammda", 1); lt = await lcText();
+    const mDuty = /Bojxona to'lovi \$(\d+\.\d\d)/.exec(lt);
+    check('jami narx: shu oyda kelgan reja bojsiz qoldiqni kamaytiradi', /Bu oyda \$\d+ kelgan — bojsiz qoldiq \$0\./.test(lt) && mDuty && +mDuty[1] > 0, (lt.match(/Bu oyda[^.]*\./) || [''])[0] + ' · boj ' + (mDuty && mDuty[1]));
+    /* Sinov rejasi o'chiriladi (Xaridlarim → reja → o'chirish) — keyingi
+       tekshiruvlar bo'sh holatga tayanadi. */
+    await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
+    await page.locator('main button').filter({ hasText: 'Xaridlarim' }).first().click(); await page.waitForTimeout(500);
+    await page.locator('main button').filter({ hasText: 'Sinov mahsulot' }).first().click(); await page.waitForTimeout(500);
     await page.locator('main button').filter({ hasText: "Rejani o'chirish" }).first().click(); await page.waitForTimeout(400);
     const plansGone = await page.evaluate(() => (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || []).length);
-    check('sinov rejasi o\'chirildi', plansGone === plansBefore, plansGone + ' ta');
+    const monthLeft = await page.evaluate(id => (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').monthly || []).filter(m => m.plan === id).length, planSaved.id);
+    check('sinov rejasi o\'chirildi (oylik yozuvi bilan)', plansGone === plansBefore && monthLeft === 0, plansGone + ' ta, oylik ' + monthLeft);
     /* Do'kon sahifasidan: do'kon va davlat oldindan to'ldirilgan. */
     await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
     await page.getByText('Taobao', { exact: true }).first().click(); await page.waitForTimeout(500);

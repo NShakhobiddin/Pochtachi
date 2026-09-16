@@ -232,6 +232,10 @@ taklif + eng tez (`courierQuotes`, `rankQuotes`), "Eng arzon / Eng tez /
 Optimal" belgilari, birinchisi tanlangan. Natija: `landedCost` — mahsulot,
 ichki yetkazish, kargo, boj, yig'im, jami ($ va so'm), boj sababi.
 "Olish foydalimi?" — O'zbekistondagi narx kiritilsa tejash so'm va foizda.
+Bojsiz me'yor kalendar oyga beriladi, shuning uchun shu oyda rejalardan
+yozilgan jo'natmalar ("Bu oyda" bloki, `st.monthly`) qoldiqni kamaytiradi
+va izohda ko'rsatiladi: "Bu oyda $320 kelgan — bojsiz qoldiq $0". Reja
+o'chirilsa uning oylik yozuvi ham o'chadi.
 
 **Rejaga qo'shish** — `savePlanFrom()`: sehrgar va kalkulyator uchun bitta
 yo'l. Reja obyektining eski maydonlari o'zgarmagan; kalkulyator qo'shimcha

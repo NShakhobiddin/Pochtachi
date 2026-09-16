@@ -4288,7 +4288,7 @@ const RU = {
   'Telefon raqami hali kiritilmagan':'Номер телефона ещё не указан', 'Trek raqam nusxalandi':'Трек-номер скопирован', 'Telegram ochildi':'Telegram открыт',
   'Xabar berish sahifasi ochildi':'Страница для сообщения открыта', 'Sevimlilardan olib tashlandi':'Удалено из избранного', "Sevimlilarga qo'shildi":'Добавлено в избранное',
   "Nusxalab bo'lmadi — matnni qo'lda belgilang":'Не удалось скопировать — выделите текст вручную', 'nusxalandi':'скопировано',
-  'Milliy valyutada':'В национальной валюте',
+  'Milliy valyutada':'В национальной валюте', "Bu oyda ${0} kelgan — bojsiz qoldiq ${1}.":'В этом месяце уже пришло ${0} — беспошлинный остаток ${1}.',
   /* Pochtam AI (7-bosqich) */
   'Pochtam AI':'Pochtam AI', "Savol bering — boj, kuryer, do'kon":'Задайте вопрос — пошлина, курьер, магазин',
   "Javoblar ilovadagi bojxona qoidalari, kuryer tariflari va do'konlar ro'yxatiga asoslanadi. Hisob-kitobni AI emas, ilovaning o'z kalkulyatori bajaradi.":'Ответы основаны на таможенных правилах, тарифах курьеров и списке магазинов из приложения. Расчёты делает не ИИ, а собственный калькулятор приложения.',
@@ -6630,7 +6630,10 @@ class Component extends DCLogic {
       planCanAdvance: !!pl && pl.step < PLAN_LAST,
       planNextLabel: pl && pl.step < PLAN_LAST ? tx(st.lang, '{0} — belgilash', tr(st.lang, PLAN_STEPS[pl.step + 1].t)) : '',
       planAdvance: () => { if (!pl) return; this.setState(x => ({ plans: x.plans.map(p => p.id === pl.id ? { ...p, step: Math.min(p.step + 1, PLAN_LAST) } : p) })); this.toast('Bosqich yangilandi'); },
-      planDelete: () => { if (!pl) return; this.setState(x => ({ plans: x.plans.filter(p => p.id !== pl.id), stack: ['home'] })); this.toast('Reja o\'chirildi'); },
+      /* Reja bilan birga uning oylik me'yor yozuvi ham o'chadi — aks holda
+         o'chirilgan reja "Bu oyda" blokida va jami narx qoldig'ida sanalib
+         qolardi. */
+      planDelete: () => { if (!pl) return; this.setState(x => ({ plans: x.plans.filter(p => p.id !== pl.id), monthly: (x.monthly || []).filter(m => m.plan !== pl.id), stack: ['home'] })); this.toast(tr(st.lang, 'Reja o\'chirildi')); },
       planOpenStore: () => { if (pl && pl.storeId) { this.warmGuide(pl.storeId); this.setState({ storeId: pl.storeId }); this.push('store'); } else this.toast('Do\'kon topilmadi'); },
       planOpenCourier: () => { if (pl && pl.courierId) this.openCourierId(pl.courierId); else this.toast('Kuryer topilmadi'); },
 
@@ -6785,7 +6788,16 @@ class Component extends DCLogic {
         const top = quotes.slice(0, 3);
         if (fast && !top.includes(fast)) top.push(fast);
         const sel = top.find(q => keyOf(q) === lc.courierKey) || top[0] || null;
-        const L = PochtamCore.landedCost({ priceUsd, qty, domesticUsd: num(lc.domestic), kg, dims, shipUsd: sel ? sel.usd : 0, norms: normsAt(), usdRate: USD_RATE, localPriceUzs: num(lc.local) });
+        /* Bojsiz me'yor kalendar oyga beriladi: shu oyda rejalardan yozilgan
+           jo'natmalar ("Bu oyda" bloki) qoldiqni kamaytiradi — bojxona
+           kalkulyatoridagi "shu oyda kelganlarni qo'shib yozing" qoidasi shu
+           yerda avtomatik. Qoldiq izohda ko'rsatiladi, shunda raqam
+           kutilmagan bo'lmaydi. */
+        const mKeyL = monthKey();
+        const monthUsd = (st.monthly || []).filter(x => String(x.date).slice(0, 7) === mKeyL).reduce((a, x) => a + num(x.usd), 0);
+        const NL = normsAt();
+        const freeLeft = Math.max(0, num(NL.freeUsd) - monthUsd);
+        const L = PochtamCore.landedCost({ priceUsd, qty, domesticUsd: num(lc.domestic), kg, dims, shipUsd: sel ? sel.usd : 0, freeUsd: freeLeft, norms: NL, usdRate: USD_RATE, localPriceUzs: num(lc.local) });
         const rows = [
           { k: qty > 1 ? tx(st.lang, '{0} dona × {1}', qty, usd(priceUsd)) : tr(st.lang, 'Mahsulot narxi'), v: usd(L.goodsUsd), c: '#131429' }
         ];
@@ -6793,11 +6805,12 @@ class Component extends DCLogic {
         rows.push({ k: sel ? tx(st.lang, 'Kargo · {0} ({1} kg)', sel.name, billKg.toFixed(1).replace('.', ',')) : tr(st.lang, 'Kargo'), v: '$' + L.shipUsd.toFixed(2), c: '#131429' });
         rows.push({ k: tr(st.lang, 'Bojxona to\'lovi'), v: L.dutyUsd > 0 ? '$' + L.dutyUsd.toFixed(2) : '$0', c: L.dutyUsd > 0 ? '#B45309' : '#0F7B3E' });
         rows.push({ k: tr(st.lang, 'Yagona yig\'im'), v: L.feeUsd > 0 ? '$' + L.feeUsd.toFixed(2) : '$0', c: L.feeUsd > 0 ? '#B45309' : '#0F7B3E' });
-        const N = normsAt();
-        const note = priceUsd <= 0 ? tr(st.lang, 'Narxni yozing — jami tannarx shu yerda chiqadi.')
-          : L.basis === 'none' ? tx(st.lang, "Tovar qiymati ${0} me'yor ichida — boj va yig'im yo'q.", N.freeUsd)
+        const N = NL;
+        const monthNote = monthUsd > 0 ? ' ' + tx(st.lang, "Bu oyda ${0} kelgan — bojsiz qoldiq ${1}.", Math.round(monthUsd), Math.round(freeLeft)) : '';
+        const note = (priceUsd <= 0 ? tr(st.lang, 'Narxni yozing — jami tannarx shu yerda chiqadi.')
+          : L.basis === 'none' ? tx(st.lang, "Tovar qiymati ${0} me'yor ichida — boj va yig'im yo'q.", Math.round(freeLeft))
           : L.basis === 'weight' ? tx(st.lang, "Me'yordan oshgan qism uchun vazn bo'yicha hisob (har kg ${0}) ustun keldi.", N.minPerKg)
-          : tx(st.lang, "Me'yordan ($" + N.freeUsd + ") oshgan qismdan {0}% boj va BHM ning {1}% yig'imi.", Math.round(N.dutyPct * 100), Math.round(N.feeShare * 100));
+          : tx(st.lang, "Me'yordan ($" + Math.round(freeLeft) + ") oshgan qismdan {0}% boj va BHM ning {1}% yig'imi.", Math.round(N.dutyPct * 100), Math.round(N.feeShare * 100))) + monthNote;
         const badgeOf = q => q === quotes[0] ? ['Eng arzon', '#E9F8EF', '#0F7B3E'] : q === fast ? ['Eng tez', '#E9EAFD', '#1A1FB0'] : q === optq ? ['Optimal', '#FDF3E3', '#B45309'] : null;
         return {
           lc,

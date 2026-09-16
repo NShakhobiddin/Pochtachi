@@ -22,7 +22,8 @@ const LABEL = {
     'tool:customs_duty': 'Vosita: boj hisobi', 'tool:courier_quotes': 'Vosita: kuryer summasi', 'tool:landed_cost': 'Vosita: jami narx',
     'tool:check_banned': 'Vosita: taqiq tekshiruvi', 'tool:find_store': 'Vosita: do\'kon qidiruvi' },
   ai_question: { '-': 'Savol yuborildi' },
-  quick: { landed: 'Jami narx', couriers: 'Kuryer tanlash', banned: 'Taqiqni tekshirish', guides: 'Qo\'llanmalar', ai: 'Pochtam AI' },
+  quick: { landed: 'Jami narx', couriers: 'Kuryer tanlash', banned: 'Taqiqni tekshirish', guides: 'Qo\'llanmalar', ai: 'Pochtam AI',
+    'ai:calc': 'AI javobidan → kalkulyator', 'ai:cour': 'AI javobidan → kuryerlar', 'ai:ban': 'AI javobidan → taqiqlar', 'ai:store': 'AI javobidan → do\'kon' },
   hamkor: { kuryer: 'Kuryer hamkorlik so\'rovi' },
   lang: { uz: 'O\'zbek', ru: 'Rus', '-': 'Noma\'lum' }
 };
