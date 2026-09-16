@@ -6218,6 +6218,18 @@ class Component extends DCLogic {
     this.push('landed');
   }
 
+  /* Bojsiz me'yor kalendar oyga beriladi: shu oyda rejalardan yozilgan
+     jo'natmalar ("Bu oyda", st.monthly) qoldiqni kamaytiradi. Jami narx va
+     reja sehrgari shu qoldiq bilan hisoblaydi — ikkisi bir xil javob beradi.
+     Bojxona kalkulyatorida esa foydalanuvchi oylik summani o'zi qo'shib
+     yozadi (ekranda shunday so'raladi). */
+  monthAllowance(st) {
+    const key = monthKey();
+    const monthUsd = (st.monthly || []).filter(x => String(x.date).slice(0, 7) === key).reduce((a, x) => a + num(x.usd), 0);
+    const norms = normsAt();
+    return { monthUsd, norms, freeLeft: Math.max(0, num(norms.freeUsd) - monthUsd) };
+  }
+
   /* Pochtam AI: savol worker'ga (METRICS_URL + 'ai') ketadi, javob suhbatga
      qo'shiladi. Tarix — oxirgi 6 xabar. Manzil bo'lmasa yoki server 503/429
      bersa "vaqtincha mavjud emas" / "chegara" holati: ilova qolgani
@@ -6507,7 +6519,7 @@ class Component extends DCLogic {
       const ship = perKg * Math.max(kg, 0.5);
       /* Boj — Pochtam Core; bojxona qiymatiga yetkazishning kg bo'yicha
          summasi kiradi (eng kam 0,5 kg qoidasi faqat kuryer haqiga). */
-      const c = PochtamCore.customsDuty({ goodsUsd: price, shipUsd: kg * perKg, kg, norms: NW, usdRate: USD_RATE });
+      const c = PochtamCore.customsDuty({ goodsUsd: price, shipUsd: kg * perKg, kg, freeUsd: this.monthAllowance(st).freeLeft, norms: NW, usdRate: USD_RATE });
       const dutyUsd = c.dutyUsd, feeUsd = c.feeUsd;
       return {
         courierName: k.name, days: k.days, kg, price, ship, dutyUsd, feeUsd,
@@ -6788,15 +6800,9 @@ class Component extends DCLogic {
         const top = quotes.slice(0, 3);
         if (fast && !top.includes(fast)) top.push(fast);
         const sel = top.find(q => keyOf(q) === lc.courierKey) || top[0] || null;
-        /* Bojsiz me'yor kalendar oyga beriladi: shu oyda rejalardan yozilgan
-           jo'natmalar ("Bu oyda" bloki) qoldiqni kamaytiradi — bojxona
-           kalkulyatoridagi "shu oyda kelganlarni qo'shib yozing" qoidasi shu
-           yerda avtomatik. Qoldiq izohda ko'rsatiladi, shunda raqam
-           kutilmagan bo'lmaydi. */
-        const mKeyL = monthKey();
-        const monthUsd = (st.monthly || []).filter(x => String(x.date).slice(0, 7) === mKeyL).reduce((a, x) => a + num(x.usd), 0);
-        const NL = normsAt();
-        const freeLeft = Math.max(0, num(NL.freeUsd) - monthUsd);
+        /* Oylik me'yor qoldig'i (monthAllowance) — izohda ham ko'rsatiladi,
+           shunda raqam kutilmagan bo'lmaydi. */
+        const { monthUsd, norms: NL, freeLeft } = this.monthAllowance(st);
         const L = PochtamCore.landedCost({ priceUsd, qty, domesticUsd: num(lc.domestic), kg, dims, shipUsd: sel ? sel.usd : 0, freeUsd: freeLeft, norms: NL, usdRate: USD_RATE, localPriceUzs: num(lc.local) });
         const rows = [
           { k: qty > 1 ? tx(st.lang, '{0} dona × {1}', qty, usd(priceUsd)) : tr(st.lang, 'Mahsulot narxi'), v: usd(L.goodsUsd), c: '#131429' }
