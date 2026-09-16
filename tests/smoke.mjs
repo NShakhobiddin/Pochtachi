@@ -1029,7 +1029,7 @@ try {
     await p.locator('header button').first().click(); await p.waitForTimeout(400);
     await p.locator('input').first().fill('nike'); await skan('qidiruv');
     await p.locator('input').first().fill('zzqq'); await skan('qidiruv-bo\'sh');
-    await nav(0); await p.locator('header button').nth(1).click(); await skan('kuzatuv');
+    await nav(0); await bos(/Xaridlarim|Харидларим|Мои покупки/); await bos(/Jo'natmalar|Жўнатмалар|Отправления/); await skan('kuzatuv');
     await nav(0); await bos(/Do'konlar|Дўконлар|Магазины/); await skan('do\'kon-papkalar');
     await bos(/Universal|Универсал/); await skan('do\'kon-papka');
     await bos(/Taobao/); await skan('do\'kon');
@@ -1327,10 +1327,11 @@ try {
   }
 
   /* Kuzatuv: saqlangan reja jo'natmaga aylanadi — trek raqami yoziladi
-     va bosqichi qo'lda suriladi. Kuzatuv tugmasi bosh sahifa sarlavhasida. */
+     va bosqichi qo'lda suriladi. Jo'natmalar Xaridlarim ichida (tab). */
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(450);
-  await page.locator('button[aria-label*="kuzat"]').first().click();
+  await page.locator('main button').filter({ hasText: 'Xaridlarim' }).first().click(); await page.waitForTimeout(500);
+  await page.locator('main button[aria-pressed]').filter({ hasText: "Jo'natmalar" }).first().click();
   await page.waitForTimeout(700);
   const kuzBosh = (await page.evaluate(() => document.body.innerText)).includes('Hali kuzatiladigan');
   check('kuzatuv: bo\'sh holat tushuntiriladi', kuzBosh);
@@ -1432,7 +1433,7 @@ try {
   /* Kuzatuv tugmasi bosh sahifa sarlavhasida — avval o'sha yerga qaytamiz. */
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(500);
-  await page.locator('button[aria-label*="kuzat"]').first().click();
+  await page.locator('main button').filter({ hasText: 'Xaridlarim' }).first().click(); await page.waitForTimeout(500); await page.locator('main button[aria-pressed]').filter({ hasText: "Jo'natmalar" }).first().click();
   await page.waitForTimeout(700);
   await page.locator('main input[placeholder="Trek raqamini yozing"]').first().fill('rb 1234 cn');
   await page.locator('main input[placeholder="Trek raqamini yozing"]').first().blur();

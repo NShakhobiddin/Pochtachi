@@ -227,8 +227,10 @@ ro'yxatidagi "Vazn bo'yicha hisob" paneli shu ishni qiladi), "Birinchi
 marta buyurtma qilyapsizmi?" kartasi (pastki menyuning markazidagi "Reja"
 tugmasi shu), bosh sahifadagi "Sevimlilar" tasmasi va "Mening rejalarim"
 (ikkalasi Xaridlarim ichida). Sahifa balandligi 2000 px dan 990 px ga
-tushdi. Sarlavhadagi kuzatuv tugmasi ham Xaridlarim → Jo'natmalar tabini
-ochadi — jo'natmalar bitta joyda. O'lchov hodisalari: `hero`
+tushdi. Sarlavhadagi kuzatuv tugmasi ham olib tashlandi — jo'natmalar
+faqat Xaridlarim → Jo'natmalar tabida (sarlavhada bosh sahifada faqat
+qidiruv qoldi). Lug'atdan 15 ta o'lik tarjima (olib tashlangan bloklar va
+eski tanishuv savoli) o'chirildi. O'lchov hodisalari: `hero`
 (link:<do'kon> | link:? | ai | text), `quick` (landed, stores, couriers,
 banned, ai, ai:*).
 

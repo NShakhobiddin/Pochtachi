@@ -637,9 +637,6 @@
         <button sc-camel-on-click="{{ goSearch }}" aria-label="Qidirish" style="width:44px;height:44px;border:none;background:#FFFFFF;border-radius:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="background:#F1F1F8">
           <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
         </button>
-        <button sc-camel-on-click="{{ goShipments }}" aria-label="Jo'natmalarni kuzatish" style="width:44px;height:44px;border:none;background:#FFFFFF;border-radius:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="background:#F1F1F8">
-          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"></path></svg>
-        </button>
       </div>
     </sc-if>
     <sc-if value="{{ showSortBtn }}" hint-placeholder-val="{{ false }}">
@@ -3569,10 +3566,9 @@ const RU = {
   'Nima olib':'Что хотите', 'kelmoqchisiz?':'привезти?',
   "Mahsulot havolasini yoki nomini yozing — do'kon, kuryer va bojni ko'rsatib beraman.":'Вставьте ссылку на товар или напишите его название — покажу магазин, курьера и пошлину.',
   'Havola yoki mahsulot nomi':'Ссылка или название товара', 'Mahsulot havolasi yoki nomi':'Ссылка или название товара', 
-  'Boj hisoblash':'Рассчитать пошлину', 'Kuryer tanlash':'Выбрать курьера', 'Taqiqni tekshirish':'Проверить запреты',
-  "Mashhur do'konlar":'Популярные магазины', 'Barchasi':'Все', 'Kuryerlarni solishtirish':'Сравнить курьеров', "Hammasini ko'rish":'Смотреть все',
-  "Og'irlik":'Вес', 'dan':'от', 'Tariflar yuklanmoqda…':'Загружаем тарифы…', "Bu yo'nalish uchun tarif topilmadi.":'Для этого направления тариф не найден.',
-  "Taxminiy: kuryer saytidagi tarif bo'yicha, hisob og'irligi uchun. Yakuniy narxni kuryer belgilaydi.":'Ориентировочно: по тарифу с сайта курьера, за расчётный вес. Итоговую цену определяет курьер.',
+  'Boj hisoblash':'Рассчитать пошлину', 'Taqiqni tekshirish':'Проверить запреты',
+  "Mashhur do'konlar":'Популярные магазины', 'Barchasi':'Все', 'Kuryerlarni solishtirish':'Сравнить курьеров', 
+  "Og'irlik":'Вес', 'dan':'от', 
   '{0} topildi — narx va vaznni kiritib bojni hisoblang':'{0} найден — введите цену и вес, чтобы рассчитать пошлину',
   "Bu do'kon hali ro'yxatda yo'q — o'xshashini qidiruvda ko'ring":'Этого магазина пока нет в списке — посмотрите похожие в поиске',
   'Angliya':'Англия', 'Germaniya':'Германия', "Qozog'iston":'Казахстан', 
@@ -3617,10 +3613,10 @@ const RU = {
   'Do\'kon tavsiflari va qo\'llanmalar hozircha faqat o\'zbek tilida.':'Описания магазинов и инструкции пока только на узбекском.',
   'Bosh sahifa':'Главная', "Qo'llanmalar":'Инструкции', "Reja":'План', 'Bojxona':'Таможня', 'Sozlamalar':'Настройки',
   "Do'konlar":'Магазины', 'Kuryerlar':'Курьеры', 'Kuzatuv':'Отслеживание', 'Taqqoslash':'Сравнение', 'Xarid rejasi':'План покупки',
-  "Qo'llanma":'Инструкция', 'Mening rejalarim':'Мои планы',
+  "Qo'llanma":'Инструкция', 
   'Saqlangan rejalar':'Сохранённые планы', 'Yangi reja':'Новый план',
   "Tanlovingizga mos {0} ta do'kon.":'Под ваш выбор подходит {0} магазинов.',
-  "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi ko'p davlatga yuboradi.":'Под ваш выбор подходит {0} магазинов, последние {1} доставляют во многие страны.', 'Bugungi foydali':'Совет дня',
+  "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi ko'p davlatga yuboradi.":'Под ваш выбор подходит {0} магазинов, последние {1} доставляют во многие страны.', 
   "Do'kon, kuryer yoki mahsulot":'Магазин, курьер или товар', "Do'kon nomi yoki kategoriya":'Название магазина или категория',
   'Tovar nomini yozing':'Введите название товара', "Saytga o'tish":'Перейти на сайт', "Telegram'da yozish":'Написать в Telegram',
   'Tozalash':'Очистить', "Natijani ko'rish":'Показать результат', 'Filtr':'Фильтр', "O'zgartirish":'Изменить',
@@ -3767,7 +3763,6 @@ const RU = {
   'Global xaridlar':'Глобальные покупки',
   'biz bilan oson.':'с нами — просто.', 'Boshlash':'Начать',
   'Oflayn zaxira kurs':'Офлайн резервный курс', 'Bugungi':'Сегодняшний', 'Markaziy bank · {0}':'Центральный банк · {0}', 'bugungi kurs':'курс на сегодня', 'Markaziy bank kursi yuklanmoqda…':'Курс Центрального банка загружается…',
-  "5 qadamda yo'lni ko'rsataman — do'kondan bojgacha.":'Покажу путь за 5 шагов — от магазина до таможни.',
   'Hisob':'Расчёт',
   "Kategoriyani tanlang — shunga qarab do'kon tavsiya qilaman.":'Выберите категорию — по ней подберу магазин.',
   "ta do'kon mos keladi":'магазинов подходит',
@@ -3810,7 +3805,7 @@ const RU = {
   "Bojxona yig'imi (BHM 25%)":'Таможенный сбор (25% БРВ)', 'Yagona boj (30%)':'Единая пошлина (30%)',
   'Yagona boj ($3 × kg)':'Единая пошлина ($3 × кг)', 'Bu oyda':'В этом месяце', "Jo'natma qo'shish":'Добавить посылку',
   "Oy summasini qo'yish":'Сумма месяца', "Jo'natmani o'chirish":'Удалить посылку',
-  'Til':'Язык', "Jo'natma bildirishnomalari":'Уведомления о посылках', 'Foydalanuvchi turi':'Тип пользователя',
+  'Til':'Язык', "Jo'natma bildirishnomalari":'Уведомления о посылках', 
   'Mutaxassis yordami':'Помощь специалиста',
   /* Monetizatsiya: narxlar, og'riq nuqtalaridagi tugmalar, affiliate */
   "oyiga 500 000 so'm":'500 000 сум в месяц', "Assalomu alaykum! «{0}» xizmati ({1}) bo'yicha yozmoqchiman.":'Здравствуйте! Хочу обратиться по услуге «{0}» ({1}).',
@@ -3824,11 +3819,9 @@ const RU = {
   'Men xaridorman':'Я покупатель', 'Kuryer tashkilotiman':'Я курьерская компания',
   "Bog'lanish":'Связаться', "To'g'ridan-to'g'ri bog'lanish":'Прямая связь',
   'Telegram':'Telegram', "Qo'ng'iroq":'Звонок',
-  'Yangi boshlovchi':'Новичок', 'Tajribali xaridor':'Опытный покупатель', "Ma'lumot noto'g'ri — xabar berish":'Сообщить об ошибке',
+  "Ma'lumot noto'g'ri — xabar berish":'Сообщить об ошибке',
   'Ilova haqida':'О приложении', 'Tilni tanlang':'Выберите язык',
-  "Keyinchalik sozlamalarda o'zgartirishingiz mumkin.":'Позже можно изменить в настройках.',
-  'Birinchi marta buyurtma qilyapsizmi?':'Заказываете впервые?', 'Ha, birinchi marta':'Да, впервые',
-  "Yo'q, tajribam bor":'Нет, есть опыт', 'Nimani olmoqchisiz?':'Что хотите купить?', 'Qaysi davlatdan?':'Из какой страны?',
+  'Nimani olmoqchisiz?':'Что хотите купить?', 'Qaysi davlatdan?':'Из какой страны?',
   "Sizga mos do'konlar":'Подходящие магазины', 'Sizga mos kuryerlar':'Подходящие курьеры',
   "Mahsulot narxi va og'irligi":'Цена и вес товара', 'Mahsulot narxi':'Цена товара', "Bojxona to'lovi":'Таможенный платёж',
   "Yagona yig'im":'Единый сбор', 'Kutilgan muddat':'Ожидаемый срок', 'Muddat':'Срок', 'Narx':'Цена', 'Davlatlar':'Страны',
