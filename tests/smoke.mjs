@@ -107,7 +107,11 @@ const BENIGN = /font|CORS|net::ERR/i;
 /* Pochtam AI bo'limida soxta server ataylab 503/429 qaytaradi — brauzer buni
    konsolga yozadi; o'sha qadamlar davomida shu ikki javob xato sanalmaydi. */
 let aiExpectErr = false;
-page.on('console', m => { if (m.type() === 'error' && !BENIGN.test(m.text()) && !(aiExpectErr && /status of (503|429)/.test(m.text()))) errors.push(m.text()); });
+/* O'lchov beacon'i: CI'da tarmoq ochiq va haqiqiy Worker localhost Origin'ni
+   403 bilan rad etadi (ALLOW_ORIGIN faqat sayt manzillari) — bu kutilgan;
+   lokal sandboxda esa umuman ulanmaydi (net::ERR, BENIGN). */
+const metricsErr = m => { const u = (m.location() || {}).url || ''; return metricsHost && /status of 403/.test(m.text()) && u.includes(metricsHost); };
+page.on('console', m => { if (m.type() === 'error' && !BENIGN.test(m.text()) && !(aiExpectErr && /status of (503|429)/.test(m.text())) && !metricsErr(m)) errors.push(m.text()); });
 page.on('response', r => { if (r.status() >= 400 && r.url().startsWith(base)) missing.push(r.status() + ' ' + r.url()); });
 /* Oddiy brauzerda ilova tashqariga faqat valyuta kursi uchun chiqadi.
    Shrift, SDK va boshqa hamma narsa o'z domenimizda — birinchi bo'yoq
@@ -1053,6 +1057,11 @@ try {
     await nav(1); await skan('qo\'llanmalar');
     await nav(2); await skan('reja');
     await nav(4); await skan('sozlamalar');
+    /* TZ bosqichlaridagi yangi ekranlar: Jami narx, Xaridlarim (4 tab), Pochtam AI. */
+    await nav(0); await bos(/Jami narx|Жами нарх|Итоговая цена/); await skan('jami-narx');
+    await nav(0); await bos(/Xaridlarim|Харидларим|Мои покупки/); await skan('xaridlarim');
+    for (const re of [/Jo'natmalar|Жўнатмалар|Отправления/, /Sevimlilar|Севимлилар|Избранное/, /Hisoblar|Ҳисоблар|Расчёты/]) { if (await bos(re)) await skan('xaridlarim-tab'); }
+    await nav(0); await bos(/Pochtam AI/); await skan('ai');
     await nav(0); await bos(/Mutaxassis|Мутахассис|Помощь|консульт/); await skan('xizmatlar');
     await bos(/Kuryer tashkilotiman|Курьер ташкилотиман|Я курьерская/); await skan('xizmatlar-kuryer');
     await ctx.close();
