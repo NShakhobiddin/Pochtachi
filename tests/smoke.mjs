@@ -563,6 +563,9 @@ try {
      do'konlar va kuryerlarni solishtirish bloki. */
   {
     const hero = page.locator('input[aria-label="Mahsulot havolasi yoki nomi"]');
+    /* iOS fokusda kattalashtirmasin: telefonda har bir kirish maydoni ≥ 16 px. */
+    const inputPx = await page.evaluate(() => [...document.querySelectorAll('input')].map(i => parseFloat(getComputedStyle(i).fontSize)));
+    check('kirish maydonlari telefonda 16 px dan kichik emas (iOS zoom)', inputPx.length > 0 && inputPx.every(v => v >= 16), inputPx.join(','));
     check('bosh sahifada universal maydon va "Boshlash"', await hero.count() === 1 && await page.locator('form button[type="submit"]', { hasText: 'Boshlash' }).count() === 1);
     const quick = await page.evaluate(() => [...document.querySelectorAll('main button')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).filter(t => /^(Jami narx|Do'konlar|Kuryerlar|Taqiqni tekshirish)$/.test(t)).length);
     check('tez o\'tish: 4 ta tugma', quick === 4, quick + ' ta');

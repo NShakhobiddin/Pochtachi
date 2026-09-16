@@ -591,6 +591,15 @@
   nav button:active { transform:scale(.92); filter:none }
   /* Faqat kompyuter menyusida ko'rinadigan tugmalar (mobil pastki menyu 5 ta qoladi). */
   .xy-desk { display:none !important; }
+  /* iOS Safari: fokuslangan maydonning shrifti 16 px dan kichik bo'lsa
+     sahifani avtomatik kattalashtiradi ("yozish uchun kirganda kattalashib
+     ketadi"). Telefonda 15 px li kirish maydonlari 16 px bo'ladi; 17/22/26 px
+     lilar allaqachon katta; kompyuterda o'zgarmaydi. */
+  @media (max-width: 1023px) {
+    /* React style atributini "font-size: 15px" (bo'shliq bilan) yozadi — ikkala shakl. */
+    input[style*="font-size:15px"], input[style*="font-size: 15px"],
+    textarea[style*="font-size:15px"], textarea[style*="font-size: 15px"] { font-size:16px !important; }
+  }
   /* Xaridlarim tablari: telefonda 2×2, kompyuter ustunida bir qator. */
   .xy-tabs4 { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:6px; }
   /* Barmoq ostidagi element bosilib turganda ko'rinib tursin. */
