@@ -18,6 +18,11 @@ const LABEL = {
     'svc-integratsiya': 'Trek tizimi integratsiyasi', 'svc-hamkorlik': 'Ilovada joylashish', umumiy: 'Umumiy murojaat'
   },
   wizard: { yakun: 'Reja yakunlandi' },
+  ai: { ok: 'Javob berildi', limit: 'Chegara (rad etildi)', err: 'Claude API xatosi', no_key: 'Kalit yo\'q', q: 'So\'rovlar (jami)',
+    'tool:customs_duty': 'Vosita: boj hisobi', 'tool:courier_quotes': 'Vosita: kuryer summasi', 'tool:landed_cost': 'Vosita: jami narx',
+    'tool:check_banned': 'Vosita: taqiq tekshiruvi', 'tool:find_store': 'Vosita: do\'kon qidiruvi' },
+  ai_question: { '-': 'Savol yuborildi' },
+  quick: { landed: 'Jami narx', couriers: 'Kuryer tanlash', banned: 'Taqiqni tekshirish', guides: 'Qo\'llanmalar', ai: 'Pochtam AI' },
   hamkor: { kuryer: 'Kuryer hamkorlik so\'rovi' },
   lang: { uz: 'O\'zbek', ru: 'Rus', '-': 'Noma\'lum' }
 };
@@ -31,6 +36,12 @@ const SECTIONS = [
   ['svcAsk', 'Pullik xizmat', 'Telegramga murojaat tugmasi bosilgan'],
   ['wizard', 'Reja', 'Reja tuzish yakuniga yetgan'],
   ['hamkor', 'Hamkorlik', 'Kuryer hamkorlik so\'rovi'],
+  ['ai', 'Pochtam AI', 'Server tomonida: javoblar, chegara, xato, ishlatilgan vositalar'],
+  ['ai_question', 'AI savollari (ilova)', 'Ilovada savol yuborilgan'],
+  ['quick', 'Tez o\'tish', 'Bosh sahifadagi tez tugmalar'],
+  ['hero', 'Universal maydon', 'Havola yoki so\'z kiritildi'],
+  ['calc_open', 'Jami narx ochildi', 'Universal kalkulyator'],
+  ['add_to_plan', 'Rejaga qo\'shildi', 'Manba bo\'yicha'],
   ['lang', 'Til', 'Foydalanuvchi tili'],
   ['ver', 'Versiya', 'Ilova versiyasi']
 ];

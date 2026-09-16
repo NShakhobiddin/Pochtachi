@@ -507,6 +507,8 @@
       content: ''; display: block; width: 159px; height: 36px; margin: 4px 8px 24px;
       background: url(icons/brand.webp) left center / contain no-repeat;
     }
+    /* Kompyuter ustunida qo'shimcha bo'limlar (Xaridlarim, Pochtam AI). */
+    .app-shell > nav > .xy-desk { display: flex !important; }
     .app-shell > header > h1:has(> img) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
     /* Reja sehrgarining pastki tugmalar qatori: menyu ustuniga emas,
        kontent ustuniga tegishli; pastdagi dumaloq tugma yo'q — bo'sh joy ham. */
@@ -586,6 +588,8 @@
     box-shadow:0 1px 2px rgba(20,19,43,.04) !important;
   }
   nav button:active { transform:scale(.92); filter:none }
+  /* Faqat kompyuter menyusida ko'rinadigan tugmalar (mobil pastki menyu 5 ta qoladi). */
+  .xy-desk { display:none !important; }
   /* Barmoq ostidagi element bosilib turganda ko'rinib tursin. */
   @media (hover:none) {
     button:active, .xy-tap:active { transition-duration:.06s }
@@ -762,6 +766,18 @@
         <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
           <span style="font-size:15px;font-weight:700;color:#131429">Xaridlarim</span>
           <span style="font-size:11px;font-weight:600;color:#6B6C85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mineSummary }}</span>
+        </div>
+        <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
+      </button>
+
+      <!-- Pochtam AI: savol-javob kirish nuqtasi (7-bosqich). -->
+      <button sc-camel-on-click="{{ goAi }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+        <div style="width:34px;height:34px;border-radius:12px;flex:none;background:linear-gradient(155deg,#494FE9,#13189D);display:flex;align-items:center;justify-content:center">
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.6l1.9 4.6 4.6 1.9-4.6 1.9L11 16.6l-1.9-4.6L4.5 10.1l4.6-1.9z"></path><path d="M18.6 15.2l.7 1.7 1.7.7-1.7.7-.7 1.7-.7-1.7-1.7-.7 1.7-.7z"></path></svg>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
+          <span style="font-size:15px;font-weight:700;color:#131429">Pochtam AI</span>
+          <span style="font-size:11px;font-weight:600;color:#6B6C85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Savol bering — boj, kuryer, do'kon</span>
         </div>
         <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
       </button>
@@ -2651,6 +2667,60 @@
     </div>
   </sc-if>
 
+  <!-- Pochtam AI: savol-javob. Savol worker'ga (METRICS_URL + 'ai') ketadi,
+       javob Claude'dan keladi; hisob-kitob faqat core/ vositalari orqali
+       (worker/src/ai.js), matn data/ai-rules.md qoidalari doirasida.
+       Suhbat brauzer xotirasida, saqlanmaydi. -->
+  <sc-if value="{{ sAi }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:12px;min-height:100%">
+      <sc-if value="{{ aiEmpty }}" hint-placeholder-val="{{ true }}">
+        <div style="background:linear-gradient(155deg,#494FE9,#13189D);border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:10px">
+          <span style="font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.15;color:#FFFFFF;text-wrap:balance">Savol bering — boj, kuryer, do'kon</span>
+          <span style="font-size:13px;font-weight:500;color:#DCDDFA;line-height:1.5">Javoblar ilovadagi bojxona qoidalari, kuryer tariflari va do'konlar ro'yxatiga asoslanadi. Hisob-kitobni AI emas, ilovaning o'z kalkulyatori bajaradi.</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <span style="font-size:13px;font-weight:700;color:#6B6C85;padding:0 2px">Masalan</span>
+          <sc-for list="{{ aiQuick }}" as="aq" hint-placeholder-count="4">
+            <button sc-camel-on-click="{{ aq.go }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;font-family:inherit;font-size:15px;font-weight:500;color:#131429;line-height:1.4;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">{{ aq.t }}</button>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-for list="{{ aiRows }}" as="m" hint-placeholder-count="2">
+        <sc-if value="{{ m.user }}" hint-placeholder-val="{{ true }}">
+          <div style="align-self:flex-end;max-width:86%;background:#1A1FB0;color:#FFFFFF;border-radius:20px 20px 6px 20px;padding:12px 14px;font-size:15px;font-weight:500;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere">{{ m.text }}</div>
+        </sc-if>
+        <sc-if value="{{ m.bot }}" hint-placeholder-val="{{ false }}">
+          <div style="align-self:flex-start;max-width:92%;display:flex;flex-direction:column;gap:10px;background:#FFFFFF;border-radius:20px 20px 20px 6px;padding:12px 14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+            <span style="font-size:15px;font-weight:500;color:{{ m.fg }};line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere">{{ m.text }}</span>
+            <sc-if value="{{ m.hasActs }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <sc-for list="{{ m.acts }}" as="a" hint-placeholder-count="2">
+                  <button sc-camel-on-click="{{ a.go }}" style="height:36px;padding:0 14px;border-radius:12px;border:1.5px solid #DCDDFA;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ a.t }}</button>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </sc-for>
+      <sc-if value="{{ aiBusy }}" hint-placeholder-val="{{ false }}">
+        <div aria-live="polite" style="align-self:flex-start;background:#FFFFFF;border-radius:20px 20px 20px 6px;padding:12px 14px;font-size:13px;font-weight:500;color:#6B6C85;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">Javob tayyorlanmoqda…</div>
+      </sc-if>
+      <div style="flex:1"></div>
+      <form sc-camel-on-submit="{{ aiSubmit }}" style="position:sticky;bottom:6px;display:flex;align-items:center;gap:8px;background:#FFFFFF;border-radius:20px;padding:6px 6px 6px 14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+        <input value="{{ aiQ }}" sc-camel-on-input="{{ onAiQ }}" placeholder="Savolingiz" type="text" enterkeyhint="send" maxlength="600" aria-label="Savolingiz" autocomplete="off" style="flex:1;min-width:0;height:40px;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;font-weight:500;color:#131429">
+        <button type="submit" aria-label="Yuborish" style="flex:none;width:40px;height:40px;border-radius:14px;border:none;cursor:pointer;background:{{ aiSendBg }};display:flex;align-items:center;justify-content:center">
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="M12 6l6 6-6 6"></path></svg>
+        </button>
+      </form>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px">
+        <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">Pochtam AI xato qilishi mumkin. Yakuniy qaror — bojxona organida.</span>
+        <sc-if value="{{ aiHasMsgs }}" hint-placeholder-val="{{ false }}">
+          <button sc-camel-on-click="{{ aiClear }}" style="flex:none;background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:6px 2px">Yangi suhbat</button>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ sMine }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:14px">
       <div style="display:flex;gap:6px;background:#FFFFFF;border-radius:20px;padding:6px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
@@ -3475,6 +3545,20 @@
         </div>
         <span style="font-size:11px;font-weight:{{ tb.settings.w }};color:{{ tb.settings.lbl }}">Sozlamalar</span>
       </button>
+      <!-- Faqat kompyuter ustunida (TZ 27): Xaridlarim va Pochtam AI.
+           Mobil pastki menyu o'zgarmaydi (.xy-desk CSS bilan yashirin). -->
+      <button class="xy-desk" sc-camel-on-click="{{ goMine }}" aria-current="{{ tb.mine.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
+        <div style="width:52px;height:32px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:{{ tb.mine.chip }};transition:background .16s ease">
+          <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="{{ tb.mine.lbl }}" stroke-width="{{ tb.mine.sw }}" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12l1.5 4H4.5L6 4z"></path><path d="M4.5 8v11a1 1 0 001 1h13a1 1 0 001-1V8"></path><path d="M9 12h6"></path></svg>
+        </div>
+        <span style="font-size:11px;font-weight:{{ tb.mine.w }};color:{{ tb.mine.lbl }}">Xaridlarim</span>
+      </button>
+      <button class="xy-desk" sc-camel-on-click="{{ goAi }}" aria-current="{{ tb.ai.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
+        <div style="width:52px;height:32px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:{{ tb.ai.chip }};transition:background .16s ease">
+          <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="{{ tb.ai.lbl }}" stroke-width="{{ tb.ai.sw }}" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.6l1.9 4.6 4.6 1.9-4.6 1.9L11 16.6l-1.9-4.6L4.5 10.1l4.6-1.9z"></path><path d="M18.6 15.2l.7 1.7 1.7.7-1.7.7-.7 1.7-.7-1.7-1.7-.7 1.7-.7z"></path></svg>
+        </div>
+        <span style="font-size:11px;font-weight:{{ tb.ai.w }};color:{{ tb.ai.lbl }}">Pochtam AI</span>
+      </button>
     </nav>
   </sc-if>
 
@@ -4201,6 +4285,16 @@ const RU = {
   'Telefon raqami hali kiritilmagan':'Номер телефона ещё не указан', 'Trek raqam nusxalandi':'Трек-номер скопирован', 'Telegram ochildi':'Telegram открыт',
   'Xabar berish sahifasi ochildi':'Страница для сообщения открыта', 'Sevimlilardan olib tashlandi':'Удалено из избранного', "Sevimlilarga qo'shildi":'Добавлено в избранное',
   "Nusxalab bo'lmadi — matnni qo'lda belgilang":'Не удалось скопировать — выделите текст вручную', 'nusxalandi':'скопировано',
+  /* Pochtam AI (7-bosqich) */
+  'Pochtam AI':'Pochtam AI', "Savol bering — boj, kuryer, do'kon":'Задайте вопрос — пошлина, курьер, магазин',
+  "Javoblar ilovadagi bojxona qoidalari, kuryer tariflari va do'konlar ro'yxatiga asoslanadi. Hisob-kitobni AI emas, ilovaning o'z kalkulyatori bajaradi.":'Ответы основаны на таможенных правилах, тарифах курьеров и списке магазинов из приложения. Расчёты делает не ИИ, а собственный калькулятор приложения.',
+  'Masalan':'Например', 'Savolingiz':'Ваш вопрос', 'Yuborish':'Отправить', 'Javob tayyorlanmoqda…':'Готовлю ответ…', 'Yangi suhbat':'Новый диалог',
+  'Pochtam AI xato qilishi mumkin. Yakuniy qaror — bojxona organida.':'Pochtam AI может ошибаться. Окончательное решение — за таможенным органом.',
+  "AI vaqtincha mavjud emas. Kalkulyator va kuryerlar ro'yxati ishlayveradi.":'ИИ временно недоступен. Калькулятор и список курьеров работают.',
+  "Bugungi savollar chegarasi tugadi — ertaga davom etamiz. Hozircha kalkulyator va kuryerlar ro'yxati ishlaydi.":'Лимит вопросов на сегодня исчерпан — продолжим завтра. Калькулятор и список курьеров работают.',
+  'Kalkulyatorda ochish':'Открыть в калькуляторе', "Kuryerlarni ko'rish":'Посмотреть курьеров', "Taqiqlar ro'yxati":'Список запретов', "Do'konni ochish":'Открыть магазин',
+  "$250 lik telefon uchun boj qancha bo'ladi?":'Какая пошлина за телефон на $250?', 'Xitoydan 2 kg yukni qaysi kuryer arzon olib keladi?':'Какой курьер дешевле доставит 2 кг из Китая?',
+  "Powerbank buyurtma qilsam bo'ladimi?":'Можно ли заказать повербанк?', "Bir oyda ikki posilka kelsa me'yor qanday hisoblanadi?":'Как считается лимит, если за месяц пришли две посылки?',
 };
 /* Matnlarda ASCII (') va tipografik (' ') apostroflar aralash uchraydi.
    Lug'at kalitlari yagona ko'rinishga keltiriladi, aks holda "Ko'p" kabi
@@ -5367,6 +5461,8 @@ class Component extends DCLogic {
     ccKg: 0, ccCountry: '', ccPri: 'cheap',
     /* Xaridlarim: faol tab va saqlangan hisoblar. */
     mineTab: 'plans', calcs: Array.isArray(SAVED.calcs) ? SAVED.calcs : [],
+    /* Pochtam AI suhbati — faqat xotirada. */
+    aiMsgs: [], aiQ: '', aiBusy: false,
     storeCountries: SAVED.storeCountries || [], storeCats: SAVED.storeCats || [],
     storeDirect: !!SAVED.storeDirect, storeGroup: SAVED.storeGroup || 'cat',
     courierCountries: SAVED.courierCountries || [], courierMode: SAVED.courierMode || null,
@@ -6032,6 +6128,15 @@ class Component extends DCLogic {
       this.toast(tr(lang, "Bu do'kon hali ro'yxatda yo'q — o'xshashini qidiruvda ko'ring"));
       return;
     }
+    /* Savol ko'rinishidagi matn (so'roq belgisi yoki so'roq so'zi) — Pochtam AI. */
+    const plain = raw.replace(/[\u2018\u2019`\u02BB\u02BC]/g, "'");
+    if (/\?\s*$/.test(plain) || /^(qancha|qanday|qaysi|nima|necha|nega|bo'ladimi|mumkinmi|kerakmi|қанча|қандай|қайси|нима|неча|сколько|как|какой|какая|можно|что|почему|нужно)\b/i.test(plain)) {
+      metrics.hit('hero', 'ai');
+      this.setState({ homeQuery: '' });
+      this.push('ai');
+      this.aiAsk(raw);
+      return;
+    }
     metrics.hit('hero', 'text');
     this.push('search');
   }
@@ -6107,6 +6212,82 @@ class Component extends DCLogic {
     metrics.hit('calc_open', prefill && prefill.storeId ? 'store:' + prefill.storeId : 'quick');
     this.setState({ lc: { ...LC_DEFAULT, ...(prefill || {}) } });
     this.push('landed');
+  }
+
+  /* Pochtam AI: savol worker'ga (METRICS_URL + 'ai') ketadi, javob suhbatga
+     qo'shiladi. Tarix — oxirgi 6 xabar. Manzil bo'lmasa yoki server 503/429
+     bersa "vaqtincha mavjud emas" / "chegara" holati: ilova qolgani
+     ishlayveradi. Kalit brauzerga hech qachon kelmaydi — u worker sirida. */
+  aiAsk(qText) {
+    const st = this.state;
+    const q = String(qText != null ? qText : st.aiQ).trim().slice(0, 600);
+    if (!q || st.aiBusy) return;
+    const errMsg = code => tr(st.lang, code === 'limit'
+      ? "Bugungi savollar chegarasi tugadi — ertaga davom etamiz. Hozircha kalkulyator va kuryerlar ro'yxati ishlaydi."
+      : "AI vaqtincha mavjud emas. Kalkulyator va kuryerlar ro'yxati ishlayveradi.");
+    const history = st.aiMsgs.filter(m => !m.err).slice(-6).map(m => ({ role: m.role, text: m.text }));
+    this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'user', text: q }], aiQ: '', aiBusy: !!METRICS_URL }));
+    this._aiScroll();
+    if (!METRICS_URL) { this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', err: 'no_key', text: errMsg('no_key') }] })); return; }
+    metrics.hit('ai_question', '-');
+    const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = setTimeout(() => { if (ctrl) ctrl.abort(); }, 60000);
+    fetch(METRICS_URL + 'ai', { method: 'POST', headers: { 'content-type': 'text/plain;charset=UTF-8' },
+      body: JSON.stringify({ q, history, lang: st.lang, usdRate: USD_RATE }), signal: ctrl ? ctrl.signal : undefined })
+      .then(async r => {
+        const j = await r.json().catch(() => null);
+        if (!r.ok || !j || !j.text) { const e = new Error('ai'); e.code = (j && j.code) || (r.status === 429 ? 'limit' : 'upstream'); throw e; }
+        return j;
+      })
+      .then(j => this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', text: String(j.text), tools: Array.isArray(j.tools) ? j.tools : [] }] })))
+      .catch(e => this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', err: (e && e.code) || 'net', text: errMsg(e && e.code) }] })))
+      .then(() => { clearTimeout(timer); this.setState({ aiBusy: false }); this._aiScroll(); });
+  }
+  _aiScroll() {
+    requestAnimationFrame(() => { const m = this._mainEl(); if (m && this.cur() === 'ai') m.scrollTop = m.scrollHeight; });
+  }
+  /* AI ekranining VM qismi: xabarlar, tez savollar, javob ostidagi tugmalar
+     (vosita chaqirilgan bo'lsa — kalkulyator, kuryerlar, taqiqlar, do'kon
+     to'ldirilgan holda ochiladi; 8-bosqich). */
+  aiVm(st) {
+    const lang = st.lang;
+    const QUICK = ["$250 lik telefon uchun boj qancha bo'ladi?", "Xitoydan 2 kg yukni qaysi kuryer arzon olib keladi?",
+      "Powerbank buyurtma qilsam bo'ladimi?", "Bir oyda ikki posilka kelsa me'yor qanday hisoblanadi?"];
+    const acts = m => {
+      const out = [], seen = new Set();
+      for (const t of m.tools || []) {
+        const inp = t.input || {}, res = t.result || {};
+        if (!t.name || res.error) continue;
+        let a = null;
+        if (t.name === 'customs_duty' || t.name === 'landed_cost') {
+          a = ['calc', 'Kalkulyatorda ochish', () => this.openLanded({ price: String(inp.goodsUsd != null ? inp.goodsUsd : (inp.priceUsd || '')), cur: 'USD',
+            qty: String(inp.qty || 1), kg: num(inp.kg) > 0 ? String(inp.kg) : '', country: LC_COUNTRIES.includes(res.country) ? res.country : LC_DEFAULT.country,
+            local: num(inp.localPriceUzs) > 0 ? String(inp.localPriceUzs) : '' })];
+        } else if (t.name === 'courier_quotes') {
+          a = ['cour', "Kuryerlarni ko'rish", () => this.openCourierCalc(res.country || inp.country, num(inp.kg) || 2)];
+        } else if (t.name === 'check_banned') {
+          a = ['ban', "Taqiqlar ro'yxati", () => this.openSec(2)];
+        } else if (t.name === 'find_store' && res.stores && res.stores[0] && STORES.some(x => x.id === res.stores[0].id)) {
+          const id = res.stores[0].id;
+          a = ['store', "Do'konni ochish", () => { this.warmGuide(id); this.setState({ storeId: id }); this.push('store'); }];
+        }
+        if (a && !seen.has(a[0])) { seen.add(a[0]); out.push({ t: tr(lang, a[1]), go: () => { metrics.hit('quick', 'ai:' + a[0]); a[2](); } }); }
+      }
+      return out;
+    };
+    return {
+      aiEmpty: !st.aiMsgs.length, aiHasMsgs: st.aiMsgs.length > 0, aiBusy: !!st.aiBusy, aiQ: st.aiQ || '',
+      aiSendBg: st.aiBusy ? '#C4C6FA' : 'linear-gradient(155deg,#494FE9,#13189D)',
+      onAiQ: e => this.setState({ aiQ: e.target.value }),
+      aiSubmit: e => { e.preventDefault(); this.aiAsk(); },
+      aiClear: () => this.setState({ aiMsgs: [] }),
+      aiQuick: QUICK.map(q => ({ t: tr(lang, q), go: () => this.aiAsk(tr(lang, q)) })),
+      aiRows: st.aiMsgs.map(m => {
+        const a = m.role === 'user' ? [] : acts(m);
+        return { user: m.role === 'user', bot: m.role !== 'user', text: m.text, fg: m.err ? '#B42318' : '#131429', acts: a, hasActs: a.length > 0 };
+      }),
+      goAi: () => { metrics.hit('quick', 'ai'); this.push('ai'); }
+    };
   }
 
   /* 5 qadam tugagani — ilovadagi yagona "tabriklaymiz" lahzasi. Bir marta
@@ -6207,7 +6388,7 @@ class Component extends DCLogic {
       return f.indexOf('from:') === 0
         ? (COURIER_ORIGINS.find(d => d[0] === f.slice(5)) || null) : null;
     })();
-    const titles = { landed:'Jami narx', mine:'Xaridlarim', plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? tx(st.lang, '{0} yo\'nalishi', tr(st.lang, courierFolderDef[1])) : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', search:'Qidiruv', wizard:'Reja tuzish', settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
+    const titles = { landed:'Jami narx', mine:'Xaridlarim', ai:'Pochtam AI', plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? tx(st.lang, '{0} yo\'nalishi', tr(st.lang, courierFolderDef[1])) : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', search:'Qidiruv', wizard:'Reja tuzish', settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
     /* Saralash tugmasi faqat ro'yxat ko'rinib turganda kerak: papkalar
        ekranida saralanadigan narsa yo'q. */
     const showSortBtn = cur === 'courierfolder' ||
@@ -6384,6 +6565,7 @@ class Component extends DCLogic {
           customs: mk('customs', ['customs', 'csec']),
           wizard: mk('wizard', ['wizard']),
           guides: mk('guides', ['guides', 'fullguide']),
+          mine: mk('mine', ['mine', 'plan', 'shipments']), ai: mk('ai', ['ai']),
           settings: mk('settings', ['settings'])
         };
       })(),
@@ -6400,6 +6582,7 @@ class Component extends DCLogic {
       sPlan: cur === 'plan' && !!pl,
       sLanded: cur === 'landed',
       sMine: cur === 'mine',
+      sAi: cur === 'ai',
       hasPlans: st.plans.length > 0,
       planCount: st.plans.length + ' ta',
       wizShowPlans: cur === 'wizard' && st.wizStep === 0 && st.plans.length > 0,
@@ -6534,6 +6717,7 @@ class Component extends DCLogic {
       onHq: e => this.setState({ homeQuery: e.target.value }),
       /* Universal maydon: havola → do'kon, aks holda qidiruv ekrani. */
       heroSubmit: e => { e.preventDefault(); this.heroGo(); },
+      ...this.aiVm(st),
       quickActs: [
         { t: 'Jami narx', iconCss: "url('icons/boj-kalkulyator.webp')", go: () => { metrics.hit('quick', 'landed'); this.openLanded(); } },
         { t: 'Kuryer tanlash', iconCss: "url('icons/courier-3d.webp')", go: () => { metrics.hit('quick', 'couriers'); this.push('couriers'); } },

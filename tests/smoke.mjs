@@ -104,7 +104,10 @@ page.on('pageerror', e => errors.push(e.message));
 // yuklanmaydi. SVG `d="{{ ... }}"` xatosi ilgari shu ro'yxatda edi — endi
 // belgilar CSS foniga o'tkazilgani uchun umuman chiqmaydi va yashirilmaydi.
 const BENIGN = /font|CORS|net::ERR/i;
-page.on('console', m => { if (m.type() === 'error' && !BENIGN.test(m.text())) errors.push(m.text()); });
+/* Pochtam AI bo'limida soxta server ataylab 503/429 qaytaradi — brauzer buni
+   konsolga yozadi; o'sha qadamlar davomida shu ikki javob xato sanalmaydi. */
+let aiExpectErr = false;
+page.on('console', m => { if (m.type() === 'error' && !BENIGN.test(m.text()) && !(aiExpectErr && /status of (503|429)/.test(m.text()))) errors.push(m.text()); });
 page.on('response', r => { if (r.status() >= 400 && r.url().startsWith(base)) missing.push(r.status() + ' ' + r.url()); });
 /* Oddiy brauzerda ilova tashqariga faqat valyuta kursi uchun chiqadi.
    Shrift, SDK va boshqa hamma narsa o'z domenimizda — birinchi bo'yoq
@@ -646,6 +649,48 @@ try {
     await calcRow.click(); await page.waitForTimeout(500);
     const reopened = await page.evaluate(() => { const i = document.querySelector('input[aria-label="Mahsulot nomi"]'); return i ? i.value : ''; });
     check('hisob qayta ochiladi (kirishlar bilan)', /Jami narx/.test((await page.locator('header').innerText())) && reopened === 'Sinov mahsulot', reopened);
+    await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
+
+    /* 7-bosqich: Pochtam AI. Worker /ai soxta (route): javob vosita bilan,
+       keyin 503 va 429. Ilova savolni tarix, til va kurs bilan yuboradi;
+       javob ostidagi tugma kalkulyatorni to'ldirib ochadi; xato holatida
+       "vaqtincha mavjud emas"; bosh sahifadagi savol AI ga boradi. Mobil
+       pastki menyu 5 ta qoladi. */
+    const aiBodies = []; let aiMode = 'ok';
+    await context.route(METRICS_URL + 'ai', async r => {
+      aiBodies.push(JSON.parse(r.request().postData() || '{}'));
+      if (aiMode === '503') return r.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: 'AI vaqtincha mavjud emas', code: 'no_key' }) });
+      if (aiMode === '429') return r.fulfill({ status: 429, contentType: 'application/json', body: JSON.stringify({ error: 'limit', code: 'limit' }) });
+      return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: 'Boj $15.00, yig\'im 110 000 so\'m.\nTaxminiy hisob.',
+        tools: [{ name: 'customs_duty', input: { goodsUsd: 250, kg: 0.5 }, result: { dutyUsd: 15 } }, { name: 'courier_quotes', input: { country: 'Xitoy', kg: 2 }, result: { country: 'Xitoy' } }], model: 'm', usage: {} }) });
+    });
+    const aiMain = () => page.locator('main').innerText().then(t => t.replace(/\s+/g, ' '));
+    await page.locator('main button').filter({ hasText: 'Pochtam AI' }).first().click(); await page.waitForTimeout(500);
+    const aiHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
+    const aiIntro = await aiMain();
+    check('Pochtam AI: ekran, kirish matni, 4 ta tez savol, maydon', /Pochtam AI/.test(aiHead) && /Savol bering/.test(aiIntro) && /Masalan/.test(aiIntro) && await page.locator('input[aria-label="Savolingiz"]').count() === 1 && (await page.locator('main button').filter({ hasText: /\?$/ }).count()) === 4, aiHead);
+    await page.locator('main button').filter({ hasText: 'telefon uchun boj' }).first().click(); await page.waitForTimeout(700);
+    const aiT1 = await aiMain();
+    check('Pochtam AI: savol yuborildi (q, lang, usdRate), javob va vosita tugmalari', aiBodies.length === 1 && /telefon uchun boj/.test(aiBodies[0].q) && aiBodies[0].lang === 'uz' && aiBodies[0].usdRate > 1000 && /Boj \$15\.00/.test(aiT1) && /Kalkulyatorda ochish/.test(aiT1) && /Kuryerlarni ko'rish/.test(aiT1), JSON.stringify(aiBodies[0]).slice(0, 120));
+    await page.locator('main button').filter({ hasText: 'Kalkulyatorda ochish' }).first().click(); await page.waitForTimeout(500);
+    const aiCalc = await page.evaluate(() => ({ h: document.querySelector('header').innerText.replace(/\s+/g, ' '), p: document.querySelector('input[aria-label="Mahsulot narxi"]')?.value, kg: document.querySelector('input[aria-label="Og\'irligi, kilogrammda"]')?.value }));
+    check('Pochtam AI → kalkulyator to\'ldirilgan ($250, 0.5 kg)', /Jami narx/.test(aiCalc.h) && aiCalc.p === '250' && aiCalc.kg === '0.5', JSON.stringify(aiCalc));
+    await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(400);
+    const aiInp = page.locator('input[aria-label="Savolingiz"]');
+    await aiInp.fill('Ikkinchi savol'); await page.keyboard.press('Enter'); await page.waitForTimeout(700);
+    check('Pochtam AI: tarix (oldingi savol-javob) yuboriladi', aiBodies.length === 2 && aiBodies[1].q === 'Ikkinchi savol' && aiBodies[1].history.length === 2 && aiBodies[1].history[0].role === 'user' && aiBodies[1].history[1].role === 'assistant', JSON.stringify(aiBodies[1] && aiBodies[1].history).slice(0, 120));
+    aiExpectErr = true;
+    aiMode = '503'; await aiInp.fill('uchinchi'); await page.keyboard.press('Enter'); await page.waitForTimeout(600);
+    check('Pochtam AI: server 503 — "vaqtincha mavjud emas"', /AI vaqtincha mavjud emas/.test(await aiMain()));
+    aiMode = '429'; await aiInp.fill('to\'rtinchi'); await page.keyboard.press('Enter'); await page.waitForTimeout(600);
+    check('Pochtam AI: 429 — chegara matni', /chegarasi tugadi/.test(await aiMain()));
+    aiMode = 'ok'; aiExpectErr = false;
+    await page.locator('main button').filter({ hasText: 'Yangi suhbat' }).first().click(); await page.waitForTimeout(300);
+    check('Pochtam AI: yangi suhbat — kirish holati qaytadi', /Masalan/.test(await aiMain()));
+    await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
+    await hero.fill("Boj qancha bo'ladi?"); await page.locator('form button[type="submit"]', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(800);
+    check('universal maydon: savol → Pochtam AI', /Pochtam AI/.test((await page.locator('header').innerText())) && aiBodies[aiBodies.length - 1].q === "Boj qancha bo'ladi?", aiBodies[aiBodies.length - 1].q);
+    check('mobil pastki menyu 5 ta (Xaridlarim va AI faqat kompyuterda)', await page.locator('nav button:visible').count() === 5);
     await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
 
     /* 5-bosqich: kuryerlar ro'yxatida vazn bo'yicha hisob. Bosh sahifadagi
@@ -1682,7 +1727,7 @@ try {
   const ruBosh = await page.evaluate(() => document.querySelector('main').innerText.replace(/\s+/g, ' '));
   check('ruscha ko\'plik: 43 магазина, 20 курьеров, 7 инструкций',
     /43 магазина/.test(ruBosh) && /20 курьеров/.test(ruBosh) && /7 инструкций/.test(ruBosh), ruBosh.slice(0, 200));
-  await page.locator('nav button').last().click();
+  await page.locator('nav button:visible').last().click();
   await page.waitForTimeout(500);
   await page.locator('main button[translate="no"]').filter({ hasText: "O'zbekcha" }).first().click();
   await page.waitForTimeout(500);
@@ -2074,11 +2119,12 @@ try {
     /* Logotipli h1 ko'zdan yashirin (1 px, clip) — rasmning o'zi emas, h1 o'lchanadi:
        clip rasm to'rtburchagini o'zgartirmaydi. */
     const h1img = header.querySelector('h1 img');
-    return { nav: r(nav), main: r(main), header: r(header), btns, brand, h1img: h1img ? r(h1img.parentElement) : null,
+    /* Kompyuter ustunida 7 ta bo'lim: 5 ta mobil tab + Xaridlarim, Pochtam AI (TZ 27). */
+    return { nav: r(nav), main: r(main), header: r(header), btns, brand, navText: nav.innerText.replace(/\s+/g, ' '), h1img: h1img ? r(h1img.parentElement) : null,
       overflow: document.documentElement.scrollWidth > innerWidth || document.querySelector('.app-shell').scrollWidth > document.querySelector('.app-shell').clientWidth };
   });
   const deskOk = desk.nav.x < desk.main.x && desk.nav.w >= 200 && desk.nav.w <= 260 && desk.nav.h >= 700 &&
-    desk.main.w >= 600 && desk.header.y < desk.main.y && desk.btns.length === 5 &&
+    desk.main.w >= 600 && desk.header.y < desk.main.y && desk.btns.length === 7 && /Pochtam AI/.test(desk.navText) && /Xaridlarim/.test(desk.navText) &&
     desk.btns.every((b, i) => b.h >= 44 && (i === 0 || b.y > desk.btns[i - 1].y)) &&
     /brand\.webp/.test(desk.brand) && (!desk.h1img || desk.h1img.w <= 1) && !desk.overflow;
   check('kompyuterda: chap menyu ustuni, keng kontent, siljishsiz', deskOk, JSON.stringify({ nav: desk.nav, main: desk.main, btn: desk.btns[0], brand: /brand/.test(desk.brand), h1: desk.h1img, overflow: desk.overflow }));

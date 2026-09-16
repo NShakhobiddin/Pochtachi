@@ -27,3 +27,7 @@ jobs:
 
       - name: Smoke testlar
         run: npm test
+
+      - name: Worker testlari (o'lchov va Pochtam AI, tarmoqsiz)
+        working-directory: worker
+        run: node test.mjs

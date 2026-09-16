@@ -1,6 +1,6 @@
 # Pochtam.uz — texnik topshiriq bo'yicha audit va rivojlantirish rejasi
 
-Sana: 2026-09-15. Holat: 1–6 bosqichlar tugadi (audit, Pochtam Core, bosh sahifa, universal kalkulyator, kuryer solishtirish, Xaridlarim). Navbat: 7 (Pochtam AI).
+Sana: 2026-09-16. Holat: 1–7 bosqichlar tugadi (audit, Pochtam Core, bosh sahifa, universal kalkulyator, kuryer solishtirish, Xaridlarim, Pochtam AI — javob ostidagi tugmalar bilan). Navbat: 8 ning qolgani (AI'dan reja tuzish, qo'llanmaga o'tish) va 9.
 Tamoyil: **EXTEND, DO NOT REBUILD** — mavjud ilova saqlanadi, funksiyalar
 bir-biriga bog'lanadi, ustiga aqlli qatlam qo'shiladi.
 
@@ -90,13 +90,13 @@ Bular kod emas, huquqiy manbaga tayangan matn — buyurtmachidan manba kerak.
 | 12. Xaridlarim | reja, kuzatuv, sevimlilar alohida | Bitta ekran `mine`, ichida tablar; holat kalitlari o'zgarmaydi |
 | 13. Jo'natmalar | 5 holat | "Bojxonada" 4-o'ringa qo'shildi; eski `step` 4 → 5 (`sv:2` belgisi) ✓ |
 | 14. Qo'llanmalarda CTA | kalkulyator tab bor | Har qo'llanmaga "Shu do'kondan hisoblash" va "Kuryerlarni solishtirish" — `postMessage` bilan ilovaga store/country uzatiladi |
-| 15–18. AI | yo'q | Alohida worker `/ai`, Claude API, tool use; **hisob-kitob faqat `core/` orqali** (o'sha modullar worker'da ham ishlaydi). Panel alohida sahifa `ai/index.html`, iframe (qo'llanmalar kabi) — bosh sahifa og'irlashmaydi |
-| 19–20. Server, xarajat | worker bor | API kaliti Cloudflare sirida; DO orqali IP/kun limiti; kesh (1 soat) va tool'lar bilan bir xabar ≈ $0.015 |
+| 15–18. AI | ✓ `worker/src/ai.js` | O'sha worker'da `/ai`, Claude API, 5 ta vosita (`core/` orqali); qoidalar `data/ai-rules.md`, baza `kb.generated.js`. Panel iframe emas, ilovaning o'z ekrani `ai` (javob tugmalari ilova holatini to'ldiradi; +16 KB) |
+| 19–20. Server, xarajat | ✓ | Kalit `ANTHROPIC_API_KEY` sirida; DO orqali IP/kun (20) va umumiy (300) chegara; tizim ko'rsatmasi keshda; savol matni saqlanmaydi |
 | 21–23. Havola, skrinshot | yo'q | 3-bosqichda havoladan faqat do'kon aniqlanadi, narx so'raladi; skrinshot — 8-bosqich, arxitektura tayyor (rasm → o'sha `landed` kirishi) |
 | 24. Olish foydalimi | yo'q | `landed` ekranida bitta ixtiyoriy maydon "O'zbekistondagi narx" → "Tejash: …" |
 | 25. Bugun Pochtam'da | `TIPS` | Saqlanadi; ustiga tirik kurs va qolgan me'yor; kanal ulanishi keyin |
 | 26. Konsultatsiya | 11 xizmat | Saqlanadi; "Murakkab holatmi?" bloki holat bo'yicha xizmatga olib boradi; AI chegaradan chiqsa shu blokka yo'naltiradi |
-| 27. Desktop menyu | chap ustun bor | Ustun tarkibi: Hisoblash, Do'konlar, Kuryerlar, Bojxona, Qo'llanmalar; pastda Xaridlarim, Pochtam AI |
+| 27. Desktop menyu | ✓ qisman | Chap ustunda 5 mobil tab + Xaridlarim, Pochtam AI (`.xy-desk`, faqat ≥1024px); "Hisoblash"/"Do'konlar"/"Kuryerlar" bo'limlari bosh sahifa orqali |
 | 28. Mobil menyu | Bosh, Qo'llanmalar, Reja (markaz), Bojxona, Sozlamalar | **Qaror kerak** (5-bo'limga qarang) |
 | 30. Papkalar | bitta fayl | `data/`, `core/`, `worker/`, `ai/` qo'shiladi; UI bitta faylda qoladi (Claude Design shabloni) — TZ "mavjud arxitekturaga moslashtirilsin" deydi |
 | 32. Xavfsizlik | React (XSS xavfsiz) | AI paneli markdown'ni `innerHTML` siz chizadi; kirish 2 000 belgi; rasm ≤ 2 MB (keyin) |
@@ -167,8 +167,8 @@ talabining texnik kafolati.
 | 4 | Universal kalkulyator ✓ (2026-09-15) | `landed` ekrani: narx/valyuta, miqdor, kategoriya, yo'nalish, og'irlik, quti (hajmiy), ichki yetkazish, kuryer takliflari (arzon/tez/optimal), jami tannarx, "foydalimi", `savePlanFrom` (name/qty/source); do'kon sahifasidan kirish | ✓ smoke: 5 tekshiruv; eski reja o'zgarmagan |
 | 5 | Kuryer taqqoslash ✓ (2026-09-15) | "Vazn bo'yicha hisob" paneli (kg, davlat, arzon/tez/optimal), kartalarda hisoblangan summa va tartib, taqqoslash jadvalida hisob qatori, bosh sahifa va jami narxdan prefill | ✓ smoke: 4 tekshiruv |
 | 6 | Xaridlarim + jo'natmalar ✓ (2026-09-15) | `mine` ekrani (Rejalar, Jo'natmalar, Sevimlilar, Hisoblar — kalkulyatorning oxirgi 10 hisobi), "Bojxonada" holati (PLAN_LAST=5, fixPlan migratsiyasi sv:2) | ✓ eski reja 4→5 ko'chadi; smoke: 4 tekshiruv |
-| 7 | Pochtam AI | worker `/ai`, kalit sirda, limit; tool'lar `core/` dan; panel `ai/index.html`; tezkor variantlar; xato holati | AI hisobni o'zi yozmaydi (test); kalit repo va brauzerda yo'q |
-| 8 | AI + funksiyalar | javob ostidagi tugmalar kalkulyator/taqqoslash/reja/qo'llanmani to'ldirilgan holda ochadi | tugmalar ishlaydi, o'lchov hodisalari keladi |
+| 7 | Pochtam AI ✓ (2026-09-16) | worker `/ai` (Claude API, kalit sirda, IP/umumiy kunlik chegara), 5 vosita `core/` dan, `data/ai-rules.md`, `kb.generated.js`; ilovada `ai` ekrani (tez savollar, tarix, 503/429 holatlari, bosh sahifa kartasi, universal maydondagi savol, desktop menyu); `tests/ai-eval.json` + `tests/ai.mjs` | ✓ worker testi: vosita natijasi core bilan bir xil, kalitsiz 503; smoke: 9 tekshiruv; kalit repo va brauzerda yo'q |
+| 8 | AI + funksiyalar (qisman ✓) | ✓ javob ostidagi tugmalar: kalkulyator (narx/vazn/davlat), kuryer paneli, taqiqlar, do'kon; qoladi: AI'dan to'g'ridan-to'g'ri reja tuzish, qo'llanma bo'limiga o'tish | tugmalar ishlaydi (smoke), o'lchov `quick:ai:*` |
 | 9 | Keyingi | havola tahlili (ochiq do'konlar), skrinshot, Score, real tracking | alohida topshiriq |
 
 Har bosqich alohida commit(lar), har biridan keyin `smoke`, `guides`,

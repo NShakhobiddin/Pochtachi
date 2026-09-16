@@ -111,6 +111,39 @@ do'kon, kuryer va qo'llanma hamda haftalik ekran soni. Ilovada "Bu hafta
 eng ko'p tanlangan kuryer" kabi tirik signal uchun. Bu yerda ham faqat
 sanoq bor, shaxsiy narsa yo'q.
 
+## Pochtam AI (`POST /ai`)
+
+Shu Worker ilovadagi AI yordamchisiga ham xizmat qiladi (`src/ai.js`).
+Kalit — sir: `npx wrangler secret put ANTHROPIC_API_KEY` (yoki GitHub'da
+`ANTHROPIC_API_KEY` sirini qo'shib workflow'ni qayta ishga tushirish).
+Kalitsiz `/ai` 503 `{"code":"no_key"}` qaytaradi va ilova buni "AI
+vaqtincha mavjud emas" deb ko'rsatadi.
+
+So'rov (Origin tekshiriladi, `ALLOW_ORIGIN`):
+
+```json
+{ "q": "320 dollarlik 2.5 kg tovar uchun boj qancha?", "lang": "uz",
+  "usdRate": 12650, "history": [{ "role": "user", "text": "…" }, { "role": "assistant", "text": "…" }] }
+```
+
+Javob: `{ text, tools: [{ name, input, result }], model, usage, stop }`.
+Xatolar: 400 (kirish), 403 (begona Origin), 429 (`code: "limit"` — IP yoki
+umumiy kunlik chegara), 503 (`no_key`, `key`, `upstream`).
+
+Qoidalar `data/ai-rules.md` da, bilimlar bazasi `src/kb.generated.js`
+(`node tools/ai-kb.mjs` tuzadi — qo'lda o'zgartirilmaydi), hisob-kitob
+`core/` vositalari orqali. Sozlamalar `wrangler.toml`: `AI_MODEL`,
+`AI_DAILY_PER_IP`, `AI_DAILY_TOTAL`, `AI_MAX_TOKENS`, `AI_EFFORT`.
+
+Xarajat mo'ljali: tizim ko'rsatmasi ≈ 12 ming token keshda (o'qish
+arzon), savol-javob ≈ 1–2 ming token; vosita bilan bir savol ≈ $0.01–0.02.
+Kunlik umumiy chegara 300 savol ≈ $5/kun eng ko'pi bilan. Hisobotda
+"Pochtam AI" bo'limi sanoqni ko'rsatadi (`ai`: ok, limit, err,
+tool:…). Savol matni saqlanmaydi va log qilinmaydi.
+
+Sinov: `AI_URL=https://pochtam-metrics.<hisob>.workers.dev/ai node
+tests/ai.mjs` (ildizdan) — `tests/ai-eval.json` dagi 16 savol.
+
 ## Saqlash muddati va xarajat
 
 Har kuni 03:00 UTC da 90 kundan eski qatorlar o'chiriladi (`crons`).
@@ -120,7 +153,7 @@ uchun yetarli. Bir kunda 1 000 foydalanuvchi ≈ 2–3 ming beacon.
 ## Lokal test
 
 ```bash
-cd worker && npm test          # beacon tahlili va sanoq (tarmoqsiz)
+cd worker && npm test          # beacon tahlili, sanoq va /ai (soxta Claude, tarmoqsiz)
 npx wrangler dev               # http://localhost:8787 da haqiqiy Worker
 ```
 

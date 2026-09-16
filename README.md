@@ -23,6 +23,12 @@ sw.js                          GENERATSIYA: offline uchun service worker
 support.js                     dc-runtime (shablonni React bilan render qiladi)
 manifest.webmanifest           PWA manifesti
 data/norms.json                bojxona me'yorlari (kodga tegmasdan yangilanadi)
+data/tariffs.json              kuryer tariflari tuzilgan ko'rinishda (core/tariffs.js hisoblaydi)
+data/categories.json           kategoriyalar va taxminiy vazn (universal kalkulyator, AI)
+data/ai-rules.md               Pochtam AI javob qoidalari (tizim ko'rsatmasi, matn)
+core/                          Pochtam Core: boj, tarif va tannarx — ilova, qo'llanma, worker uchun bitta
+worker/                        Cloudflare Worker: o'lchov (/, /stats, /hisobot) va Pochtam AI (/ai)
+worker/src/kb.generated.js     GENERATSIYA: AI bilimlar bazasi (ro'yxatlar + qoidalar), tools/ai-kb.mjs
 vendor/                        React va ReactDOM (unpkg'dagi asl fayllar)
 fonts/                         matn shriftlari (o'z domenimizda) va bayroq subseti
 icons/                         3D bo'lim ikonkalari (`boj-*` — bojxona qatorlari), tab-bar,
@@ -45,6 +51,8 @@ guides/guide-engine.js         qo'llanmalarning umumiy render kodi (7 tasi uchun
 guides/guide.js                qo'llanmalarning umumiy skripti
 tools/                         build, SEO, rasm/shrift va tekshiruv skriptlari
 tests/smoke.mjs                asosiy yo'llarni tekshiruvchi smoke test
+tests/core.mjs                 Pochtam Core formulalari va tariflar yaxlitligi
+tests/ai-eval.json, ai.mjs     Pochtam AI sinov to'plami (tirik worker bilan, ixtiyoriy)
 ```
 
 ## Buyruqlar
@@ -266,6 +274,60 @@ bo'lmagan rejada 4 ("Keldi") → 5, keyin `sv: 2`. Real tracking yo'q va
 shunday deb yoziladi; holat qo'lda belgilanadi. Kuryer API uchun joy:
 `trackedList[].site` (kuryer kuzatuv sahifasi) va `track`.
 
+## Pochtam AI (7-bosqich)
+
+Savol-javob ekrani `ai` (bosh sahifadagi "Pochtam AI" kartasi, kompyuter
+menyusidagi bo'lim, universal maydonga yozilgan savol — `?` yoki so'roq
+so'zi bilan boshlangan matn). Suhbat faqat brauzer xotirasida (`aiMsgs`),
+saqlanmaydi.
+
+**Qanday ishlaydi.** Ilova savolni, oxirgi 6 xabarni, tilni va joriy kursni
+o'lchov serveriga yuboradi (`METRICS_URL + 'ai'`, `worker/src/ai.js`).
+Worker Claude API'ga murojaat qiladi — kalit Cloudflare sirida
+(`ANTHROPIC_API_KEY`), brauzerga hech qachon tushmaydi. Uch qatlam:
+
+- **Qoidalar** — `data/ai-rules.md`: kim, qaysi tilda, nimani aytmaydi,
+  bojxona faktlari, murakkab holatda Xizmatlarga yo'naltirish. Oddiy
+  matn, kodga tegmasdan tahrirlanadi.
+- **Bilimlar bazasi** — `worker/src/kb.generated.js`: manbadagi
+  kuryerlar, do'konlar, taqiqlar, xizmatlar, qo'llanmalar hamda
+  `data/*.json` dan `tools/ai-kb.mjs` tuzadi (`npm run build` ichida,
+  `--check` mosligini tekshiradi). Ilova va AI bir manbadan gapiradi.
+- **Vositalar** — `customs_duty`, `courier_quotes`, `landed_cost`,
+  `check_banned`, `find_store`. Hisob-kitob faqat shu vositalar orqali va
+  ular `core/` modullarini chaqiradi: AI raqamni o'zi yozmaydi, natija
+  ilovadagi kalkulyator bilan bir xil (`worker/test.mjs` tekshiradi).
+
+Javob ostida vositaga qarab tugma chiqadi: "Kalkulyatorda ochish" (narx,
+vazn, davlat to'ldirilgan `landed`), "Kuryerlarni ko'rish" (`courierfolder`,
+vazn paneli), "Taqiqlar ro'yxati", "Do'konni ochish" — 8-bosqichning
+birinchi qismi.
+
+**Chegaralar va xarajat.** Bitta IP uchun kuniga `AI_DAILY_PER_IP` (20),
+hammasi uchun `AI_DAILY_TOTAL` (300) savol — `wrangler.toml`. IP
+saqlanmaydi: kun va sir bilan tuzlangan xesh sanaladi, 90 kunda o'chadi.
+Savol ≤ 600 belgi, javob ≤ 1024 token, tizim ko'rsatmasi Claude keshida
+(`cache_control`). Model `AI_MODEL` (claude-opus-5), fikrlash darajasi
+`AI_EFFORT`. Hisobotda (`/hisobot`) "Pochtam AI" bo'limi: javob, chegara,
+xato, ishlatilgan vositalar.
+
+**Yoqish.** GitHub'da `ANTHROPIC_API_KEY` sirini qo'shib "O'lchovni yoqish"
+workflow'ini qayta ishga tushiring — u kalitni Worker'ga sir sifatida
+yozadi. Kalitsiz `/ai` 503 qaytaradi, ilova "AI vaqtincha mavjud emas" deb
+ko'rsatadi; 429 da "bugungi chegara tugadi". Kalkulyator, kuryerlar va
+qolgan hamma narsa ishlayveradi.
+
+**Sinov.** `tests/ai-eval.json` — 16 savol (boj, kuryer, taqiq, do'kon,
+me'yor, ruscha, mavzudan tashqari) va mezonlar: kerakli vosita
+chaqirilganmi, javobda kutilgan ifoda bormi, vositasiz raqam yo'qmi, til
+to'g'rimi. `AI_URL=https://<worker>/ai node tests/ai.mjs` — tirik worker
+bilan; `AI_URL` bo'lmasa o'tkazib yuboriladi.
+
+Rejadagi `ai/index.html` iframe o'rniga ekran ilovaning o'zida: javob
+ostidagi tugmalar ilova holatini to'ldirishi kerak (kalkulyator, kuryer
+paneli), iframe'da bu `postMessage` orqali ikki tomonlama bo'lardi. Narxi
+— `index.html` ga ~16 KB (byudjet ichida).
+
 ## Pochtam Core
 
 Biznes mantiq UI dan ajratilgan, `core/` da, oddiy skript sifatida
@@ -465,6 +527,11 @@ qanday so'rov ketmaydi, to'ldirilsa faqat o'sha manzilga — ilovaning
 shunday saqlanadi (`tests/smoke.mjs` tekshiradi). Server `worker/` da
 (Cloudflare Worker + Durable Object); uni `.github/workflows/metrics.yml`
 bir tugma bilan joylaydi va manzilni ilovaga yozadi.
+
+Shu server `POST /ai` bilan Pochtam AI'ga ham xizmat qiladi (yuqoridagi
+bo'lim): AI savoli — foydalanuvchi o'zi yozgan matn — faqat o'sha manzilga
+ketadi va saqlanmaydi (Cloudflare loglarida ham yozilmaydi: worker savol
+matnini log qilmaydi).
 
 **Nima yuboriladi.** Hodisa nomi, qo'pol kalit, ilova versiyasi va til:
 
@@ -843,4 +910,4 @@ bilan ishga tushadi.
 
 ## O'lcham byudjeti
 
-`npm run check` quyidagilarni tekshiradi: kuryer logotiplari ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 120 KB, do'kon logotiplari ≤ 260 KB, qo'llanmalar ≤ 700 KB, `index.html` ≤ 760 KB (2026-09-15: TZ bosqichlari — bosh sahifa, jami narx, kuryer solishtirish paneli, Xaridlarim — uchun 680 dan oshirildi; gzip ~175 KB). Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.
+`npm run check` quyidagilarni tekshiradi: kuryer logotiplari ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 120 KB, do'kon logotiplari ≤ 260 KB, qo'llanmalar ≤ 700 KB, `index.html` ≤ 760 KB (2026-09-15: TZ bosqichlari — bosh sahifa, jami narx, kuryer solishtirish paneli, Xaridlarim, Pochtam AI ekrani — uchun 680 dan oshirildi; hozir ~725 KB, gzip ~175 KB). Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.

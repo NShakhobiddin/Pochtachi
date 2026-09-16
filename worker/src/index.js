@@ -20,10 +20,13 @@
  *                        ochilgan do'kon/kuryer/qo'llanmalari, tokensiz,
  *                        1 soat keshlanadi (ilovadagi "tirik signal" uchun)
  *   GET  /hisobot      — o'qiladigan hisobot sahifasi (parol sahifada so'raladi)
+ *   POST /ai           — Pochtam AI (src/ai.js): Claude API proksisi, kalit sirda,
+ *                        kunlik chegara shu Durable Object'da sanaladi
  *   GET  /             — "ok"
  */
 
 import { hisobotHtml } from './hisobot.js';
+import { handleAi } from './ai.js';
 
 const NAMES = new Set(['screen', 'store', 'courier', 'guide', 'wizard', 'svcAsk', 'hamkor',
   /* bosh sahifa va yangi funksiyalar */ 'hero', 'quick', 'courier_compare', 'calc_open', 'calc_done', 'add_to_plan', 'consult_click', 'ai_question']);
@@ -98,12 +101,33 @@ export class Counter {
       }
       return new Response(null, { status: 204 });
     }
+    if (request.method === 'POST' && url.pathname === '/limit') {
+      /* AI kunlik chegarasi: IP xeshi (ai_ip) va umumiy (ai/q) sanog'i shu
+         kunda oshirilib, chegara bilan solishtiriladi. Xesh kun va sir bilan
+         tuzlangan — IP qayta tiklanmaydi; 90 kundan keyin boshqa qatorlar
+         bilan birga o'chadi. */
+      const { key, max, total } = await request.json();
+      const day = isoDay();
+      for (const [name, k] of [['ai_ip', String(key || '-')], ['ai', 'q']]) {
+        this.sql.exec(`INSERT INTO counts (day, name, key, n) VALUES (?, ?, ?, ?)
+          ON CONFLICT(day, name, key) DO UPDATE SET n = n + excluded.n`, day, name, k, 1);
+      }
+      let n = 0, t = 0;
+      for (const r of this.sql.exec(`SELECT day, name, key, n FROM counts WHERE day >= ? ORDER BY day, name, n DESC`, day)) {
+        if (r.day !== day) continue;
+        if (r.name === 'ai_ip' && r.key === String(key || '-')) n = r.n;
+        if (r.name === 'ai' && r.key === 'q') t = r.n;
+      }
+      const overTotal = total > 0 && t > total, overIp = max > 0 && n > max;
+      return json(this.env, { ok: !overTotal && !overIp, n, t, scope: overTotal ? 'total' : 'ip' });
+    }
     if (url.pathname === '/stats') {
       const days = Math.min(MAX_DAYS, Math.max(1, +url.searchParams.get('days') || 7));
       const from = daysBack(days - 1);
       const cur = this.sql.exec(`SELECT day, name, key, n FROM counts WHERE day >= ? ORDER BY day, name, n DESC`, from);
       const byName = {}, byDay = {};
       for (const r of cur) {
+        if (r.name === 'ai_ip') continue;   /* chegara uchun ichki sanoq, hisobotga chiqmaydi */
         (byName[r.name] ||= {})[r.key] = ((byName[r.name] || {})[r.key] || 0) + r.n;
         if (r.name === 'screen') byDay[r.day] = (byDay[r.day] || 0) + r.n;
       }
@@ -149,6 +173,12 @@ export default {
         ctx.waitUntil(counter.fetch('https://counter/add', { method: 'POST', body: JSON.stringify(rows) }));
       }
       return new Response(null, { status: 204, headers: cors(env, {}, origin) });
+    }
+
+    if (request.method === 'POST' && url.pathname === '/ai') {
+      return handleAi({ request, env, ctx, origin, originOk: originOk(env, origin), cors, counter,
+        /* Testda soxta Claude: env.AI_FETCH funksiyasi. Ishlab chiqarishda yo'q. */
+        fetchImpl: typeof env.AI_FETCH === 'function' ? env.AI_FETCH : undefined });
     }
 
     if (request.method === 'GET' && url.pathname === '/stats') {

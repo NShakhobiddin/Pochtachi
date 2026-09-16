@@ -14,6 +14,17 @@ ALLOW_ORIGIN = "https://nshakhobiddin.github.io"
 # ochilgan do'kon/kuryer/qo'llanmalari) — ilovadagi "tirik signal" uchun.
 PUBLIC_STATS = "0"
 
+# Pochtam AI (POST /ai). Kalit — sir:  wrangler secret put ANTHROPIC_API_KEY
+# Kalit qo'yilmaguncha /ai 503 "AI vaqtincha mavjud emas" qaytaradi, ilova
+# buni ko'rsatadi va qolgani ishlayveradi.
+AI_MODEL = "claude-opus-5"
+# Kunlik chegara: bitta IP (xesh) uchun va hammasi uchun. Xarajat nazorati.
+AI_DAILY_PER_IP = "20"
+AI_DAILY_TOTAL = "300"
+# Javob uzunligi (token) va fikrlash darajasi (bo'sh — API standarti).
+AI_MAX_TOKENS = "1024"
+AI_EFFORT = "medium"
+
 # READ_TOKEN — sir, toml ga yozilmaydi:  wrangler secret put READ_TOKEN
 
 # Cloudflare panelida (Workers & Pages → pochtam-metrics → Logs) so'rovlar
