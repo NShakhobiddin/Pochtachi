@@ -281,7 +281,7 @@ try {
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(500);
   check('bosh sahifada faqat universal maydon',
-    await page.evaluate(() => { const i = document.querySelectorAll('main input'); return i.length === 1 && i[0].getAttribute('aria-label') === 'Mahsulot havolasi yoki nomi' && i[0].type !== 'search'; }));
+    await page.evaluate(() => { const i = document.querySelectorAll('main input:not([type="file"])'); return i.length === 1 && i[0].getAttribute('aria-label') === 'Mahsulot havolasi yoki nomi' && i[0].type !== 'search'; }));
   await page.locator('button[aria-label="Qidirish"]').first().click();
   await page.waitForTimeout(600);
   /* Ochilganda maydon fokusda: telefonda klaviatura o'zi chiqadi. */
@@ -557,14 +557,14 @@ try {
      kartasi, solishtirish bloki, "Birinchi marta", sevimlilar tasmasi va
      rejalar bloki olib tashlandi), balandligi 1300 px dan kam. */
   const ixcham = await page.evaluate(() => { const m = document.querySelector('main'); return { bloklar: m.firstElementChild.children.length, h: m.scrollHeight, takror: /Kuryerlarni solishtirish|Birinchi marta|Mening rejalarim/.test(m.innerText) }; });
-  check('bosh sahifa ixcham: 7 blok, takror yo\'q', ixcham.bloklar === 7 && ixcham.h < 1300 && !ixcham.takror, JSON.stringify(ixcham));
+  check('bosh sahifa ixcham: 6 blok, takror yo\'q', ixcham.bloklar === 6 && ixcham.h < 1300 && !ixcham.takror, JSON.stringify(ixcham));
 
   /* 3-bosqich: bosh sahifadagi universal maydon, tez o'tish, mashhur
      do'konlar va kuryerlarni solishtirish bloki. */
   {
     const hero = page.locator('input[aria-label="Mahsulot havolasi yoki nomi"]');
     /* iOS fokusda kattalashtirmasin: telefonda har bir kirish maydoni ≥ 16 px. */
-    const inputPx = await page.evaluate(() => [...document.querySelectorAll('input')].map(i => parseFloat(getComputedStyle(i).fontSize)));
+    const inputPx = await page.evaluate(() => [...document.querySelectorAll('input:not([type="file"])')].map(i => parseFloat(getComputedStyle(i).fontSize)));
     check('kirish maydonlari telefonda 16 px dan kichik emas (iOS zoom)', inputPx.length > 0 && inputPx.every(v => v >= 16), inputPx.join(','));
     check('bosh sahifada universal maydon va "Boshlash"', await hero.count() === 1 && await page.locator('form button[type="submit"]', { hasText: 'Boshlash' }).count() === 1);
     const quick = await page.evaluate(() => [...document.querySelectorAll('main button')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).filter(t => /^(Jami narx|Do'konlar|Kuryerlar|Taqiqni tekshirish)$/.test(t)).length);
@@ -657,14 +657,44 @@ try {
       aiBodies.push(JSON.parse(r.request().postData() || '{}'));
       if (aiMode === '503') return r.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: 'AI vaqtincha mavjud emas', code: 'no_key' }) });
       if (aiMode === '429') return r.fulfill({ status: 429, contentType: 'application/json', body: JSON.stringify({ error: 'limit', code: 'limit' }) });
+      const q = (aiBodies[aiBodies.length - 1] || {}).q || '';
+      if (/krossovka|Krossovka/.test(q)) return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: 'Original krossovka uchun Nike va Adidas rasmiy do\'konlari mos. 41 EU = US 8.',
+        tools: [{ name: 'suggest_stores', input: { category: 'poyabzal', original: true, budgetUsd: 100, query: 'men sneakers size 41' }, result: { found: true, stores: [{ id: 'nike', name: 'Nike', searchUrl: 'https://www.nike.com/w?q=men+sneakers+size+41' }, { id: 'adidas', name: 'Adidas', searchUrl: 'https://www.adidas.com/us/search?q=men+sneakers' }] } }], model: 'm', usage: {} }) });
       return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: 'Boj $15.00, yig\'im 110 000 so\'m.\nTaxminiy hisob.',
         tools: [{ name: 'customs_duty', input: { goodsUsd: 250, kg: 0.5 }, result: { dutyUsd: 15 } }, { name: 'courier_quotes', input: { country: 'Xitoy', kg: 2 }, result: { country: 'Xitoy' } }], model: 'm', usage: {} }) });
     });
+    /* Skrinshot: soxta /ai/shot — CNY narx, taxminiy kurs bilan. */
+    const shotBodies = [];
+    await context.route(METRICS_URL + 'ai/shot', async r => {
+      shotBodies.push(JSON.parse(r.request().postData() || '{}'));
+      return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ found: true, name: 'Nike Air Max 90', price: 699, currency: 'CNY', priceUsd: 97.86, fxApprox: true, qty: 1, store: 'Taobao', confidence: 0.9 }) });
+    });
     const aiMain = () => page.locator('main').innerText().then(t => t.replace(/\s+/g, ' '));
-    await page.locator('main button').filter({ hasText: 'Pochtam AI' }).first().click(); await page.waitForTimeout(500);
+    /* Bosh sahifadagi asosiy AI tugmalari: "Skrinshot yuklash" (fayl maydoni) va "Tovar topish". */
+    check('bosh sahifa: Skrinshot yuklash va Tovar topish tugmalari, yashirin fayl maydoni', await homeCard('Skrinshot yuklash').count() === 1 && await homeCard('Tovar topish').count() === 1 && await page.locator('input[type="file"][data-shot]').count() === 1);
+    await homeCard('Tovar topish').click(); await page.waitForTimeout(600);
     const aiHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
     const aiIntro = await aiMain();
-    check('Pochtam AI: ekran, kirish matni, 4 ta tez savol, maydon', /Pochtam AI/.test(aiHead) && /Savol bering/.test(aiIntro) && /Masalan/.test(aiIntro) && await page.locator('input[aria-label="Savolingiz"]').count() === 1 && (await page.locator('main button').filter({ hasText: /\?$/ }).count()) === 4, aiHead);
+    const aiPh = await page.locator('input[aria-label="Savolingiz"]').getAttribute('placeholder');
+    check('Pochtam AI: ekran, ikki rejim, 4 ta misol, "Tovar topish" rejimida maydon fokusda', /Pochtam AI/.test(aiHead) && /Skrinshot yuklash/.test(aiIntro) && /Masalan/.test(aiIntro) && /krossovka/.test(aiPh || '') && (await page.evaluate(() => document.activeElement && document.activeElement.getAttribute('aria-label'))) === 'Savolingiz' && (await page.locator('main button').filter({ hasText: /\?$|gacha$/ }).count()) === 4, aiHead + ' · ' + aiPh);
+    await page.locator('main button').filter({ hasText: 'Qanday ishlaydi' }).first().click(); await page.waitForTimeout(300);
+    const howTxt = await aiMain();
+    check('Pochtam AI: "Qanday ishlaydi" — ikki rejim, uch qadam', /Skrinshot yuklash 1 /.test(howTxt) && /Tovar topish 1 /.test(howTxt) && (howTxt.match(/ 3 /g) || []).length >= 2, howTxt.slice(howTxt.indexOf('Qanday'), howTxt.indexOf('Qanday') + 120));
+    /* Tovar topish: so'rov → suggest_stores → do'kon qidiruv havolalari (yangi oynada). */
+    await page.locator('main button').filter({ hasText: 'Krossovka olmoqchiman' }).first().click(); await page.waitForTimeout(800);
+    const links = await page.evaluate(() => [...document.querySelectorAll('main a[target="_blank"]')].map(a => a.innerText.replace(/\s+/g, ' ').trim() + '→' + a.href));
+    check('Pochtam AI: tovar so\'rovi — do\'kon havolalari', links.length === 2 && /^Nike/.test(links[0]) && /nike\.com\/w\?q=men\+sneakers/.test(links[0]) && /noopener/.test((await page.locator('main a[target="_blank"]').first().getAttribute('rel')) || ''), links.join(' | '));
+    /* Skrinshot: fayl → /ai/shot (JPEG, kurs) → "Topildi" xabari → kalkulyator to'ldirilgan (¥ 699, Taobao → Xitoy). */
+    const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFklEQVR42mP8z8BQz0AEYBxVSF+FAAhKDveksOjmAAAAAElFTkSuQmCC', 'base64');
+    await page.setInputFiles('input[type="file"][data-shot]', { name: 'shot.png', mimeType: 'image/png', buffer: PNG }); await page.waitForTimeout(1200);
+    const shotTxt = await aiMain();
+    check('Skrinshot: JPEG va kurs yuboriladi, "Topildi" xabari, taxminiy kurs belgisi', shotBodies.length === 1 && /^data:image\/jpeg;base64,/.test(shotBodies[0].image) && shotBodies[0].usdRate > 1000 && /Topildi: Nike Air Max 90 — 699 CNY ≈ \$97\.86 \(taxminiy kurs\)/.test(shotTxt) && /Do'kon: Taobao/.test(shotTxt), shotTxt.slice(shotTxt.indexOf('Topildi'), shotTxt.indexOf('Topildi') + 80));
+    await page.locator('main button').filter({ hasText: 'Kalkulyatorda ochish' }).last().click(); await page.waitForTimeout(600);
+    const shotCalc = await page.evaluate(() => ({ h: document.querySelector('header').innerText.replace(/\s+/g, ' '), name: document.querySelector('input[aria-label="Mahsulot nomi"]')?.value, price: document.querySelector('input[aria-label="Mahsulot narxi"]')?.value, on: [...document.querySelectorAll('main button[aria-pressed="true"]')].map(b => b.innerText.trim()).slice(0, 3) }));
+    check('Skrinshot → kalkulyator: nom, 699, ¥, Xitoy', /Jami narx/.test(shotCalc.h) && shotCalc.name === 'Nike Air Max 90' && shotCalc.price === '699' && shotCalc.on.includes('¥') && shotCalc.on.includes('Xitoy'), JSON.stringify(shotCalc));
+    await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(400);
+    await page.locator('main button').filter({ hasText: 'Yangi suhbat' }).first().click(); await page.waitForTimeout(300);
+    aiBodies.length = 0; /* yuqoridagi tovar so'rovi sanalmasin */
     await page.locator('main button').filter({ hasText: 'telefon uchun boj' }).first().click(); await page.waitForTimeout(700);
     const aiT1 = await aiMain();
     check('Pochtam AI: savol yuborildi (q, lang, usdRate), javob va vosita tugmalari', aiBodies.length === 1 && /telefon uchun boj/.test(aiBodies[0].q) && aiBodies[0].lang === 'uz' && aiBodies[0].usdRate > 1000 && /Boj \$15\.00/.test(aiT1) && /Kalkulyatorda ochish/.test(aiT1) && /Kuryerlarni ko'rish/.test(aiT1), JSON.stringify(aiBodies[0]).slice(0, 120));
@@ -1052,7 +1082,7 @@ try {
     await nav(0); await bos(/Jami narx|Жами нарх|Итоговая цена/); await skan('jami-narx');
     await nav(0); await bos(/Xaridlarim|Харидларим|Мои покупки/); await skan('xaridlarim');
     for (const re of [/Jo'natmalar|Жўнатмалар|Отправления/, /Sevimlilar|Севимлилар|Избранное/, /Hisoblar|Ҳисоблар|Расчёты/]) { if (await bos(re)) await skan('xaridlarim-tab'); }
-    await nav(0); await bos(/Pochtam AI/); await skan('ai');
+    await nav(0); await bos(/Tovar topish|Товар топиш|Найти товар/); await bos(/Qanday ishlaydi|Қандай ишлайди|Как это работает/); await skan('ai');
     await nav(0); await bos(/Mutaxassis|Мутахассис|Помощь|консульт/); await skan('xizmatlar');
     await bos(/Kuryer tashkilotiman|Курьер ташкилотиман|Я курьерская/); await skan('xizmatlar-kuryer');
     await ctx.close();

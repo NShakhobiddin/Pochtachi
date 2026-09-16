@@ -694,6 +694,14 @@
           <input value="{{ hq }}" sc-camel-on-input="{{ onHq }}" placeholder="Havola yoki mahsulot nomi" type="text" enterkeyhint="go" aria-label="Mahsulot havolasi yoki nomi" style="flex:1;min-width:0;height:40px;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;font-weight:500;color:#131429">
           <button type="submit" style="height:40px;padding:0 16px;border-radius:14px;border:none;background:linear-gradient(155deg,#494FE9,#13189D);color:#FFFFFF;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;flex:none">Boshlash</button>
         </form>
+        <!-- Pochtam AI — asosiy funksiya: skrinshotdan nom va narx, so'rovdan
+             do'kon. Fayl maydoni yashirin; tugma uni ochadi (shotPick). -->
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px">
+          <button sc-camel-on-click="{{ shotPick }}" style="height:48px;border-radius:16px;border:none;background:linear-gradient(155deg,#494FE9,#13189D);color:#FFFFFF;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 12px"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8.5A2.5 2.5 0 016.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0120 8.5V17a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17z"></path><circle cx="12" cy="13" r="3.5"></circle></svg><span>Skrinshot yuklash</span></button>
+          <button sc-camel-on-click="{{ goFind }}" style="height:48px;border-radius:16px;border:1.5px solid #DCDDFA;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 12px"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M11 3.6l1.9 4.6 4.6 1.9-4.6 1.9L11 16.6l-1.9-4.6L4.5 10.1l4.6-1.9z"></path><path d="M18.6 15.2l.7 1.7 1.7.7-1.7.7-.7 1.7-.7-1.7-1.7-.7 1.7-.7z"></path></svg><span>Tovar topish</span></button>
+        </div>
+        <input type="file" accept="image/*" data-shot="1" sc-camel-on-change="{{ onShotFile }}" aria-label="Skrinshot tanlash" style="display:none">
+        <div style="font-size:13px;color:#6B6C85;font-weight:500;line-height:1.5;text-wrap:pretty">Skrinshotdan nom va narxni o'qiyman, so'rovdan do'kon, o'lcham va jami narxni topaman. <button sc-camel-on-click="{{ goHow }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:0">Qanday ishlaydi</button></div>
         <!-- Tez o'tish: eng ko'p kerak bo'ladigan to'rt harakat. -->
         <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
           <sc-for list="{{ quickActs }}" as="qa" hint-placeholder-count="4">
@@ -719,17 +727,6 @@
         <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
       </button>
 
-      <!-- Pochtam AI: savol-javob kirish nuqtasi (7-bosqich). -->
-      <button sc-camel-on-click="{{ goAi }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-        <div style="width:34px;height:34px;border-radius:12px;flex:none;background:linear-gradient(155deg,#494FE9,#13189D);display:flex;align-items:center;justify-content:center">
-          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.6l1.9 4.6 4.6 1.9-4.6 1.9L11 16.6l-1.9-4.6L4.5 10.1l4.6-1.9z"></path><path d="M18.6 15.2l.7 1.7 1.7.7-1.7.7-.7 1.7-.7-1.7-1.7-.7 1.7-.7z"></path></svg>
-        </div>
-        <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
-          <span style="font-size:15px;font-weight:700;color:#131429">Pochtam AI</span>
-          <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">Savol bering — boj, kuryer, do'kon</span>
-        </div>
-        <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
-      </button>
 
       <!-- Mashhur do'konlar: logotip tasmasi, "Barchasi" — do'konlar bo'limi. -->
       <div style="display:flex;flex-direction:column;gap:12px">
@@ -2474,11 +2471,37 @@
        Suhbat brauzer xotirasida, saqlanmaydi. -->
   <sc-if value="{{ sAi }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:12px;min-height:100%">
+      <!-- Fayl maydoni ekranning o'zida: suhbat boshlangach ham kamera tugmasi ishlaydi. -->
+      <input type="file" accept="image/*" data-shot="1" sc-camel-on-change="{{ onShotFile }}" aria-label="Skrinshot tanlash" style="display:none">
       <sc-if value="{{ aiEmpty }}" hint-placeholder-val="{{ true }}">
-        <div style="background:linear-gradient(155deg,#494FE9,#13189D);border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:10px">
-          <span style="font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.15;color:#FFFFFF;text-wrap:balance">Savol bering — boj, kuryer, do'kon</span>
-          <span style="font-size:13px;font-weight:500;color:#DCDDFA;line-height:1.5">Javoblar ilovadagi bojxona qoidalari, kuryer tariflari va do'konlar ro'yxatiga asoslanadi. Hisob-kitobni AI emas, ilovaning o'z kalkulyatori bajaradi.</span>
+        <div style="background:linear-gradient(155deg,#494FE9,#13189D);border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:12px">
+          <span style="font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.15;color:#FFFFFF">Pochtam AI</span>
+          <span style="font-size:13px;font-weight:500;color:#DCDDFA;line-height:1.5">Skrinshotdan narxni o'qiyman, so'rovdan do'kon va jami narxni topaman, boj va kuryer bo'yicha savollarga javob beraman. Hisob-kitobni AI emas, ilovaning o'z kalkulyatori bajaradi.</span>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px">
+            <button sc-camel-on-click="{{ shotPick }}" style="height:44px;border-radius:14px;border:none;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 10px"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8.5A2.5 2.5 0 016.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0120 8.5V17a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17z"></path><circle cx="12" cy="13" r="3.5"></circle></svg><span>Skrinshot yuklash</span></button>
+            <button sc-camel-on-click="{{ aiFindStart }}" style="height:44px;border-radius:14px;border:1.5px solid #C4C6FA;background:transparent;color:#FFFFFF;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 10px"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M11 3.6l1.9 4.6 4.6 1.9-4.6 1.9L11 16.6l-1.9-4.6L4.5 10.1l4.6-1.9z"></path><path d="M18.6 15.2l.7 1.7 1.7.7-1.7.7-.7 1.7-.7-1.7-1.7-.7 1.7-.7z"></path></svg><span>Tovar topish</span></button>
+          </div>
         </div>
+        <!-- Qanday ishlaydi: ikki rejim, uch qadam. -->
+        <button sc-camel-on-click="{{ toggleHow }}" aria-expanded="{{ aiHowOn }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;font-family:inherit;width:100%;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+          <span style="font-size:15px;font-weight:700;color:#131429">Qanday ishlaydi</span>
+          <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transform:{{ aiHowRot }}"><path d="M6 9l6 6 6-6"></path></svg>
+        </button>
+        <sc-if value="{{ aiHowOn }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#FFFFFF;border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+            <sc-for list="{{ aiHow }}" as="h" hint-placeholder-count="2">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <span style="font-size:13px;font-weight:700;color:#1A1FB0">{{ h.t }}</span>
+                <sc-for list="{{ h.steps }}" as="hs" hint-placeholder-count="3">
+                  <div style="display:flex;gap:8px;align-items:flex-start">
+                    <span style="flex:none;width:18px;height:18px;border-radius:999px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#6B6C85">{{ hs.n }}</span>
+                    <span style="font-size:13px;font-weight:500;color:#282944;line-height:1.5">{{ hs.t }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
         <div style="display:flex;flex-direction:column;gap:8px">
           <span style="font-size:13px;font-weight:700;color:#6B6C85;padding:0 2px">Masalan</span>
           <sc-for list="{{ aiQuick }}" as="aq" hint-placeholder-count="4">
@@ -2489,7 +2512,12 @@
       <div role="log" aria-live="polite" style="display:contents">
       <sc-for list="{{ aiRows }}" as="m" hint-placeholder-count="2">
         <sc-if value="{{ m.user }}" hint-placeholder-val="{{ true }}">
-          <div style="align-self:flex-end;max-width:86%;background:#1A1FB0;color:#FFFFFF;border-radius:20px 20px 6px 20px;padding:12px 14px;font-size:15px;font-weight:500;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere">{{ m.text }}</div>
+          <div style="align-self:flex-end;max-width:86%;background:#1A1FB0;color:#FFFFFF;border-radius:20px 20px 6px 20px;padding:12px 14px;font-size:15px;font-weight:500;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;display:flex;flex-direction:column;gap:8px">
+            <sc-if value="{{ m.hasImg }}" hint-placeholder-val="{{ false }}">
+              <div aria-label="Skrinshot" style="width:140px;height:140px;border-radius:12px;background-color:#FFFFFF;background-size:cover;background-position:top center;background-image:{{ m.imgCss }}"></div>
+            </sc-if>
+            <span>{{ m.text }}</span>
+          </div>
         </sc-if>
         <sc-if value="{{ m.bot }}" hint-placeholder-val="{{ false }}">
           <div style="align-self:flex-start;max-width:92%;display:flex;flex-direction:column;gap:10px;background:#FFFFFF;border-radius:20px 20px 20px 6px;padding:12px 14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
@@ -2497,7 +2525,12 @@
             <sc-if value="{{ m.hasActs }}" hint-placeholder-val="{{ true }}">
               <div style="display:flex;flex-wrap:wrap;gap:8px">
                 <sc-for list="{{ m.acts }}" as="a" hint-placeholder-count="2">
-                  <button sc-camel-on-click="{{ a.go }}" style="height:36px;padding:0 14px;border-radius:12px;border:1.5px solid #DCDDFA;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ a.t }}</button>
+                  <sc-if value="{{ a.isLink }}" hint-placeholder-val="{{ false }}">
+                    <a class="xy-tap" sc-camel-on-click="{{ a.hit }}" href="{{ a.href }}" target="_blank" rel="noopener noreferrer" style="height:36px;padding:0 14px;border-radius:12px;border:1.5px solid #DCDDFA;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px">{{ a.t }}<span aria-hidden="true">↗</span></a>
+                  </sc-if>
+                  <sc-if value="{{ a.isBtn }}" hint-placeholder-val="{{ true }}">
+                    <button sc-camel-on-click="{{ a.go }}" style="height:36px;padding:0 14px;border-radius:12px;border:1.5px solid #DCDDFA;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ a.t }}</button>
+                  </sc-if>
                 </sc-for>
       </div>
               </div>
@@ -2509,8 +2542,9 @@
         <div aria-live="polite" style="align-self:flex-start;background:#FFFFFF;border-radius:20px 20px 20px 6px;padding:12px 14px;font-size:13px;font-weight:500;color:#6B6C85;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">Javob tayyorlanmoqda…</div>
       </sc-if>
       <div style="flex:1"></div>
-      <form sc-camel-on-submit="{{ aiSubmit }}" style="position:sticky;bottom:6px;display:flex;align-items:center;gap:8px;background:#FFFFFF;border-radius:20px;padding:6px 6px 6px 14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-        <input value="{{ aiQ }}" sc-camel-on-input="{{ onAiQ }}" placeholder="Savolingiz" type="text" enterkeyhint="send" maxlength="600" aria-label="Savolingiz" autocomplete="off" style="flex:1;min-width:0;height:40px;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;font-weight:500;color:#131429">
+      <form sc-camel-on-submit="{{ aiSubmit }}" style="position:sticky;bottom:6px;display:flex;align-items:center;gap:8px;background:#FFFFFF;border-radius:20px;padding:6px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+        <button type="button" sc-camel-on-click="{{ shotPick }}" aria-label="Skrinshot yuklash" style="flex:none;width:40px;height:40px;border-radius:14px;border:none;cursor:pointer;background:#E9EAFD;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8.5A2.5 2.5 0 016.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0120 8.5V17a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></button>
+        <input value="{{ aiQ }}" sc-camel-on-input="{{ onAiQ }}" placeholder="{{ aiPlaceholder }}" type="text" enterkeyhint="send" maxlength="600" aria-label="Savolingiz" autocomplete="off" style="flex:1;min-width:0;height:40px;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;font-weight:500;color:#131429">
         <button type="submit" aria-label="Yuborish" style="flex:none;width:40px;height:40px;border-radius:14px;border:none;cursor:pointer;background:{{ aiSendBg }};display:flex;align-items:center;justify-content:center">
           <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="M12 6l6 6-6 6"></path></svg>
         </button>
@@ -4084,6 +4118,23 @@ const RU = {
   'Xabar berish sahifasi ochildi':'Страница для сообщения открыта', 'Sevimlilardan olib tashlandi':'Удалено из избранного', "Sevimlilarga qo'shildi":'Добавлено в избранное',
   "Nusxalab bo'lmadi — matnni qo'lda belgilang":'Не удалось скопировать — выделите текст вручную', 'nusxalandi':'скопировано',
   'Milliy valyutada':'В национальной валюте', "Bu oyda ${0} kelgan — bojsiz qoldiq ${1}.":'В этом месяце уже пришло ${0} — беспошлинный остаток ${1}.',
+  /* Pochtam AI — skrinshot va tovar topish (8-bosqich) */
+  'Skrinshot yuklash':'Загрузить скриншот', 'Tovar topish':'Найти товар', 'Qanday ishlaydi':'Как это работает', 'Skrinshot tanlash':'Выбрать скриншот', 'Skrinshot':'Скриншот',
+  "Skrinshotdan nom va narxni o'qiyman, so'rovdan do'kon, o'lcham va jami narxni topaman.":'Из скриншота прочитаю название и цену, по запросу найду магазин, размер и итоговую цену.',
+  "Skrinshotdan narxni o'qiyman, so'rovdan do'kon va jami narxni topaman, boj va kuryer bo'yicha savollarga javob beraman. Hisob-kitobni AI emas, ilovaning o'z kalkulyatori bajaradi.":'Прочитаю цену со скриншота, по запросу найду магазин и итоговую цену, отвечу на вопросы о пошлине и курьерах. Расчёты делает не ИИ, а собственный калькулятор приложения.',
+  "Do'kon sahifasida narx ko'rinadigan joyni skrinshot qiling.":'Сделайте скриншот страницы магазина так, чтобы была видна цена.',
+  '"Skrinshot yuklash" — rasm telefonda kichraytirilib yuboriladi, saqlanmaydi.':'«Загрузить скриншот» — картинка уменьшается на телефоне и отправляется, не сохраняется.',
+  'Nom va narx o\'qiladi; "Kalkulyatorda ochish" — vazn va davlatni tasdiqlaysiz, jami narx chiqadi.':'Читаются название и цена; «Открыть в калькуляторе» — подтверждаете вес и страну, выходит итоговая цена.',
+  "Nima kerakligini oddiy yozing: tovar, kimga, original kerakmi, o'lcham, byudjet.":'Напишите простыми словами: что нужно, для кого, нужен ли оригинал, размер, бюджет.',
+  "AI mos do'konlarni tanlaydi (originallik, narx segmenti) va har biriga qidiruv havolasi beradi.":'ИИ подберёт подходящие магазины (оригинальность, ценовой сегмент) и даст ссылку на поиск в каждом.',
+  "O'lcham jadvali va byudjetdagi tovar uchun jami narx (boj, kargo) ham chiqadi.":'Также покажет таблицу размеров и итоговую цену товара в вашем бюджете (пошлина, доставка).',
+  'Krossovka olmoqchiman: erkaklarniki, original, 41 razmer, $100 gacha':'Хочу кроссовки: мужские, оригинал, 41 размер, до $100',
+  'Masalan: krossovka, erkaklar, original, 41 razmer, $100 gacha':'Например: кроссовки, мужские, оригинал, 41 размер, до $100',
+  'Rasm faylini tanlang':'Выберите файл изображения', "Rasm o'qilmadi — boshqa faylni tanlang.":'Изображение не прочиталось — выберите другой файл.',
+  "Rasmdan narx o'qilmadi. Do'kon sahifasida narx ko'rinadigan joyni skrinshot qiling yoki narxni qo'lda yozing.":'Цена на скриншоте не найдена. Сделайте скриншот так, чтобы была видна цена, или введите её вручную.',
+  'Topildi: {0} — {1}':'Найдено: {0} — {1}', 'taxminiy kurs':'примерный курс', 'mahsulot':'товар', '{0} dona':'{0} шт.',
+  "Narxga ishonch past — kalkulyatorda tekshiring.":'Уверенность в цене низкая — проверьте в калькуляторе.',
+  "Kalkulyatorda vazn va davlatni tasdiqlang — jami narx chiqadi.":'Подтвердите вес и страну в калькуляторе — выйдет итоговая цена.',
   /* Pochtam AI (7-bosqich) */
   'Pochtam AI':'Pochtam AI', "Savol bering — boj, kuryer, do'kon":'Задайте вопрос — пошлина, курьер, магазин',
   "Javoblar ilovadagi bojxona qoidalari, kuryer tariflari va do'konlar ro'yxatiga asoslanadi. Hisob-kitobni AI emas, ilovaning o'z kalkulyatori bajaradi.":'Ответы основаны на таможенных правилах, тарифах курьеров и списке магазинов из приложения. Расчёты делает не ИИ, а собственный калькулятор приложения.',
@@ -5261,7 +5312,7 @@ class Component extends DCLogic {
     /* Xaridlarim: faol tab va saqlangan hisoblar. */
     mineTab: 'plans', calcs: Array.isArray(SAVED.calcs) ? SAVED.calcs : [],
     /* Pochtam AI suhbati — faqat xotirada. */
-    aiMsgs: [], aiQ: '', aiBusy: false,
+    aiMsgs: [], aiQ: '', aiBusy: false, aiFind: false, aiHow: false,
     storeCountries: SAVED.storeCountries || [], storeCats: SAVED.storeCats || [],
     storeDirect: !!SAVED.storeDirect, storeGroup: SAVED.storeGroup || 'cat',
     courierCountries: SAVED.courierCountries || [], courierMode: SAVED.courierMode || null,
@@ -5929,9 +5980,11 @@ class Component extends DCLogic {
     }
     /* Savol ko'rinishidagi matn (so'roq belgisi yoki so'roq so'zi) — Pochtam AI. */
     const plain = raw.replace(/[\u2018\u2019`\u02BB\u02BC]/g, "'");
-    if (/\?\s*$/.test(plain) || /^(qancha|qanday|qaysi|nima|necha|nega|bo'ladimi|mumkinmi|kerakmi|қанча|қандай|қайси|нима|неча|сколько|как|какой|какая|можно|что|почему|нужно)\b/i.test(plain)) {
-      metrics.hit('hero', 'ai');
-      this.setState({ homeQuery: '' });
+    /* Mahsulot so'rovi ("krossovka olmoqchiman, 41 razmer, $100 gacha") ham AI ga. */
+    const wantsProduct = /(olmoqchiman|olmoqchi|kerak|qidiryapman|topib ber|razmer|gacha|byudjet|olмoqchiman|олмоқчиман|керак|размер|хочу|нужн|найд|бюджет|до \$?\d)/i.test(plain) || (plain.match(/,/g) || []).length >= 2;
+    if (/\?\s*$/.test(plain) || wantsProduct || /^(qancha|qanday|qaysi|nima|necha|nega|bo'ladimi|mumkinmi|kerakmi|қанча|қандай|қайси|нима|неча|сколько|как|какой|какая|можно|что|почему|нужно)\b/i.test(plain)) {
+      metrics.hit('hero', wantsProduct ? 'ai:find' : 'ai');
+      this.setState({ homeQuery: '', aiFind: wantsProduct });
       this.push('ai');
       this.aiAsk(raw);
       return;
@@ -6054,6 +6107,76 @@ class Component extends DCLogic {
       .catch(e => this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', err: (e && e.code) || 'net', text: errMsg(e && e.code) }] })))
       .then(() => { clearTimeout(timer); this.setState({ aiBusy: false }); this._aiScroll(); });
   }
+  /* Skrinshot: fayl → 1280 px JPEG (brauzerda) → /ai/shot → nom, narx,
+     valyuta; javob ostidagi "Kalkulyatorda ochish" maydonlarni to'ldiradi.
+     Rasm serverda saqlanmaydi. */
+  shotPick() {
+    const root = this._rootRef.current;
+    const inp = root && root.querySelector('input[type="file"][data-shot]');
+    if (inp) { inp.value = ''; inp.click(); }
+  }
+  shotResize(file) {
+    const MAX = 1280;
+    const url = URL.createObjectURL(file);
+    return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; })
+      .then(img => {
+        const k = Math.min(1, MAX / Math.max(1, img.naturalWidth, img.naturalHeight));
+        const c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(img.naturalWidth * k)); c.height = Math.max(1, Math.round(img.naturalHeight * k));
+        const g = c.getContext('2d'); g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+        return c.toDataURL('image/jpeg', 0.82);
+      })
+      .finally(() => URL.revokeObjectURL(url));
+  }
+  aiShot(file) {
+    const st = this.state;
+    if (!file || st.aiBusy) return;
+    if (!/^image\//.test(file.type || '')) { this.toast(tr(st.lang, 'Rasm faylini tanlang')); return; }
+    if (this.cur() !== 'ai') this.push('ai');
+    const errMsg = code => tr(st.lang, code === 'limit'
+      ? "Bugungi savollar chegarasi tugadi — ertaga davom etamiz. Hozircha kalkulyator va kuryerlar ro'yxati ishlaydi."
+      : "AI vaqtincha mavjud emas. Kalkulyator va kuryerlar ro'yxati ishlayveradi.");
+    const fail = (code, text) => this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', err: code, text }] }));
+    metrics.hit('ai_question', 'shot');
+    this.setState({ aiBusy: true });
+    this.shotResize(file).then(dataUrl => {
+      this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'user', text: tr(x.lang, 'Skrinshot'), img: dataUrl }] }));
+      this._aiScroll();
+      if (!METRICS_URL) { fail('no_key', errMsg('no_key')); return; }
+      const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const timer = setTimeout(() => { if (ctrl) ctrl.abort(); }, 60000);
+      return fetch(METRICS_URL + 'ai/shot', { method: 'POST', headers: { 'content-type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify({ image: dataUrl, lang: st.lang, usdRate: USD_RATE }), signal: ctrl ? ctrl.signal : undefined })
+        .then(async r => {
+          const j = await r.json().catch(() => null);
+          if (!r.ok || !j) { const e = new Error('shot'); e.code = (j && j.code) || (r.status === 429 ? 'limit' : 'upstream'); throw e; }
+          return j;
+        })
+        .then(j => {
+          const lang = this.state.lang;
+          if (!j.found) {
+            this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', text: tr(lang, "Rasmdan narx o'qilmadi. Do'kon sahifasida narx ko'rinadigan joyni skrinshot qiling yoki narxni qo'lda yozing."), tools: [{ name: 'shot', input: {}, result: { found: false } }] }] }));
+            return;
+          }
+          const priceTxt = j.price + ' ' + j.currency + (j.currency !== 'USD' && j.priceUsd > 0 ? ' ≈ $' + j.priceUsd + (j.fxApprox ? ' (' + tr(lang, 'taxminiy kurs') + ')' : '') : '');
+          const parts = [tx(lang, 'Topildi: {0} — {1}', j.name || tr(lang, 'mahsulot'), priceTxt)];
+          if (j.store) parts.push(tr(lang, "Do'kon") + ': ' + j.store);
+          if (j.qty > 1) parts.push(tx(lang, '{0} dona', j.qty));
+          if (j.confidence < 0.6) parts.push(tr(lang, "Narxga ishonch past — kalkulyatorda tekshiring."));
+          parts.push(tr(lang, "Kalkulyatorda vazn va davlatni tasdiqlang — jami narx chiqadi."));
+          this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', text: parts.join('\n'), tools: [{ name: 'shot', input: {}, result: j }] }] }));
+        })
+        .catch(e => fail((e && e.code) || 'net', errMsg(e && e.code)))
+        .then(() => clearTimeout(timer));
+    }).catch(() => fail('img', tr(this.state.lang, "Rasm o'qilmadi — boshqa faylni tanlang.")))
+      .then(() => { this.setState({ aiBusy: false }); this._aiScroll(); });
+  }
+  /* "Tovar topish" rejimi: AI ekrani, maydonda so'rov namunasi, fokus. */
+  aiFindMode() {
+    this.setState({ aiFind: true });
+    if (this.cur() !== 'ai') this.push('ai');
+    setTimeout(() => { const r = this._rootRef.current; const i = r && r.querySelector('input[aria-label="Savolingiz"]'); if (i) i.focus(); }, 350);
+  }
   _aiScroll() {
     requestAnimationFrame(() => { const m = this._mainEl(); if (m && this.cur() === 'ai') m.scrollTop = m.scrollHeight; });
   }
@@ -6062,8 +6185,13 @@ class Component extends DCLogic {
      to'ldirilgan holda ochiladi; 8-bosqich). */
   aiVm(st) {
     const lang = st.lang;
-    const QUICK = ["$250 lik telefon uchun boj qancha bo'ladi?", "Xitoydan 2 kg yukni qaysi kuryer arzon olib keladi?",
-      "Powerbank buyurtma qilsam bo'ladimi?", "Bir oyda ikki posilka kelsa me'yor qanday hisoblanadi?"];
+    const QUICK = ["Krossovka olmoqchiman: erkaklarniki, original, 41 razmer, $100 gacha", "$250 lik telefon uchun boj qancha bo'ladi?",
+      "Xitoydan 2 kg yukni qaysi kuryer arzon olib keladi?", "Powerbank buyurtma qilsam bo'ladimi?"];
+    const HOW = [
+      ['Skrinshot yuklash', ["Do'kon sahifasida narx ko'rinadigan joyni skrinshot qiling.", "\"Skrinshot yuklash\" — rasm telefonda kichraytirilib yuboriladi, saqlanmaydi.", "Nom va narx o'qiladi; \"Kalkulyatorda ochish\" — vazn va davlatni tasdiqlaysiz, jami narx chiqadi."]],
+      ['Tovar topish', ["Nima kerakligini oddiy yozing: tovar, kimga, original kerakmi, o'lcham, byudjet.", "AI mos do'konlarni tanlaydi (originallik, narx segmenti) va har biriga qidiruv havolasi beradi.", "O'lcham jadvali va byudjetdagi tovar uchun jami narx (boj, kargo) ham chiqadi."]]
+    ];
+    const LC_CURS = ['USD', 'EUR', 'GBP', 'CNY', 'TRY', 'UZS'];
     const acts = m => {
       const out = [], seen = new Set();
       for (const t of m.tools || []) {
@@ -6081,8 +6209,22 @@ class Component extends DCLogic {
         } else if (t.name === 'find_store' && res.stores && res.stores[0] && STORES.some(x => x.id === res.stores[0].id)) {
           const id = res.stores[0].id;
           a = ['store', "Do'konni ochish", () => { this.warmGuide(id); this.setState({ storeId: id }); this.push('store'); }];
+        } else if (t.name === 'suggest_stores' && Array.isArray(res.stores)) {
+          /* Har do'kon uchun qidiruv havolasi (yangi oynada). */
+          for (const sg of res.stores.slice(0, 4)) {
+            const k = 'link:' + sg.id;
+            if (seen.has(k) || !/^https:\/\//.test(sg.searchUrl || '')) continue;
+            seen.add(k); out.push({ t: sg.name, href: sg.searchUrl, isLink: true, isBtn: false, hit: () => metrics.hit('quick', 'ai:link') });
+          }
+        } else if (t.name === 'shot') {
+          if (res.found) {
+            const cur = LC_CURS.includes(res.currency) ? res.currency : 'USD';
+            const store = res.store ? STORES.find(x => norm(x.name) === norm(res.store) || (x.domain && norm(res.store).includes(norm(x.domain.split('.')[0])))) : null;
+            a = ['calc', 'Kalkulyatorda ochish', () => this.openLanded({ name: res.name || '', price: String(cur === res.currency ? res.price : (res.priceUsd || res.price)), cur,
+              qty: String(res.qty || 1), storeId: store ? store.id : null, country: store && LC_COUNTRIES.includes(store.country) ? store.country : LC_DEFAULT.country })];
+          } else a = ['calc', 'Jami narx', () => this.openLanded()];
         }
-        if (a && !seen.has(a[0])) { seen.add(a[0]); out.push({ t: tr(lang, a[1]), go: () => { metrics.hit('quick', 'ai:' + a[0]); a[2](); } }); }
+        if (a && !seen.has(a[0])) { seen.add(a[0]); out.push({ t: tr(lang, a[1]), isBtn: true, isLink: false, go: () => { metrics.hit('quick', 'ai:' + a[0]); a[2](); } }); }
       }
       return out;
     };
@@ -6095,8 +6237,18 @@ class Component extends DCLogic {
       aiQuick: QUICK.map(q => ({ t: tr(lang, q), go: () => this.aiAsk(tr(lang, q)) })),
       aiRows: st.aiMsgs.map(m => {
         const a = m.role === 'user' ? [] : acts(m);
-        return { user: m.role === 'user', bot: m.role !== 'user', text: m.text, fg: m.err ? '#B42318' : '#131429', acts: a, hasActs: a.length > 0 };
+        return { user: m.role === 'user', bot: m.role !== 'user', text: m.text, fg: m.err ? '#B42318' : '#131429', acts: a, hasActs: a.length > 0,
+          hasImg: !!m.img, imgCss: m.img ? 'url(' + m.img + ')' : 'none' };
       }),
+      aiPlaceholder: tr(lang, st.aiFind ? 'Masalan: krossovka, erkaklar, original, 41 razmer, $100 gacha' : 'Savolingiz'),
+      aiHowOn: !!st.aiHow, aiHowRot: st.aiHow ? 'rotate(180deg)' : 'none',
+      aiHow: HOW.map(([t, steps]) => ({ t: tr(lang, t), steps: steps.map((x, i) => ({ n: String(i + 1), t: tr(lang, x) })) })),
+      toggleHow: () => this.setState({ aiHow: !st.aiHow }),
+      goHow: () => { metrics.hit('quick', 'ai:how'); this.setState({ aiHow: true }); this.push('ai'); },
+      goFind: () => { metrics.hit('quick', 'ai:find'); this.aiFindMode(); },
+      aiFindStart: () => this.aiFindMode(),
+      shotPick: () => { metrics.hit('quick', 'ai:shot'); this.shotPick(); },
+      onShotFile: e => { const f = e.target.files && e.target.files[0]; if (f) this.aiShot(f); },
       goAi: () => { metrics.hit('quick', 'ai'); this.push('ai'); }
     };
   }
@@ -6578,7 +6730,7 @@ class Component extends DCLogic {
         const onF = key => e => setLc({ [key]: e.target.value });
         const chip = on => on ? { on: true, bg: '#1A1FB0', fg: '#FFFFFF', bd: '#1A1FB0' } : { on: false, bg: '#FFFFFF', fg: '#131429', bd: '#DCDDFA' };
         const fx = TARIFFS && TARIFFS.fx || {};
-        const curs = [['USD', '$'], ['EUR', '€'], ['GBP', '£'], ['UZS', "so'm"]];
+        const curs = [['USD', '$'], ['EUR', '€'], ['GBP', '£'], ['CNY', '¥'], ['TRY', '₺'], ['UZS', "so'm"]];
         const fxOf = c => c === 'USD' ? 1 : c === 'UZS' ? (USD_RATE > 0 ? 1 / USD_RATE : 0) : (num(fx[c]) || 0);
         const priceUsd = Math.max(0, num(lc.price)) * fxOf(lc.cur);
         const qty = Math.max(1, Math.round(num(lc.qty) || 1));

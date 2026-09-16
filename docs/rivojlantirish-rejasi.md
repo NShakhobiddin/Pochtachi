@@ -92,7 +92,7 @@ Bular kod emas, huquqiy manbaga tayangan matn — buyurtmachidan manba kerak.
 | 14. Qo'llanmalarda CTA | kalkulyator tab bor | Har qo'llanmaga "Shu do'kondan hisoblash" va "Kuryerlarni solishtirish" — `postMessage` bilan ilovaga store/country uzatiladi |
 | 15–18. AI | ✓ `worker/src/ai.js` | O'sha worker'da `/ai`, Claude API, 5 ta vosita (`core/` orqali); qoidalar `data/ai-rules.md`, baza `kb.generated.js`. Panel iframe emas, ilovaning o'z ekrani `ai` (javob tugmalari ilova holatini to'ldiradi; +16 KB) |
 | 19–20. Server, xarajat | ✓ | Kalit `ANTHROPIC_API_KEY` sirida; DO orqali IP/kun (20) va umumiy (300) chegara; tizim ko'rsatmasi keshda; savol matni saqlanmaydi |
-| 21–23. Havola, skrinshot | yo'q | 3-bosqichda havoladan faqat do'kon aniqlanadi, narx so'raladi; skrinshot — 8-bosqich, arxitektura tayyor (rasm → o'sha `landed` kirishi) |
+| 21–23. Havola, skrinshot | ✓ | Havola → do'kon (3-bosqich); skrinshot → `/ai/shot` → nom, narx, valyuta → `landed` kirishi (8-bosqich) |
 | 24. Olish foydalimi | yo'q | `landed` ekranida bitta ixtiyoriy maydon "O'zbekistondagi narx" → "Tejash: …" |
 | 25. Bugun Pochtam'da | `TIPS` | Saqlanadi; ustiga tirik kurs va qolgan me'yor; kanal ulanishi keyin |
 | 26. Konsultatsiya | 11 xizmat | Saqlanadi; "Murakkab holatmi?" bloki holat bo'yicha xizmatga olib boradi; AI chegaradan chiqsa shu blokka yo'naltiradi |
@@ -168,7 +168,7 @@ talabining texnik kafolati.
 | 5 | Kuryer taqqoslash ✓ (2026-09-15) | "Vazn bo'yicha hisob" paneli (kg, davlat, arzon/tez/optimal), kartalarda hisoblangan summa va tartib, taqqoslash jadvalida hisob qatori, bosh sahifa va jami narxdan prefill | ✓ smoke: 4 tekshiruv |
 | 6 | Xaridlarim + jo'natmalar ✓ (2026-09-15) | `mine` ekrani (Rejalar, Jo'natmalar, Sevimlilar, Hisoblar — kalkulyatorning oxirgi 10 hisobi), "Bojxonada" holati (PLAN_LAST=5, fixPlan migratsiyasi sv:2) | ✓ eski reja 4→5 ko'chadi; smoke: 4 tekshiruv |
 | 7 | Pochtam AI ✓ (2026-09-16) | worker `/ai` (Claude API, kalit sirda, IP/umumiy kunlik chegara), 5 vosita `core/` dan, `data/ai-rules.md`, `kb.generated.js`; ilovada `ai` ekrani (tez savollar, tarix, 503/429 holatlari, bosh sahifa kartasi, universal maydondagi savol, desktop menyu); `tests/ai-eval.json` + `tests/ai.mjs` | ✓ worker testi: vosita natijasi core bilan bir xil, kalitsiz 503; smoke: 9 tekshiruv; kalit repo va brauzerda yo'q |
-| 8 | AI + funksiyalar (qisman ✓) | ✓ javob ostidagi tugmalar: kalkulyator (narx/vazn/davlat), kuryer paneli, taqiqlar, do'kon; qoladi: AI'dan to'g'ridan-to'g'ri reja tuzish, qo'llanma bo'limiga o'tish | tugmalar ishlaydi (smoke), o'lchov `quick:ai:*` |
+| 8 | AI + funksiyalar ✓ (2026-09-16) | Bosh sahifada asosiy funksiya: **Skrinshot yuklash** (`/ai/shot`, Haiku, tuzilgan JSON → kalkulyator) va **Tovar topish** (`suggest_stores`, do'kon havolalari, o'lcham jadvali, jami narx) + "Qanday ishlaydi" qo'llanmasi; javob tugmalari: kalkulyator, kuryer paneli, taqiqlar, do'kon, havolalar. Qoladi: AI'dan to'g'ridan-to'g'ri reja tuzish | worker 78 tekshiruv, smoke 189; TZ 21–23 (havola, skrinshot) yopildi |
 | 9 | Keyingi | havola tahlili (ochiq do'konlar), skrinshot, Score, real tracking | alohida topshiriq |
 
 Har bosqich alohida commit(lar), har biridan keyin `smoke`, `guides`,

@@ -294,12 +294,42 @@ bo'lmagan rejada 4 ("Keldi") → 5, keyin `sv: 2`. Real tracking yo'q va
 shunday deb yoziladi; holat qo'lda belgilanadi. Kuryer API uchun joy:
 `trackedList[].site` (kuryer kuzatuv sahifasi) va `track`.
 
-## Pochtam AI (7-bosqich)
+## Pochtam AI (7–8-bosqich)
 
-Savol-javob ekrani `ai` (bosh sahifadagi "Pochtam AI" kartasi, kompyuter
-menyusidagi bo'lim, universal maydonga yozilgan savol — `?` yoki so'roq
-so'zi bilan boshlangan matn). Suhbat faqat brauzer xotirasida (`aiMsgs`),
-saqlanmaydi.
+Ilovaning asosiy funksiyasi — bosh sahifada universal maydon ostida ikkita
+tugma: **Skrinshot yuklash** va **Tovar topish**, yonida "Qanday ishlaydi"
+(AI ekranida ikki rejim uchun 3 qadamli qo'llanma, `aiHow`). Savol-javob
+ekrani `ai` ga kirish: shu tugmalar, kompyuter menyusidagi bo'lim,
+universal maydonga yozilgan savol (`?`, so'roq so'zi) yoki mahsulot so'rovi
+("olmoqchiman", "razmer", "gacha", ikki vergul — `heroGo`). Suhbat faqat
+brauzer xotirasida (`aiMsgs`), saqlanmaydi.
+
+**Skrinshot yuklash** (`aiShot`). Fayl brauzerda canvas bilan 1280 px ga
+kichraytirilib JPEG (0.82) qilinadi va `POST /ai/shot` ga ketadi (`image`
+data URL, `lang`, `usdRate`). Worker (`handleShot`) bitta chaqiruv bilan,
+vositasiz, arzon modelga (`AI_SHOT_MODEL`, standart `claude-haiku-4-5`)
+tuzilgan JSON so'raydi: nom, narx, valyuta, miqdor, do'kon, ishonch
+(`SHOT_SCHEMA`, `output_config.format`; rad etilsa matndan JSON). Valyuta
+`data/tariffs.json` `fx` bilan dollarga o'giriladi (CNY/TRY/KRW/AED/RUB
+taxminiy — `fxApprox`). Javob suhbatga "Topildi: … — 699 CNY ≈ $97.86"
+bo'lib tushadi, "Kalkulyatorda ochish" nom, narx, valyuta (¥/₺ chiplari
+qo'shildi), miqdor, do'kon va davlatni to'ldiradi; vazn va davlatni
+foydalanuvchi tasdiqlaydi, hisob `core/` da. Rasm serverda saqlanmaydi va
+log qilinmaydi. Narx topilmasa — "qo'lda yozing" + "Jami narx" tugmasi.
+Narx: bir skrinshot ≈ 1 500 kirish tokeni, chat savolidan bir necha
+barobar arzon.
+
+**Tovar topish**. "krossovka olmoqchiman, erkaklarniki, original, 41
+razmer, $100 gacha" kabi so'rov → `data/ai-rules.md` "Tovar topish"
+bo'limi: AI kategoriya, originallik, o'lcham, byudjetni ajratadi,
+`suggest_stores` vositasi (`worker/src/ai.js`) bazadan mos do'konlarni
+tanlaydi (kategoriya hal qiluvchi, originallik "Yuqori", byudjet → narx
+segmenti) va har biriga qidiruv havolasi beradi (`SEARCH_URL`, 27 do'kon;
+qolganlarida do'kon manzili). Javob ostida do'kon nomli tugmalar yangi
+oynada ochiladi; o'lcham jadvali (EU/US/sm) va byudjetdagi tovar uchun jami
+narx (`landed_cost`). Konkret mahsulot va joriy narxni AI bilmaydi va
+shunday deydi — bu bosqichda web search yo'q (narx va sifat sabab; keyingi
+variantlar `docs/rivojlantirish-rejasi.md` 9-bosqichda).
 
 **Qanday ishlaydi.** Ilova savolni, oxirgi 6 xabarni, tilni va joriy kursni
 o'lchov serveriga yuboradi (`METRICS_URL + 'ai'`, `worker/src/ai.js`).
@@ -342,6 +372,12 @@ me'yor, ruscha, mavzudan tashqari) va mezonlar: kerakli vosita
 chaqirilganmi, javobda kutilgan ifoda bormi, vositasiz raqam yo'qmi, til
 to'g'rimi. `AI_URL=https://<worker>/ai node tests/ai.mjs` — tirik worker
 bilan; `AI_URL` bo'lmasa o'tkazib yuboriladi.
+
+Sinov: `tests/ai-eval.json` da tovar so'rovi uchun 3 savol (vosita
+`suggest_stores`, javobda havola matni emas — tugma). Worker testlari:
+`/ai/shot` (rasm bloki, JSON sxema, zaxira yo'l, CNY → USD), `suggest_stores`
+reytingi. Smoke: bosh sahifa tugmalari, "Qanday ishlaydi", do'kon havolalari,
+skrinshot → kalkulyator (soxta `/ai/shot`).
 
 Rejadagi `ai/index.html` iframe o'rniga ekran ilovaning o'zida: javob
 ostidagi tugmalar ilova holatini to'ldirishi kerak (kalkulyator, kuryer

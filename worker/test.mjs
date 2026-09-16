@@ -152,5 +152,46 @@ check('tizim ko\'rsatmasi: qoidalar, me\'yor, kuryer va do\'kon bazasi', /HECH Q
 check('tizim ko\'rsatmasida kalit yo\'q', !/sk-/.test(sys));
 check('parseAiBody: rollar navbat bilan, oxirgi assistant', JSON.stringify(parseAiBody(JSON.stringify({ q: 'a', history: [{ role: 'assistant', text: 'x' }, { role: 'user', text: 'u1' }, { role: 'user', text: 'u2' }, { role: 'assistant', text: 'a1' }, { role: 'user', text: 'u3' }] })).history) === JSON.stringify([{ role: 'user', text: 'u1\nu2' }, { role: 'assistant', text: 'a1' }]));
 
+/* --- Skrinshot (/ai/shot) va do'kon tavsiyasi (suggest_stores) --- */
+const { parseShotBody, normalizeShot, searchUrl } = await import('./src/ai.js');
+const PNG1 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+const shot = (body, extra = {}, ip = '3.3.3.3') => worker.fetch(new Request('https://w/ai/shot', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': ip }, body: JSON.stringify(body) }), aiEnv(extra), ctx);
+check('parseShotBody: data URL dan mime va base64', (() => { const p = parseShotBody(JSON.stringify({ image: 'data:image/png;base64,' + PNG1 })); return typeof p === 'object' && p.mime === 'image/png' && p.image === PNG1; })());
+check('parseShotBody: rasmsiz — xato', typeof parseShotBody(JSON.stringify({ lang: 'uz' })) === 'string');
+check('parseShotBody: begona tur — xato', typeof parseShotBody(JSON.stringify({ image: PNG1, mime: 'image/gif' })) === 'string');
+const n1 = normalizeShot({ name: ' Nike Air Max 90 ', price: '129.99', currency: 'usd', qty: 0, store: 'Amazon', confidence: 0.9 }, 12650);
+check('normalizeShot: USD narx, nom, miqdor 1', n1.found && n1.priceUsd === 129.99 && n1.name === 'Nike Air Max 90' && n1.qty === 1 && !n1.fxApprox, JSON.stringify(n1));
+const n2 = normalizeShot({ name: 'Kurtka', price: 699, currency: 'CNY', qty: 2, store: 'Taobao', confidence: 0.7 }, 12650);
+check('normalizeShot: CNY → USD taxminiy kurs bilan, belgi', n2.found && n2.priceUsd > 80 && n2.priceUsd < 110 && n2.fxApprox && n2.qty === 2, JSON.stringify(n2));
+check('normalizeShot: narx yo\'q — found=false', !normalizeShot({ price: 0, currency: '' }, 12650).found);
+check('shot: kalitsiz 503', (await worker.fetch(new Request('https://w/ai/shot', { method: 'POST', headers: { origin: 'https://x' }, body: JSON.stringify({ image: PNG1, mime: 'image/png' }) }), { ...env }, ctx)).status === 503);
+check('shot: rasmsiz 400', (await shot({ lang: 'uz' }, { AI_FETCH: () => claudeText('{}') })).status === 400);
+let shotReq = null;
+const fakeShot = async (url, init) => {
+  shotReq = JSON.parse(init.body);
+  return new Response(JSON.stringify({ model: 'claude-haiku-4-5', stop_reason: 'end_turn', usage: { input_tokens: 1500, output_tokens: 60 },
+    content: [{ type: 'text', text: JSON.stringify({ name: 'Nike Air Max 90', price: 129.99, currency: 'USD', qty: 1, store: 'Amazon', confidence: 0.92 }) }] }), { status: 200 });
+};
+const sr = await shot({ image: 'data:image/png;base64,' + PNG1, lang: 'uz', usdRate: 12650 }, { AI_FETCH: fakeShot });
+const sj = await sr.json();
+check('shot: rasm Claude\'ga base64 blok bilan, JSON sxema so\'raladi, arzon model', shotReq && shotReq.model === 'claude-haiku-4-5' && shotReq.messages[0].content[0].type === 'image' && shotReq.messages[0].content[0].source.data === PNG1 && shotReq.output_config && shotReq.output_config.format.type === 'json_schema' && !shotReq.tools, JSON.stringify(shotReq).slice(0, 160));
+check('shot: javob — nom, narx, USD, ishonch', sr.status === 200 && sj.found && sj.name === 'Nike Air Max 90' && sj.priceUsd === 129.99 && sj.confidence === 0.92 && sj.usage.input === 1500, JSON.stringify(sj).slice(0, 160));
+/* Tuzilgan chiqish 400 bersa — oddiy so'rov, matn ichidan JSON. */
+let calls2 = 0;
+const fallbackShot = async (url, init) => { calls2++; const b = JSON.parse(init.body); if (b.output_config) return new Response(JSON.stringify({ error: { type: 'invalid_request_error', message: 'output_config.format is not supported' } }), { status: 400 });
+  return new Response(JSON.stringify({ model: 'm', stop_reason: 'end_turn', content: [{ type: 'text', text: 'Mana: {"name":"Kurtka","price":699,"currency":"CNY","qty":1,"store":"Taobao","confidence":0.6} tayyor' }] }), { status: 200 }); };
+const sr2 = await (await shot({ image: PNG1, mime: 'image/png', usdRate: 12650 }, { AI_FETCH: fallbackShot }, '3.3.3.4')).json();
+check('shot: sxema rad etilsa matndan JSON, CNY → USD', calls2 === 2 && sr2.found && sr2.currency === 'CNY' && sr2.fxApprox && sr2.priceUsd > 80, JSON.stringify(sr2).slice(0, 120));
+const sr3 = await (await shot({ image: PNG1, mime: 'image/png' }, { AI_FETCH: () => claudeText('rasmda narx ko\'rinmayapti') }, '3.3.3.5')).json();
+check('shot: JSON topilmasa found=false, code unreadable', sr3.found === false && sr3.code === 'unreadable');
+const sr4 = await shot({ image: PNG1, mime: 'image/png' }, { AI_FETCH: () => new Response('{}', { status: 529 }) }, '3.3.3.6');
+check('shot: Claude yiqilsa 503', sr4.status === 503);
+/* suggest_stores */
+const sg = runTool('suggest_stores', { category: 'poyabzal', original: true, budgetUsd: 100, query: 'men sneakers size 41' }, tctx);
+check('suggest_stores: original poyabzal $100 — brend poyabzal do\'konlari birinchi, havola bilan', sg.found && sg.stores.length === 5 && sg.stores.slice(0, 3).every(x => x.cat === 'poyabzal' && /Yuqori/.test(x.original)) && sg.stores.every(x => /^https:\/\//.test(x.searchUrl)) && sg.stores.some(x => /men\+sneakers/.test(x.searchUrl)), sg.stores.map(x => x.id).join(','));
+const sg2 = runTool('suggest_stores', { category: 'elektronika', original: false, budgetUsd: 30, query: 'wireless earbuds' }, tctx);
+check('suggest_stores: arzon elektronika — arzon marketplace ham ro\'yxatda', sg2.found && sg2.stores.slice(0, 3).some(x => ['aliexpress', 'taobao', 'pinduoduo', 'walmart'].includes(x.id)), sg2.stores.map(x => x.id).join(','));
+check('searchUrl: shablonsiz do\'kon — o\'z manzili', /^https:\/\//.test(searchUrl({ id: 'yoq', url: 'https://example.com' }, 'x')) && searchUrl({ id: 'amazon', url: 'https://www.amazon.com' }, 'red shoes') === 'https://www.amazon.com/s?k=red+shoes');
+
 console.log(fails ? `\n${fails} ta tekshiruv o'tmadi.` : '\nWorker testlari o\'tdi.');
 process.exit(fails ? 1 : 0);

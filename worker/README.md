@@ -127,6 +127,14 @@ So'rov (Origin tekshiriladi, `ALLOW_ORIGIN`):
 ```
 
 Javob: `{ text, tools: [{ name, input, result }], model, usage, stop }`.
+Vositalar: `customs_duty`, `courier_quotes`, `landed_cost`, `check_banned`,
+`find_store`, `suggest_stores` (tovar so'rovi → do'konlar + qidiruv havolasi).
+
+`POST /ai/shot` — skrinshot: `{ image: "data:image/jpeg;base64,…", lang, usdRate }`
+(≤ ~1 MB; ilova 1280 px ga kichraytiradi) → `{ found, name, price, currency,
+priceUsd, fxApprox, qty, store, confidence, model, usage }`. Bitta arzon
+chaqiruv (`AI_SHOT_MODEL`, standart `claude-haiku-4-5`), tuzilgan JSON
+chiqish; rasm saqlanmaydi. Chegara va xatolar `/ai` bilan bir xil.
 Xatolar: 400 (kirish), 403 (begona Origin), 429 (`code: "limit"` — IP yoki
 umumiy kunlik chegara), 503 (`no_key`, `key`, `upstream`).
 

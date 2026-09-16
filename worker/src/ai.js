@@ -112,8 +112,81 @@ export const TOOLS = [
     name: 'find_store',
     description: 'Do\'konni nom, domen, kategoriya yoki davlat bo\'yicha bazadan topadi.',
     input_schema: { type: 'object', properties: { query: { type: 'string' } }, required: ['query'] }
+  },
+  {
+    name: 'suggest_stores',
+    description: 'Mahsulot so\'rovi ("krossovka, erkaklar, original, 41, $100 gacha") uchun mos do\'konlar: kategoriya, originallik va byudjetga qarab bazadan tanlaydi va har biriga qidiruv havolasi beradi. Foydalanuvchi biror narsa sotib olmoqchi bo\'lsa chaqiriladi.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        category: { type: 'string', enum: ['kiyim va moda', 'poyabzal', 'elektronika', 'kosmetika', 'bolalar', 'universal'], description: 'Kategoriya' },
+        original: { type: 'boolean', description: 'Faqat original/brend kerakmi' },
+        budgetUsd: { type: 'number', description: 'Byudjet, USD (bo\'lmasa 0)' },
+        query: { type: 'string', description: 'Do\'kon qidiruviga yoziladigan inglizcha so\'rov, masalan "men sneakers size 41"' }
+      },
+      required: ['category', 'query']
+    }
   }
 ];
+
+/* Do'kon qidiruv havolalari: {q} o'rniga inglizcha so'rov. Faqat ochiq va
+   ishonchli shablonlar; qolgan do'konlarda do'kon manzilining o'zi. */
+const SEARCH_URL = {
+  amazon: 'https://www.amazon.com/s?k={q}', ebay: 'https://www.ebay.com/sch/i.html?_nkw={q}',
+  trendyol: 'https://www.trendyol.com/sr?q={q}', aliexpress: 'https://www.aliexpress.com/w/wholesale-{q}.html',
+  shein: 'https://www.shein.com/pdsearch/{q}/', taobao: 'https://s.taobao.com/search?q={q}',
+  walmart: 'https://www.walmart.com/search?q={q}', asos: 'https://www.asos.com/search/?q={q}',
+  nike: 'https://www.nike.com/w?q={q}', adidas: 'https://www.adidas.com/us/search?q={q}',
+  puma: 'https://us.puma.com/us/en/search?q={q}', newbalance: 'https://www.newbalance.com/search?q={q}',
+  footlocker: 'https://www.footlocker.com/search?query={q}', jdsports: 'https://www.jdsports.com/search/{q}/',
+  zara: 'https://www.zara.com/us/en/search?searchTerm={q}', hm: 'https://www2.hm.com/en_us/search-results.html?q={q}',
+  uniqlo: 'https://www.uniqlo.com/us/en/search?q={q}', bestbuy: 'https://www.bestbuy.com/site/searchpage.jsp?st={q}',
+  newegg: 'https://www.newegg.com/p/pl?d={q}', sephora: 'https://www.sephora.com/search?keyword={q}',
+  ulta: 'https://www.ulta.com/search?search={q}', lego: 'https://www.lego.com/en-us/search?q={q}',
+  noon: 'https://www.noon.com/uae-en/search/?q={q}', farfetch: 'https://www.farfetch.com/shopping/search/items.aspx?q={q}',
+  mytheresa: 'https://www.mytheresa.com/us/en/search?q={q}', jomashop: 'https://www.jomashop.com/search?q={q}'
+};
+export function searchUrl(store, q) {
+  const t = SEARCH_URL[store.id];
+  const query = encodeURIComponent(String(q || '').trim()).replace(/%20/g, '+');
+  return t && query ? t.replace('{q}', query) : (store.url || '');
+}
+const PRICE_RANK = { '$': 1, '$$': 2, '$$$': 3, '$$$$': 4 };
+
+/* Mahsulot so'rovi uchun do'konlar: kategoriya, originallik va byudjetga
+   qarab bazadan tanlanadi, qidiruv havolasi bilan. Reyting: originallik
+   talab qilinsa "Yuqori" birinchi; byudjet past bo'lsa arzon segment. */
+function toolSuggest(inp) {
+  const cat = String(inp.category || '').trim();
+  const wantOrig = !!inp.original;
+  const budget = pos(inp.budgetUsd);
+  const q = String(inp.query || '').trim().slice(0, 80);
+  /* Byudjet → narx segmenti: $35 gacha "$", $80 gacha "$$", $400 gacha "$$$". */
+  const maxRank = budget > 0 ? (budget < 35 ? 1 : budget < 80 ? 2 : budget < 400 ? 3 : 4) : 4;
+  const scored = KB.STORES.map(s => {
+    let sc = 0;
+    /* Kategoriya hal qiluvchi: aynan mos do'kon universal marketplace'dan ancha oldinda. */
+    if (cat && s.cat === cat) sc += 6; else if (s.cat === 'universal') sc += 1; else if (cat) return null;
+    const orig = /Yuqori/i.test(s.original || '');
+    if (wantOrig) sc += orig ? 3 : 0; else sc += orig ? 0 : 1;
+    const pr = PRICE_RANK[s.price] || 2;
+    if (pr <= maxRank) sc += 2; else sc -= (pr - maxRank) * 2;
+    if (s.direct) sc += 1;
+    if (KB.GUIDES.some(g => g.id === s.id)) sc += 1;
+    if (SEARCH_URL[s.id]) sc += 1;
+    return { s, sc };
+  }).filter(Boolean).sort((a, b) => b.sc - a.sc).slice(0, 5);
+  if (!scored.length) return { found: false, note: 'Bu kategoriya uchun bazada do\'kon yo\'q.' };
+  return {
+    found: true, query: q,
+    stores: scored.map(({ s }) => ({
+      id: s.id, name: s.name, country: s.country, cat: s.cat, price: s.price, original: s.original,
+      direct: !!s.direct, complexity: s.complexity, guide: KB.GUIDES.some(g => g.id === s.id),
+      searchUrl: searchUrl(s, q)
+    })),
+    note: wantOrig ? 'Original talab qilinsa "Yuqori" originallikdagi do\'konlar birinchi; marketplace\'larda originallik sotuvchiga bog\'liq — sotuvchi reytingini tekshirish kerak.' : ''
+  };
+}
 
 function findCategoryKg(cat) {
   const c = KB.CATEGORIES.find(x => x.id === cat) || KB.CATEGORIES.find(x => x.id === 'universal');
@@ -220,6 +293,7 @@ export function runTool(name, input, ctx) {
     if (name === 'landed_cost') return toolLanded(inp, ctx);
     if (name === 'check_banned') return toolBanned(inp);
     if (name === 'find_store') return toolStore(inp);
+    if (name === 'suggest_stores') return toolSuggest(inp);
     return { error: 'noma\'lum vosita: ' + name };
   } catch (e) {
     return { error: 'hisoblab bo\'lmadi: ' + (e && e.message || e) };
@@ -273,27 +347,41 @@ async function callClaude(body, env, fetchImpl) {
   return { data };
 }
 
-export async function handleAi({ request, env, ctx, origin, originOk, cors, counter, fetchImpl }) {
+/* /ai va /ai/shot uchun umumiy darvoza: Origin, kalit, tana hajmi. Xato
+   bo'lsa { res } (tayyor Response), aks holda { text, json, count, limit }.
+   Kunlik chegara `limit()` bilan — chaqiruvchi kirishni tekshirgach chaqiradi,
+   shunda noto'g'ri so'rov kvotani yemaydi. */
+async function gate({ request, env, ctx, origin, originOk, cors, counter, maxBody }) {
   const json = (obj, status = 200) => new Response(JSON.stringify(obj), { status, headers: cors(env, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }, origin) });
   const count = key => { if (counter && ctx) ctx.waitUntil(counter.fetch('https://counter/add', { method: 'POST', body: JSON.stringify([{ day: isoDay(), name: 'ai', key, n: 1 }]) }).catch(() => {})); };
-  if (!originOk) return json({ error: 'ruxsat yo\'q' }, 403);
-  if (!env.ANTHROPIC_API_KEY) { count('no_key'); return json({ error: 'AI vaqtincha mavjud emas', code: 'no_key' }, 503); }
+  if (!originOk) return { res: json({ error: 'ruxsat yo\'q' }, 403) };
+  if (!env.ANTHROPIC_API_KEY) { count('no_key'); return { res: json({ error: 'AI vaqtincha mavjud emas', code: 'no_key' }, 503) }; }
   const len = +(request.headers.get('content-length') || 0);
-  if (len > AI_LIMITS.body) return json({ error: 'so\'rov juda katta', code: 'bad_input' }, 413);
+  if (len > maxBody) return { res: json({ error: 'so\'rov juda katta', code: 'bad_input' }, 413) };
   const text = await request.text();
-  if (text.length > AI_LIMITS.body) return json({ error: 'so\'rov juda katta', code: 'bad_input' }, 413);
-  const parsed = parseAiBody(text);
-  if (typeof parsed === 'string') return json({ error: parsed, code: 'bad_input' }, 400);
-
-  const today = isoDay();
+  if (text.length > maxBody) return { res: json({ error: 'so\'rov juda katta', code: 'bad_input' }, 413) };
   /* Kunlik chegara: IP xeshi (kun + sir bilan tuzlangan, qayta tiklanmaydi) va umumiy. */
-  if (counter) {
-    const key = await ipKey(request, env, today);
+  const limit = async () => {
+    if (!counter) return null;
+    const key = await ipKey(request, env, isoDay());
     const perIp = +env.AI_DAILY_PER_IP || 20, total = +env.AI_DAILY_TOTAL || 300;
     let lim = { ok: true };
     try { lim = await (await counter.fetch('https://counter/limit', { method: 'POST', body: JSON.stringify({ key, max: perIp, total }) })).json(); } catch (e) { lim = { ok: true }; }
-    if (!lim.ok) { count('limit'); return json({ error: 'Bugungi savollar chegarasi tugadi. Ertaga yana urinib ko\'ring yoki ilovadagi kalkulyatordan foydalaning.', code: 'limit', scope: lim.scope || 'ip' }, 429); }
-  }
+    if (lim.ok) return null;
+    count('limit');
+    return json({ error: 'Bugungi savollar chegarasi tugadi. Ertaga yana urinib ko\'ring yoki ilovadagi kalkulyatordan foydalaning.', code: 'limit', scope: lim.scope || 'ip' }, 429);
+  };
+  return { text, json, count, limit };
+}
+
+export async function handleAi({ request, env, ctx, origin, originOk, cors, counter, fetchImpl }) {
+  const g = await gate({ request, env, ctx, origin, originOk, cors, counter, maxBody: AI_LIMITS.body });
+  if (g.res) return g.res;
+  const { json, count } = g;
+  const parsed = parseAiBody(g.text);
+  if (typeof parsed === 'string') return json({ error: parsed, code: 'bad_input' }, 400);
+  const limited = await g.limit(); if (limited) return limited;
+  const today = isoDay();
 
   const usdRate = parsed.usdRate || FALLBACK_RATE;
   const toolCtx = { usdRate, today };
@@ -338,4 +426,95 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
   if (!textOut) textOut = 'Javob tayyorlab bo\'lmadi. Savolni boshqacha yozib ko\'ring yoki ilovadagi "Jami narx" kalkulyatoridan foydalaning.';
   count('ok');
   return json({ text: textOut, tools: used, model, usage, stop });
+}
+
+/* --- Skrinshot → mahsulot ma'lumoti (POST /ai/shot). Rasm base64 (JPEG/PNG/
+   WebP, ≤ ~1 MB — ilova 1280 px ga kichraytirib yuboradi). Bitta chaqiruv,
+   vositasiz, qisqa ko'rsatma: model faqat rasmda ko'ringan nom, narx,
+   valyuta, miqdor, do'konni JSON qilib beradi; hisob-kitob ilovada (core/).
+   Model arzon (AI_SHOT_MODEL, standart Haiku 4.5). Rasm saqlanmaydi. --- */
+export const SHOT_LIMITS = { body: 1500000, maxTokens: 300 };
+const SHOT_SCHEMA = {
+  type: 'object',
+  properties: {
+    name: { type: 'string', description: 'Mahsulot nomi rasmda yozilganidek (bo\'lmasa bo\'sh satr)' },
+    price: { type: 'number', description: 'Joriy (chegirmali) narx raqami; topilmasa 0' },
+    currency: { type: 'string', description: 'Valyuta kodi: USD, EUR, GBP, CNY, TRY, KRW, AED, RUB, UZS; noma\'lum bo\'lsa bo\'sh' },
+    qty: { type: 'integer', description: 'Miqdor, ko\'rinmasa 1' },
+    store: { type: 'string', description: 'Do\'kon yoki sayt nomi rasmdan; bo\'lmasa bo\'sh' },
+    confidence: { type: 'number', description: 'Narx to\'g\'ri o\'qilganiga ishonch 0..1' }
+  },
+  required: ['name', 'price', 'currency', 'qty', 'store', 'confidence'],
+  additionalProperties: false
+};
+const SHOT_PROMPT = 'Bu do\'kon sahifasining skrinshoti. Faqat rasmda ko\'ringan ma\'lumotni yoz: mahsulot nomi, joriy narx (chegirma bo\'lsa chegirmali narx, eski narx emas), valyuta (belgi yoki kod bo\'yicha: ¥ Xitoy saytida CNY, ₺ TRY, $ USD, € EUR, £ GBP, ₩ KRW, AED, ₽ RUB, so\'m UZS), miqdor va do\'kon nomi. Taxmin qilma: narx ko\'rinmasa price 0 va confidence 0. Javob faqat JSON.';
+
+export function parseShotBody(text) {
+  let d;
+  try { d = JSON.parse(text); } catch (e) { return 'JSON kutilgan edi'; }
+  if (!d || typeof d !== 'object') return 'obyekt kutilgan edi';
+  let img = String(d.image || '');
+  let mime = String(d.mime || '').toLowerCase();
+  const m = /^data:(image\/(?:jpeg|png|webp));base64,(.+)$/i.exec(img);
+  if (m) { mime = m[1].toLowerCase(); img = m[2]; }
+  if (!img) return 'rasm yo\'q';
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(mime)) return 'rasm turi: jpeg, png yoki webp';
+  if (!/^[A-Za-z0-9+/=\s]+$/.test(img.slice(0, 4000))) return 'rasm base64 emas';
+  const lang = ['uz', 'uzc', 'ru'].includes(d.lang) ? d.lang : 'uz';
+  const usdRate = num(d.usdRate);
+  return { image: img.replace(/\s/g, ''), mime, lang, usdRate: usdRate >= 5000 && usdRate <= 50000 ? usdRate : 0 };
+}
+
+/* Modelning JSON javobini tekshirib, ilova uchun tayyor obyektga keltiradi. */
+export function normalizeShot(raw, usdRate) {
+  const o = raw && typeof raw === 'object' ? raw : {};
+  const price = pos(o.price);
+  const cur = String(o.currency || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);
+  const fx = KB.TARIFFS.fx || {};
+  const rate = cur === 'USD' ? 1 : cur === 'UZS' ? (usdRate > 0 ? 1 / usdRate : 0) : num(fx[cur]);
+  const priceUsd = price > 0 && rate > 0 ? r2(price * rate) : 0;
+  return {
+    found: price > 0,
+    name: String(o.name || '').trim().slice(0, 80),
+    price, currency: cur || (price > 0 ? 'USD' : ''),
+    priceUsd, fxApprox: !!(cur && cur !== 'USD' && cur !== 'UZS' && cur !== 'EUR' && cur !== 'GBP'),
+    qty: Math.max(1, Math.min(99, Math.round(pos(o.qty) || 1))),
+    store: String(o.store || '').trim().slice(0, 40),
+    confidence: Math.max(0, Math.min(1, num(o.confidence)))
+  };
+}
+
+export async function handleShot({ request, env, ctx, origin, originOk, cors, counter, fetchImpl }) {
+  const g = await gate({ request, env, ctx, origin, originOk, cors, counter, maxBody: SHOT_LIMITS.body });
+  if (g.res) return g.res;
+  const { json, count } = g;
+  const parsed = parseShotBody(g.text);
+  if (typeof parsed === 'string') return json({ error: parsed, code: 'bad_input' }, 400);
+  const limited = await g.limit(); if (limited) return limited;
+  const usdRate = parsed.usdRate || FALLBACK_RATE;
+  const fetchFn = fetchImpl || globalThis.fetch;
+  const base = {
+    model: env.AI_SHOT_MODEL || 'claude-haiku-4-5', max_tokens: SHOT_LIMITS.maxTokens,
+    messages: [{ role: 'user', content: [
+      { type: 'image', source: { type: 'base64', media_type: parsed.mime, data: parsed.image } },
+      { type: 'text', text: SHOT_PROMPT }
+    ] }]
+  };
+  let r = await callClaude({ ...base, output_config: { format: { type: 'json_schema', schema: SHOT_SCHEMA } } }, env, fetchFn);
+  /* Tuzilgan chiqish rad etilsa (eski model/proksi) — oddiy matndan JSON. */
+  if (r.error && r.status === 400 && /output_config|format|schema/i.test(r.error)) r = await callClaude(base, env, fetchFn);
+  if (r.error) {
+    console.log('ai shot upstream', r.status, r.type || '', r.error);
+    count('shot_err');
+    return json({ error: 'AI vaqtincha mavjud emas', code: r.status === 401 || r.status === 403 ? 'key' : 'upstream' }, 503);
+  }
+  const msg = r.data || {};
+  const text = (Array.isArray(msg.content) ? msg.content : []).filter(b => b.type === 'text').map(b => b.text).join('\n');
+  let raw = null;
+  try { raw = JSON.parse(text); } catch (e) { const m = /\{[\s\S]*\}/.exec(text); if (m) { try { raw = JSON.parse(m[0]); } catch (e2) { raw = null; } } }
+  if (msg.stop_reason === 'refusal' || !raw) { count('shot_err'); return json({ found: false, error: 'Rasmdan ma\'lumot o\'qilmadi', code: 'unreadable', model: msg.model || base.model }, 200); }
+  const out = normalizeShot(raw, usdRate);
+  count(out.found ? 'shot' : 'shot_empty');
+  const u = msg.usage || {};
+  return json({ ...out, model: msg.model || base.model, usage: { input: u.input_tokens || 0, output: u.output_tokens || 0 } });
 }

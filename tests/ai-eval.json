@@ -1,21 +1,114 @@
 {
-  "note": "Pochtam AI sinov to'plami. `AI_URL=https://<worker>/ai node tests/ai.mjs` bilan ishga tushadi (kalit o'rnatilgan worker kerak). Mezonlar: tool — shu vosita chaqirilishi shart; noTool — vosita chaqirilmasligi kerak; must — javobda shu ifoda (regex, i) bo'lishi; mustNot — bo'lmasligi; lang — javob tili (uz|ru).",
+  "note": "Pochtam AI sinov to'plami. `AI_URL=https://<worker>/ai node tests/ai.mjs` bilan ishga tushadi (kalit o'rnatilgan worker kerak). Mezonlar: tool — shu vosita chaqirilishi shart; noTool — vosita chaqirilmasligi kerak; must — javobda shu ifoda (regex, i) bo'lishi; mustNot — bo'lmasligi; lang — javob tili (uz|ru). tool=suggest_stores — tovar so'rovi; mustNot https — havolalar matnda emas, tugmada.",
   "cases": [
-    { "q": "$320 lik 2,5 kg tovar uchun boj qancha bo'ladi?", "tool": "customs_duty", "must": "38[.,]5|597", "lang": "uz" },
-    { "q": "150 dollarlik krossovka uchun boj to'lanadimi?", "tool": "customs_duty", "must": "me'yor ichida|boj yo'q|to'lov yo'q", "lang": "uz" },
-    { "q": "Xitoydan 2 kg yukni qaysi kuryer arzon olib keladi?", "tool": "courier_quotes", "must": "\\$\\s?\\d", "lang": "uz" },
-    { "q": "AQShdan 5 kg — eng tez kuryer qaysi?", "tool": "courier_quotes", "lang": "uz" },
-    { "q": "Trendyoldan 40 dollarlik ko'ylak, hammasi bo'lib qancha tushadi?", "tool": "landed_cost", "must": "jami|\\$\\s?\\d", "lang": "uz" },
-    { "q": "Powerbank buyurtma qilsam bo'ladimi?", "must": "avia|litiy|batareya", "lang": "uz" },
-    { "q": "Elektron sigareta olib kelsa bo'ladimi?", "tool": "check_banned", "must": "taqiq", "lang": "uz" },
-    { "q": "Alkogol pochta orqali keladimi?", "must": "taqiq", "lang": "uz" },
-    { "q": "Poizon qanday do'kon?", "tool": "find_store", "must": "Poizon", "lang": "uz" },
-    { "q": "Bir oyda ikki posilka kelsa me'yor qanday hisoblanadi?", "must": "kalendar oy|qo'shib|qo'shiladi", "lang": "uz" },
-    { "q": "Jo'natmam bojxonada ushlanib qoldi, nima qilay?", "must": "hujjat|chek|invoys|Xizmatlar|mutaxassis", "lang": "uz" },
-    { "q": "Сколько пошлина за телефон на 250 долларов?", "tool": "customs_duty", "must": "пошлин|сбор", "lang": "ru" },
-    { "q": "Какой курьер дешевле привезёт 3 кг из Турции?", "tool": "courier_quotes", "lang": "ru" },
-    { "q": "Bugun ob-havo qanday?", "noTool": true, "mustNot": "\\$\\s?\\d", "lang": "uz" },
-    { "q": "Python'da massivni qanday saralayman?", "noTool": true, "mustNot": "sort\\(|\\.sort", "lang": "uz" },
-    { "q": "Bojxona qonuni 2027-yilda o'zgaradimi?", "noTool": true, "must": "aniq ma'lumot|bilmayman|ma'lumotim yo'q", "lang": "uz" }
+    {
+      "q": "$320 lik 2,5 kg tovar uchun boj qancha bo'ladi?",
+      "tool": "customs_duty",
+      "must": "38[.,]5|597",
+      "lang": "uz"
+    },
+    {
+      "q": "150 dollarlik krossovka uchun boj to'lanadimi?",
+      "tool": "customs_duty",
+      "must": "me'yor ichida|boj yo'q|to'lov yo'q",
+      "lang": "uz"
+    },
+    {
+      "q": "Xitoydan 2 kg yukni qaysi kuryer arzon olib keladi?",
+      "tool": "courier_quotes",
+      "must": "\\$\\s?\\d",
+      "lang": "uz"
+    },
+    {
+      "q": "AQShdan 5 kg — eng tez kuryer qaysi?",
+      "tool": "courier_quotes",
+      "lang": "uz"
+    },
+    {
+      "q": "Trendyoldan 40 dollarlik ko'ylak, hammasi bo'lib qancha tushadi?",
+      "tool": "landed_cost",
+      "must": "jami|\\$\\s?\\d",
+      "lang": "uz"
+    },
+    {
+      "q": "Powerbank buyurtma qilsam bo'ladimi?",
+      "must": "avia|litiy|batareya",
+      "lang": "uz"
+    },
+    {
+      "q": "Elektron sigareta olib kelsa bo'ladimi?",
+      "tool": "check_banned",
+      "must": "taqiq",
+      "lang": "uz"
+    },
+    {
+      "q": "Alkogol pochta orqali keladimi?",
+      "must": "taqiq",
+      "lang": "uz"
+    },
+    {
+      "q": "Poizon qanday do'kon?",
+      "tool": "find_store",
+      "must": "Poizon",
+      "lang": "uz"
+    },
+    {
+      "q": "Bir oyda ikki posilka kelsa me'yor qanday hisoblanadi?",
+      "must": "kalendar oy|qo'shib|qo'shiladi",
+      "lang": "uz"
+    },
+    {
+      "q": "Jo'natmam bojxonada ushlanib qoldi, nima qilay?",
+      "must": "hujjat|chek|invoys|Xizmatlar|mutaxassis",
+      "lang": "uz"
+    },
+    {
+      "q": "Сколько пошлина за телефон на 250 долларов?",
+      "tool": "customs_duty",
+      "must": "пошлин|сбор",
+      "lang": "ru"
+    },
+    {
+      "q": "Какой курьер дешевле привезёт 3 кг из Турции?",
+      "tool": "courier_quotes",
+      "lang": "ru"
+    },
+    {
+      "q": "Bugun ob-havo qanday?",
+      "noTool": true,
+      "mustNot": "\\$\\s?\\d",
+      "lang": "uz"
+    },
+    {
+      "q": "Python'da massivni qanday saralayman?",
+      "noTool": true,
+      "mustNot": "sort\\(|\\.sort",
+      "lang": "uz"
+    },
+    {
+      "q": "Bojxona qonuni 2027-yilda o'zgaradimi?",
+      "noTool": true,
+      "must": "aniq ma'lumot|bilmayman|ma'lumotim yo'q",
+      "lang": "uz"
+    },
+    {
+      "q": "krasovka olmoqchiman, erkaklarniki, original bo'lsin, 41 razmer, 100$ gacha",
+      "tool": "suggest_stores",
+      "must": "Nike|Adidas|Poizon|New Balance|Puma",
+      "mustNot": "https?://",
+      "lang": "uz"
+    },
+    {
+      "q": "Bolamga lego kerak, $60 gacha, qaysi do'kondan olsam bo'ladi?",
+      "tool": "suggest_stores",
+      "must": "LEGO|Amazon|Hamleys|Toys",
+      "lang": "uz"
+    },
+    {
+      "q": "Хочу кроссовки женские 38 размер до 80 долларов, оригинал",
+      "tool": "suggest_stores",
+      "must": "US 7|24 см|Nike|Adidas",
+      "lang": "ru"
+    }
   ]
 }

@@ -18,6 +18,8 @@ PUBLIC_STATS = "0"
 # Kalit qo'yilmaguncha /ai 503 "AI vaqtincha mavjud emas" qaytaradi, ilova
 # buni ko'rsatadi va qolgani ishlayveradi.
 AI_MODEL = "claude-opus-5"
+# Skrinshotdan narx o'qish (POST /ai/shot) — arzon model yetarli.
+AI_SHOT_MODEL = "claude-haiku-4-5"
 # Kunlik chegara: bitta IP (xesh) uchun va hammasi uchun. Xarajat nazorati.
 AI_DAILY_PER_IP = "20"
 AI_DAILY_TOTAL = "300"
