@@ -509,6 +509,7 @@
     }
     /* Kompyuter ustunida qo'shimcha bo'limlar (Xaridlarim, Pochtam AI). */
     .app-shell > nav > .xy-desk { display: flex !important; }
+    .app-shell .xy-tabs4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }   /* asosiy qoida pastroqda turadi — aniqlik yuqoriroq bo'lishi shart */
     .app-shell > header > h1:has(> img) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
     /* Reja sehrgarining pastki tugmalar qatori: menyu ustuniga emas,
        kontent ustuniga tegishli; pastdagi dumaloq tugma yo'q — bo'sh joy ham. */
@@ -590,6 +591,8 @@
   nav button:active { transform:scale(.92); filter:none }
   /* Faqat kompyuter menyusida ko'rinadigan tugmalar (mobil pastki menyu 5 ta qoladi). */
   .xy-desk { display:none !important; }
+  /* Xaridlarim tablari: telefonda 2×2, kompyuter ustunida bir qator. */
+  .xy-tabs4 { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:6px; }
   /* Barmoq ostidagi element bosilib turganda ko'rinib tursin. */
   @media (hover:none) {
     button:active, .xy-tap:active { transition-duration:.06s }
@@ -777,7 +780,7 @@
         </div>
         <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
           <span style="font-size:15px;font-weight:700;color:#131429">Pochtam AI</span>
-          <span style="font-size:11px;font-weight:600;color:#6B6C85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Savol bering — boj, kuryer, do'kon</span>
+          <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">Savol bering — boj, kuryer, do'kon</span>
         </div>
         <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
       </button>
@@ -787,7 +790,7 @@
         <div style="display:flex;align-items:center;gap:10px;padding:0 2px">
           <h2 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Mashhur do'konlar</h2>
           <div style="flex:1"></div>
-          <button sc-camel-on-click="{{ goStores }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:6px 2px">Barchasi</button>
+          <button sc-camel-on-click="{{ goStores }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:8px 2px">Barchasi</button>
         </div>
         <div style="display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;margin:0 -18px;padding:2px 18px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch">
           <sc-for list="{{ popRow }}" as="ps" hint-placeholder-count="5">
@@ -811,7 +814,7 @@
         <div style="display:flex;align-items:center;gap:10px;padding:0 2px">
           <h2 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Kuryerlarni solishtirish</h2>
           <div style="flex:1"></div>
-          <button sc-camel-on-click="{{ cmpAll }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:6px 2px">Hammasini ko'rish</button>
+          <button sc-camel-on-click="{{ cmpAll }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:8px 2px">Hammasini ko'rish</button>
         </div>
         <div style="background:#FFFFFF;border-radius:20px;padding:14px 16px 12px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
           <div style="display:flex;gap:8px;overflow-x:auto;margin:0 -16px;padding:0 16px 2px">
@@ -2549,7 +2552,7 @@
               </div>
               <div style="display:flex;flex-direction:column;gap:8px">
                 <sc-for list="{{ o.rows }}" as="r" hint-placeholder-count="2">
-                  <button sc-camel-on-click="{{ r.copy }}" aria-label="{{ r.k }} — nusxalash" style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:none;border:none;padding:4px 0;margin:-5px 0;width:100%;text-align:left;cursor:pointer;font-family:inherit">
+                  <button sc-camel-on-click="{{ r.copy }}" aria-label="{{ r.k }} — nusxalash" style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:none;border:none;min-height:32px;padding:0;margin:-4px 0;width:100%;text-align:left;cursor:pointer;font-family:inherit">
                     <span style="font-size:13px;font-weight:500;color:#6B6C85">{{ r.k }}</span>
                     <span style="display:flex;align-items:center;gap:6px;min-width:0">
                       <span style="font-size:13px;font-weight:700;color:#131429;font-variant-numeric:tabular-nums;text-align:right">{{ r.v }}</span>
@@ -2685,6 +2688,7 @@
           </sc-for>
         </div>
       </sc-if>
+      <div role="log" aria-live="polite" style="display:contents">
       <sc-for list="{{ aiRows }}" as="m" hint-placeholder-count="2">
         <sc-if value="{{ m.user }}" hint-placeholder-val="{{ true }}">
           <div style="align-self:flex-end;max-width:86%;background:#1A1FB0;color:#FFFFFF;border-radius:20px 20px 6px 20px;padding:12px 14px;font-size:15px;font-weight:500;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere">{{ m.text }}</div>
@@ -2697,6 +2701,7 @@
                 <sc-for list="{{ m.acts }}" as="a" hint-placeholder-count="2">
                   <button sc-camel-on-click="{{ a.go }}" style="height:36px;padding:0 14px;border-radius:12px;border:1.5px solid #DCDDFA;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ a.t }}</button>
                 </sc-for>
+      </div>
               </div>
             </sc-if>
           </div>
@@ -2715,7 +2720,7 @@
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px">
         <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">Pochtam AI xato qilishi mumkin. Yakuniy qaror — bojxona organida.</span>
         <sc-if value="{{ aiHasMsgs }}" hint-placeholder-val="{{ false }}">
-          <button sc-camel-on-click="{{ aiClear }}" style="flex:none;background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:6px 2px">Yangi suhbat</button>
+          <button sc-camel-on-click="{{ aiClear }}" style="flex:none;background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:8px 2px">Yangi suhbat</button>
         </sc-if>
       </div>
     </div>
@@ -2723,9 +2728,12 @@
 
   <sc-if value="{{ sMine }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:14px">
-      <div style="display:flex;gap:6px;background:#FFFFFF;border-radius:20px;padding:6px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+      <!-- To'rt tab telefonda bir qatorga sig'maydi ("Jo'natmalar",
+           kirillda "Жўнатмалар" 100 px dan keng) — 2×2 to'r, kompyuterda
+           bitta qator (.xy-tabs4, CSS). -->
+      <div class="xy-tabs4" style="background:#FFFFFF;border-radius:20px;padding:6px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
         <sc-for list="{{ mineTabs }}" as="mt" hint-placeholder-count="4">
-          <button sc-camel-on-click="{{ mt.pick }}" aria-pressed="{{ mt.on }}" style="flex:1;min-width:0;height:38px;border-radius:14px;border:none;background:{{ mt.bg }};color:{{ mt.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;overflow:hidden">{{ mt.t }}<span style="font-size:11px;font-weight:600;opacity:.8;font-variant-numeric:tabular-nums">{{ mt.n }}</span></button>
+          <button sc-camel-on-click="{{ mt.pick }}" aria-pressed="{{ mt.on }}" style="min-width:0;height:38px;padding:0 10px;border-radius:14px;border:none;background:{{ mt.bg }};color:{{ mt.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ mt.t }}<span style="font-size:11px;font-weight:600;opacity:.8;font-variant-numeric:tabular-nums">{{ mt.n }}</span></button>
         </sc-for>
       </div>
 
@@ -3197,7 +3205,7 @@
         <div style="display:flex;align-items:center;gap:10px">
           <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Kuryer</span>
           <div style="flex:1"></div>
-          <button sc-camel-on-click="{{ goCouriers }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:6px 2px">Hammasi</button>
+          <button sc-camel-on-click="{{ goCouriers }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:8px 2px">Hammasi</button>
         </div>
         <sc-if value="{{ lcQuoteHas }}" hint-placeholder-val="{{ true }}">
           <sc-for list="{{ lcQuotes }}" as="lq" hint-placeholder-count="3">
@@ -3768,33 +3776,33 @@ const RU = {
   /* Bosh sahifa: universal maydon, tez o'tish, mashhur do'konlar, kuryer solishtirish */
   'Nima olib':'Что хотите', 'kelmoqchisiz?':'привезти?',
   "Mahsulot havolasini yoki nomini yozing — do'kon, kuryer va bojni ko'rsatib beraman.":'Вставьте ссылку на товар или напишите его название — покажу магазин, курьера и пошлину.',
-  'Havola yoki mahsulot nomi':'Ссылка или название товара', 'Mahsulot havolasi yoki nomi':'Ссылка или название товара', 'Boshlash':'Начать',
+  'Havola yoki mahsulot nomi':'Ссылка или название товара', 'Mahsulot havolasi yoki nomi':'Ссылка или название товара', 
   'Boj hisoblash':'Рассчитать пошлину', 'Kuryer tanlash':'Выбрать курьера', 'Taqiqni tekshirish':'Проверить запреты',
   "Mashhur do'konlar":'Популярные магазины', 'Barchasi':'Все', 'Kuryerlarni solishtirish':'Сравнить курьеров', "Hammasini ko'rish":'Смотреть все',
   "Og'irlik":'Вес', 'dan':'от', 'Tariflar yuklanmoqda…':'Загружаем тарифы…', "Bu yo'nalish uchun tarif topilmadi.":'Для этого направления тариф не найден.',
   "Taxminiy: kuryer saytidagi tarif bo'yicha, hisob og'irligi uchun. Yakuniy narxni kuryer belgilaydi.":'Ориентировочно: по тарифу с сайта курьера, за расчётный вес. Итоговую цену определяет курьер.',
   '{0} topildi — narx va vaznni kiritib bojni hisoblang':'{0} найден — введите цену и вес, чтобы рассчитать пошлину',
   "Bu do'kon hali ro'yxatda yo'q — o'xshashini qidiruvda ko'ring":'Этого магазина пока нет в списке — посмотрите похожие в поиске',
-  'Angliya':'Англия', 'Koreya':'Корея', 'Germaniya':'Германия', 'Rossiya':'Россия', "Qozog'iston":'Казахстан', 'Malayziya':'Малайзия',
+  'Angliya':'Англия', 'Germaniya':'Германия', "Qozog'iston":'Казахстан', 
   /* Xaridlarim, jo'natma holatlari */
-  'Xaridlarim':'Мои покупки', 'Rejalar':'Планы', 'Sevimlilar':'Избранное', 'Hisoblar':'Расчёты', "Jo'natmalar":'Отправления',
+  'Xaridlarim':'Мои покупки', 'Rejalar':'Планы', 'Hisoblar':'Расчёты', "Jo'natmalar":'Отправления',
   '{0} reja':'{0} план', "{0} jo'natma":'{0} отправл.', '{0} sevimli':'{0} избр.', "Reja, jo'natma, sevimlilar va hisoblar":'Планы, отправления, избранное и расчёты',
   "Hali reja yo'q":'Планов пока нет', "Reja — do'kon, kuryer va boj bilan bitta karta. Sehrgar orqali 5 qadamda yoki \"Jami narx\" kalkulyatoridan tuziladi.":'План — одна карточка с магазином, курьером и пошлиной. Составляется мастером за 5 шагов или из калькулятора «Итоговая цена».',
   "Sevimlilar bo'sh":'Избранное пусто', "Do'kon, kuryer yoki qo'llanma sahifasidagi yulduzchani bosing — shu yerga tushadi.":'Нажмите звёздочку на странице магазина, курьера или инструкции — появится здесь.',
   'Hisoblar shu yerda saqlanadi':'Расчёты сохраняются здесь', '"Jami narx" kalkulyatorida hisoblagan oxirgi 10 ta natija — qayta ochib davom etasiz.':'Последние 10 результатов калькулятора «Итоговая цена» — откройте и продолжите.',
-  'Jami narxni hisoblash':'Рассчитать итоговую цену', 'Hisob':'Расчёт',
+  'Jami narxni hisoblash':'Рассчитать итоговую цену', 
   'Bojxonada':'На таможне', "Rasmiylashtirish — xabarnoma tasdiqlanadi, boj bo'lsa to'lanadi":'Оформление — подтверждается уведомление, при необходимости оплачивается пошлина',
   /* Kuryerlar: vazn bo'yicha hisob paneli */
-  "Vazn bo'yicha hisob":'Расчёт по весу', 'Tarif':'Тариф', 'Arzon':'Дешевле', 'Tez':'Быстрее', 'kun':'дн.', "narx so'raladi":'цена по запросу',
+  "Vazn bo'yicha hisob":'Расчёт по весу', 'Tarif':'Тариф', 'Tez':'Быстро', "narx so'raladi":'цена по запросу',
   '{0} kg · {1}':'{0} кг · {1}', 'Hisob · {0} kg · {1}':'Расчёт · {0} кг · {1}',
   "{0} · {1} kg uchun kuryer saytidagi tarif bo'yicha taxminiy summa. Jadvalda tarifi yo'q kuryerlar oxirida.":'{0} · {1} кг: ориентировочная сумма по тарифу с сайта курьера. Курьеры без тарифа в таблице — в конце.',
   /* Universal kalkulyator (Jami narx) */
-  'Jami narx':'Итоговая цена', 'Mahsulot':'Товар', 'Nomi (ixtiyoriy), masalan: Nike Air Max':'Название (необязательно), например: Nike Air Max', 'Mahsulot nomi':'Название товара',
-  'Narxi':'Цена', 'Miqdor':'Количество', 'Miqdor, dona':'Количество, шт', 'dona':'шт', 'Kategoriya':'Категория', 'Qayerdan va qancha':'Откуда и сколько',
+  'Jami narx':'Итоговая цена', 'Nomi (ixtiyoriy), masalan: Nike Air Max':'Название (необязательно), например: Nike Air Max', 'Mahsulot nomi':'Название товара',
+  'Narxi':'Цена', 'Miqdor':'Количество', 'Miqdor, dona':'Количество, шт', 'Qayerdan va qancha':'Откуда и сколько',
   "Og'irligi, 1 dona":'Вес, 1 шт', "Do'kon ichida yetkazish":'Доставка внутри магазина', "Do'kon ichida yetkazish, dollarda":'Доставка внутри магазина, в долларах',
   "Quti o'lchami, sm (ixtiyoriy)":'Размер коробки, см (необязательно)', 'uzunlik':'длина', 'kenglik':'ширина', 'balandlik':'высота',
   'Quti uzunligi, sm':'Длина коробки, см', 'Quti kengligi, sm':'Ширина коробки, см', 'Quti balandligi, sm':'Высота коробки, см',
-  'Kuryer':'Курьер', 'Hammasi':'Все', 'Jami tannarx':'Итоговая стоимость', 'Jami':'Итого', "Xarid rejasiga qo'shish":'Добавить в план покупки',
+  'Jami tannarx':'Итоговая стоимость', "Xarid rejasiga qo'shish":'Добавить в план покупки',
   "Olish foydalimi? O'zbekistondagi narxini yozing":'Выгодно ли? Укажите цену в Узбекистане', "O'zbekistondagi narx, so'mda":'Цена в Узбекистане, в сумах', 'masalan 4 300 000':'например 4 300 000',
   "Bu yo'nalish uchun jadvalda tarif yo'q — kargo qatorisiz hisoblanadi. Kuryer bo'limida \"narx so'raladi\" belgili kuryerlarni ko'ring.":'Для этого направления в таблице нет тарифа — расчёт без строки карго. В разделе курьеров смотрите курьеров с пометкой «цена по запросу».',
   'Taxminiy hisob. Boj — VMQ 244-son bo\'yicha, kargo — kuryer saytidagi tarif. Yakuniy summani bojxona va kuryer belgilaydi.':'Ориентировочный расчёт. Пошлина — по ПКМ №244, карго — по тарифу с сайта курьера. Итоговую сумму определяют таможня и курьер.',
@@ -3805,12 +3813,11 @@ const RU = {
   "Hajmiy og'irlik {0} kg haqiqiy {1} kg dan katta — kargo shu bo'yicha.":'Объёмный вес {0} кг больше фактического {1} кг — карго считается по нему.',
   "Hisob og'irligi: {0} kg.":'Расчётный вес: {0} кг.',
   "Og'irlik yozilmadi — kategoriya bo'yicha taxmin: {0} kg/dona. Aniq vazn kiritsangiz hisob aniqroq bo'ladi.":'Вес не указан — оценка по категории: {0} кг/шт. Укажите точный вес, чтобы расчёт был точнее.',
-  'Eng arzon':'Самый дешёвый', 'Eng tez':'Самый быстрый', 'Optimal':'Оптимальный',
+  'Optimal':'Оптимально',
   "Chetdan olish foydali — tejash {0} so'm ({1}%).":'Покупать за рубежом выгодно — экономия {0} сум ({1}%).',
   "O'zbekistonda arzonroq — farq {0} so'm.":'В Узбекистане дешевле — разница {0} сум.',
   'Avval mahsulot narxini yozing':'Сначала введите цену товара', "Do'kon tanlanmagan":'Магазин не выбран',
   "Shu do'kondan xarajatni hisoblash":'Рассчитать расходы из этого магазина',
-  'Kiyim va moda':'Одежда и мода', 'Poyabzal va krossovka':'Обувь и кроссовки', 'Elektronika va texnika':'Электроника и техника', 'Kosmetika va parfyumeriya':'Косметика и парфюмерия', "Bolalar va o'yinchoq":'Детское и игрушки', 'Universal':'Универсальные',
   'Qo\'llanma yuklanmoqda…':'Инструкция загружается…',
   'Ilovani telefonga o\'rnatish':'Установить приложение',
   'Interfeys tili':'Язык интерфейса',
@@ -3818,7 +3825,7 @@ const RU = {
   'Do\'kon tavsiflari va qo\'llanmalar hozircha faqat o\'zbek tilida.':'Описания магазинов и инструкции пока только на узбекском.',
   'Bosh sahifa':'Главная', "Qo'llanmalar":'Инструкции', "Reja":'План', 'Bojxona':'Таможня', 'Sozlamalar':'Настройки',
   "Do'konlar":'Магазины', 'Kuryerlar':'Курьеры', 'Kuzatuv':'Отслеживание', 'Taqqoslash':'Сравнение', 'Xarid rejasi':'План покупки',
-  "Qo'llanma":'Инструкция', "Reja tuzish":'Составление плана', 'Mening rejalarim':'Мои планы',
+  "Qo'llanma":'Инструкция', 'Mening rejalarim':'Мои планы',
   'Saqlangan rejalar':'Сохранённые планы', 'Yangi reja':'Новый план',
   "Tanlovingizga mos {0} ta do'kon.":'Под ваш выбор подходит {0} магазинов.',
   "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi ko'p davlatga yuboradi.":'Под ваш выбор подходит {0} магазинов, последние {1} доставляют во многие страны.', 'Bugungi foydali':'Совет дня',
@@ -3826,7 +3833,7 @@ const RU = {
   'Tovar nomini yozing':'Введите название товара', "Saytga o'tish":'Перейти на сайт', "Telegram'da yozish":'Написать в Telegram',
   'Tozalash':'Очистить', "Natijani ko'rish":'Показать результат', 'Filtr':'Фильтр', "O'zgartirish":'Изменить',
   "O'tkazib yuborish":'Пропустить', 'Yangilash':'Обновить', 'Yuklanmoqda…':'Загрузка…', 'Hisob qanday chiqdi':'Как получился расчёт',
-  "Do'konni ochish":'Открыть магазин', "Qo'llanmalarga qaytish":'Вернуться к инструкциям', 'Nusxalash':'Копировать',
+  "Qo'llanmalarga qaytish":'Вернуться к инструкциям', 'Nusxalash':'Копировать',
   'ta':'шт.', "ta bo'lim":'разделов', "ta jo'natma":'отправлений',
   'ta platforma':'платформ', 'ta pozitsiya':'позиций', "ta yo'nalish":'направлений',
   /* Qo'llanma kartochkalarining yorlig'i va tavsifi: butun ekran rus
@@ -3852,10 +3859,9 @@ const RU = {
   "Pullik konsultatsiya · ushlangan jo'natma, boj hisobi, hujjatlar":'Платная консультация · задержанная посылка, расчёт пошлины, документы',
   /* Pullik xizmatlar ekrani. */
   "Ilovadagi ma'lumot yetmasa — mutaxassis bilan ishlash. Quyidagilar pullik xizmatlar.":'Если информации в приложении не хватает — работа со специалистом. Ниже платные услуги.',
-  'Men xaridorman':'Я покупатель', 'Kuryer tashkilotiman':'Я курьерская компания',
   'Chet eldan buyurtma qilgan jismoniy shaxslar uchun.':'Для физических лиц, заказывающих из-за рубежа.',
   'Kuryerlik va logistika kompaniyalari uchun yuridik va texnik yordam.':'Юридическая и техническая помощь курьерским и логистическим компаниям.',
-  "Bog'lanish":'Связаться', 'Kelishilgan holda':'По договорённости', "Loyiha bo'yicha":'По проекту',
+  'Kelishilgan holda':'По договорённости', "Loyiha bo'yicha":'По проекту',
   'YURIDIK':'ЮРИДИЧЕСКОЕ', 'TEXNIK':'ТЕХНИЧЕСКОЕ', 'HAMKORLIK':'ПАРТНЁРСТВО',
   "ENG KO'P SO'RALADI":'СПРАШИВАЮТ ЧАЩЕ ВСЕГО',
   'Dush–Shan, 09:00–19:00':'Пн–Сб, 09:00–19:00',
@@ -3912,7 +3918,6 @@ const RU = {
   'Hamkorlik':'Партнёрство',
   "Kuryerlik tashkilotimi? Ro'yxatga qo'shilish uchun yozing — javob Telegramda keladi.":'Пункт выдачи почты или курьерская компания? Напишите, чтобы попасть в список — ответ придёт в Telegram.',
   'Kuryerlik tashkilotiman':'Я курьерская компания',
-  'Telegram ochildi':'Telegram открыт',
   /* Do'konlarning xususiyat qatorlari. */
   "Xitoy ichki bozori — eng arzon":'Внутренний рынок Китая — самое дешёвое',
   'Dunyodagi eng katta tanlov':'Самый большой выбор в мире',
@@ -3963,7 +3968,6 @@ const RU = {
   "misol: $320 va 2,5 kg uchun {0} so'm":'пример: за $320 и 2,5 кг {0} сум', "hozir {0} so'm":'сейчас {0} сум',
   "ta platforma uchun to'liq qo'llanma \u2014 bosqichlar, kalkulyator, lug'at va FAQ bilan.":'платформ с полной инструкцией \u2014 шаги, калькулятор, словарь и FAQ.',
   "Qo'llanmalar bu yerda ochiladi \u2192":'Инструкции откроются здесь \u2192',
-  "Brend nusxasi (replika) bojxonada olib qo'yiladi. Narx bozordan keskin past bo'lsa, bu birinchi ogohlantirish.":'Копия бренда (реплика) изымается на таможне. Если цена резко ниже рыночной \u2014 это первый тревожный знак.',
   'Interfeys matnlari tarjima qilinadi. Do\'kon, kuryer nomlari va huquqiy manbalar asl holida qoladi.':'Переводятся тексты интерфейса. Названия магазинов, курьеров и правовые источники остаются в оригинале.',
   "Kurs Markaziy bank ochiq ma'lumotlaridan (cbu.uz) avtomatik olinadi va 6 soatda bir yangilanadi. Barcha so'mdagi hisob-kitob shu kursga asoslanadi.":'Курс берётся из открытых данных Центрального банка (cbu.uz) и обновляется раз в 6 часов. Все расчёты в сумах опираются на него.',
   "Ma'lumotlar amaldagi qonunchilik hujjatlaridan olingan. Yakuniy qaror bojxona organi tomonidan qabul qilinadi.":'Данные взяты из действующих нормативных актов. Окончательное решение принимает таможенный орган.',
@@ -4015,7 +4019,7 @@ const RU = {
   'Yagona boj ($3 × kg)':'Единая пошлина ($3 × кг)', 'Bu oyda':'В этом месяце', "Jo'natma qo'shish":'Добавить посылку',
   "Oy summasini qo'yish":'Сумма месяца', "Jo'natmani o'chirish":'Удалить посылку',
   'Til':'Язык', "Jo'natma bildirishnomalari":'Уведомления о посылках', 'Foydalanuvchi turi':'Тип пользователя',
-  'Xizmatlar':'Услуги', 'Mutaxassis yordami':'Помощь специалиста',
+  'Mutaxassis yordami':'Помощь специалиста',
   /* Monetizatsiya: narxlar, og'riq nuqtalaridagi tugmalar, affiliate */
   "oyiga 500 000 so'm":'500 000 сум в месяц', "Assalomu alaykum! «{0}» xizmati ({1}) bo'yicha yozmoqchiman.":'Здравствуйте! Хочу обратиться по услуге «{0}» ({1}).',
   'Hisob katta chiqdimi?':'Расчёт получился большим?', "Mutaxassis me'yor, kurs va stavkani qayta hisoblaydi; ortiqcha undirilgan bo'lsa qaytarish tartibini aytadi.":'Специалист пересчитает лимит, курс и ставку; если удержано лишнее — объяснит порядок возврата.',
@@ -4026,7 +4030,7 @@ const RU = {
   'hamkorlik havolasi':'партнёрская ссылка', "Ba'zi do'kon havolalari — hamkorlik havolasi: siz uchun narx o'zgarmaydi, ilova do'kondan kichik komissiya oladi.":'Некоторые ссылки на магазины — партнёрские: цена для вас не меняется, приложение получает небольшую комиссию от магазина.',
   'Mutaxassis konsultatsiyasi':'Консультация специалиста',
   'Men xaridorman':'Я покупатель', 'Kuryer tashkilotiman':'Я курьерская компания',
-  "Bog'lanish":'Связаться', 'Narx':'Цена', "To'g'ridan-to'g'ri bog'lanish":'Прямая связь',
+  "Bog'lanish":'Связаться', "To'g'ridan-to'g'ri bog'lanish":'Прямая связь',
   'Telegram':'Telegram', "Qo'ng'iroq":'Звонок',
   'Yangi boshlovchi':'Новичок', 'Tajribali xaridor':'Опытный покупатель', "Ma'lumot noto'g'ri — xabar berish":'Сообщить об ошибке',
   'Ilova haqida':'О приложении', 'Tilni tanlang':'Выберите язык',
@@ -4036,7 +4040,7 @@ const RU = {
   "Sizga mos do'konlar":'Подходящие магазины', 'Sizga mos kuryerlar':'Подходящие курьеры',
   "Mahsulot narxi va og'irligi":'Цена и вес товара', 'Mahsulot narxi':'Цена товара', "Bojxona to'lovi":'Таможенный платёж',
   "Yagona yig'im":'Единый сбор', 'Kutilgan muddat':'Ожидаемый срок', 'Muddat':'Срок', 'Narx':'Цена', 'Davlatlar':'Страны',
-  'Kategoriya':'Категория', 'Davlat':'Страна', "Do'kon":'Магазин', 'Kuryer':'Курьер', 'Yetkazish':'Доставка', 'Mahsulot':'Товар',
+  'Kategoriya':'Категория', 'Davlat':'Страна', "Do'kon":'Магазин', 'Mahsulot':'Товар',
   'Eng arzon':'Самый дешёвый', 'Eng tez':'Самый быстрый', 'Ishonchli':'Надёжный', 'Eng arzon tarif':'Самый дешёвый тариф',
   'Hammasi':'Все', 'Taqiqlangan':'Запрещено', 'Cheklangan':'Ограничено', 'TAQIQLANGAN':'ЗАПРЕЩЕНО', 'CHEKLANGAN':'ОГРАНИЧЕНО',
   'Mavjud':'Есть', "Ma'lumot yo'q":'Нет данных', 'TREK RAQAM':'ТРЕК-НОМЕР', 'Turi':'Тип', 'Xizmatlar':'Услуги',
@@ -4191,7 +4195,7 @@ const RU = {
   "O'zingiznikini hisoblang":'Посчитайте своё', "Kalkulyatorga oylik summa, vazn va yetkazish narxini kiriting — ilova shu qadamlarni siz uchun bajaradi va hisob bosqichlarini ko'rsatadi.":'Введите в калькулятор сумму за месяц, вес и цену доставки — приложение выполнит эти шаги за вас и покажет этапы расчёта.',
   "Jo'natma chegaraga keldi":'Отправление на границе', "Kuryer yoki pochta jo'natmani bojxona nazoratiga topshiradi. Deklaratsiya tizimda ro'yxatga olinadi — bu avtomatik, sizdan hech narsa talab qilinmaydi.":'Курьер или почта передаёт отправление на таможенный контроль. Декларация регистрируется в системе автоматически — от вас ничего не требуется.',
   'Xavf darajasi':'Уровень риска', "Tizim har jo'natmaga xavf darajasini belgilaydi: past, o'rta yoki yuqori. Bunga tovar turi, qiymati va jo'natmalar takrorlanishi ta'sir qiladi.":'Система присваивает каждому отправлению уровень риска: низкий, средний или высокий. На него влияют тип товара, стоимость и повторяемость отправлений.',
-  'Xabarnoma keladi':'Приходит уведомление', "Sizga YIDXP (my.gov.uz) yoki mobil ilova orqali xabarnoma yuboriladi. Kuryerlar ko'pincha Telegram yoki SMS orqali ham ogohlantiradi.":'Уведомление приходит через ЕПИГУ (my.gov.uz) или мобильное приложение. Курьеры часто дублируют его в Telegram или по SMS.',
+  "Sizga YIDXP (my.gov.uz) yoki mobil ilova orqali xabarnoma yuboriladi. Kuryerlar ko'pincha Telegram yoki SMS orqali ham ogohlantiradi.":'Уведомление приходит через ЕПИГУ (my.gov.uz) или мобильное приложение. Курьеры часто дублируют его в Telegram или по SMS.',
   'Xabarnomada nima bor':'Что в уведомлении', "Tovar tavsifi, qiymati, vazni, hisoblangan boj (agar bo'lsa) va javob berish muddati. Hammasini diqqat bilan tekshiring.":'Описание товара, стоимость, вес, рассчитанная пошлина (если есть) и срок ответа. Внимательно проверьте всё.',
   'Tasdiqlash yoki rad etish':'Подтвердить или отклонить', "Ma'lumot to'g'ri bo'lsa tasdiqlaysiz. Past va o'rta xavfda bu ixtiyoriy, yuqori xavfda majburiy. Rad etsangiz, jo'natma rasmiylashtirilmaydi.":'Если данные верны — подтверждаете. При низком и среднем риске это по желанию, при высоком — обязательно. Если отклонить, отправление не оформляется.',
   "Xato ko'rsangiz":'Если видите ошибку', "Qiymat yoki tovar noto'g'ri yozilgan bo'lsa, darhol tasdiqlamang: kuryerga xabar bering yoki eng yaqin bojxona organiga chek bilan murojaat qiling.":'Если стоимость или товар указаны неверно, не подтверждайте сразу: сообщите курьеру или обратитесь с чеком в ближайший таможенный орган.',

@@ -646,6 +646,7 @@ try {
     await page.locator('main button').filter({ hasText: 'Xaridlarim' }).first().click(); await page.waitForTimeout(500);
     const mineHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
     const mineTabs = await page.evaluate(() => [...document.querySelectorAll('main button[aria-pressed]')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).slice(0, 4));
+    check('Xaridlarim: tab yozuvlari kesilmaydi (2×2 to\'r)', await page.evaluate(() => [...document.querySelectorAll('main button[aria-pressed]')].slice(0, 4).every(b => b.scrollWidth <= b.clientWidth + 1)));
     check('Xaridlarim: 4 tab, "Hali reja yo\'q" holati', /Xaridlarim/.test(mineHead) && mineTabs.length === 4 && /Rejalar/.test(mineTabs[0]) && /Hisoblar/.test(mineTabs[3]) && /Hali reja yo'q/.test(await page.locator('main').innerText()), mineHead + ' · ' + mineTabs.join(' | '));
     await page.locator('main button[aria-pressed]').filter({ hasText: 'Hisoblar' }).first().click(); await page.waitForTimeout(300);
     const calcRow = page.locator('main button').filter({ hasText: 'Sinov mahsulot' }).first();

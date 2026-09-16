@@ -137,18 +137,20 @@ function knownCountry(country) {
   return k ? KB.COUNTRIES.find(c => Core.countryKey(c) === k) : null;
 }
 
-function quotesFor(country, kg, priority) {
-  const all = Core.courierQuotes({ couriers: KB.COURIERS, tariffs: KB.TARIFFS, country, kg, usdRate: 0, minKg: 0.5 });
+/* usdRate — so'mda yozilgan tariflar (UZS) dollarga o'girilishi uchun;
+   bo'lmasa o'sha kuryerlar "so'rov bo'yicha" ro'yxatiga tushib qolardi. */
+function quotesFor(country, kg, priority, usdRate) {
+  const all = Core.courierQuotes({ couriers: KB.COURIERS, tariffs: KB.TARIFFS, country, kg, usdRate, minKg: 0.5 });
   const ranked = Core.rankQuotes(all, priority || 'cheap');
   return { ok: ranked.filter(q => q.ok), rest: ranked.filter(q => !q.ok) };
 }
 
-function toolQuotes(inp) {
+function toolQuotes(inp, ctx) {
   const country = String(inp.country || '').trim(), kg = pos(inp.kg);
   if (!country || !(kg > 0)) return { error: 'davlat va og\'irlik kerak' };
   const known = knownCountry(country);
   if (!known) return { error: 'bu davlat uchun tarif yo\'q', countries: KB.COUNTRIES };
-  const { ok, rest } = quotesFor(known, kg, inp.priority);
+  const { ok, rest } = quotesFor(known, kg, inp.priority, ctx.usdRate);
   return {
     country: known, kg, priority: inp.priority || 'cheap',
     quotes: ok.slice(0, 6).map(q => ({ courier: q.name, usd: r2(q.usd), days: q.days || null, mode: q.mode, tracking: q.tracking, tariff: q.text })),
@@ -167,7 +169,7 @@ function toolLanded(inp, ctx) {
   const dims = inp.dims && pos(inp.dims.l) > 0 ? { l: pos(inp.dims.l), w: pos(inp.dims.w), h: pos(inp.dims.h) } : null;
   const volKg = dims ? Core.volumetricKg(dims.l, dims.w, dims.h) : 0;
   const billKg = Core.billableKg(kg * qty, volKg);
-  const { ok } = quotesFor(known, billKg, 'cheap');
+  const { ok } = quotesFor(known, billKg, 'cheap', ctx.usdRate);
   const best = ok[0] || null;
   const norms = Core.normsAt(KB.NORMS, ctx.today) || {};
   const freeLeft = Math.max(0, num(norms.freeUsd) - pos(inp.monthUsd));
@@ -214,7 +216,7 @@ export function runTool(name, input, ctx) {
   const inp = input && typeof input === 'object' ? input : {};
   try {
     if (name === 'customs_duty') return toolCustoms(inp, ctx);
-    if (name === 'courier_quotes') return toolQuotes(inp);
+    if (name === 'courier_quotes') return toolQuotes(inp, ctx);
     if (name === 'landed_cost') return toolLanded(inp, ctx);
     if (name === 'check_banned') return toolBanned(inp);
     if (name === 'find_store') return toolStore(inp);
