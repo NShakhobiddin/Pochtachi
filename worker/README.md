@@ -116,8 +116,10 @@ sanoq bor, shaxsiy narsa yo'q.
 Shu Worker ilovadagi AI yordamchisiga ham xizmat qiladi (`src/ai.js`).
 Kalit — sir: `npx wrangler secret put ANTHROPIC_API_KEY` (yoki GitHub'da
 `ANTHROPIC_API_KEY` sirini qo'shib workflow'ni qayta ishga tushirish).
-Kalitsiz `/ai` 503 `{"code":"no_key"}` qaytaradi va ilova buni "AI
-vaqtincha mavjud emas" deb ko'rsatadi.
+Kalitsiz `/ai` 503 `{"code":"no_key"}` qaytaradi. Ilova ochilganda
+`GET /ai/status` → `{ "ai": true|false }` so'raydi (5 daqiqa kesh) va
+`false` bo'lsa AI tugmalarini umuman ko'rsatmaydi — foydalanuvchi "AI
+mavjud emas" xabarini ko'rmaydi, savollar oddiy qidiruvga boradi.
 
 So'rov (Origin tekshiriladi, `ALLOW_ORIGIN`):
 

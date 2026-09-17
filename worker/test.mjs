@@ -80,6 +80,11 @@ const aiEnv = (extra = {}) => ({ ...env, ANTHROPIC_API_KEY: 'sk-test', AI_DAILY_
 const ask = (q, extra = {}, init = {}) => worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': '1.2.3.4', ...(init.headers || {}) }, body: JSON.stringify({ q, lang: 'uz', usdRate: 12650, ...(init.body || {}) }) }), aiEnv(extra), ctx);
 const claudeText = text => new Response(JSON.stringify({ model: 'claude-test', stop_reason: 'end_turn', content: [{ type: 'text', text }], usage: { input_tokens: 10, output_tokens: 5 } }), { status: 200 });
 
+/* /ai/status: kalitsiz false, kalit bilan true; keshlanadi, Origin qaytariladi. */
+const stOff = await hit('/ai/status', { headers: { origin: 'https://x' } });
+const stOn = await worker.fetch(new Request('https://w/ai/status', { headers: { origin: 'https://x' } }), aiEnv(), ctx);
+check('/ai/status kalitsiz — ai:false, 5 daqiqa kesh', stOff.status === 200 && (await stOff.json()).ai === false && /max-age=300/.test(stOff.headers.get('cache-control') || '') && stOff.headers.get('Access-Control-Allow-Origin') === 'https://x');
+check('/ai/status kalit bilan — ai:true', stOn.status === 200 && (await stOn.json()).ai === true);
 const noKey = await worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x' }, body: JSON.stringify({ q: 'salom' }) }), { ...env, AI_FETCH: () => { throw new Error('chaqirilmasligi kerak'); } }, ctx);
 check('/ai kalitsiz — 503 no_key', noKey.status === 503 && (await noKey.json()).code === 'no_key');
 const badOrigin = await worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://boshqa' }, body: '{"q":"x"}' }), aiEnv({ AI_FETCH: claudeText }), ctx);

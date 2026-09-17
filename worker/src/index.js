@@ -20,6 +20,7 @@
  *                        ochilgan do'kon/kuryer/qo'llanmalari, tokensiz,
  *                        1 soat keshlanadi (ilovadagi "tirik signal" uchun)
  *   GET  /hisobot      — o'qiladigan hisobot sahifasi (parol sahifada so'raladi)
+ *   GET  /ai/status    — { ai: true|false } — kalit bormi (ilova tugmalarni shunga qarab ko'rsatadi)
  *   POST /ai           — Pochtam AI (src/ai.js): Claude API proksisi, kalit sirda,
  *                        kunlik chegara shu Durable Object'da sanaladi
  *   POST /ai/shot      — skrinshotdan mahsulot nomi/narxi (JSON), o'sha chegara
@@ -174,6 +175,13 @@ export default {
         ctx.waitUntil(counter.fetch('https://counter/add', { method: 'POST', body: JSON.stringify(rows) }));
       }
       return new Response(null, { status: 204, headers: cors(env, {}, origin) });
+    }
+
+    /* Ilova ochilganda: AI yoqilganmi (kalit bormi). Sir emas, faqat bayroq —
+       ilova o'chiq AI uchun tugma ko'rsatmaydi. 5 daqiqa keshlanadi. */
+    if (request.method === 'GET' && url.pathname === '/ai/status') {
+      return new Response(JSON.stringify({ ai: !!env.ANTHROPIC_API_KEY }), { status: 200,
+        headers: cors(env, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300' }, origin) });
     }
 
     if (request.method === 'POST' && (url.pathname === '/ai/shot' || url.pathname === '/ai')) {

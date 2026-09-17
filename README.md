@@ -198,13 +198,26 @@ yopadi, keyingina ekranni.
 
 ## Bosh sahifa (3-bosqich, 2026-09-16 da soddalashtirildi)
 
-Sahifa vazifadan boshlanadi: **universal maydon** ("Nima olib
-kelmoqchisiz?") havola, mahsulot nomi yoki savolni qabul qiladi.
-`heroGo()`: havola bo'lsa domen bo'yicha do'kon topiladi (`STORES.domain`
-yoki `DOMAIN_ALIAS` — `tb.cn`, `amzn.to`, `dewu.com` kabi qisqa va mobil
-manzillar) va do'kon sahifasi ochiladi; ro'yxatda yo'q domen — domen so'zi
-bilan qidiruvga; savol (so'roq belgisi yoki so'roq so'zi) — Pochtam AI;
-oddiy so'z — qidiruv ekrani. Oqim hech qachon to'xtab qolmaydi (TZ 21).
+Sahifa vazifadan boshlanadi: **bitta maydon** ("Nima olib
+kelmoqchisiz?") havola, mahsulot nomi, erkin so'rov yoki skrinshotni
+qabul qiladi — kirish nuqtasi bitta (2026-09-17, "bitta maydon → bitta
+natija"). `heroGo()`: havola bo'lsa domen bo'yicha do'kon topiladi
+(`STORES.domain` yoki `DOMAIN_ALIAS` — `tb.cn`, `amzn.to`, `dewu.com` kabi
+qisqa va mobil manzillar) va do'kon sahifasi ochiladi; ro'yxatda yo'q
+domen — domen so'zi bilan qidiruvga; savol (so'roq belgisi yoki so'roq
+so'zi) yoki tovar so'rovi ("olmoqchiman", "razmer", "gacha", ikki vergul)
+— Pochtam AI; oddiy so'z — qidiruv ekrani. Kamera tugmasi maydonning
+ichida (skrinshot → `aiShot`). Maydon ostida bitta bosiladigan namuna
+("Masalan: krossovka, 41 razmer, $100 gacha") — qo'llanma o'rniga
+ishlaydigan misol. Oqim hech qachon to'xtab qolmaydi (TZ 21).
+
+**AI bayrog'i.** Ilova ochilganda Worker'dan `GET /ai/status` →
+`{ ai: true|false }` (kalit bormi; 5 daqiqa kesh, oxirgi holat
+`localStorage.xy_ai`, `checkAi()`). `false` bo'lsa AI izi qolmaydi:
+kamera ko'rinmaydi, placeholder "Havola yoki mahsulot nomi", namuna
+"Nike Air Max", savol qidiruvga boradi, kompyuter menyusida "Pochtam AI"
+yo'q. Foydalanuvchi "AI mavjud emas" xabarini hech qachon ko'rmaydi.
+Noma'lum holat (tarmoq yo'q, birinchi ochilish) — o'chiq.
 
 Bosh sahifada yettita blok, har biri bitta vazifa uchun, takrori yo'q:
 
@@ -296,13 +309,14 @@ shunday deb yoziladi; holat qo'lda belgilanadi. Kuryer API uchun joy:
 
 ## Pochtam AI (7–8-bosqich)
 
-Ilovaning asosiy funksiyasi — bosh sahifada universal maydon ostida ikkita
-tugma: **Skrinshot yuklash** va **Tovar topish**, yonida "Qanday ishlaydi"
-(AI ekranida ikki rejim uchun 3 qadamli qo'llanma, `aiHow`). Savol-javob
-ekrani `ai` ga kirish: shu tugmalar, kompyuter menyusidagi bo'lim,
-universal maydonga yozilgan savol (`?`, so'roq so'zi) yoki mahsulot so'rovi
-("olmoqchiman", "razmer", "gacha", ikki vergul — `heroGo`). Suhbat faqat
-brauzer xotirasida (`aiMsgs`), saqlanmaydi.
+AI — suhbatdosh emas, shakl to'ldiruvchi: skrinshotdan narxni o'qiydi,
+erkin so'rovni tushunadi, hisobni esa `core/` bajaradi. Kirish nuqtalari
+(2026-09-17 dan): bosh sahifadagi bitta maydon (savol, tovar so'rovi —
+`heroGo`), maydon ichidagi kamera (skrinshot), kompyuter menyusidagi
+bo'lim. Bosh sahifada alohida AI tugmalari va "Qanday ishlaydi" yo'q —
+ularning o'rnida bitta bosiladigan namuna. AI o'chiq bo'lsa (`/ai/status`)
+bularning hech biri ko'rinmaydi. Suhbat faqat brauzer xotirasida
+(`aiMsgs`), saqlanmaydi.
 
 **Skrinshot yuklash** (`aiShot`). Fayl brauzerda canvas bilan 1280 px ga
 kichraytirilib JPEG (0.82) qilinadi va `POST /ai/shot` ga ketadi (`image`
