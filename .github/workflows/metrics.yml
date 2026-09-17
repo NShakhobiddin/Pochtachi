@@ -73,6 +73,7 @@ jobs:
         run: printf '%s' "$R" | npx wrangler secret put READ_TOKEN
 
       - name: Pochtam AI kalitini o'rnatish (ANTHROPIC_API_KEY, ixtiyoriy)
+        id: aikey
         working-directory: worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -82,7 +83,15 @@ jobs:
           # GitHub'da ANTHROPIC_API_KEY siri bo'lsa Worker'ga sir sifatida
           # yoziladi va /ai ishga tushadi; bo'lmasa /ai 503 qaytaradi, ilova
           # "AI vaqtincha mavjud emas" deb ko'rsatadi — qolgani ishlaydi.
-          if [ -n "$K" ]; then printf '%s' "$K" | npx wrangler secret put ANTHROPIC_API_KEY; echo "AI kaliti o'rnatildi"; else echo "ANTHROPIC_API_KEY siri yo'q — AI o'chiq qoladi"; fi
+          # Sirning O'ZI hech qayerga chiqmaydi — faqat bor/yo'q bayrog'i.
+          if [ -n "$K" ]; then
+            printf '%s' "$K" | npx wrangler secret put ANTHROPIC_API_KEY
+            echo "set=1" >> "$GITHUB_OUTPUT"
+            echo "AI kaliti o'rnatildi"
+          else
+            echo "set=0" >> "$GITHUB_OUTPUT"
+            echo "ANTHROPIC_API_KEY siri yo'q — AI o'chiq qoladi"
+          fi
 
       - name: Serverni sinash
         env:
@@ -112,9 +121,12 @@ jobs:
       - name: Pochtam AI sinovi (/ai va /ai/shot)
         env:
           URL: ${{ steps.deploy.outputs.url }}
+          KEY_SET: ${{ steps.aikey.outputs.set }}
         run: |
           set +e
           # Kalit bo'lmasa 503 no_key — bu xato emas, AI o'chiq degani; workflow davom etadi.
+          # Kalit QO'YILGAN bo'lsa esa 200 dan boshqa javob — haqiqiy xato:
+          # aks holda buzuq kalit yashil belgi ostida ko'rinmay qolardi.
           echo "== POST /ai"
           code=$(curl -s -m 90 -o /tmp/ai1 -w '%{http_code}' -X POST "${URL}ai" -H 'origin: https://nshakhobiddin.github.io' -H 'content-type: text/plain' \
             -d '{"q":"320 dollarlik 2.5 kg tovar uchun boj qancha?","lang":"uz","usdRate":12650}')
@@ -123,11 +135,20 @@ jobs:
           code2=$(curl -s -m 90 -o /tmp/ai2 -w '%{http_code}' -X POST "${URL}ai/shot" -H 'origin: https://nshakhobiddin.github.io' -H 'content-type: text/plain' \
             -d '{"image":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==","lang":"uz","usdRate":12650}')
           echo "[$code2] $(head -c 400 /tmp/ai2)"
-          case "$code" in
-            200) echo "::notice::Pochtam AI ishlayapti: /ai 200";;
-            503) if grep -q no_key /tmp/ai1; then echo "::warning::AI o'chiq: ANTHROPIC_API_KEY siri yo'q (GitHub → Settings → Secrets)"; else echo "::warning::AI 503: Claude API javob bermadi — $(head -c 200 /tmp/ai1)"; fi;;
-            *) echo "::warning::/ai kutilmagan javob: $code";;
-          esac
+          MODEL=$(node -e "try{process.stdout.write(JSON.parse(require('fs').readFileSync('/tmp/ai1','utf8')).model||'')}catch(e){}")
+          if [ "$KEY_SET" = "1" ]; then
+            # Kalit bor: ikkala yo'l ham ishlashi shart.
+            [ "$code" = "200" ] || { echo "::error::Kalit qo'yilgan, lekin /ai $code qaytardi — $(head -c 300 /tmp/ai1)"; exit 1; }
+            [ "$code2" = "200" ] || { echo "::error::Kalit qo'yilgan, lekin /ai/shot $code2 qaytardi — $(head -c 300 /tmp/ai2)"; exit 1; }
+            echo "::notice::Pochtam AI ishlayapti — /ai 200, /ai/shot 200, model: ${MODEL:-noma'lum}"
+          else
+            case "$code" in
+              503) grep -q no_key /tmp/ai1 \
+                     && echo "::warning::AI o'chiq: ANTHROPIC_API_KEY siri yo'q (GitHub → Settings → Secrets and variables → Actions)" \
+                     || echo "::warning::AI 503: Claude API javob bermadi — $(head -c 200 /tmp/ai1)";;
+              *) echo "::warning::Kalitsiz kutilgani 503 edi, keldi: $code";;
+            esac
+          fi
 
       - name: Ilovaga manzilni yozish va qurish
         env:
