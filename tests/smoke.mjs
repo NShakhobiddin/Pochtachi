@@ -477,7 +477,7 @@ try {
   // 9. "Orqaga" ilovadan chiqarib yubormaydi
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(400);
-  await homeCard('Qayerdan olsam?').click();
+  await homeCard("Do'konlar").click();
   await page.waitForTimeout(600);
   await page.goBack();
   await page.waitForTimeout(600);
@@ -493,7 +493,7 @@ try {
   // 10b. Do'konlar bo'limi papka ko'rinishida ochiladi
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(400);
-  await homeCard('Qayerdan olsam?').click();
+  await homeCard("Do'konlar").click();
   await page.waitForTimeout(600);
   const folders = await page.evaluate(() => ({
     chooser: /Bo'lim tanlang/.test(document.body.innerText),
@@ -567,9 +567,8 @@ try {
     const inputPx = await page.evaluate(() => [...document.querySelectorAll('input:not([type="file"])')].map(i => parseFloat(getComputedStyle(i).fontSize)));
     check('kirish maydonlari telefonda 16 px dan kichik emas (iOS zoom)', inputPx.length > 0 && inputPx.every(v => v >= 16), inputPx.join(','));
     check('bosh sahifada universal maydon va "Boshlash"', await hero.count() === 1 && await page.locator('form button[type="submit"]', { hasText: 'Boshlash' }).count() === 1);
-    /* Plitkalar bo'lim nomi emas, savol: "muammo → yechim" tamoyili. */
-    const quick = await page.evaluate(() => [...document.querySelectorAll('main button')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).filter(t => /^(Qayerdan olsam\?|Qancha tushadi\?|Qaysi kuryer\?|Ruxsat bormi\?)$/.test(t)).length);
-    check('tez o\'tish: 4 ta savol tugmasi', quick === 4, quick + ' ta');
+    const quick = await page.evaluate(() => [...document.querySelectorAll('main button')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).filter(t => /^(Jami narx|Do'konlar|Kuryerlar|Taqiqni tekshirish)$/.test(t)).length);
+    check('tez o\'tish: 4 ta tugma', quick === 4, quick + ' ta');
     const pop = await page.evaluate(() => { const t = document.querySelector('main').innerText; const i = t.indexOf("Mashhur do'konlar"); return t.slice(i, i + 120).replace(/\s+/g, ' '); });
     check('mashhur do\'konlar tasmasi', /Taobao/.test(pop) && /Pinduoduo/.test(pop) && /Amazon/.test(pop), pop.slice(0, 60));
     /* Havola → do'kon sahifasi (domen va qisqa manzil), noma'lum domen → qidiruv, so'z → qidiruv. */
@@ -588,7 +587,7 @@ try {
        "Xarid rejasiga qo'shish" reja ekranini ochadi va localStorage'da
        yangi maydonlar (name, qty, source) bilan reja paydo bo'ladi. */
     const plansBefore = await page.evaluate(() => (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || []).length);
-    await page.locator('main button').filter({ hasText: 'Qancha tushadi?' }).first().click(); await page.waitForTimeout(500);
+    await page.locator('main button').filter({ hasText: 'Jami narx' }).first().click(); await page.waitForTimeout(500);
     const lcHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
     const lcFill = async (label, v) => { const el = page.locator(`input[aria-label="${label}"]`); await el.fill(String(v)); await el.dispatchEvent('change'); await page.waitForTimeout(150); };
     await lcFill('Mahsulot narxi', 320); await lcFill("Og'irligi, kilogrammda", 2.5);
@@ -610,7 +609,7 @@ try {
     /* Oylik me'yor: yangi reja "Bu oyda" ga yozildi, endi jami narx qoldiqni
        hisobga oladi — $100 lik tovar ham bojli chiqadi va izohda qoldiq turadi. */
     await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
-    await page.locator('main button').filter({ hasText: 'Qancha tushadi?' }).first().click(); await page.waitForTimeout(500);
+    await page.locator('main button').filter({ hasText: 'Jami narx' }).first().click(); await page.waitForTimeout(500);
     await lcFill('Mahsulot narxi', 100); await lcFill("Og'irligi, kilogrammda", 1); lt = await lcText();
     const mDuty = /Bojxona to'lovi \$(\d+\.\d\d)/.exec(lt);
     check('jami narx: shu oyda kelgan reja bojsiz qoldiqni kamaytiradi', /Bu oyda \$\d+ kelgan — bojsiz qoldiq \$0\./.test(lt) && mDuty && +mDuty[1] > 0, (lt.match(/Bu oyda[^.]*\./) || [''])[0] + ' · boj ' + (mDuty && mDuty[1]));
@@ -724,7 +723,7 @@ try {
        Kuryerlar → Barcha kuryerlar; panelda "2 kg" tanlanadi (davlat —
        Xitoy, standart); kartalarda hisoblangan summa, arzonidan tartib;
        "Tez" muddat bo'yicha; taqqoslash jadvalida hisob qatori. */
-    await homeCard('Qaysi kuryer?').click(); await page.waitForTimeout(600);
+    await homeCard('Kuryerlar').click(); await page.waitForTimeout(600);
     await page.getByText('Barcha kuryerlar', { exact: false }).first().click(); await page.waitForTimeout(600);
     await page.getByRole('button', { name: '2 kg', exact: true }).first().click(); await page.waitForTimeout(400);
     const ccHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
@@ -1064,10 +1063,10 @@ try {
     await p.locator('input').first().fill('nike'); await skan('qidiruv');
     await p.locator('input').first().fill('zzqq'); await skan('qidiruv-bo\'sh');
     await nav(0); await bos(/Xaridlarim|Харидларим|Мои покупки/); await bos(/Jo'natmalar|Жўнатмалар|Отправления/); await skan('kuzatuv');
-    await nav(0); await bos(/Qayerdan olsam|Қаердан олсам|Где купить/); await skan('do\'kon-papkalar');
+    await nav(0); await bos(/Do'konlar|Дўконлар|Магазины/); await skan('do\'kon-papkalar');
     await bos(/Universal|Универсал/); await skan('do\'kon-papka');
     await bos(/Taobao/); await skan('do\'kon');
-    await nav(0); await bos(/Qaysi kuryer|Қайси курьер|Какой курьер/); await skan('kuryer-papkalar');
+    await nav(0); await bos(/Kuryerlar|Курьерлар|Курьеры/); await skan('kuryer-papkalar');
     await bos(/Turkiya|Туркия|Турция/); await skan('kuryer-papka');
     await bos(/ASE/); await skan('kuryer');
     await bos(/Taqqoslash|Таққослаш|Сравн/); await skan('taqqoslash');
@@ -1080,7 +1079,7 @@ try {
     await nav(2); await skan('reja');
     await nav(4); await skan('sozlamalar');
     /* TZ bosqichlaridagi yangi ekranlar: Jami narx, Xaridlarim (4 tab), Pochtam AI. */
-    await nav(0); await bos(/Qancha tushadi|Қанча тушади|Сколько выйдет/); await skan('jami-narx');
+    await nav(0); await bos(/Jami narx|Жами нарх|Итоговая цена/); await skan('jami-narx');
     await nav(0); await bos(/Xaridlarim|Харидларим|Мои покупки/); await skan('xaridlarim');
     for (const re of [/Jo'natmalar|Жўнатмалар|Отправления/, /Sevimlilar|Севимлилар|Избранное/, /Hisoblar|Ҳисоблар|Расчёты/]) { if (await bos(re)) await skan('xaridlarim-tab'); }
     await nav(0); await bos(/Tovar topish|Товар топиш|Найти товар/); await bos(/Qanday ishlaydi|Қандай ишлайди|Как это работает/); await skan('ai');
@@ -1099,7 +1098,7 @@ try {
 
   /* Do'kon ro'yxatidagi yorliqlar faqat ogohlantirish bo'lib qolmasin:
      qo'llanmasi bor do'konlarda ijobiy belgi turadi. */
-  await page.locator('main button', { hasText: 'Qayerdan olsam?' }).first().click();
+  await page.locator('main button', { hasText: "Do'konlar" }).first().click();
   await page.waitForTimeout(600);
   await page.locator('main button', { hasText: 'Universal' }).first().click();
   await page.waitForTimeout(700);
@@ -1114,7 +1113,7 @@ try {
   /* Taqqoslash rejimi yoqilganda nima qilish kerakligi yozilib turadi. */
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(500);
-  await page.locator('main button', { hasText: 'Qaysi kuryer?' }).first().click();
+  await page.locator('main button', { hasText: 'Kuryerlar' }).first().click();
   await page.waitForTimeout(700);
   await page.locator('main button', { hasText: 'AQSh' }).first().click();
   await page.waitForTimeout(700);
@@ -1155,7 +1154,7 @@ try {
      ochadi; Global do'kon uchun "Barcha kuryerlar". */
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(500);
-  await page.locator('main button', { hasText: 'Qayerdan olsam?' }).first().click();
+  await page.locator('main button', { hasText: "Do'konlar" }).first().click();
   await page.waitForTimeout(600);
   await page.locator('main button', { hasText: 'Tovar turi' }).first().click();
   await page.waitForTimeout(300);
@@ -1490,7 +1489,7 @@ try {
   /* Kuryer kartochkasidagi havola chiplarida belgi bo'lsin. */
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(450);
-  await homeCard('Qaysi kuryer?').click();
+  await homeCard('Kuryerlar').click();
   await page.waitForTimeout(700);
   await page.getByText('Barcha kuryerlar', { exact: false }).first().click();
   await page.waitForTimeout(700);
@@ -1758,7 +1757,7 @@ try {
   await page.waitForTimeout(500);
   const ruBosh = await page.evaluate(() => document.querySelector('main').innerText.replace(/\s+/g, ' '));
   check('ruscha bosh sahifa: tez o\'tish plitkalari tarjimada',
-    /Где купить\?/.test(ruBosh) && /Сколько выйдет\?/.test(ruBosh) && /Какой курьер\?/.test(ruBosh) && /Можно ввозить\?/.test(ruBosh), ruBosh.slice(0, 200));
+    /Итоговая цена/.test(ruBosh) && /Магазины/.test(ruBosh) && /Курьеры/.test(ruBosh) && /Проверить запреты/.test(ruBosh), ruBosh.slice(0, 200));
   await page.locator('nav button:visible').last().click();
   await page.waitForTimeout(500);
   await page.locator('main button[translate="no"]').filter({ hasText: "O'zbekcha" }).first().click();
@@ -1770,7 +1769,7 @@ try {
   // Keyingi tekshiruvlar papkalar ekranidan davom etadi.
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(400);
-  await homeCard('Qayerdan olsam?').click();
+  await homeCard("Do'konlar").click();
   await page.waitForTimeout(700);
 
   await page.getByText('Elektronika', { exact: false }).first().click();
@@ -1864,7 +1863,7 @@ try {
   // 10c. Kuryerlar bo'limi ham papka ko'rinishida
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(400);
-  await homeCard('Qaysi kuryer?').click();
+  await homeCard('Kuryerlar').click();
   await page.waitForTimeout(600);
   const cFolders = await page.evaluate(() => ({
     chooser: /Yo'nalishni tanlang/.test(document.body.innerText),
@@ -2029,7 +2028,7 @@ try {
   // Papkalar va papka ichi ham 360 px da siljimasin
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click().catch(() => {});
   await page.waitForTimeout(400);
-  await homeCard('Qayerdan olsam?').click().catch(() => {});
+  await homeCard("Do'konlar").click().catch(() => {});
   await page.waitForTimeout(500);
   for (const label of ['papkalar', 'papka ichi']) {
     if (label === 'papka ichi') {
@@ -2250,13 +2249,13 @@ try {
   await page.waitForTimeout(1500);
   await page.locator('nav button').first().click();
   await page.waitForTimeout(400);
-  await page.locator('main button').filter({ hasText: 'Qayerdan olsam?' }).first().click();
+  await page.locator('main button').filter({ hasText: "Do'konlar" }).first().click();
   await page.waitForTimeout(400);
   await page.locator('main button').filter({ hasText: /Universal/ }).first().click();
   await page.waitForTimeout(700);
   await page.locator('nav button').first().click();
   await page.waitForTimeout(300);
-  await page.locator('main button').filter({ hasText: 'Qaysi kuryer?' }).first().click();
+  await page.locator('main button').filter({ hasText: 'Kuryerlar' }).first().click();
   await page.waitForTimeout(700);
   const tarmoqRasm = hits.filter(h => /\.(webp|png|woff2)$/.test(h));
   check('takroriy ochilishda rasm va shrift tarmoqdan so\'ralmaydi',
