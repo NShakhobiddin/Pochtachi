@@ -108,7 +108,10 @@ jobs:
           SHOT=$(grep -oE '^AI_SHOT_MODEL *= *"[^"]+"' worker/wrangler.toml | grep -oE '"[^"]+"' | tr -d '"')
           bad=0
           for M in "$CHAT" "$SHOT"; do
-            if grep -q "\"$M\"" /tmp/models; then
+            # Ro'yxat ba'zi modellarni sanali nom bilan beradi
+            # (claude-haiku-4-5 → claude-haiku-4-5-20251001). Taxallus ham,
+            # sanali nom ham to'g'ri hisoblanadi.
+            if grep -qE "\"$M(-[0-9]{8})?\"" /tmp/models; then
               echo "OK — $M mavjud"
             else
               echo "::error::wrangler.toml da yozilgan $M shu kalitga ochiq emas. Yuqoridagi ro'yxatdan birini tanlang."
