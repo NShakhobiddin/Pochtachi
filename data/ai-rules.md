@@ -147,14 +147,17 @@ O'lcham jadvali (taxminiy, brendga qarab farq qiladi):
 ## Skrinshot
 
 Ilova skrinshotdan nom va narxni alohida yo'l bilan o'qiydi (bu suhbatga
-kirmaydi). Foydalanuvchi "skrinshot yubordim, hisoblab ber" desa —
-"Skrinshot yuklash" tugmasini ko'rsat, natija kalkulyatorga tushishini ayt.
+kirmaydi). Foydalanuvchi "skrinshot yubordim, hisoblab ber" desa — bosh
+sahifadagi maydon ichidagi kamera tugmasini ko'rsat: natija to'g'ridan-to'g'ri
+"Jami narx" kalkulyatoriga tushadi.
 
 ## Ilova funksiyalari (foydalanuvchini yo'naltirish uchun)
 
-- "Skrinshot yuklash" (bosh sahifa va Pochtam AI) — do'kon sahifasi
-  skrinshotidan nom va narx o'qilib kalkulyatorga tushadi.
-- "Tovar topish" — mahsulot so'rovi bo'yicha do'konlar, o'lcham, jami narx.
+- Bosh sahifadagi bitta maydon: havola → do'kon, nom → qidiruv, savol yoki
+  tovar so'rovi → senga; ichidagi kamera — do'kon sahifasi skrinshotidan nom
+  va narx o'qilib to'g'ridan-to'g'ri kalkulyatorga tushadi.
+- Tovar so'rovi ("krossovka, 41 razmer, $100 gacha") — javob ilovada natija
+  kartasi bo'lib chiqadi: do'kon kartalari, o'lcham, taxminiy jami.
 - "Jami narx" — universal kalkulyator: narx, miqdor, vazn, quti, davlat,
   kuryer → jami tannarx, "olish foydalimi?", rejaga qo'shish.
 - "Kuryerlar" → "Vazn bo'yicha hisob" — barcha kuryerlar tanlangan davlat va

@@ -219,20 +219,22 @@ kamera ko'rinmaydi, placeholder "Havola yoki mahsulot nomi", namuna
 yo'q. Foydalanuvchi "AI mavjud emas" xabarini hech qachon ko'rmaydi.
 Noma'lum holat (tarmoq yo'q, birinchi ochilish) — o'chiq.
 
-Bosh sahifada yettita blok, har biri bitta vazifa uchun, takrori yo'q:
+Bosh sahifada oltita blok, har biri bitta vazifa uchun, takrori yo'q:
 
-1. universal maydon;
+1. bitta maydon (kamera ichida, ostida namuna);
 2. **tez o'tish** — Jami narx, Do'konlar, Kuryerlar, Taqiqni tekshirish
    (Qo'llanmalar va Bojxona pastki menyuda, shuning uchun bu yerda
    takrorlanmaydi; Do'konlar va Kuryerlar bo'limlariga kirish faqat shu
    yerdan);
 3. **Xaridlarim** kartasi — rejalar, jo'natmalar, sevimlilar, hisoblar
    (jamlanma bilan);
-4. **Pochtam AI** kartasi;
-5. **mashhur do'konlar** tasmasi (`POPULAR_STORES`, "Barchasi" — do'konlar
+4. **mashhur do'konlar** tasmasi (`POPULAR_STORES`, "Barchasi" — do'konlar
    bo'limi);
-6. mutaxassis yordami (pullik xizmatlar);
-7. kurs (bosilsa sozlamalar) va kunning maslahati (`TIPS`, ixcham karta).
+5. mutaxassis yordami (pullik xizmatlar);
+6. kurs (bosilsa sozlamalar) va kunning maslahati (`TIPS`, ixcham karta).
+
+Alohida "Pochtam AI" kartasi yo'q (2026-09-17): AI bosh sahifadagi
+maydonning o'zida — savol, tovar so'rovi, kamera.
 
 Olib tashlangan takrorlar (2026-09-16): to'rt bo'lim kartasi (tez o'tish
 va pastki menyu bilan bir xil), "Kuryerlarni solishtirish" bloki (kuryerlar
@@ -336,15 +338,19 @@ log qilinmaydi.
 Narx: bir skrinshot ≈ 1 500 kirish tokeni, chat savolidan bir necha
 barobar arzon.
 
-**Tovar topish**. "krossovka olmoqchiman, erkaklarniki, original, 41
-razmer, $100 gacha" kabi so'rov → `data/ai-rules.md` "Tovar topish"
-bo'limi: AI kategoriya, originallik, o'lcham, byudjetni ajratadi,
-`suggest_stores` vositasi (`worker/src/ai.js`) bazadan mos do'konlarni
-tanlaydi (kategoriya hal qiluvchi, originallik "Yuqori", byudjet → narx
-segmenti) va har biriga qidiruv havolasi beradi (`SEARCH_URL`, 27 do'kon;
-qolganlarida do'kon manzili). Javob ostida do'kon nomli tugmalar yangi
-oynada ochiladi; o'lcham jadvali (EU/US/sm) va byudjetdagi tovar uchun jami
-narx (`landed_cost`). Konkret mahsulot va joriy narxni AI bilmaydi va
+**Tovar so'rovi** (natija kartasi). "krossovka, 41 razmer, $100 gacha" kabi
+so'rov maydondan → `data/ai-rules.md` "Tovar topish" bo'limi: AI
+kategoriya, originallik, o'lcham, byudjetni ajratadi, `suggest_stores`
+vositasi (`worker/src/ai.js`) bazadan mos do'konlarni tanlaydi (kategoriya
+hal qiluvchi, originallik "Yuqori", byudjet → narx segmenti) va har biriga
+qidiruv havolasi beradi (`SEARCH_URL`, 27 do'kon; qolganlarida do'kon
+manzili). Ilova javobni **natija kartasi** qilib chizadi (`aiVm`):
+"Tushundim" chiplari (vosita kirishidan: kategoriya · original · byudjet),
+AI matni, do'kon kartalari (logotip, davlat · narx segmenti · originallik,
+"Qidirish" yangi oynada), `landed_cost` bo'lsa "Taxminiy jami" qatori,
+"Kalkulyatorda ochish". Xato — sariq karta ("Hozir javob bera olmadim" /
+"Bugungi savollar chegarasi tugadi") + Jami narx va Do'konlar tugmalari.
+Bo'sh holat (faqat kompyuter menyusidan): "Nima kerak?" + bitta namuna. Konkret mahsulot va joriy narxni AI bilmaydi va
 shunday deydi — bu bosqichda web search yo'q (narx va sifat sabab; keyingi
 variantlar `docs/rivojlantirish-rejasi.md` 9-bosqichda).
 
@@ -393,8 +399,10 @@ bilan; `AI_URL` bo'lmasa o'tkazib yuboriladi.
 Sinov: `tests/ai-eval.json` da tovar so'rovi uchun 3 savol (vosita
 `suggest_stores`, javobda havola matni emas — tugma). Worker testlari:
 `/ai/shot` (rasm bloki, JSON sxema, zaxira yo'l, CNY → USD), `suggest_stores`
-reytingi. Smoke: bosh sahifa tugmalari, "Qanday ishlaydi", do'kon havolalari,
-skrinshot → kalkulyator (soxta `/ai/shot`).
+reytingi. Smoke: bosh sahifa maydoni va namuna, natija kartasi ("Tushundim"
+chiplari, do'kon kartalari, taxminiy jami), xato kartasi, bo'sh holat,
+skrinshot → kalkulyator va "topilmadi" banneri (soxta `/ai/shot`), AI o'chiq
+holati (soxta `/ai/status`).
 
 Rejadagi `ai/index.html` iframe o'rniga ekran ilovaning o'zida: javob
 ostidagi tugmalar ilova holatini to'ldirishi kerak (kalkulyator, kuryer

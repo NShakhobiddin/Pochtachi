@@ -1,6 +1,6 @@
 # Pochtam.uz — texnik topshiriq bo'yicha audit va rivojlantirish rejasi
 
-Sana: 2026-09-16. Holat: 1–7 bosqichlar tugadi (audit, Pochtam Core, bosh sahifa, universal kalkulyator, kuryer solishtirish, Xaridlarim, Pochtam AI — javob ostidagi tugmalar bilan). Navbat: 8 ning qolgani (AI'dan reja tuzish, qo'llanmaga o'tish) va 9.
+Sana: 2026-09-17. Holat: 1–9 bosqichlar tugadi (audit, Pochtam Core, bosh sahifa, universal kalkulyator, kuryer solishtirish, Xaridlarim, Pochtam AI, AI funksiyalar, "bitta maydon → bitta natija" soddalashtirish). Navbat: 10.
 Tamoyil: **EXTEND, DO NOT REBUILD** — mavjud ilova saqlanadi, funksiyalar
 bir-biriga bog'lanadi, ustiga aqlli qatlam qo'shiladi.
 
@@ -169,7 +169,8 @@ talabining texnik kafolati.
 | 6 | Xaridlarim + jo'natmalar ✓ (2026-09-15) | `mine` ekrani (Rejalar, Jo'natmalar, Sevimlilar, Hisoblar — kalkulyatorning oxirgi 10 hisobi), "Bojxonada" holati (PLAN_LAST=5, fixPlan migratsiyasi sv:2) | ✓ eski reja 4→5 ko'chadi; smoke: 4 tekshiruv |
 | 7 | Pochtam AI ✓ (2026-09-16) | worker `/ai` (Claude API, kalit sirda, IP/umumiy kunlik chegara), 5 vosita `core/` dan, `data/ai-rules.md`, `kb.generated.js`; ilovada `ai` ekrani (tez savollar, tarix, 503/429 holatlari, bosh sahifa kartasi, universal maydondagi savol, desktop menyu); `tests/ai-eval.json` + `tests/ai.mjs` | ✓ worker testi: vosita natijasi core bilan bir xil, kalitsiz 503; smoke: 9 tekshiruv; kalit repo va brauzerda yo'q |
 | 8 | AI + funksiyalar ✓ (2026-09-16) | Bosh sahifada asosiy funksiya: **Skrinshot yuklash** (`/ai/shot`, Haiku, tuzilgan JSON → kalkulyator) va **Tovar topish** (`suggest_stores`, do'kon havolalari, o'lcham jadvali, jami narx) + "Qanday ishlaydi" qo'llanmasi; javob tugmalari: kalkulyator, kuryer paneli, taqiqlar, do'kon, havolalar. Qoladi: AI'dan to'g'ridan-to'g'ri reja tuzish | worker 78 tekshiruv, smoke 189; TZ 21–23 (havola, skrinshot) yopildi |
-| 9 | Keyingi | havola tahlili (ochiq do'konlar), skrinshot, Score, real tracking | alohida topshiriq |
+| 9 | "Bitta maydon → bitta natija" ✓ (2026-09-17) | AI chalkash edi (7 kirish nuqtasi, bo'sh chat, takror tugmalar, o'lik "AI mavjud emas"). Endi: bosh sahifada **bitta maydon** (kamera ichida, ostida bosiladigan namuna); `GET /ai/status` bayrog'i — kalit yo'q bo'lsa AI izi yo'q; skrinshot → to'g'ridan-to'g'ri Jami narx (banner: o'qilmoqda / o'qildi / o'qilmadi); AI ekrani — natija kartasi ("Tushundim" chiplari, do'kon kartalari, taxminiy jami), xato sariq karta + ishlaydigan tugmalar, bo'sh chat yo'q; 30 ga yaqin o'lik tarjima o'chirildi | smoke 193, worker 80; foydalanuvchi hech qachon o'lik tugma yoki bo'sh chat ko'rmaydi |
+| 10 | Keyingi | havola tahlili (ochiq do'konlar), Score, real tracking, AI'dan reja tuzish | alohida topshiriq |
 
 Har bosqich alohida commit(lar), har biridan keyin `smoke`, `guides`,
 `check`, `worker` testlari yashil, sayt avtomatik joylanadi. Bosqichlar
