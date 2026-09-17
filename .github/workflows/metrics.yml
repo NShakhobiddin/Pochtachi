@@ -72,6 +72,41 @@ jobs:
           R: ${{ secrets.METRICS_READ_TOKEN }}
         run: printf '%s' "$R" | npx wrangler secret put READ_TOKEN
 
+      # Kalitni Worker'ga yozishdan OLDIN Anthropic'ning o'zidan so'raymiz:
+      # ishlaydimi va qaysi modellar mavjud. Kalit modelga bog'liq emas —
+      # bitta kalit hisobdagi hamma modelni ochadi — shuning uchun bu ro'yxat
+      # "qaysi modelni yozsam bo'ladi" degan savolga ham javob beradi.
+      # Kalitning o'zi hech qayerga chiqmaydi: faqat uzunligi va model nomlari.
+      - name: Kalitni tekshirish va mavjud modellarni ko'rsatish
+        env:
+          K: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          set +e
+          K=$(printf '%s' "$K" | tr -d '[:space:]')
+          if [ -z "$K" ]; then echo "Kalit yo'q — tekshiruv o'tkazib yuborildi"; exit 0; fi
+          echo "Kalit uzunligi: ${#K} belgi (to'liq kalit odatda 100 dan ortiq)"
+          code=$(curl -s -o /tmp/models -w '%{http_code}' 'https://api.anthropic.com/v1/models?limit=100' \
+            -H "x-api-key: $K" -H 'anthropic-version: 2023-06-01')
+          if [ "$code" != "200" ]; then
+            echo "::error::Anthropic kalitni qabul qilmadi ($code): $(head -c 400 /tmp/models)"
+            echo "::error::401/403 — kalit noto'g'ri, chala nusxalangan yoki o'chirilgan. console.anthropic.com → API keys → Create key, so'ng GitHub sirini almashtiring."
+            exit 1
+          fi
+          echo "Kalit ishlayapti. Shu kalitga ochiq modellar:"
+          node -e "JSON.parse(require('fs').readFileSync('/tmp/models','utf8')).data.forEach(m=>console.log('  -', m.id))"
+          CHAT=$(grep -oE '^AI_MODEL *= *"[^"]+"' worker/wrangler.toml | grep -oE '"[^"]+"' | tr -d '"')
+          SHOT=$(grep -oE '^AI_SHOT_MODEL *= *"[^"]+"' worker/wrangler.toml | grep -oE '"[^"]+"' | tr -d '"')
+          bad=0
+          for M in "$CHAT" "$SHOT"; do
+            if grep -q "\"$M\"" /tmp/models; then
+              echo "OK — $M mavjud"
+            else
+              echo "::error::wrangler.toml da yozilgan $M shu kalitga ochiq emas. Yuqoridagi ro'yxatdan birini tanlang."
+              bad=1
+            fi
+          done
+          [ "$bad" = "0" ] || exit 1
+
       - name: Pochtam AI kalitini o'rnatish (ANTHROPIC_API_KEY, ixtiyoriy)
         id: aikey
         working-directory: worker
