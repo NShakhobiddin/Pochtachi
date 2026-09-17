@@ -174,8 +174,12 @@ const shot = (body, extra = {}, ip = '3.3.3.3') => worker.fetch(new Request('htt
 check('parseShotBody: data URL dan mime va base64', (() => { const p = parseShotBody(JSON.stringify({ image: 'data:image/png;base64,' + PNG1 })); return typeof p === 'object' && p.mime === 'image/png' && p.image === PNG1; })());
 check('parseShotBody: rasmsiz — xato', typeof parseShotBody(JSON.stringify({ lang: 'uz' })) === 'string');
 check('parseShotBody: begona tur — xato', typeof parseShotBody(JSON.stringify({ image: PNG1, mime: 'image/gif' })) === 'string');
-const n1 = normalizeShot({ name: ' Nike Air Max 90 ', price: '129.99', currency: 'usd', qty: 0, store: 'Amazon', confidence: 0.9 }, 12650);
+const n1 = normalizeShot({ name: ' Nike Air Max 90 ', price: '129.99', currency: 'usd', qty: 0, store: 'Amazon', category: 'Poyabzal', country: 'USA', weightKg: 0.9, confidence: 0.9 }, 12650);
 check('normalizeShot: USD narx, nom, miqdor 1', n1.found && n1.priceUsd === 129.99 && n1.name === 'Nike Air Max 90' && n1.qty === 1 && !n1.fxApprox, JSON.stringify(n1));
+/* Natija kartasi uchun maydonlar: kategoriya faqat bazadagi id, davlat taxallusdan (USA → AQSh), vazn chegaralangan. */
+check('normalizeShot: kategoriya, davlat (taxallus), vazn', n1.category === 'poyabzal' && n1.country === 'AQSh' && n1.weightKg === 0.9, JSON.stringify([n1.category, n1.country, n1.weightKg]));
+const n0 = normalizeShot({ price: 5, currency: 'USD', category: 'mebel', country: 'Marsdan', weightKg: 900 }, 12650);
+check('normalizeShot: noma\'lum kategoriya/davlat bo\'sh, vazn 50 kg dan oshmaydi', n0.category === '' && n0.country === '' && n0.weightKg === 50, JSON.stringify([n0.category, n0.country, n0.weightKg]));
 const n2 = normalizeShot({ name: 'Kurtka', price: 699, currency: 'CNY', qty: 2, store: 'Taobao', confidence: 0.7 }, 12650);
 check('normalizeShot: CNY → USD taxminiy kurs bilan, belgi', n2.found && n2.priceUsd > 80 && n2.priceUsd < 110 && n2.fxApprox && n2.qty === 2, JSON.stringify(n2));
 check('normalizeShot: narx yo\'q — found=false', !normalizeShot({ price: 0, currency: '' }, 12650).found);
@@ -185,12 +189,13 @@ let shotReq = null;
 const fakeShot = async (url, init) => {
   shotReq = JSON.parse(init.body);
   return new Response(JSON.stringify({ model: 'claude-haiku-4-5', stop_reason: 'end_turn', usage: { input_tokens: 1500, output_tokens: 60 },
-    content: [{ type: 'text', text: JSON.stringify({ name: 'Nike Air Max 90', price: 129.99, currency: 'USD', qty: 1, store: 'Amazon', confidence: 0.92 }) }] }), { status: 200 });
+    content: [{ type: 'text', text: JSON.stringify({ name: 'Nike Air Max 90', price: 129.99, currency: 'USD', qty: 1, store: 'Amazon', category: 'poyabzal', country: 'AQSh', weightKg: 0, confidence: 0.92 }) }] }), { status: 200 });
 };
 const sr = await shot({ image: 'data:image/png;base64,' + PNG1, lang: 'uz', usdRate: 12650 }, { AI_FETCH: fakeShot });
 const sj = await sr.json();
 check('shot: rasm Claude\'ga base64 blok bilan, JSON sxema so\'raladi, arzon model', shotReq && shotReq.model === 'claude-haiku-4-5' && shotReq.messages[0].content[0].type === 'image' && shotReq.messages[0].content[0].source.data === PNG1 && shotReq.output_config && shotReq.output_config.format.type === 'json_schema' && !shotReq.tools, JSON.stringify(shotReq).slice(0, 160));
 check('shot: javob — nom, narx, USD, ishonch', sr.status === 200 && sj.found && sj.name === 'Nike Air Max 90' && sj.priceUsd === 129.99 && sj.confidence === 0.92 && sj.usage.input === 1500, JSON.stringify(sj).slice(0, 160));
+check('shot: sxemada kategoriya, davlat, vazn so\'raladi va javobda keladi', shotReq.output_config.format.schema.required.includes('category') && shotReq.output_config.format.schema.required.includes('country') && shotReq.output_config.format.schema.required.includes('weightKg') && sj.category === 'poyabzal' && sj.country === 'AQSh' && sj.weightKg === 0, JSON.stringify([sj.category, sj.country, sj.weightKg]));
 /* Tuzilgan chiqish 400 bersa — oddiy so'rov, matn ichidan JSON. */
 let calls2 = 0;
 const fallbackShot = async (url, init) => { calls2++; const b = JSON.parse(init.body); if (b.output_config) return new Response(JSON.stringify({ error: { type: 'invalid_request_error', message: 'output_config.format is not supported' } }), { status: 400 });

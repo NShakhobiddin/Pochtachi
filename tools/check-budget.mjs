@@ -90,11 +90,12 @@ const index = join(ROOT, 'index.html');
 if (existsSync(index)) {
   const size = kb(statSync(index).size);
   const gz = kb(gzipSync(readFileSync(index), { level: 9 }).length);
-  /* 760 KB: TZ bosqichlari (bosh sahifa, jami narx kalkulyatori, kuryer
-     solishtirish paneli, Xaridlarim) uchun 680 → 720 → 760 KB oshirildi —
-     README, "O'lcham byudjeti". Uzatiladigan hajm gzip ≈ 175 KB. */
-  const ok = size <= 760;
-  console.log(`${ok ? '  ok  ' : ' XATO '} index.html: ${size} KB (chegara 760 KB), gzip ${gz} KB`);
+  /* 800 KB: TZ bosqichlari (bosh sahifa, jami narx kalkulyatori, kuryer
+     solishtirish paneli, Xaridlarim) uchun 680 → 720 → 760 KB, skrinshot
+     natija ekrani ("Jami narx" avtomatik karta, 2026-09-17) uchun 800 KB
+     ga oshirildi — README, "O'lcham byudjeti". Uzatiladigan hajm gzip ≈ 186 KB. */
+  const ok = size <= 800;
+  console.log(`${ok ? '  ok  ' : ' XATO '} index.html: ${size} KB (chegara 800 KB), gzip ${gz} KB`);
   if (!ok) failed = true;
 }
 

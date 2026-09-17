@@ -206,10 +206,11 @@ natija"). `heroGo()`: havola bo'lsa domen bo'yicha do'kon topiladi
 qisqa va mobil manzillar) va do'kon sahifasi ochiladi; ro'yxatda yo'q
 domen — domen so'zi bilan qidiruvga; savol (so'roq belgisi yoki so'roq
 so'zi) yoki tovar so'rovi ("olmoqchiman", "razmer", "gacha", ikki vergul)
-— Pochtam AI; oddiy so'z — qidiruv ekrani. Kamera tugmasi maydonning
-ichida (skrinshot → `aiShot`). Maydon ostida bitta bosiladigan namuna
-("Masalan: krossovka, 41 razmer, $100 gacha") — qo'llanma o'rniga
-ishlaydigan misol. Oqim hech qachon to'xtab qolmaydi (TZ 21).
+— Pochtam AI; oddiy so'z — qidiruv ekrani. Maydon ostida ikkita tugma
+(AI yoqiq bo'lsa): **Skrinshot yuklash** (asosiy — jami narx shu yerdan,
+`aiShot` → natija ekrani) va **Qayerdan topaman?** (yordamchi — Pochtam AI
+ga o'tadi: qaysi do'konda borligi, qanday topish va skrinshot qilish).
+Oqim hech qachon to'xtab qolmaydi (TZ 21).
 
 **AI bayrog'i.** Ilova ochilganda Worker'dan `GET /ai/status` →
 `{ ai: true|false }` (kalit bormi; 5 daqiqa kesh, oxirgi holat
@@ -314,32 +315,44 @@ shunday deb yoziladi; holat qo'lda belgilanadi. Kuryer API uchun joy:
 AI — suhbatdosh emas, shakl to'ldiruvchi: skrinshotdan narxni o'qiydi,
 erkin so'rovni tushunadi, hisobni esa `core/` bajaradi. Kirish nuqtalari
 (2026-09-17 dan): bosh sahifadagi bitta maydon (savol, tovar so'rovi —
-`heroGo`), maydon ichidagi kamera (skrinshot), kompyuter menyusidagi
-bo'lim. Bosh sahifada alohida AI tugmalari va "Qanday ishlaydi" yo'q —
-ularning o'rnida bitta bosiladigan namuna. AI o'chiq bo'lsa (`/ai/status`)
-bularning hech biri ko'rinmaydi. Suhbat faqat brauzer xotirasida
+`heroGo`), "Skrinshot yuklash" (asosiy), "Qayerdan topaman?" (yordamchi
+chat), kompyuter menyusidagi bo'lim. "Qanday ishlaydi" yo'q. AI o'chiq
+bo'lsa (`/ai/status`) bularning hech biri ko'rinmaydi. Suhbat faqat brauzer xotirasida
 (`aiMsgs`), saqlanmaydi.
 
 **Skrinshot yuklash** (`aiShot`). Fayl brauzerda canvas bilan 1280 px ga
 kichraytirilib JPEG (0.82) qilinadi va `POST /ai/shot` ga ketadi (`image`
 data URL, `lang`, `usdRate`). Worker (`handleShot`) bitta chaqiruv bilan,
 vositasiz, arzon modelga (`AI_SHOT_MODEL`, standart `claude-haiku-4-5`)
-tuzilgan JSON so'raydi: nom, narx, valyuta, miqdor, do'kon, ishonch
-(`SHOT_SCHEMA`, `output_config.format`; rad etilsa matndan JSON). Valyuta
+tuzilgan JSON so'raydi: nom, narx, valyuta, miqdor, do'kon, kategoriya,
+davlat, og'irlik (sahifada bo'lsa), ishonch (`SHOT_SCHEMA`,
+`output_config.format`; rad etilsa matndan JSON). Valyuta
 `data/tariffs.json` `fx` bilan dollarga o'giriladi (CNY/TRY/KRW/AED/RUB
-taxminiy — `fxApprox`). Chat yo'q (2026-09-17): kamera bosilishi bilan
-"Jami narx" ekrani ochiladi, tepasida banner (`lcShot`) "Skrinshot
-o'qilmoqda…" → "Skrinshotdan o'qildi: Nike Air Max 90 — 699 CNY ≈ $97.86";
-nom, narx, valyuta (¥/₺ chiplari), miqdor, do'kon va davlat to'ldiriladi,
-vazn va davlatni foydalanuvchi tasdiqlaydi, hisob `core/` da. Narx
-topilmasa yoki server javob bermasa — sariq banner "narxni qo'lda yozing",
-kalkulyator ishlayveradi (qizil xato yo'q). Rasm serverda saqlanmaydi va
-log qilinmaydi.
+taxminiy — `fxApprox`). **Jami hisob faqat skrinshot orqali** (2026-09-17,
+`result` ekrani, `resultVm`): kamera bosilishi bilan "Jami narx" natija
+ekrani ochiladi ("o'qilmoqda"), javob kelgach karta — mahsulot, narx,
+do'kon · davlat (do'kon bazadan nomi/domeni bo'yicha; davlat — do'konniki,
+bo'lmasa AI taxmini, bo'lmasa valyutadan — "taxmin" belgisi bilan), **eng
+arzon kuryer** va muddati (tezroq variant bir qatorda), og'irlik (sahifadan
+yoki kategoriya taxmini), qatorlar (narx, kargo, boj, yig'im), jami
+dollar va so'mda, boj eslatmasi; ostida taqiq/cheklov (nom bo'yicha
+`bannedHits`), kategoriya ogohlantirishi, oylik me'yor, past ishonch.
+Hisob `landedCalc()` da (kalkulyator bilan bitta kod), AI faqat rasmni
+o'qidi. Tugmalar: **Qanday buyurtma qilaman?** — Pochtam AI ga tayyor
+savol (do'kon, davlat, mahsulot, narx, kuryer) → `data/ai-rules.md`
+"Qanday buyurtma qilaman" bo'limi bo'yicha qadam-baqadam yo'riqnoma va
+mos kuryerlar; **Vaznni aniqlashtirish** — kalkulyator to'ldirilgan holda
+(banner "Skrinshotdan o'qildi"); **Rejaga qo'shish**; **Boshqa kuryerlar**.
+Narx topilmasa — sariq karta (3 qadam: sahifani oching, narx ko'ringan
+joyni skrinshot qiling, qayta yuklang) va Qayta yuklash / Qo'lda hisoblash
+/ Qayerdan topaman?; server javob bermasa — "Hozir o'qiy olmadim" + Qayta
+urinish / Qo'lda hisoblash. Rasm serverda saqlanmaydi va log qilinmaydi.
 Narx: bir skrinshot ≈ 1 500 kirish tokeni, chat savolidan bir necha
 barobar arzon.
 
-**Tovar so'rovi** (natija kartasi). "krossovka, 41 razmer, $100 gacha" kabi
-so'rov maydondan → `data/ai-rules.md` "Tovar topish" bo'limi: AI
+**Qayerdan topaman?** (yordamchi chat). Tugma bo'sh AI ekranini ochadi
+("Qayerdan topaman?" sarlavhasi, namuna); "krossovka, 41 razmer, $100
+gacha" kabi so'rov → `data/ai-rules.md` "Qayerdan topaman" bo'limi: AI
 kategoriya, originallik, o'lcham, byudjetni ajratadi, `suggest_stores`
 vositasi (`worker/src/ai.js`) bazadan mos do'konlarni tanlaydi (kategoriya
 hal qiluvchi, originallik "Yuqori", byudjet → narx segmenti) va har biriga
@@ -420,8 +433,11 @@ Sinov: `tests/ai-eval.json` da tovar so'rovi uchun 3 savol (vosita
 `/ai/shot` (rasm bloki, JSON sxema, zaxira yo'l, CNY → USD), `suggest_stores`
 reytingi. Smoke: bosh sahifa maydoni va namuna, natija kartasi ("Tushundim"
 chiplari, do'kon kartalari, taxminiy jami), xato kartasi, bo'sh holat,
-skrinshot → kalkulyator va "topilmadi" banneri (soxta `/ai/shot`), AI o'chiq
-holati (soxta `/ai/status`).
+skrinshot → natija ekrani (soxta `/ai/shot`: nom, narx, do'kon · davlat,
+eng arzon kuryer, jami $102.26, tugmalar), "Vaznni aniqlashtirish" →
+to'ldirilgan kalkulyator, "Qanday buyurtma qilaman?" → AI savoli,
+"topilmadi" kartasi → bo'sh kalkulyator, AI o'chiq holati (soxta
+`/ai/status`: kamera ham, "Qayerdan topaman?" ham yo'q).
 
 Rejadagi `ai/index.html` iframe o'rniga ekran ilovaning o'zida: javob
 ostidagi tugmalar ilova holatini to'ldirishi kerak (kalkulyator, kuryer
@@ -1024,4 +1040,4 @@ bilan ishga tushadi.
 
 ## O'lcham byudjeti
 
-`npm run check` quyidagilarni tekshiradi: kuryer logotiplari ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 120 KB, do'kon logotiplari ≤ 260 KB, qo'llanmalar ≤ 700 KB, `index.html` ≤ 760 KB (2026-09-15: TZ bosqichlari — bosh sahifa, jami narx, kuryer solishtirish paneli, Xaridlarim, Pochtam AI ekrani — uchun 680 dan oshirildi; hozir ~725 KB, gzip ~175 KB). Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.
+`npm run check` quyidagilarni tekshiradi: kuryer logotiplari ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 120 KB, do'kon logotiplari ≤ 260 KB, qo'llanmalar ≤ 700 KB, `index.html` ≤ 800 KB (2026-09-15: TZ bosqichlari — bosh sahifa, jami narx, kuryer solishtirish paneli, Xaridlarim, Pochtam AI ekrani — uchun 680 dan 760 ga; 2026-09-17: skrinshot natija ekrani uchun 800 ga oshirildi; hozir ~780 KB, gzip ~186 KB). Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.

@@ -456,12 +456,15 @@ const SHOT_SCHEMA = {
     currency: { type: 'string', description: 'Valyuta kodi: USD, EUR, GBP, CNY, TRY, KRW, AED, RUB, UZS; noma\'lum bo\'lsa bo\'sh' },
     qty: { type: 'integer', description: 'Miqdor, ko\'rinmasa 1' },
     store: { type: 'string', description: 'Do\'kon yoki sayt nomi rasmdan; bo\'lmasa bo\'sh' },
+    category: { type: 'string', description: 'Mahsulot kategoriyasi: kiyim va moda, poyabzal, elektronika, kosmetika, bolalar, universal (boshqa yoki noaniq)' },
+    country: { type: 'string', description: 'Do\'kon qaysi davlatdan yuboradi — domen, til, valyuta bo\'yicha: Xitoy (.cn, ¥, xitoycha), AQSh (.com AQSh do\'koni, $), Turkiya (.tr, ₺), Angliya (.co.uk, £), Koreya (.kr, ₩), Germaniya (.de, €), BAA (.ae, AED), Rossiya (.ru, ₽); noma\'lum bo\'lsa bo\'sh' },
+    weightKg: { type: 'number', description: 'Sahifada mahsulot og\'irligi ko\'rinsa, kilogrammda (800 g = 0.8); ko\'rinmasa 0' },
     confidence: { type: 'number', description: 'Narx to\'g\'ri o\'qilganiga ishonch 0..1' }
   },
-  required: ['name', 'price', 'currency', 'qty', 'store', 'confidence'],
+  required: ['name', 'price', 'currency', 'qty', 'store', 'category', 'country', 'weightKg', 'confidence'],
   additionalProperties: false
 };
-const SHOT_PROMPT = 'Bu do\'kon sahifasining skrinshoti. Faqat rasmda ko\'ringan ma\'lumotni yoz: mahsulot nomi, joriy narx (chegirma bo\'lsa chegirmali narx, eski narx emas), valyuta (belgi yoki kod bo\'yicha: ¥ Xitoy saytida CNY, ₺ TRY, $ USD, € EUR, £ GBP, ₩ KRW, AED, ₽ RUB, so\'m UZS), miqdor va do\'kon nomi. Taxmin qilma: narx ko\'rinmasa price 0 va confidence 0. Javob faqat JSON.';
+const SHOT_PROMPT = 'Bu do\'kon sahifasining skrinshoti. Faqat rasmda ko\'ringan ma\'lumotni yoz: mahsulot nomi, joriy narx (chegirma bo\'lsa chegirmali narx, eski narx emas), valyuta (belgi yoki kod bo\'yicha: ¥ Xitoy saytida CNY, ₺ TRY, $ USD, € EUR, £ GBP, ₩ KRW, AED, ₽ RUB, so\'m UZS), miqdor, do\'kon nomi, mahsulot kategoriyasi (ro\'yxatdan bittasi), do\'kon qaysi davlatdan yuborishi (domen, til va valyutadan xulosa qil; aniq bo\'lmasa bo\'sh) va sahifada og\'irlik ko\'rinsa kilogrammda (ko\'rinmasa 0). Taxmin qilma: narx ko\'rinmasa price 0 va confidence 0. Javob faqat JSON.';
 
 export function parseShotBody(text) {
   let d;
@@ -494,6 +497,12 @@ export function normalizeShot(raw, usdRate) {
     priceUsd, fxApprox: !!(cur && cur !== 'USD' && cur !== 'UZS' && cur !== 'EUR' && cur !== 'GBP'),
     qty: Math.max(1, Math.min(99, Math.round(pos(o.qty) || 1))),
     store: String(o.store || '').trim().slice(0, 40),
+    /* Kategoriya faqat bazadagi id; davlat — kuryer tarifi bor ro'yxatdan
+       (taxallus ham tushuniladi: USA → AQSh); vazn 0..50 kg. Noma'lumi
+       bo'sh/0 — ilova o'zi kategoriya bo'yicha taxmin qiladi. */
+    category: (() => { const c = String(o.category || '').trim().toLowerCase(); return KB.CATEGORIES.some(x => x.id === c) ? c : ''; })(),
+    country: knownCountry(String(o.country || '').trim()) || '',
+    weightKg: Math.min(50, Math.max(0, num(o.weightKg))),
     confidence: Math.max(0, Math.min(1, num(o.confidence)))
   };
 }

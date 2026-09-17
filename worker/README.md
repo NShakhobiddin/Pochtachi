@@ -134,7 +134,10 @@ Vositalar: `customs_duty`, `courier_quotes`, `landed_cost`, `check_banned`,
 
 `POST /ai/shot` — skrinshot: `{ image: "data:image/jpeg;base64,…", lang, usdRate }`
 (≤ ~1 MB; ilova 1280 px ga kichraytiradi) → `{ found, name, price, currency,
-priceUsd, fxApprox, qty, store, confidence, model, usage }`. Bitta arzon
+priceUsd, fxApprox, qty, store, category, country, weightKg, confidence,
+model, usage }` (`category` — `data/categories.json` id yoki `""`;
+`country` — ilovadagi davlat nomi yoki `""`; `weightKg` — sahifada
+ko'rinsa, 0–50). Bitta arzon
 chaqiruv (`AI_SHOT_MODEL`, standart `claude-haiku-4-5`), tuzilgan JSON
 chiqish; rasm saqlanmaydi. Chegara va xatolar `/ai` bilan bir xil.
 Xatolar: 400 (kirish), 403 (begona Origin), 429 (`code: "limit"` — IP yoki
