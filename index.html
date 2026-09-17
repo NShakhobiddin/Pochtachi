@@ -2475,68 +2475,66 @@
        Suhbat brauzer xotirasida, saqlanmaydi. -->
   <sc-if value="{{ sAi }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:12px;min-height:100%">
-      <!-- Fayl maydoni ekranning o'zida: suhbat boshlangach ham kamera tugmasi ishlaydi. -->
-      <input type="file" accept="image/*" data-shot="1" sc-camel-on-change="{{ onShotFile }}" aria-label="Skrinshot tanlash" style="display:none">
-      <sc-if value="{{ aiEmpty }}" hint-placeholder-val="{{ true }}">
-        <div style="background:linear-gradient(155deg,#494FE9,#13189D);border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:12px">
-          <span style="font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.15;color:#FFFFFF">Pochtam AI</span>
-          <span style="font-size:13px;font-weight:500;color:#DCDDFA;line-height:1.5">Skrinshotdan narxni o'qiyman, so'rovdan do'kon va jami narxni topaman, boj va kuryer bo'yicha savollarga javob beraman. Hisob-kitobni AI emas, ilovaning o'z kalkulyatori bajaradi.</span>
-          <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px">
-            <button sc-camel-on-click="{{ shotPick }}" style="height:44px;border-radius:14px;border:none;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 10px"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8.5A2.5 2.5 0 016.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0120 8.5V17a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17z"></path><circle cx="12" cy="13" r="3.5"></circle></svg><span>Skrinshot yuklash</span></button>
-            <button sc-camel-on-click="{{ aiFindStart }}" style="height:44px;border-radius:14px;border:1.5px solid #C4C6FA;background:transparent;color:#FFFFFF;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 10px"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M11 3.6l1.9 4.6 4.6 1.9-4.6 1.9L11 16.6l-1.9-4.6L4.5 10.1l4.6-1.9z"></path><path d="M18.6 15.2l.7 1.7 1.7.7-1.7.7-.7 1.7-.7-1.7-1.7-.7 1.7-.7z"></path></svg><span>Tovar topish</span></button>
-          </div>
-        </div>
-        <!-- Qanday ishlaydi: ikki rejim, uch qadam. -->
-        <button sc-camel-on-click="{{ toggleHow }}" aria-expanded="{{ aiHowOn }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;font-family:inherit;width:100%;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-          <span style="font-size:15px;font-weight:700;color:#131429">Qanday ishlaydi</span>
-          <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transform:{{ aiHowRot }}"><path d="M6 9l6 6 6-6"></path></svg>
-        </button>
-        <sc-if value="{{ aiHowOn }}" hint-placeholder-val="{{ false }}">
-          <div style="background:#FFFFFF;border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-            <sc-for list="{{ aiHow }}" as="h" hint-placeholder-count="2">
-              <div style="display:flex;flex-direction:column;gap:8px">
-                <span style="font-size:13px;font-weight:700;color:#1A1FB0">{{ h.t }}</span>
-                <sc-for list="{{ h.steps }}" as="hs" hint-placeholder-count="3">
-                  <div style="display:flex;gap:8px;align-items:flex-start">
-                    <span style="flex:none;width:18px;height:18px;border-radius:999px;background:#F1F1F8;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#6B6C85">{{ hs.n }}</span>
-                    <span style="font-size:13px;font-weight:500;color:#282944;line-height:1.5">{{ hs.t }}</span>
-                  </div>
-                </sc-for>
-              </div>
-            </sc-for>
-          </div>
-        </sc-if>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <span style="font-size:13px;font-weight:700;color:#6B6C85;padding:0 2px">Masalan</span>
-          <sc-for list="{{ aiQuick }}" as="aq" hint-placeholder-count="4">
-            <button sc-camel-on-click="{{ aq.go }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;font-family:inherit;font-size:15px;font-weight:500;color:#131429;line-height:1.4;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">{{ aq.t }}</button>
-          </sc-for>
+      <!-- Bo'sh holat faqat kompyuter menyusidan kirilganda ko'rinadi:
+           bitta gap va bitta namuna. Rejimlar, qo'llanma, misollar ro'yxati
+           yo'q — bosh sahifadagi maydon bilan bir xil tajriba. -->
+      <sc-if value="{{ aiEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:8px;padding:8px 2px">
+          <span style="font-size:17px;font-weight:700;letter-spacing:-.02em;color:#131429">Nima kerak?</span>
+          <span style="font-size:15px;font-weight:500;color:#6B6C85;line-height:1.5;text-wrap:pretty">Tovarni tasvirlang yoki boj, kuryer, taqiq bo'yicha savol bering.</span>
+          <button sc-camel-on-click="{{ aiHintGo }}" style="align-self:flex-start;background:none;border:none;padding:0;font-family:inherit;font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5;text-align:left;cursor:pointer">Masalan: <span style="font-size:13px;font-weight:700;color:#1A1FB0">{{ aiHint }}</span></button>
         </div>
       </sc-if>
       <div role="log" aria-live="polite" style="display:contents">
       <sc-for list="{{ aiRows }}" as="m" hint-placeholder-count="2">
         <sc-if value="{{ m.user }}" hint-placeholder-val="{{ true }}">
-          <div style="align-self:flex-end;max-width:86%;background:#1A1FB0;color:#FFFFFF;border-radius:20px 20px 6px 20px;padding:12px 14px;font-size:15px;font-weight:500;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;display:flex;flex-direction:column;gap:8px">
-            <sc-if value="{{ m.hasImg }}" hint-placeholder-val="{{ false }}">
-              <div aria-label="Skrinshot" style="width:140px;height:140px;border-radius:12px;background-color:#FFFFFF;background-size:cover;background-position:top center;background-image:{{ m.imgCss }}"></div>
-            </sc-if>
-            <span>{{ m.text }}</span>
-          </div>
+          <div style="align-self:flex-end;max-width:86%;background:#1A1FB0;color:#FFFFFF;border-radius:20px 20px 6px 20px;padding:12px 14px;font-size:15px;font-weight:500;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere">{{ m.text }}</div>
         </sc-if>
         <sc-if value="{{ m.bot }}" hint-placeholder-val="{{ false }}">
-          <div style="align-self:flex-start;max-width:92%;display:flex;flex-direction:column;gap:10px;background:#FFFFFF;border-radius:20px 20px 20px 6px;padding:12px 14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-            <span style="font-size:15px;font-weight:500;color:{{ m.fg }};line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere">{{ m.text }}</span>
+          <!-- Natija kartasi: "Tushundim" chiplari → matn → do'kon kartalari →
+               taxminiy jami → amal tugmalari. Xato ham karta: sariq, qizil
+               emas, ostida ishlaydigan yo'llar. -->
+          <div style="align-self:flex-start;width:100%;max-width:100%;display:flex;flex-direction:column;gap:10px;background:{{ m.bg }};border-radius:20px 20px 20px 6px;padding:12px 14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+            <sc-if value="{{ m.hasGot }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px">
+                <span style="font-size:11px;font-weight:600;color:#6B6C85">Tushundim:</span>
+                <sc-for list="{{ m.got }}" as="g" hint-placeholder-count="3">
+                  <span style="font-size:11px;font-weight:700;color:#1A1FB0;background:#E9EAFD;border-radius:999px;padding:2px 8px">{{ g }}</span>
+                </sc-for>
+              </div>
+            </sc-if>
+            <span style="font-size:15px;font-weight:{{ m.fw }};color:{{ m.fg }};line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere">{{ m.text }}</span>
+            <sc-if value="{{ m.hasSub }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5">{{ m.sub }}</span>
+            </sc-if>
+            <sc-if value="{{ m.hasStores }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ m.stores }}" as="sg" hint-placeholder-count="3">
+                  <a class="xy-tap" sc-camel-on-click="{{ sg.hit }}" href="{{ sg.href }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:12px;background:#F6F7FB;border-radius:16px;padding:10px 12px;text-decoration:none">
+                    <div aria-hidden="true" style="width:34px;height:34px;border-radius:12px;flex:none;background-color:{{ sg.plate }};background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ sg.logoCss }}"></div>
+                    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                      <span style="font-size:15px;font-weight:700;color:#131429">{{ sg.name }}</span>
+                      <span style="font-size:11px;font-weight:600;color:#6B6C85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ sg.sub }}</span>
+                    </div>
+                    <span style="flex:none;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;color:#1A1FB0">Qidirish<svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></span>
+                  </a>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ m.hasTotal }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#F6F7FB;border-radius:16px;padding:10px 12px">
+                <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                  <span style="font-size:13px;font-weight:700;color:#131429">Taxminiy jami</span>
+                  <span style="font-size:11px;font-weight:600;color:#6B6C85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ m.totalSub }}</span>
+                </div>
+                <span style="flex:none;font-size:22px;font-weight:800;letter-spacing:-.02em;color:#1A1FB0">{{ m.total }}</span>
+              </div>
+            </sc-if>
             <sc-if value="{{ m.hasActs }}" hint-placeholder-val="{{ true }}">
               <div style="display:flex;flex-wrap:wrap;gap:8px">
                 <sc-for list="{{ m.acts }}" as="a" hint-placeholder-count="2">
-                  <sc-if value="{{ a.isLink }}" hint-placeholder-val="{{ false }}">
-                    <a class="xy-tap" sc-camel-on-click="{{ a.hit }}" href="{{ a.href }}" target="_blank" rel="noopener noreferrer" style="height:36px;padding:0 14px;border-radius:12px;border:1.5px solid #DCDDFA;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px">{{ a.t }}<span aria-hidden="true">↗</span></a>
-                  </sc-if>
-                  <sc-if value="{{ a.isBtn }}" hint-placeholder-val="{{ true }}">
-                    <button sc-camel-on-click="{{ a.go }}" style="height:36px;padding:0 14px;border-radius:12px;border:1.5px solid #DCDDFA;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ a.t }}</button>
-                  </sc-if>
+                  <button sc-camel-on-click="{{ a.go }}" style="height:36px;padding:0 14px;border-radius:12px;border:1.5px solid #DCDDFA;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ a.t }}</button>
                 </sc-for>
-      </div>
               </div>
             </sc-if>
           </div>
@@ -2545,9 +2543,11 @@
       <sc-if value="{{ aiBusy }}" hint-placeholder-val="{{ false }}">
         <div aria-live="polite" style="align-self:flex-start;background:#FFFFFF;border-radius:20px 20px 20px 6px;padding:12px 14px;font-size:13px;font-weight:500;color:#6B6C85;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">Javob tayyorlanmoqda…</div>
       </sc-if>
+      </div>
       <div style="flex:1"></div>
-      <form sc-camel-on-submit="{{ aiSubmit }}" style="position:sticky;bottom:6px;display:flex;align-items:center;gap:8px;background:#FFFFFF;border-radius:20px;padding:6px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-        <button type="button" sc-camel-on-click="{{ shotPick }}" aria-label="Skrinshot yuklash" style="flex:none;width:40px;height:40px;border-radius:14px;border:none;cursor:pointer;background:#E9EAFD;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8.5A2.5 2.5 0 016.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0120 8.5V17a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></button>
+      <!-- Keyingi savol. Kamera bu yerda yo'q — u bosh sahifadagi maydonda,
+           skrinshot to'g'ridan-to'g'ri kalkulyatorga boradi. -->
+      <form sc-camel-on-submit="{{ aiSubmit }}" style="position:sticky;bottom:6px;display:flex;align-items:center;gap:8px;background:#FFFFFF;border-radius:20px;padding:6px 6px 6px 14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
         <input value="{{ aiQ }}" sc-camel-on-input="{{ onAiQ }}" placeholder="{{ aiPlaceholder }}" type="text" enterkeyhint="send" maxlength="600" aria-label="Savolingiz" autocomplete="off" style="flex:1;min-width:0;height:40px;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;font-weight:500;color:#131429">
         <button type="submit" aria-label="Yuborish" style="flex:none;width:40px;height:40px;border-radius:14px;border:none;cursor:pointer;background:{{ aiSendBg }};display:flex;align-items:center;justify-content:center">
           <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="M12 6l6 6-6 6"></path></svg>
@@ -4167,6 +4167,10 @@ const RU = {
   /* Pochtam AI (7-bosqich) */
   'Pochtam AI':'Pochtam AI', "Savol bering — boj, kuryer, do'kon":'Задайте вопрос — пошлина, курьер, магазин',
   "Javoblar ilovadagi bojxona qoidalari, kuryer tariflari va do'konlar ro'yxatiga asoslanadi. Hisob-kitobni AI emas, ilovaning o'z kalkulyatori bajaradi.":'Ответы основаны на таможенных правилах, тарифах курьеров и списке магазинов из приложения. Расчёты делает не ИИ, а собственный калькулятор приложения.',
+  'Nima kerak?':'Что нужно?', "Tovarni tasvirlang yoki boj, kuryer, taqiq bo'yicha savol bering.":'Опишите товар или задайте вопрос о пошлине, курьере, запретах.',
+  'Tushundim:':'Понял:', 'original':'оригинал', '{0} gacha':'до {0}', 'Qidirish':'Искать', 'Yana savol':'Ещё вопрос', "Savol yoki tovar so'rovi":'Вопрос или запрос товара',
+  'Bugungi savollar chegarasi tugadi':'Лимит вопросов на сегодня исчерпан', "Ertaga davom etamiz. Hozircha kalkulyator va do'konlar ro'yxati ishlaydi.":'Продолжим завтра. Пока работают калькулятор и список магазинов.',
+  'Hozir javob bera olmadim':'Сейчас не смог ответить', "Kalkulyator va do'konlar ro'yxati ishlayveradi.":'Калькулятор и список магазинов работают.',
   'Masalan':'Например', 'Savolingiz':'Ваш вопрос', 'Yuborish':'Отправить', 'Javob tayyorlanmoqda…':'Готовлю ответ…', 'Yangi suhbat':'Новый диалог',
   'Pochtam AI xato qilishi mumkin. Yakuniy qaror — bojxona organida.':'Pochtam AI может ошибаться. Окончательное решение — за таможенным органом.',
   "AI vaqtincha mavjud emas. Kalkulyator va kuryerlar ro'yxati ishlayveradi.":'ИИ временно недоступен. Калькулятор и список курьеров работают.',
@@ -5343,7 +5347,7 @@ class Component extends DCLogic {
     /* Xaridlarim: faol tab va saqlangan hisoblar. */
     mineTab: 'plans', calcs: Array.isArray(SAVED.calcs) ? SAVED.calcs : [],
     /* Pochtam AI suhbati — faqat xotirada. */
-    aiMsgs: [], aiQ: '', aiBusy: false, aiFind: false, aiHow: false,
+    aiMsgs: [], aiQ: '', aiBusy: false,
     /* Kalkulyator tepasidagi skrinshot banneri: null yoki { state: busy|ok|none|err, … }. */
     lcShot: null,
     /* AI yoqilganmi (Worker'da kalit bormi). Oxirgi ma'lum holat
@@ -6045,7 +6049,7 @@ class Component extends DCLogic {
     /* AI o'chiq bo'lsa (kalit yo'q) savol ham oddiy qidiruvga boradi. */
     if (asksAi && this.state.aiOn) {
       metrics.hit('hero', wantsProduct ? 'ai:find' : 'ai');
-      this.setState({ homeQuery: '', aiFind: wantsProduct });
+      this.setState({ homeQuery: '' });
       this.push('ai');
       this.aiAsk(raw);
       return;
@@ -6147,13 +6151,10 @@ class Component extends DCLogic {
     const st = this.state;
     const q = String(qText != null ? qText : st.aiQ).trim().slice(0, 600);
     if (!q || st.aiBusy) return;
-    const errMsg = code => tr(st.lang, code === 'limit'
-      ? "Bugungi savollar chegarasi tugadi — ertaga davom etamiz. Hozircha kalkulyator va kuryerlar ro'yxati ishlaydi."
-      : "AI vaqtincha mavjud emas. Kalkulyator va kuryerlar ro'yxati ishlayveradi.");
     const history = st.aiMsgs.filter(m => !m.err).slice(-6).map(m => ({ role: m.role, text: m.text }));
     this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'user', text: q }], aiQ: '', aiBusy: !!METRICS_URL }));
     this._aiScroll();
-    if (!METRICS_URL) { this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', err: 'no_key', text: errMsg('no_key') }] })); return; }
+    if (!METRICS_URL) { this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', err: 'no_key' }] })); return; }
     metrics.hit('ai_question', '-');
     const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
     const timer = setTimeout(() => { if (ctrl) ctrl.abort(); }, 60000);
@@ -6165,7 +6166,7 @@ class Component extends DCLogic {
         return j;
       })
       .then(j => this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', text: String(j.text), tools: Array.isArray(j.tools) ? j.tools : [] }] })))
-      .catch(e => this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', err: (e && e.code) || 'net', text: errMsg(e && e.code) }] })))
+      .catch(e => this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', err: (e && e.code) || 'net' }] })))
       .then(() => { clearTimeout(timer); this.setState({ aiBusy: false }); this._aiScroll(); });
   }
   /* Skrinshot: fayl → 1280 px JPEG (brauzerda) → /ai/shot → nom, narx,
@@ -6225,12 +6226,6 @@ class Component extends DCLogic {
         .then(() => clearTimeout(timer));
     }).catch(() => done({ state: 'err', code: 'img' }));
   }
-  /* "Tovar topish" rejimi: AI ekrani, maydonda so'rov namunasi, fokus. */
-  aiFindMode() {
-    this.setState({ aiFind: true });
-    if (this.cur() !== 'ai') this.push('ai');
-    setTimeout(() => { const r = this._rootRef.current; const i = r && r.querySelector('input[aria-label="Savolingiz"]'); if (i) i.focus(); }, 350);
-  }
   _aiScroll() {
     requestAnimationFrame(() => { const m = this._mainEl(); if (m && this.cur() === 'ai') m.scrollTop = m.scrollHeight; });
   }
@@ -6239,12 +6234,10 @@ class Component extends DCLogic {
      to'ldirilgan holda ochiladi; 8-bosqich). */
   aiVm(st) {
     const lang = st.lang;
-    const QUICK = ["Krossovka olmoqchiman: erkaklarniki, original, 41 razmer, $100 gacha", "$250 lik telefon uchun boj qancha bo'ladi?",
-      "Xitoydan 2 kg yukni qaysi kuryer arzon olib keladi?", "Powerbank buyurtma qilsam bo'ladimi?"];
-    const HOW = [
-      ['Skrinshot yuklash', ["Do'kon sahifasida narx ko'rinadigan joyni skrinshot qiling.", "\"Skrinshot yuklash\" — rasm telefonda kichraytirilib yuboriladi, saqlanmaydi.", "Nom va narx o'qiladi; \"Kalkulyatorda ochish\" — vazn va davlatni tasdiqlaysiz, jami narx chiqadi."]],
-      ['Tovar topish', ["Nima kerakligini oddiy yozing: tovar, kimga, original kerakmi, o'lcham, byudjet.", "AI mos do'konlarni tanlaydi (originallik, narx segmenti) va har biriga qidiruv havolasi beradi.", "O'lcham jadvali va byudjetdagi tovar uchun jami narx (boj, kargo) ham chiqadi."]]
-    ];
+    const HINT = 'krossovka, 41 razmer, $100 gacha';
+    const usd = v => '$' + num(v).toFixed(2);
+    /* Javob ostidagi tugmalar: vosita chaqirilgan bo'lsa kalkulyator,
+       kuryerlar, taqiqlar, do'kon to'ldirilgan holda ochiladi. */
     const acts = m => {
       const out = [], seen = new Set();
       for (const t of m.tools || []) {
@@ -6262,42 +6255,73 @@ class Component extends DCLogic {
         } else if (t.name === 'find_store' && res.stores && res.stores[0] && STORES.some(x => x.id === res.stores[0].id)) {
           const id = res.stores[0].id;
           a = ['store', "Do'konni ochish", () => { this.warmGuide(id); this.setState({ storeId: id }); this.push('store'); }];
-        } else if (t.name === 'suggest_stores' && Array.isArray(res.stores)) {
-          /* Har do'kon uchun qidiruv havolasi (yangi oynada). */
-          for (const sg of res.stores.slice(0, 4)) {
-            const k = 'link:' + sg.id;
-            if (seen.has(k) || !/^https:\/\//.test(sg.searchUrl || '')) continue;
-            seen.add(k); out.push({ t: sg.name, href: sg.searchUrl, isLink: true, isBtn: false, hit: () => metrics.hit('quick', 'ai:link') });
-          }
         }
-        if (a && !seen.has(a[0])) { seen.add(a[0]); out.push({ t: tr(lang, a[1]), isBtn: true, isLink: false, go: () => { metrics.hit('quick', 'ai:' + a[0]); a[2](); } }); }
+        if (a && !seen.has(a[0])) { seen.add(a[0]); out.push({ t: tr(lang, a[1]), go: () => { metrics.hit('quick', 'ai:' + a[0]); a[2](); } }); }
       }
       return out;
     };
+    /* Tovar so'rovi: "Tushundim" chiplari (vosita kirishidan), do'kon
+       kartalari (qidiruv havolasi yangi oynada) va taxminiy jami. */
+    const tool = (m, name) => (m.tools || []).find(t => t.name === name && t.result && !t.result.error) || null;
+    const gotOf = m => {
+      const t = tool(m, 'suggest_stores'); if (!t) return [];
+      const inp = t.input || {}, out = [];
+      const cat = CATEGORIES.find(c => c.id === inp.category);
+      if (cat) out.push(tr(lang, cat.label));
+      if (inp.original) out.push(tr(lang, 'original'));
+      if (num(inp.budgetUsd) > 0) out.push(tx(lang, '{0} gacha', '$' + num(inp.budgetUsd)));
+      return out;
+    };
+    const storesOf = m => {
+      const t = tool(m, 'suggest_stores'); if (!t || !Array.isArray(t.result.stores)) return [];
+      return t.result.stores.slice(0, 4).filter(sg => /^https:\/\//.test(sg.searchUrl || '')).map(sg => {
+        const loc = STORES.find(x => x.id === sg.id);
+        const bor = !!(loc && loc.logoCss && loc.logoCss !== 'none');
+        return { name: sg.name, href: sg.searchUrl, logoCss: bor ? loc.logoCss : 'none', plate: bor ? 'transparent' : '#F1F1F8',
+          sub: [tr(lang, sg.country || ''), sg.price || '', sg.original ? tr(lang, sg.original) : ''].filter(Boolean).join(' · '),
+          hit: () => metrics.hit('quick', 'ai:link') };
+      });
+    };
+    const totalOf = m => {
+      const t = tool(m, 'landed_cost'); if (!t || !(num(t.result.totalUsd) > 0)) return null;
+      const r = t.result;
+      return { total: usd(r.totalUsd), sub: [tr(lang, 'Kargo') + ' ' + usd(r.shipUsd), tr(lang, 'Boj') + ' ' + usd(r.dutyUsd), r.courier && r.courier.name].filter(Boolean).join(' · ') };
+    };
+    /* Xato — sariq karta, ostida ishlaydigan yo'llar. */
+    const errOf = code => code === 'limit'
+      ? [tr(lang, 'Bugungi savollar chegarasi tugadi'), tr(lang, "Ertaga davom etamiz. Hozircha kalkulyator va do'konlar ro'yxati ishlaydi.")]
+      : [tr(lang, 'Hozir javob bera olmadim'), tr(lang, "Kalkulyator va do'konlar ro'yxati ishlayveradi.")];
+    const errActs = () => [
+      { t: tr(lang, 'Jami narx'), go: () => { metrics.hit('quick', 'ai:err-calc'); this.openLanded(); } },
+      { t: tr(lang, "Do'konlar"), go: () => { metrics.hit('quick', 'ai:err-stores'); this.push('stores'); } }
+    ];
     return {
       aiEmpty: !st.aiMsgs.length, aiHasMsgs: st.aiMsgs.length > 0, aiBusy: !!st.aiBusy, aiQ: st.aiQ || '',
       aiSendBg: st.aiBusy ? '#C4C6FA' : 'linear-gradient(155deg,#494FE9,#13189D)',
       onAiQ: e => this.setState({ aiQ: e.target.value }),
       aiSubmit: e => { e.preventDefault(); this.aiAsk(); },
       aiClear: () => this.setState({ aiMsgs: [] }),
-      aiQuick: QUICK.map(q => ({ t: tr(lang, q), go: () => this.aiAsk(tr(lang, q)) })),
+      aiHint: tr(lang, HINT),
+      aiHintGo: () => { metrics.hit('quick', 'ai:hint'); this.aiAsk(tr(lang, HINT)); },
+      aiPlaceholder: tr(lang, st.aiMsgs.length ? 'Yana savol' : "Savol yoki tovar so'rovi"),
       aiRows: st.aiMsgs.map(m => {
-        const a = m.role === 'user' ? [] : acts(m);
-        return { user: m.role === 'user', bot: m.role !== 'user', text: m.text, fg: m.err ? '#B42318' : '#131429', acts: a, hasActs: a.length > 0,
-          hasImg: !!m.img, imgCss: m.img ? 'url(' + m.img + ')' : 'none' };
+        if (m.role === 'user') return { user: true, bot: false, text: m.text };
+        if (m.err) {
+          const [t, sub] = errOf(m.err);
+          return { user: false, bot: true, text: t, fw: '700', fg: '#B45309', bg: '#FDF3E3', hasSub: true, sub, hasGot: false, got: [], hasStores: false, stores: [], hasTotal: false, acts: errActs(), hasActs: true };
+        }
+        const got = gotOf(m), stores = storesOf(m), total = totalOf(m), a = acts(m);
+        return { user: false, bot: true, text: m.text, fw: '500', fg: '#131429', bg: '#FFFFFF', hasSub: false, sub: '',
+          hasGot: got.length > 0, got, hasStores: stores.length > 0, stores,
+          hasTotal: !!total, total: total ? total.total : '', totalSub: total ? total.sub : '', acts: a, hasActs: a.length > 0 };
       }),
-      aiPlaceholder: tr(lang, st.aiFind ? 'Masalan: krossovka, erkaklar, original, 41 razmer, $100 gacha' : 'Savolingiz'),
-      aiHowOn: !!st.aiHow, aiHowRot: st.aiHow ? 'rotate(180deg)' : 'none',
-      aiHow: HOW.map(([t, steps]) => ({ t: tr(lang, t), steps: steps.map((x, i) => ({ n: String(i + 1), t: tr(lang, x) })) })),
-      toggleHow: () => this.setState({ aiHow: !st.aiHow }),
-      aiFindStart: () => this.aiFindMode(),
       /* Bosh sahifadagi maydon: AI yoqilganda skrinshot va tovar so'rovi
          haqida, o'chiqda — havola va nom haqida gapiradi. */
       aiOn: !!st.aiOn,
       heroPh: tr(lang, st.aiOn ? 'Havola, nom yoki skrinshot' : 'Havola yoki mahsulot nomi'),
       heroSub: tr(lang, st.aiOn ? "Havola, nom yoki skrinshot — do'kon, kuryer va jami narxni ko'rsataman." : "Mahsulot havolasini yoki nomini yozing — do'kon, kuryer va bojni ko'rsatib beraman."),
-      heroHint: tr(lang, st.aiOn ? 'krossovka, 41 razmer, $100 gacha' : 'Nike Air Max'),
-      heroHintGo: () => { metrics.hit('hero', 'hint'); this.setState({ homeQuery: tr(lang, st.aiOn ? 'krossovka, 41 razmer, $100 gacha' : 'Nike Air Max') }, () => this.heroGo()); },
+      heroHint: tr(lang, st.aiOn ? HINT : 'Nike Air Max'),
+      heroHintGo: () => { metrics.hit('hero', 'hint'); this.setState({ homeQuery: tr(lang, st.aiOn ? HINT : 'Nike Air Max') }, () => this.heroGo()); },
       shotPick: () => { metrics.hit('quick', 'ai:shot'); this.shotPick(); },
       onShotFile: e => { const f = e.target.files && e.target.files[0]; if (f) this.aiShot(f); },
       goAi: () => { metrics.hit('quick', 'ai'); this.push('ai'); }
