@@ -85,6 +85,16 @@ jobs:
           K=$(printf '%s' "$K" | tr -d '[:space:]')
           if [ -z "$K" ]; then echo "Kalit yo'q — tekshiruv o'tkazib yuborildi"; exit 0; fi
           echo "Kalit uzunligi: ${#K} belgi (to'liq kalit odatda 100 dan ortiq)"
+          # Kalit TURI: faqat tasnif chiqadi, kalitning o'zi emas. Noto'g'ri
+          # turdagi kalit (admin kaliti, OAuth tokeni, boshqa xizmatniki) ham
+          # 401 beradi va uzunligi to'g'ri bo'lishi mumkin.
+          case "$K" in
+            sk-ant-api*)   echo "Kalit turi: API kaliti — tur to'g'ri";;
+            sk-ant-admin*) echo "::error::Bu ADMIN kaliti (sk-ant-admin…). U faqat tashkilotni boshqarish uchun; Messages API ishlamaydi. API keys bo'limidan oddiy kalit oling.";;
+            sk-ant-*)      echo "::warning::sk-ant- bilan boshlanadi, lekin api/admin emas — kalit turi notanish";;
+            sk-*)          echo "::warning::sk- bilan boshlanadi, lekin Anthropic kalitiga o'xshamaydi (Anthropic: sk-ant-api…)";;
+            *)             echo "::error::Anthropic API kaliti sk-ant-api… bilan boshlanadi. Sizniki boshqacha — bu boshqa xizmatning kaliti yoki OAuth tokeni bo'lishi mumkin.";;
+          esac
           code=$(curl -s -o /tmp/models -w '%{http_code}' 'https://api.anthropic.com/v1/models?limit=100' \
             -H "x-api-key: $K" -H 'anthropic-version: 2023-06-01')
           if [ "$code" != "200" ]; then
