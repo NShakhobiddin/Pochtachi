@@ -84,6 +84,10 @@ jobs:
           # yoziladi va /ai ishga tushadi; bo'lmasa /ai 503 qaytaradi, ilova
           # "AI vaqtincha mavjud emas" deb ko'rsatadi — qolgani ishlaydi.
           # Sirning O'ZI hech qayerga chiqmaydi — faqat bor/yo'q bayrog'i.
+          # Nusxalashda kalit yoniga tushib qolgan bo'shliq yoki qator oxiri
+          # Anthropic'da 401 beradi — kesib tashlaymiz. Kalit ichida bo'shliq
+          # bo'lmaydi, shuning uchun bu xavfsiz.
+          K=$(printf '%s' "$K" | tr -d '[:space:]')
           if [ -n "$K" ]; then
             printf '%s' "$K" | npx wrangler secret put ANTHROPIC_API_KEY
             echo "set=1" >> "$GITHUB_OUTPUT"
@@ -136,11 +140,19 @@ jobs:
             -d '{"image":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==","lang":"uz","usdRate":12650}')
           echo "[$code2] $(head -c 400 /tmp/ai2)"
           MODEL=$(node -e "try{process.stdout.write(JSON.parse(require('fs').readFileSync('/tmp/ai1','utf8')).model||'')}catch(e){}")
+          # Diqqat: ${MODEL:-...} ichiga apostrofli so'z yozib bo'lmaydi —
+          # bash uni ochilgan qo'shtirnoq deb o'qiydi va skript yiqiladi.
+          [ -n "$MODEL" ] || MODEL='?'
           if [ "$KEY_SET" = "1" ]; then
             # Kalit bor: ikkala yo'l ham ishlashi shart.
-            [ "$code" = "200" ] || { echo "::error::Kalit qo'yilgan, lekin /ai $code qaytardi — $(head -c 300 /tmp/ai1)"; exit 1; }
+            if [ "$code" != "200" ]; then
+              echo "::error::Kalit qo'yilgan, lekin /ai $code qaytardi — $(head -c 300 /tmp/ai1)"
+              grep -q '"code":"key"' /tmp/ai1 && echo "::error::Anthropic kalitni rad etdi (401/403). Kalit to'liq nusxalanganini va o'chirilmaganini tekshiring: console.anthropic.com → API keys. Yangi kalit olib, GitHub sirini almashtiring."
+              grep -q '"code":"no_key"' /tmp/ai1 && echo "::error::Worker'da kalit yo'q — sir o'rnatilmadi."
+              exit 1
+            fi
             [ "$code2" = "200" ] || { echo "::error::Kalit qo'yilgan, lekin /ai/shot $code2 qaytardi — $(head -c 300 /tmp/ai2)"; exit 1; }
-            echo "::notice::Pochtam AI ishlayapti — /ai 200, /ai/shot 200, model: ${MODEL:-noma'lum}"
+            echo "::notice::Pochtam AI ishlayapti — /ai 200, /ai/shot 200, model: $MODEL"
           else
             case "$code" in
               503) grep -q no_key /tmp/ai1 \
