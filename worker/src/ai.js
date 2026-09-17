@@ -24,7 +24,7 @@ import * as KB from './kb.generated.js';
 const Core = globalThis.PochtamCore;
 export const AI_LIMITS = { q: 600, hist: 6, histText: 800, body: 12288, rounds: 4 };
 const API_URL = 'https://api.anthropic.com/v1/messages';
-const DEFAULT_MODEL = 'claude-opus-5';
+const DEFAULT_MODEL = 'claude-sonnet-5';
 const FALLBACK_RATE = 12700;
 
 const num = v => { const x = typeof v === 'number' ? v : parseFloat(String(v == null ? '' : v).replace(',', '.').replace(/\s/g, '')); return isFinite(x) ? x : 0; };
@@ -37,18 +37,27 @@ const LEVEL = { red: 'taqiqlangan', amber: 'cheklangan (ruxsat/sertifikat yoki m
 
 /* --- Tizim ko'rsatmasi: qoidalar + bilimlar bazasi. Kun va til alohida
    blokda, oxirida turadi, shunda asosiy matn Claude keshida qoladi. --- */
+/* Tizim ko'rsatmasi har so'rovda qayta yuboriladi, shuning uchun unda
+   faqat INDEKS turadi: model nima borligini bilib, kerakli vositani
+   chaqirsin. Tafsilot vositalardan keladi va u yerda baza to'liq:
+   do'konning qaytarish sharti, murakkabligi, turi va domeni —
+   `find_store`; taqiqning qonuniy manbasi va izohi — `check_banned`;
+   kuryer summasi, muddati va kuzatuvi — `courier_quotes`. Ilgari
+   bularning hammasi matn bo'lib har chaqiruvda ketardi (12 400 token);
+   indeksda ~7 200. Maydon qo'shishdan oldin o'ylab ko'ring: uni
+   vosita qaytara oladimi? */
 export function buildSystem() {
   const cur = Core.normsAt(KB.NORMS, isoDay()) || {};
-  const couriers = KB.COURIERS.map(c => ({ name: c.name, countries: c.countries, days: c.days, mode: c.mode, tracking: c.tracking, note: c.note, limits: c.limits }));
-  const stores = KB.STORES.map(s => ({ name: s.name, domain: s.domain, country: s.country, cat: s.cat, type: s.type, price: s.price, original: s.original, direct: s.direct, complexity: s.complexity, returns: s.returns }));
-  const banned = KB.BANNED.map(b => ({ name: b.name, level: LEVEL[b.level] || b.level, src: b.src }));
+  const couriers = KB.COURIERS.map(c => ({ name: c.name, countries: c.countries, days: c.days, mode: c.mode, tracking: c.tracking }));
+  const stores = KB.STORES.map(s => ({ name: s.name, country: s.country, cat: s.cat, price: s.price, original: s.original, direct: s.direct }));
+  const banned = KB.BANNED.map(b => ({ name: b.name, level: LEVEL[b.level] || b.level }));
   return [
     KB.RULES.trim(),
     '## Joriy me\'yor (NORMS)\n' + JSON.stringify(cur),
-    '## Kuryerlar (' + couriers.length + ')\n' + JSON.stringify(couriers),
+    '## Kuryerlar indeksi (' + couriers.length + ') — summa, muddat va cheklov uchun courier_quotes\n' + JSON.stringify(couriers),
     '## Kuryer tarifi bor davlatlar\n' + KB.COUNTRIES.join(', '),
-    '## Do\'konlar (' + stores.length + ')\n' + JSON.stringify(stores),
-    '## Taqiqlangan va cheklangan tovarlar\n' + JSON.stringify(banned),
+    '## Do\'konlar indeksi (' + stores.length + ') — qaytarish, murakkablik, tur va domen uchun find_store\n' + JSON.stringify(stores),
+    '## Taqiq va cheklovlar indeksi — qonuniy manba va izoh uchun check_banned\n' + JSON.stringify(banned),
     '## Kategoriyalar (taxminiy vazn kg/dona)\n' + JSON.stringify(KB.CATEGORIES.map(c => ({ id: c.id, kgPerItem: c.kgPerItem, caution: c.caution }))),
     '## Xizmatlar (pullik konsultatsiya)\n' + JSON.stringify(KB.SERVICES.map(s => ({ title: s.title, sub: s.sub, lane: s.lane }))),
     '## Qo\'llanmalar\n' + JSON.stringify(KB.GUIDES)
@@ -391,7 +400,10 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
   ];
   const messages = parsed.history.map(h => ({ role: h.role, content: h.text }));
   messages.push({ role: 'user', content: parsed.q });
-  const body = { model: env.AI_MODEL || DEFAULT_MODEL, max_tokens: +env.AI_MAX_TOKENS || 1024, system, tools: TOOLS, messages };
+  /* Fikrlash tokenlari ham shu chegaradan yeydi (Sonnet 5 da u sukut
+     bo'yicha yoqiq), shuning uchun javobga joy qoladigan qilib olingan.
+     Chegara faqat shift — hisob haqiqatda yozilgan tokenlar bo'yicha. */
+  const body = { model: env.AI_MODEL || DEFAULT_MODEL, max_tokens: +env.AI_MAX_TOKENS || 2048, system, tools: TOOLS, messages };
   if (env.AI_EFFORT) body.output_config = { effort: env.AI_EFFORT };
 
   const used = []; let textOut = '', model = body.model, stop = '';
@@ -423,6 +435,8 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
     if (round === AI_LIMITS.rounds - 1) stop = 'rounds';
   }
   if (stop === 'refusal') textOut = textOut || 'Bu savolga javob bera olmayman. Bojxona, kuryer yoki do\'kon haqida so\'rang.';
+  /* Chegaraga urilib kesilgan javob yarim gapda tugamasin. */
+  if (stop === 'max_tokens' && textOut) textOut += '\n' + 'Javob uzun bo\'lgani uchun qisqartirildi — savolni aniqroq bering.';
   if (!textOut) textOut = 'Javob tayyorlab bo\'lmadi. Savolni boshqacha yozib ko\'ring yoki ilovadagi "Jami narx" kalkulyatoridan foydalaning.';
   count('ok');
   return json({ text: textOut, tools: used, model, usage, stop });

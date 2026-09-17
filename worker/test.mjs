@@ -98,7 +98,7 @@ check('/ai buzuq JSON — 400', (await worker.fetch(new Request('https://w/ai', 
 let calls = [];
 const fakeClaude = async (url, init) => {
   const body = JSON.parse(init.body); calls.push(body);
-  check('Claude so\'rovi: kalit sarlavhada, model va vositalar bor', init.headers['x-api-key'] === 'sk-test' && body.model === 'claude-opus-5' && body.tools.length === TOOLS.length && body.system[0].cache_control.type === 'ephemeral', body.model);
+  check('Claude so\'rovi: kalit sarlavhada, model va vositalar bor', init.headers['x-api-key'] === 'sk-test' && body.model === 'claude-sonnet-5' && body.tools.length === TOOLS.length && body.system[0].cache_control.type === 'ephemeral', body.model);
   if (calls.length === 1) return new Response(JSON.stringify({ model: 'claude-test', stop_reason: 'tool_use', usage: { input_tokens: 100, output_tokens: 20 },
     content: [{ type: 'text', text: 'Hisoblayman.' }, { type: 'tool_use', id: 'toolu_1', name: 'customs_duty', input: { goodsUsd: 320, shipUsd: 22.5, kg: 2.5 } }] }), { status: 200 });
   const last = body.messages[body.messages.length - 1];
@@ -153,8 +153,18 @@ check('check_banned: topilmasa "ruxsat degani emas"', /ruxsat degani emas/.test(
 check('find_store: domen bo\'yicha', runTool('find_store', { query: 'trendyol.com' }, tctx).stores[0].id === 'trendyol');
 check('noma\'lum vosita — xato, tashlamaydi', !!runTool('yoq', {}, tctx).error);
 const sys = buildSystem();
-check('tizim ko\'rsatmasi: qoidalar, me\'yor, kuryer va do\'kon bazasi', /HECH QACHON o'zing/.test(sys) && /"freeUsd":200/.test(sys) && /MYMEEST/.test(sys) && /taobao\.com/.test(sys) && /Giyohvandlik/.test(sys), sys.length + ' belgi');
+check('tizim ko\'rsatmasi: qoidalar, me\'yor, kuryer va do\'kon indeksi', /HECH QACHON o'zing/.test(sys) && /"freeUsd":200/.test(sys) && /MYMEEST/.test(sys) && /"name":"Taobao"/.test(sys) && /Giyohvandlik/.test(sys), sys.length + ' belgi');
 check('tizim ko\'rsatmasida kalit yo\'q', !/sk-/.test(sys));
+/* Indeks: og'ir matn maydonlari promptga tushmaydi — ular vositalardan
+   keladi (find_store, check_banned, courier_quotes). Bu tekshiruv
+   maydon qaytib qo'shilib qolishidan saqlaydi. */
+check('tizim ko\'rsatmasi indeks: og\'ir maydonlar promptda yo\'q',
+  !/"returns":/.test(sys) && !/"complexity":/.test(sys) && !/"limits":/.test(sys) && !/"domain":/.test(sys) && !/"note":/.test(sys));
+check('tizim ko\'rsatmasi byudjeti: 26 000 belgidan kichik', sys.length < 26000, sys.length + ' belgi');
+/* Kesilgan maydonlar vositalarda bor — indeks ularni yo'qotmadi. */
+const tDet = runTool('find_store', { query: 'taobao' }, tctx).stores[0];
+check('find_store tafsilotni beradi (qaytarish, murakkablik, domen)', !!tDet.returns && !!tDet.complexity && tDet.domain === 'taobao.com');
+check('check_banned manba va izohni beradi', !!runTool('check_banned', { query: 'qurol' }, tctx).items[0].src);
 check('parseAiBody: rollar navbat bilan, oxirgi assistant', JSON.stringify(parseAiBody(JSON.stringify({ q: 'a', history: [{ role: 'assistant', text: 'x' }, { role: 'user', text: 'u1' }, { role: 'user', text: 'u2' }, { role: 'assistant', text: 'a1' }, { role: 'user', text: 'u3' }] })).history) === JSON.stringify([{ role: 'user', text: 'u1\nu2' }, { role: 'assistant', text: 'a1' }]));
 
 /* --- Skrinshot (/ai/shot) va do'kon tavsiyasi (suggest_stores) --- */

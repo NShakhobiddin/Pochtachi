@@ -379,9 +379,28 @@ birinchi qismi.
 **Chegaralar va xarajat.** Bitta IP uchun kuniga `AI_DAILY_PER_IP` (20),
 hammasi uchun `AI_DAILY_TOTAL` (300) savol — `wrangler.toml`. IP
 saqlanmaydi: kun va sir bilan tuzlangan xesh sanaladi, 90 kunda o'chadi.
-Savol ≤ 600 belgi, javob ≤ 1024 token, tizim ko'rsatmasi Claude keshida
-(`cache_control`). Model `AI_MODEL` (claude-opus-5), fikrlash darajasi
-`AI_EFFORT`. Hisobotda (`/hisobot`) "Pochtam AI" bo'limi: javob, chegara,
+Savol ≤ 600 belgi, javob ≤ 2048 token (fikrlash tokenlari ham shu
+chegaradan yeydi), tizim ko'rsatmasi Claude keshida (`cache_control`).
+Model `AI_MODEL` (claude-sonnet-5), fikrlash darajasi `AI_EFFORT`.
+
+**Tizim ko'rsatmasi — indeks, baza emas (2026-09-17).** Ilgari kuryer,
+do'kon va taqiq ro'yxatlari to'liq matn bo'lib har so'rovda qayta
+yuborilardi (38 368 belgi ≈ 12 400 token), vaholanki o'sha ma'lumotni
+vositalar serverda o'qiydi — bir xil narsa ikki marta ketardi. Endi
+promptda faqat indeks: kuryer (nom, davlat, muddat, rejim, kuzatuv),
+do'kon (nom, davlat, kategoriya, narx segmenti, originallik,
+to'g'ridan-to'g'ri), taqiq (nom, daraja). Tafsilot vositadan keladi —
+qaytarish sharti, murakkablik, tur va domen `find_store` da, qonuniy
+manba va izoh `check_banned` da, summa va muddat `courier_quotes` da;
+qoida `data/ai-rules.md` da yozilgan. Natija: 22 131 belgi ≈ 7 600 token
+(−42%). Worker testi og'ir maydonlar qaytib qo'shilib qolishidan
+saqlaydi va 26 000 belgi byudjetini tekshiradi.
+
+**Narx.** Bitta savol (vosita chaqiruvi bilan 2 ta so'rov, kesh hisobga
+olingan): ilgari Opus 5 + to'liq baza ≈ $0.111, endi Sonnet 5 + indeks
+≈ $0.031 — **72% arzon**. Kunlik 300 savol chegarasida oyiga ~$996
+o'rniga ~$282. Skrinshot alohida: `AI_SHOT_MODEL` (claude-haiku-4-5),
+bitta chaqiruv ≈ $0.002 — u o'zgarmadi. Hisobotda (`/hisobot`) "Pochtam AI" bo'limi: javob, chegara,
 xato, ishlatilgan vositalar.
 
 **Yoqish.** GitHub'da `ANTHROPIC_API_KEY` sirini qo'shib "O'lchovni yoqish"

@@ -145,9 +145,15 @@ Qoidalar `data/ai-rules.md` da, bilimlar bazasi `src/kb.generated.js`
 `core/` vositalari orqali. Sozlamalar `wrangler.toml`: `AI_MODEL`,
 `AI_DAILY_PER_IP`, `AI_DAILY_TOTAL`, `AI_MAX_TOKENS`, `AI_EFFORT`.
 
-Xarajat mo'ljali: tizim ko'rsatmasi ≈ 12 ming token keshda (o'qish
-arzon), savol-javob ≈ 1–2 ming token; vosita bilan bir savol ≈ $0.01–0.02.
-Kunlik umumiy chegara 300 savol ≈ $5/kun eng ko'pi bilan. Hisobotda
+Tizim ko'rsatmasi — indeks: kuryer, do'kon va taqiq ro'yxatlari qisqa
+maydonlar bilan ketadi, tafsilotni vositalar qaytaradi (`find_store`,
+`check_banned`, `courier_quotes`). Shuning uchun `buildSystem()` ga
+maydon qo'shishdan oldin tekshiring — uni vosita bera oladimi? Test
+byudjetni (26 000 belgi) va og'ir maydonlar yo'qligini kuzatadi.
+
+Xarajat mo'ljali: tizim ko'rsatmasi ≈ 7,6 ming token keshda (o'qish
+arzon), savol-javob ≈ 1–2 ming token; vosita bilan bir savol ≈ $0.03
+(Sonnet 5). Kunlik umumiy chegara 300 savol ≈ $9/kun eng ko'pi bilan. Hisobotda
 "Pochtam AI" bo'limi sanoqni ko'rsatadi (`ai`: ok, limit, err,
 tool:…). Savol matni saqlanmaydi va log qilinmaydi.
 

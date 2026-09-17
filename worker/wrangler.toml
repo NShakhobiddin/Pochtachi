@@ -17,14 +17,14 @@ PUBLIC_STATS = "0"
 # Pochtam AI (POST /ai). Kalit — sir:  wrangler secret put ANTHROPIC_API_KEY
 # Kalit qo'yilmaguncha /ai 503 "AI vaqtincha mavjud emas" qaytaradi, ilova
 # buni ko'rsatadi va qolgani ishlayveradi.
-AI_MODEL = "claude-opus-5"
+AI_MODEL = "claude-sonnet-5"
 # Skrinshotdan narx o'qish (POST /ai/shot) — arzon model yetarli.
 AI_SHOT_MODEL = "claude-haiku-4-5"
 # Kunlik chegara: bitta IP (xesh) uchun va hammasi uchun. Xarajat nazorati.
 AI_DAILY_PER_IP = "20"
 AI_DAILY_TOTAL = "300"
 # Javob uzunligi (token) va fikrlash darajasi (bo'sh — API standarti).
-AI_MAX_TOKENS = "1024"
+AI_MAX_TOKENS = "2048"
 AI_EFFORT = "medium"
 
 # READ_TOKEN — sir, toml ga yozilmaydi:  wrangler secret put READ_TOKEN
