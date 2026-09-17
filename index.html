@@ -694,11 +694,11 @@
              so'z → qidiruv, savol yoki tovar so'rovi → Pochtam AI, kamera →
              skrinshot. Kamera faqat AI yoqilganda (aiOn) ko'rinadi — o'lik
              tugma bo'lmaydi. -->
-        <form sc-camel-on-submit="{{ heroSubmit }}" style="display:flex;align-items:center;gap:8px;background:#FFFFFF;border-radius:20px;padding:6px 6px 6px 14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+        <form data-tour="field" sc-camel-on-submit="{{ heroSubmit }}" style="display:flex;align-items:center;gap:8px;background:#FFFFFF;border-radius:20px;padding:6px 6px 6px 14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
           <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6B6C85" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
           <input value="{{ hq }}" sc-camel-on-input="{{ onHq }}" placeholder="{{ heroPh }}" type="text" enterkeyhint="go" aria-label="Mahsulot havolasi yoki nomi" style="flex:1;min-width:0;height:40px;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;font-weight:500;color:#131429">
           <sc-if value="{{ aiOn }}" hint-placeholder-val="{{ true }}">
-            <button type="button" sc-camel-on-click="{{ shotPick }}" aria-label="Skrinshot yuklash" style="flex:none;width:40px;height:40px;border-radius:14px;border:none;cursor:pointer;background:#E9EAFD;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8.5A2.5 2.5 0 016.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0120 8.5V17a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></button>
+            <button type="button" data-tour="camera" sc-camel-on-click="{{ shotPick }}" aria-label="Skrinshot yuklash" style="flex:none;width:40px;height:40px;border-radius:14px;border:none;cursor:pointer;background:#E9EAFD;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8.5A2.5 2.5 0 016.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0120 8.5V17a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></button>
           </sc-if>
           <button type="submit" aria-label="Boshlash" style="flex:none;width:40px;height:40px;border-radius:14px;border:none;background:linear-gradient(155deg,#494FE9,#13189D);cursor:pointer;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="M12 6l6 6-6 6"></path></svg></button>
         </form>
@@ -707,7 +707,7 @@
              bitta ishlaydigan misol. -->
         <button sc-camel-on-click="{{ heroHintGo }}" style="align-self:flex-start;background:none;border:none;padding:0 2px;font-family:inherit;font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5;text-align:left;cursor:pointer">Masalan: <span style="font-size:13px;font-weight:700;color:#1A1FB0">{{ heroHint }}</span></button>
         <!-- Tez o'tish: eng ko'p kerak bo'ladigan to'rt harakat. -->
-        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
+        <div data-tour="quick" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
           <sc-for list="{{ quickActs }}" as="qa" hint-placeholder-count="4">
             <button sc-camel-on-click="{{ qa.go }}" style="display:flex;flex-direction:column;align-items:center;gap:8px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 6px;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="background:#F6F7FB">
               <div aria-hidden="true" style="width:36px;height:36px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ qa.iconCss }}"></div>
@@ -720,7 +720,7 @@
 
 
       <!-- Xaridlarim: reja, jo'natma, sevimli va hisoblar bitta joyda. -->
-      <button sc-camel-on-click="{{ goMine }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+      <button data-tour="mine" sc-camel-on-click="{{ goMine }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
         <div style="width:34px;height:34px;border-radius:12px;flex:none;background:#E9EAFD;display:flex;align-items:center;justify-content:center">
           <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12l1.5 4H4.5L6 4z"></path><path d="M4.5 8v11a1 1 0 001 1h13a1 1 0 001-1V8"></path><path d="M9 12h6"></path></svg>
         </div>
@@ -3347,6 +3347,7 @@
         <sc-if value="{{ hasAff }}" hint-placeholder-val="{{ false }}">
           <div style="font-size:13px;color:#6B6C85;line-height:1.5;text-wrap:pretty">Ba'zi do'kon havolalari — hamkorlik havolasi: siz uchun narx o'zgarmaydi, ilova do'kondan kichik komissiya oladi.</div>
         </sc-if>
+        <button sc-camel-on-click="{{ tourReplay }}" style="align-self:flex-start;height:36px;padding:0 14px;border-radius:12px;border:1.5px solid #DCDDFA;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">Ilova bilan tanishish</button>
         <div style="font-size:11px;font-weight:700;color:#6B6C85;padding-top:4px;font-variant-numeric:tabular-nums">{{ appVersion }}</div>
       </div>
     </div>
@@ -3367,7 +3368,7 @@
   </sc-if>
 
   <sc-if value="{{ showTabs }}" hint-placeholder-val="{{ true }}">
-    <nav aria-label="Asosiy menyu" style="flex:none;display:flex;align-items:flex-start;justify-content:space-around;padding:9px 6px calc(16px + var(--xy-safe-bottom));background:#FFFFFF;border-top:1px solid #F1F1F8;box-shadow:none;position:relative;z-index:5">
+    <nav data-tour="nav" aria-label="Asosiy menyu" style="flex:none;display:flex;align-items:flex-start;justify-content:space-around;padding:9px 6px calc(16px + var(--xy-safe-bottom));background:#FFFFFF;border-top:1px solid #F1F1F8;box-shadow:none;position:relative;z-index:5">
       <button sc-camel-on-click="{{ tHome }}" aria-current="{{ tb.home.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
         <div style="width:52px;height:32px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:{{ tb.home.chip }};transition:background .16s ease">
           <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="{{ tb.home.lbl }}" stroke-width="{{ tb.home.sw }}" stroke-linecap="round" stroke-linejoin="round"><path d="M3.2 10.6 12 3.4l8.8 7.2"></path><path d="M5.5 9.4V19a1.6 1.6 0 0 0 1.6 1.6h9.8A1.6 1.6 0 0 0 18.5 19V9.4"></path><path d="M9.7 20.6V15a1 1 0 0 1 1-1h2.6a1 1 0 0 1 1 1v5.6"></path></svg>
@@ -3441,6 +3442,32 @@
         <div style="display:flex;gap:12px;padding-top:4px">
           <button sc-camel-on-click="{{ resetAllFilters }}" style="flex:1;height:52px;border-radius:20px;background:#F1F1F8;border:none;color:#131429;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer">Tozalash</button>
           <button sc-camel-on-click="{{ closeSheet }}" style="flex:1.6;height:52px;border-radius:20px;background:linear-gradient(155deg,#494FE9,#13189D);border:none;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">Natijani ko'rish</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Birinchi kirishda tanishtiruv (coach marks): ekran xiralashadi,
+       bitta joy yoritiladi, yonida qisqa izoh va "Keyingi". Bir marta
+       ko'rsatiladi (localStorage xy_tour), Sozlamalardan qayta ochiladi.
+       Xiralik SVG niqob bilan — teshik burchaklari yumaloq, soya emas.
+       Teshik koordinatalari shablonda emas (SVG atributida "{{ }}" brauzer
+       konsolida xato beradi), tourMeasure() ularni to'g'ridan-to'g'ri
+       DOM'ga yozadi. -->
+  <sc-if value="{{ tourOn }}" hint-placeholder-val="{{ false }}">
+    <div role="dialog" aria-modal="true" aria-labelledby="xy-tour-title" style="position:absolute;inset:0;z-index:30;overflow:hidden">
+      <svg aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%">
+        <defs><mask id="xy-tour-mask"><rect x="0" y="0" width="100%" height="100%" fill="#FFFFFF"></rect><rect data-tour-hole="1" x="0" y="0" width="0" height="0" rx="20" fill="#131429"></rect></mask></defs>
+        <rect x="0" y="0" width="100%" height="100%" fill="#131429" fill-opacity=".62" mask="url(#xy-tour-mask)"></rect>
+      </svg>
+      <div aria-hidden="true" style="position:absolute;{{ tourBox }};box-sizing:border-box;border-radius:20px;border:2px solid #FFFFFF"></div>
+      <div style="position:absolute;left:16px;right:16px;top:{{ tourCardTop }};bottom:{{ tourCardBottom }};margin:0 auto;max-width:420px;background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:11px;font-weight:700;color:#6B6C85;font-variant-numeric:tabular-nums">{{ tourN }}</span>
+        <span id="xy-tour-title" style="font-size:17px;font-weight:700;letter-spacing:-.02em;color:#131429">{{ tourTitle }}</span>
+        <span style="font-size:15px;font-weight:500;color:#4E4F6B;line-height:1.5;text-wrap:pretty">{{ tourText }}</span>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:4px">
+          <button sc-camel-on-click="{{ tourSkip }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#6B6C85;cursor:pointer;padding:8px 2px">O'tkazib yuborish</button>
+          <button data-tour-next="1" sc-camel-on-click="{{ tourNext }}" style="height:44px;padding:0 20px;border-radius:14px;border:none;background:linear-gradient(155deg,#494FE9,#13189D);color:#FFFFFF;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer">{{ tourNextLabel }}</button>
         </div>
       </div>
     </div>
@@ -3687,7 +3714,13 @@ const RU = {
   "Do'kon, kuryer yoki mahsulot":'Магазин, курьер или товар', "Do'kon nomi yoki kategoriya":'Название магазина или категория',
   'Tovar nomini yozing':'Введите название товара', "Saytga o'tish":'Перейти на сайт', "Telegram'da yozish":'Написать в Telegram',
   'Tozalash':'Очистить', "Natijani ko'rish":'Показать результат', 'Filtr':'Фильтр', "O'zgartirish":'Изменить',
-  "O'tkazib yuborish":'Пропустить', 'Yangilash':'Обновить', 'Yuklanmoqda…':'Загрузка…', 'Hisob qanday chiqdi':'Как получился расчёт',
+  "O'tkazib yuborish":'Пропустить', 'Keyingi':'Далее', 'Tushunarli':'Понятно', 'Ilova bilan tanishish':'Знакомство с приложением',
+  /* Tanishtiruv qadamlari */
+  'Shu yerdan boshlang':'Начните здесь', "Havola, mahsulot nomi yoki savol yozing — do'kon, kuryer va jami narxni ko'rsataman.":'Введите ссылку, название товара или вопрос — покажу магазин, курьера и итоговую цену.',
+  'Skrinshot':'Скриншот', "Do'kon sahifasi skrinshotini yuklang — narx o'zi o'qiladi va kalkulyatorga tushadi.":'Загрузите скриншот страницы магазина — цена прочитается сама и попадёт в калькулятор.',
+  "To'rt asosiy vosita":'Четыре основных инструмента', "Jami narx, do'konlar, kuryerlar va taqiqlarni tekshirish — har biri bitta bosishda.":'Итоговая цена, магазины, курьеры и проверка запретов — каждый в одно касание.',
+  "Rejalar, jo'natmalar, sevimlilar va hisoblar shu yerda saqlanadi.":'Планы, отправления, избранное и расчёты хранятся здесь.',
+  "Bo'limlar":'Разделы', "Qo'llanmalar, Bojxona va Sozlamalar. O'rtadagi tugma — xarid rejasini tuzish.":'Инструкции, Таможня и Настройки. Кнопка в центре — составить план покупки.', 'Yangilash':'Обновить', 'Yuklanmoqda…':'Загрузка…', 'Hisob qanday chiqdi':'Как получился расчёт',
   "Qo'llanmalarga qaytish":'Вернуться к инструкциям', 'Nusxalash':'Копировать',
   'ta':'шт.', "ta bo'lim":'разделов', "ta jo'natma":'отправлений',
   'ta platforma':'платформ', 'ta pozitsiya':'позиций', "ta yo'nalish":'направлений',
@@ -5355,7 +5388,9 @@ class Component extends DCLogic {
     wizStep: 0, wizCat: null, wizCountry: null, wizStore: null, wizCourier: null, wizPrice: '150', wizWeight: '1.2',
     plans: SAVED.plans || [], planId: null,
     justSaved: false,
-    sheetOpen: false, toast: ''
+    sheetOpen: false, toast: '',
+    /* Tanishtiruv: null yoki { i, rect } (rect — yoritilgan joy, shell'ga nisbatan). */
+    tour: null
   };
 
   cur() { return this.state.stack[this.state.stack.length - 1]; }
@@ -5506,6 +5541,7 @@ class Component extends DCLogic {
   componentDidUpdate(prevProps) {
     saveState(this.state); this.applyLang(); this.syncTelegram();
     this.screenMoved();
+    this.maybeTour();
   }
 
   /* --- Shaxsiy iz: sevimlilar, oxirgi ko'rilganlar, qidiruv tarixi ---
@@ -5669,6 +5705,8 @@ class Component extends DCLogic {
   componentWillUnmount() {
     clearTimeout(this._warmT);
     clearTimeout(this._moT);
+    clearTimeout(this._tourT);
+    if (this._onTourResize) window.removeEventListener('resize', this._onTourResize);
     if (this._onPop) window.removeEventListener('popstate', this._onPop);
     if (this._onKey) window.removeEventListener('keydown', this._onKey);
     if (this._onInstall) window.removeEventListener('beforeinstallprompt', this._onInstall);
@@ -5753,6 +5791,7 @@ class Component extends DCLogic {
       /* Filtr varag'i ochiq bo'lsa Escape avval uni yopadi; ilgari butun
          ekran orqaga ketar, varaq esa ochiq qolib bosishlarni to'sardi. */
       if (this.state.sheetOpen) { e.preventDefault(); this.setState({ sheetOpen: false }); return; }
+      if (this.state.tour) { e.preventDefault(); this.tourEnd(false); return; }
       if (this.state.stack.length < 2) return;
       const a = document.activeElement;
       if (a && a.tagName === 'INPUT' && a.value) return;
@@ -5770,6 +5809,81 @@ class Component extends DCLogic {
     const age = RATE_META.at ? Date.now() - RATE_META.at : Infinity;
     if (age > 6 * 3600 * 1000) this.refreshRate(true); else this.forceUpdate();
     this.checkAi();
+    this.maybeTour();
+  }
+
+  /* --- Tanishtiruv (birinchi kirish) ---
+     Tanishuv ekranidan keyin bosh sahifada bir marta: 5 qadam (AI o'chiq
+     bo'lsa kamera qadami tushib qoladi). Har qadam data-tour nishonli
+     elementni shell'ga nisbatan o'lchaydi; element yo'q bo'lsa qadam
+     o'tkazib yuboriladi. Escape — yopish. */
+  maybeTour() {
+    if (this._tourChecked || !this.state.onboarded || this.cur() !== 'home') return;
+    this._tourChecked = true;
+    let seen = true;
+    try { seen = localStorage.getItem('xy_tour') === '1'; } catch (e) {}
+    if (seen) return;
+    this._tourT = setTimeout(() => { if (this.cur() === 'home' && !this.state.tour) this.tourStart(); }, 700);
+  }
+  tourSteps() {
+    const L = k => tr(this.state.lang, k);
+    const all = [
+      { k: 'field', t: 'Shu yerdan boshlang', x: "Havola, mahsulot nomi yoki savol yozing — do'kon, kuryer va jami narxni ko'rsataman." },
+      { k: 'camera', t: 'Skrinshot', x: "Do'kon sahifasi skrinshotini yuklang — narx o'zi o'qiladi va kalkulyatorga tushadi.", need: () => !!this.state.aiOn },
+      { k: 'quick', t: "To'rt asosiy vosita", x: "Jami narx, do'konlar, kuryerlar va taqiqlarni tekshirish — har biri bitta bosishda." },
+      { k: 'mine', t: 'Xaridlarim', x: "Rejalar, jo'natmalar, sevimlilar va hisoblar shu yerda saqlanadi." },
+      { k: 'nav', t: "Bo'limlar", x: "Qo'llanmalar, Bojxona va Sozlamalar. O'rtadagi tugma — xarid rejasini tuzish." }
+    ];
+    return all.filter(x => !x.need || x.need()).map(x => ({ k: x.k, t: L(x.t), x: L(x.x) }));
+  }
+  tourStart() {
+    if (this.cur() !== 'home') this.go('home');
+    metrics.hit('tour', 'start');
+    if (!this._onTourResize) { this._onTourResize = () => { if (this.state.tour) this.tourMeasure(); }; window.addEventListener('resize', this._onTourResize); }
+    this.setState({ tour: { i: 0, rect: null } }, () => this.tourMeasure());
+  }
+  tourGo(i) {
+    if (i >= this.tourSteps().length) { this.tourEnd(true); return; }
+    this.setState({ tour: { i, rect: null } }, () => this.tourMeasure());
+  }
+  tourMeasure() {
+    const t = this.state.tour, root = this._rootRef.current;
+    if (!t || !root) return;
+    const step = this.tourSteps()[t.i];
+    if (!step) { this.tourEnd(true); return; }
+    const el = root.querySelector('[data-tour="' + step.k + '"]');
+    if (!el) { this.tourGo(t.i + 1); return; }
+    try { el.scrollIntoView({ block: 'center', behavior: 'auto' }); } catch (e) {}
+    requestAnimationFrame(() => {
+      if (!this.state.tour) return;
+      const a = root.getBoundingClientRect(), b = el.getBoundingClientRect(), pad = 6;
+      const rect = { x: Math.round(b.left - a.left - pad), y: Math.round(b.top - a.top - pad), w: Math.round(b.width + pad * 2), h: Math.round(b.height + pad * 2), sh: Math.round(a.height) };
+      this.setState({ tour: { i: t.i, rect } }, () => {
+        const hole = root.querySelector('[data-tour-hole]');
+        if (hole) { hole.setAttribute('x', rect.x); hole.setAttribute('y', rect.y); hole.setAttribute('width', rect.w); hole.setAttribute('height', rect.h); }
+        const btn = root.querySelector('[data-tour-next]'); if (btn) btn.focus();
+      });
+    });
+  }
+  tourEnd(done) {
+    const t = this.state.tour;
+    metrics.hit('tour', done ? 'done' : 'skip:' + (t ? t.i + 1 : 0));
+    this.setState({ tour: null });
+    try { localStorage.setItem('xy_tour', '1'); } catch (e) {}
+  }
+  tourVm(st) {
+    const t = st.tour;
+    if (!t || !t.rect) return { tourOn: false };
+    const steps = this.tourSteps(), step = steps[t.i] || steps[0], r = t.rect;
+    const below = r.y + r.h + 12, fits = below + 200 <= r.sh;
+    return {
+      tourOn: true,
+      tourBox: 'left:' + r.x + 'px;top:' + r.y + 'px;width:' + r.w + 'px;height:' + r.h + 'px',
+      tourCardTop: fits ? below + 'px' : 'auto', tourCardBottom: fits ? 'auto' : (r.sh - r.y + 12) + 'px',
+      tourN: (t.i + 1) + ' / ' + steps.length, tourTitle: step.t, tourText: step.x,
+      tourNextLabel: tr(st.lang, t.i + 1 >= steps.length ? 'Tushunarli' : 'Keyingi'),
+      tourNext: () => this.tourGo(t.i + 1), tourSkip: () => this.tourEnd(false)
+    };
   }
 
   /* AI bayrog'i: Worker GET /ai/status → { ai: true|false } (kalit bormi).
@@ -7695,6 +7809,8 @@ class Component extends DCLogic {
       sharePlan: () => this.toast('Reja Telegram\'dagi saqlangan xabarlarga yuborildi'),
 
       sheetOpen: st.sheetOpen,
+      ...this.tourVm(st),
+      tourReplay: () => { metrics.hit('tour', 'replay'); this.go('home'); clearTimeout(this._tourT); this._tourT = setTimeout(() => this.tourStart(), 350); },
       openSheet: () => this.setState({ sheetOpen: true }),
       closeSheet: () => this.setState({ sheetOpen: false }),
       stop: e => e.stopPropagation(),

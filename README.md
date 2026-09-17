@@ -541,6 +541,19 @@ ruscha ochiladi va "Русский" kartasi belgilangan turadi; tanlov
 foydalanuvchida qoladi. Tanlangan til va tanishuv o'tilgani `localStorage`
 da (`v: 1` bilan) saqlanadi.
 
+**Tanishtiruv (2026-09-17).** Tanishuvdan keyin bosh sahifada bir marta
+"coach marks": ekran xiralashadi (SVG niqob, teshik burchaklari yumaloq),
+bitta joy yoritiladi, yonida qisqa izoh, "O'tkazib yuborish" va "Keyingi"
+(oxirgisida "Tushunarli"). 5 qadam: maydon, kamera (AI yoqiq bo'lsa),
+to'rt plitka, Xaridlarim, pastki menyu — nishonlar `data-tour` atributi
+bilan, o'lchov `tourMeasure()` (shell'ga nisbatan, nishon avval
+`scrollIntoView`), karta joy bo'lsa pastda, bo'lmasa tepada. Escape
+yopadi, fokus "Keyingi" tugmasida (`role="dialog"`). Ko'rilgani
+`localStorage.xy_tour`; Sozlamalar → "Ilova bilan tanishish" qayta
+ochadi. O'lchov: `tour` (start, done, skip:N, replay). Teshik
+koordinatalari shablonda emas — SVG atributida `{{ }}` brauzer konsolida
+xato beradi — `tourMeasure()` ularni DOM'ga o'zi yozadi.
+
 ## Telegram bot ichida ochish
 
 Ilova Telegram Mini App sifatida to'liq ekranda ochiladi. Botga ulash:
