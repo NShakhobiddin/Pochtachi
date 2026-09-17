@@ -209,10 +209,14 @@ oddiy so'z — qidiruv ekrani. Oqim hech qachon to'xtab qolmaydi (TZ 21).
 Bosh sahifada yettita blok, har biri bitta vazifa uchun, takrori yo'q:
 
 1. universal maydon;
-2. **tez o'tish** — Jami narx, Do'konlar, Kuryerlar, Taqiqni tekshirish
-   (Qo'llanmalar va Bojxona pastki menyuda, shuning uchun bu yerda
-   takrorlanmaydi; Do'konlar va Kuryerlar bo'limlariga kirish faqat shu
-   yerdan);
+2. **tez o'tish** — to'rt savol, bo'lim nomi emas (2026-09-17, "muammo →
+   yechim → natija" tamoyili): "Qayerdan olsam?" (do'konlar), "Qancha
+   tushadi?" (jami narx), "Qaysi kuryer?" (kuryerlar), "Ruxsat bormi?"
+   (taqiqlar). Tartib xarid yo'li bo'yicha. Qo'llanmalar va Bojxona pastki
+   menyuda, shuning uchun bu yerda takrorlanmaydi; do'konlar va kuryerlar
+   ro'yxatiga kirish faqat shu yerdan. Metrika kalitlari o'zgarmadi
+   (`quick`: stores, landed, couriers, banned), shuning uchun eski
+   hisobotlar bilan taqqoslash buzilmaydi;
 3. **Xaridlarim** kartasi — rejalar, jo'natmalar, sevimlilar, hisoblar
    (jamlanma bilan);
 4. **Pochtam AI** kartasi;
@@ -236,7 +240,7 @@ banned, ai, ai:*).
 
 ## Universal kalkulyator — Jami narx (4-bosqich)
 
-Ekran `landed` (tez o'tishdagi "Jami narx", do'kon sahifasidagi "Shu
+Ekran `landed` (tez o'tishdagi "Qancha tushadi?", do'kon sahifasidagi "Shu
 do'kondan xarajatni hisoblash", keyinroq AI). Kirish: nom (ixtiyoriy),
 narx va valyuta (USD / EUR / GBP / so'm — EUR va GBP `data/tariffs.json`
 dagi zaxira kurslar, so'm — joriy kurs), miqdor, kategoriya

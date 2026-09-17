@@ -702,7 +702,7 @@
         </div>
         <input type="file" accept="image/*" data-shot="1" sc-camel-on-change="{{ onShotFile }}" aria-label="Skrinshot tanlash" style="display:none">
         <div style="font-size:13px;color:#6B6C85;font-weight:500;line-height:1.5;text-wrap:pretty">Skrinshotdan nom va narxni o'qiyman, so'rovdan do'kon, o'lcham va jami narxni topaman. <button sc-camel-on-click="{{ goHow }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:0">Qanday ishlaydi</button></div>
-        <!-- Tez o'tish: eng ko'p kerak bo'ladigan to'rt harakat. -->
+        <!-- Tez o'tish: to'rt savol — har biri bitta yechim oqimini ochadi. -->
         <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
           <sc-for list="{{ quickActs }}" as="qa" hint-placeholder-count="4">
             <button sc-camel-on-click="{{ qa.go }}" style="display:flex;flex-direction:column;align-items:center;gap:8px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 6px;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="background:#F6F7FB">
@@ -3610,6 +3610,8 @@ const RU = {
   "Mahsulot havolasini yoki nomini yozing — do'kon, kuryer va bojni ko'rsatib beraman.":'Вставьте ссылку на товар или напишите его название — покажу магазин, курьера и пошлину.',
   'Havola yoki mahsulot nomi':'Ссылка или название товара', 'Mahsulot havolasi yoki nomi':'Ссылка или название товара', 
   'Boj hisoblash':'Рассчитать пошлину', 'Taqiqni tekshirish':'Проверить запреты',
+  /* Bosh sahifadagi tez o'tish plitkalari — savol shaklida. */
+  'Qayerdan olsam?':'Где купить?', 'Qancha tushadi?':'Сколько выйдет?', 'Qaysi kuryer?':'Какой курьер?', 'Ruxsat bormi?':'Можно ввозить?',
   "Mashhur do'konlar":'Популярные магазины', 'Barchasi':'Все', 'Kuryerlarni solishtirish':'Сравнить курьеров', 
   "Og'irlik":'Вес', 'dan':'от', 
   '{0} topildi — narx va vaznni kiritib bojni hisoblang':'{0} найден — введите цену и вес, чтобы рассчитать пошлину',
@@ -6686,13 +6688,15 @@ class Component extends DCLogic {
       heroSubmit: e => { e.preventDefault(); this.heroGo(); },
       ...this.aiVm(st),
       quickActs: [
-        /* To'rt asosiy harakat. Qo'llanmalar va Bojxona pastki menyuda,
-           shuning uchun bu yerda takrorlanmaydi; Do'konlar va Kuryerlar
-           bo'limlariga faqat shu yerdan kiriladi. */
-        { t: 'Jami narx', iconCss: "url('icons/boj-kalkulyator.webp')", go: () => { metrics.hit('quick', 'landed'); this.openLanded(); } },
-        { t: "Do'konlar", iconCss: "url('icons/stores-3d.webp')", go: () => { metrics.hit('quick', 'stores'); this.push('stores'); } },
-        { t: 'Kuryerlar', iconCss: "url('icons/courier-3d.webp')", go: () => { metrics.hit('quick', 'couriers'); this.push('couriers'); } },
-        { t: 'Taqiqni tekshirish', iconCss: "url('icons/boj-taqiq.webp')", go: () => { metrics.hit('quick', 'banned'); this.openSec(2); } }
+        /* Bo'lim nomi emas, foydalanuvchining savoli: har bir plitka bitta
+           muammoni yechadi. Tartib xarid yo'li bo'yicha: qayerdan olaman →
+           qancha turadi → kim olib keladi → ruxsatmi. Metrika kalitlari
+           (stores/landed/couriers/banned) o'zgarmadi, shuning uchun eski
+           hisobotlar bilan taqqoslash buzilmaydi. */
+        { t: 'Qayerdan olsam?', iconCss: "url('icons/stores-3d.webp')", go: () => { metrics.hit('quick', 'stores'); this.push('stores'); } },
+        { t: 'Qancha tushadi?', iconCss: "url('icons/boj-kalkulyator.webp')", go: () => { metrics.hit('quick', 'landed'); this.openLanded(); } },
+        { t: 'Qaysi kuryer?', iconCss: "url('icons/courier-3d.webp')", go: () => { metrics.hit('quick', 'couriers'); this.push('couriers'); } },
+        { t: 'Ruxsat bormi?', iconCss: "url('icons/boj-taqiq.webp')", go: () => { metrics.hit('quick', 'banned'); this.openSec(2); } }
       ],
       /* Mashhur do'konlar tasmasi. */
       popRow: POPULAR_STORES.map(id => STORES.find(x => x.id === id)).filter(Boolean).map(x => {
