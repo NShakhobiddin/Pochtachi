@@ -325,11 +325,14 @@ vositasiz, arzon modelga (`AI_SHOT_MODEL`, standart `claude-haiku-4-5`)
 tuzilgan JSON so'raydi: nom, narx, valyuta, miqdor, do'kon, ishonch
 (`SHOT_SCHEMA`, `output_config.format`; rad etilsa matndan JSON). Valyuta
 `data/tariffs.json` `fx` bilan dollarga o'giriladi (CNY/TRY/KRW/AED/RUB
-taxminiy — `fxApprox`). Javob suhbatga "Topildi: … — 699 CNY ≈ $97.86"
-bo'lib tushadi, "Kalkulyatorda ochish" nom, narx, valyuta (¥/₺ chiplari
-qo'shildi), miqdor, do'kon va davlatni to'ldiradi; vazn va davlatni
-foydalanuvchi tasdiqlaydi, hisob `core/` da. Rasm serverda saqlanmaydi va
-log qilinmaydi. Narx topilmasa — "qo'lda yozing" + "Jami narx" tugmasi.
+taxminiy — `fxApprox`). Chat yo'q (2026-09-17): kamera bosilishi bilan
+"Jami narx" ekrani ochiladi, tepasida banner (`lcShot`) "Skrinshot
+o'qilmoqda…" → "Skrinshotdan o'qildi: Nike Air Max 90 — 699 CNY ≈ $97.86";
+nom, narx, valyuta (¥/₺ chiplari), miqdor, do'kon va davlat to'ldiriladi,
+vazn va davlatni foydalanuvchi tasdiqlaydi, hisob `core/` da. Narx
+topilmasa yoki server javob bermasa — sariq banner "narxni qo'lda yozing",
+kalkulyator ishlayveradi (qizil xato yo'q). Rasm serverda saqlanmaydi va
+log qilinmaydi.
 Narx: bir skrinshot ≈ 1 500 kirish tokeni, chat savolidan bir necha
 barobar arzon.
 

@@ -2958,6 +2958,21 @@
   <sc-if value="{{ sLanded }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:14px">
 
+      <!-- Skrinshot banneri: o'qilmoqda → o'qildi (maydonlar to'ldi) yoki
+           o'qilmadi / xato (narxni qo'lda yozing). Qizil emas — hisob
+           baribir ishlaydi. -->
+      <sc-if value="{{ lcShotOn }}" hint-placeholder-val="{{ false }}">
+        <div role="status" aria-live="polite" style="display:flex;align-items:flex-start;gap:12px;background:{{ lcShotBg }};border-radius:20px;padding:12px 14px">
+          <div aria-hidden="true" style="width:34px;height:34px;border-radius:12px;flex:none;background:#FFFFFF;display:flex;align-items:center;justify-content:center">
+            <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="{{ lcShotFg }}" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5A2.5 2.5 0 016.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0120 8.5V17a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>
+          </div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+            <span style="font-size:15px;font-weight:700;color:{{ lcShotFg }};line-height:1.4;overflow-wrap:anywhere">{{ lcShotT }}</span>
+            <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5">{{ lcShotSub }}</span>
+          </div>
+        </div>
+      </sc-if>
+
       <!-- 1. Mahsulot: nom (ixtiyoriy), narx va valyuta, miqdor, kategoriya -->
       <div style="background:#FFFFFF;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
         <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Mahsulot</span>
@@ -4140,6 +4155,11 @@ const RU = {
   'Masalan: krossovka, erkaklar, original, 41 razmer, $100 gacha':'Например: кроссовки, мужские, оригинал, 41 размер, до $100',
   'Rasm faylini tanlang':'Выберите файл изображения', "Rasm o'qilmadi — boshqa faylni tanlang.":'Изображение не прочиталось — выберите другой файл.',
   "Rasmdan narx o'qilmadi. Do'kon sahifasida narx ko'rinadigan joyni skrinshot qiling yoki narxni qo'lda yozing.":'Цена на скриншоте не найдена. Сделайте скриншот так, чтобы была видна цена, или введите её вручную.',
+  "Skrinshot o'qilmoqda…":'Читаю скриншот…', "Nom va narx bir necha soniyada chiqadi.":'Название и цена появятся через несколько секунд.',
+  "Skrinshotdan o'qildi: {0} — {1}":'Со скриншота: {0} — {1}', "Narxga ishonch past — tekshiring.":'Уверенность в цене низкая — проверьте.',
+  "Vazn va davlatni tekshiring — jami narx pastda.":'Проверьте вес и страну — итоговая цена ниже.',
+  "Rasmdan narx o'qilmadi":'Цена на скриншоте не найдена', "Narxni qo'lda yozing. Do'kon sahifasida narx ko'rinadigan joyni skrinshot qilsangiz o'qiladi.":'Введите цену вручную. Сделайте скриншот той части страницы магазина, где видна цена.',
+  "Bugungi skrinshot chegarasi tugadi":'Лимит скриншотов на сегодня исчерпан', "Hozir o'qiy olmadim":'Сейчас не удалось прочитать', "Narxni qo'lda yozing — hisob ishlayveradi.":'Введите цену вручную — расчёт работает.',
   'Topildi: {0} — {1}':'Найдено: {0} — {1}', 'taxminiy kurs':'примерный курс', 'mahsulot':'товар', '{0} dona':'{0} шт.',
   "Narxga ishonch past — kalkulyatorda tekshiring.":'Уверенность в цене низкая — проверьте в калькуляторе.',
   "Kalkulyatorda vazn va davlatni tasdiqlang — jami narx chiqadi.":'Подтвердите вес и страну в калькуляторе — выйдет итоговая цена.',
@@ -4951,6 +4971,8 @@ const LC_DEFAULT = { name: '', price: '', cur: 'USD', qty: '1', cat: 'universal'
 const FOLDER_COUNTRY = { Xitoy: 'Xitoy', AQSH: 'AQSh', Turkiya: 'Turkiya', Yevropa: 'Angliya', Koreya: 'Koreya', Rossiya: 'Rossiya', BAA: 'BAA', MDH: "Qozog'iston", Malayziya: 'Malayziya' };
 const CC_COUNTRIES = ['Xitoy', 'AQSh', 'Turkiya', 'Angliya', 'Germaniya', 'Koreya', 'BAA', 'Rossiya'];
 const LC_COUNTRIES = ['Xitoy', 'AQSh', 'Turkiya', 'Angliya', 'Koreya', 'Germaniya', 'BAA'];
+/* Skrinshotdan kelgan valyuta shu ro'yxatda bo'lsa o'zi, aks holda dollar. */
+const LC_SHOT_CURS = ['USD', 'EUR', 'GBP', 'CNY', 'TRY', 'UZS'];
 const POPULAR_STORES = ['taobao', 'pinduoduo', 'amazon', 'trendyol', 'poizon', 'shein', 'aliexpress', 'ebay'];
 const RATE_META = { date:'', diff:0, live:false, loading:false, at:0 };
 /* Ilova versiyasi — sozlamalar ekranida ko'rsatiladi. */
@@ -5321,6 +5343,8 @@ class Component extends DCLogic {
     mineTab: 'plans', calcs: Array.isArray(SAVED.calcs) ? SAVED.calcs : [],
     /* Pochtam AI suhbati — faqat xotirada. */
     aiMsgs: [], aiQ: '', aiBusy: false, aiFind: false, aiHow: false,
+    /* Kalkulyator tepasidagi skrinshot banneri: null yoki { state: busy|ok|none|err, … }. */
+    lcShot: null,
     /* AI yoqilganmi (Worker'da kalit bormi). Oxirgi ma'lum holat
        localStorage'da — ikkinchi ochilishda kamera darrov joyida; haqiqiy
        holat checkAi() bilan yangilanadi. Noma'lum bo'lsa — o'chiq: o'lik
@@ -6096,10 +6120,10 @@ class Component extends DCLogic {
 
   /* Universal kalkulyatorni ochish: prefill — do'kon sahifasidan (storeId,
      country, cat) yoki bo'sh. */
-  openLanded(prefill) {
+  openLanded(prefill, shot) {
     metrics.hit('calc_open', prefill && prefill.storeId ? 'store:' + prefill.storeId : 'quick');
-    this.setState({ lc: { ...LC_DEFAULT, ...(prefill || {}) } });
-    this.push('landed');
+    this.setState({ lc: { ...LC_DEFAULT, ...(prefill || {}) }, lcShot: shot || null });
+    if (this.cur() !== 'landed') this.push('landed');
   }
 
   /* Bojsiz me'yor kalendar oyga beriladi: shu oyda rejalardan yozilgan
@@ -6144,7 +6168,9 @@ class Component extends DCLogic {
       .then(() => { clearTimeout(timer); this.setState({ aiBusy: false }); this._aiScroll(); });
   }
   /* Skrinshot: fayl → 1280 px JPEG (brauzerda) → /ai/shot → nom, narx,
-     valyuta; javob ostidagi "Kalkulyatorda ochish" maydonlarni to'ldiradi.
+     valyuta, do'kon → kalkulyator to'ldiriladi. Chat yo'q: skrinshotning
+     yagona maqsadi — narxni yozmaslik. Kalkulyator tepasidagi banner
+     (lcShot) holatni aytadi: o'qilmoqda / o'qildi / o'qilmadi / xato.
      Rasm serverda saqlanmaydi. */
   shotPick() {
     const root = this._rootRef.current;
@@ -6166,19 +6192,15 @@ class Component extends DCLogic {
   }
   aiShot(file) {
     const st = this.state;
-    if (!file || st.aiBusy) return;
+    if (!file || st.lcShot && st.lcShot.state === 'busy') return;
     if (!/^image\//.test(file.type || '')) { this.toast(tr(st.lang, 'Rasm faylini tanlang')); return; }
-    if (this.cur() !== 'ai') this.push('ai');
-    const errMsg = code => tr(st.lang, code === 'limit'
-      ? "Bugungi savollar chegarasi tugadi — ertaga davom etamiz. Hozircha kalkulyator va kuryerlar ro'yxati ishlaydi."
-      : "AI vaqtincha mavjud emas. Kalkulyator va kuryerlar ro'yxati ishlayveradi.");
-    const fail = (code, text) => this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', err: code, text }] }));
+    /* Kalkulyator darrov ochiladi — foydalanuvchi natija qayerga tushishini
+       ko'rib turadi; banner "o'qilmoqda" dan "o'qildi" ga o'tadi. */
+    this.openLanded({}, { state: 'busy' });
     metrics.hit('ai_question', 'shot');
-    this.setState({ aiBusy: true });
+    const done = (shot, fill) => this.setState(x => ({ lcShot: shot, lc: fill ? { ...x.lc, ...fill } : x.lc }));
     this.shotResize(file).then(dataUrl => {
-      this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'user', text: tr(x.lang, 'Skrinshot'), img: dataUrl }] }));
-      this._aiScroll();
-      if (!METRICS_URL) { fail('no_key', errMsg('no_key')); return; }
+      if (!METRICS_URL) { done({ state: 'err', code: 'no_key' }); return; }
       const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
       const timer = setTimeout(() => { if (ctrl) ctrl.abort(); }, 60000);
       return fetch(METRICS_URL + 'ai/shot', { method: 'POST', headers: { 'content-type': 'text/plain;charset=UTF-8' },
@@ -6189,23 +6211,18 @@ class Component extends DCLogic {
           return j;
         })
         .then(j => {
+          if (!j.found) { done({ state: 'none' }); return; }
           const lang = this.state.lang;
-          if (!j.found) {
-            this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', text: tr(lang, "Rasmdan narx o'qilmadi. Do'kon sahifasida narx ko'rinadigan joyni skrinshot qiling yoki narxni qo'lda yozing."), tools: [{ name: 'shot', input: {}, result: { found: false } }] }] }));
-            return;
-          }
+          const cur = LC_SHOT_CURS.includes(j.currency) ? j.currency : 'USD';
+          const store = j.store ? STORES.find(x => norm(x.name) === norm(j.store) || (x.domain && norm(j.store).includes(norm(x.domain.split('.')[0])))) : null;
           const priceTxt = j.price + ' ' + j.currency + (j.currency !== 'USD' && j.priceUsd > 0 ? ' ≈ $' + j.priceUsd + (j.fxApprox ? ' (' + tr(lang, 'taxminiy kurs') + ')' : '') : '');
-          const parts = [tx(lang, 'Topildi: {0} — {1}', j.name || tr(lang, 'mahsulot'), priceTxt)];
-          if (j.store) parts.push(tr(lang, "Do'kon") + ': ' + j.store);
-          if (j.qty > 1) parts.push(tx(lang, '{0} dona', j.qty));
-          if (j.confidence < 0.6) parts.push(tr(lang, "Narxga ishonch past — kalkulyatorda tekshiring."));
-          parts.push(tr(lang, "Kalkulyatorda vazn va davlatni tasdiqlang — jami narx chiqadi."));
-          this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', text: parts.join('\n'), tools: [{ name: 'shot', input: {}, result: j }] }] }));
+          done({ state: 'ok', name: j.name || tr(lang, 'mahsulot'), priceTxt, store: store ? store.name : (j.store || ''), low: j.confidence < 0.6 },
+            { name: j.name || '', price: String(cur === j.currency ? j.price : (j.priceUsd || j.price)), cur, qty: String(j.qty || 1),
+              storeId: store ? store.id : null, country: store && LC_COUNTRIES.includes(store.country) ? store.country : LC_DEFAULT.country });
         })
-        .catch(e => fail((e && e.code) || 'net', errMsg(e && e.code)))
+        .catch(e => done({ state: 'err', code: (e && e.code) || 'net' }))
         .then(() => clearTimeout(timer));
-    }).catch(() => fail('img', tr(this.state.lang, "Rasm o'qilmadi — boshqa faylni tanlang.")))
-      .then(() => { this.setState({ aiBusy: false }); this._aiScroll(); });
+    }).catch(() => done({ state: 'err', code: 'img' }));
   }
   /* "Tovar topish" rejimi: AI ekrani, maydonda so'rov namunasi, fokus. */
   aiFindMode() {
@@ -6227,7 +6244,6 @@ class Component extends DCLogic {
       ['Skrinshot yuklash', ["Do'kon sahifasida narx ko'rinadigan joyni skrinshot qiling.", "\"Skrinshot yuklash\" — rasm telefonda kichraytirilib yuboriladi, saqlanmaydi.", "Nom va narx o'qiladi; \"Kalkulyatorda ochish\" — vazn va davlatni tasdiqlaysiz, jami narx chiqadi."]],
       ['Tovar topish', ["Nima kerakligini oddiy yozing: tovar, kimga, original kerakmi, o'lcham, byudjet.", "AI mos do'konlarni tanlaydi (originallik, narx segmenti) va har biriga qidiruv havolasi beradi.", "O'lcham jadvali va byudjetdagi tovar uchun jami narx (boj, kargo) ham chiqadi."]]
     ];
-    const LC_CURS = ['USD', 'EUR', 'GBP', 'CNY', 'TRY', 'UZS'];
     const acts = m => {
       const out = [], seen = new Set();
       for (const t of m.tools || []) {
@@ -6252,13 +6268,6 @@ class Component extends DCLogic {
             if (seen.has(k) || !/^https:\/\//.test(sg.searchUrl || '')) continue;
             seen.add(k); out.push({ t: sg.name, href: sg.searchUrl, isLink: true, isBtn: false, hit: () => metrics.hit('quick', 'ai:link') });
           }
-        } else if (t.name === 'shot') {
-          if (res.found) {
-            const cur = LC_CURS.includes(res.currency) ? res.currency : 'USD';
-            const store = res.store ? STORES.find(x => norm(x.name) === norm(res.store) || (x.domain && norm(res.store).includes(norm(x.domain.split('.')[0])))) : null;
-            a = ['calc', 'Kalkulyatorda ochish', () => this.openLanded({ name: res.name || '', price: String(cur === res.currency ? res.price : (res.priceUsd || res.price)), cur,
-              qty: String(res.qty || 1), storeId: store ? store.id : null, country: store && LC_COUNTRIES.includes(store.country) ? store.country : LC_DEFAULT.country })];
-          } else a = ['calc', 'Jami narx', () => this.openLanded()];
         }
         if (a && !seen.has(a[0])) { seen.add(a[0]); out.push({ t: tr(lang, a[1]), isBtn: true, isLink: false, go: () => { metrics.hit('quick', 'ai:' + a[0]); a[2](); } }); }
       }
@@ -6810,7 +6819,18 @@ class Component extends DCLogic {
           : L.basis === 'weight' ? tx(st.lang, "Me'yordan oshgan qism uchun vazn bo'yicha hisob (har kg ${0}) ustun keldi.", N.minPerKg)
           : tx(st.lang, "Me'yordan ($" + Math.round(freeLeft) + ") oshgan qismdan {0}% boj va BHM ning {1}% yig'imi.", Math.round(N.dutyPct * 100), Math.round(N.feeShare * 100))) + monthNote;
         const badgeOf = q => q === quotes[0] ? ['Eng arzon', '#E9F8EF', '#0F7B3E'] : q === fast ? ['Eng tez', '#E9EAFD', '#1A1FB0'] : q === optq ? ['Optimal', '#FDF3E3', '#B45309'] : null;
+        /* Skrinshot banneri matnlari — holatga qarab. */
+        const sh = st.lcShot;
+        const shotVm = !sh ? { lcShotOn: false } : (() => {
+          const L = k => tr(st.lang, k);
+          if (sh.state === 'busy') return { lcShotOn: true, lcShotBg: '#E9EAFD', lcShotFg: '#1A1FB0', lcShotT: L("Skrinshot o'qilmoqda…"), lcShotSub: L("Nom va narx bir necha soniyada chiqadi.") };
+          if (sh.state === 'ok') return { lcShotOn: true, lcShotBg: '#E9F8EF', lcShotFg: '#0F7B3E', lcShotT: tx(st.lang, "Skrinshotdan o'qildi: {0} — {1}", sh.name, sh.priceTxt),
+            lcShotSub: (sh.store ? L("Do'kon") + ': ' + sh.store + '. ' : '') + (sh.low ? L("Narxga ishonch past — tekshiring.") + ' ' : '') + L("Vazn va davlatni tekshiring — jami narx pastda.") };
+          if (sh.state === 'none') return { lcShotOn: true, lcShotBg: '#FDF3E3', lcShotFg: '#B45309', lcShotT: L("Rasmdan narx o'qilmadi"), lcShotSub: L("Narxni qo'lda yozing. Do'kon sahifasida narx ko'rinadigan joyni skrinshot qilsangiz o'qiladi.") };
+          return { lcShotOn: true, lcShotBg: '#FDF3E3', lcShotFg: '#B45309', lcShotT: L(sh.code === 'limit' ? "Bugungi skrinshot chegarasi tugadi" : "Hozir o'qiy olmadim"), lcShotSub: L("Narxni qo'lda yozing — hisob ishlayveradi.") };
+        })();
         return {
+          ...shotVm,
           lc,
           lcName: onF('name'), lcPrice: onF('price'), lcQty: onF('qty'), lcKg: onF('kg'), lcDomestic: onF('domestic'), lcL: onF('l'), lcW: onF('w'), lcH: onF('h'), lcLocal: onF('local'),
           lcCurLabel: (curs.find(c => c[0] === lc.cur) || curs[0])[1],
