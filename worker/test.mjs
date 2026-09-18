@@ -98,7 +98,7 @@ check('/ai buzuq JSON — 400', (await worker.fetch(new Request('https://w/ai', 
 let calls = [];
 const fakeClaude = async (url, init) => {
   const body = JSON.parse(init.body); calls.push(body);
-  check('Claude so\'rovi: kalit sarlavhada, model va vositalar bor', init.headers['x-api-key'] === 'sk-test' && body.model === 'claude-sonnet-5' && body.tools.length === TOOLS.length && body.system[0].cache_control.type === 'ephemeral', body.model);
+  check('Claude so\'rovi: kalit sarlavhada, model va vositalar bor', init.headers['x-api-key'] === 'sk-test' && body.model === 'claude-sonnet-5' && body.tools.length === TOOLS.length && !body.tools.some(t => t.type === 'web_search_20260209') && body.system[0].cache_control.type === 'ephemeral', body.model);
   if (calls.length === 1) return new Response(JSON.stringify({ model: 'claude-test', stop_reason: 'tool_use', usage: { input_tokens: 100, output_tokens: 20 },
     content: [{ type: 'text', text: 'Hisoblayman.' }, { type: 'tool_use', id: 'toolu_1', name: 'customs_duty', input: { goodsUsd: 320, shipUsd: 22.5, kg: 2.5 } }] }), { status: 200 });
   const last = body.messages[body.messages.length - 1];
@@ -132,6 +132,38 @@ check('/ai tarmoq xatosi — 503 upstream', netErr.status === 503);
 const refused = await ask('x', { AI_FETCH: () => new Response(JSON.stringify({ model: 'm', stop_reason: 'refusal', content: [] }), { status: 200 }) }, { headers: { 'cf-connecting-ip': '4.4.4.4' } });
 check('/ai refusal — rad javobi matni', refused.status === 200 && /javob bera olmayman/.test((await refused.json()).text));
 
+/* "Qayerdan topaman" (find:true): veb-qidiruv vositasi qo'shiladi (max 2),
+   server qidiruvlari sanaladi, pause_turn davom ettiriladi, product_links
+   tekshirilib ilovaga uzatiladi. */
+{
+  const fcalls = [];
+  const fakeFind = async (url, init) => {
+    const body = JSON.parse(init.body); fcalls.push(body);
+    if (fcalls.length === 1) return new Response(JSON.stringify({ model: 'claude-test', stop_reason: 'pause_turn', usage: { input_tokens: 50, output_tokens: 5, server_tool_use: { web_search_requests: 1 } },
+      content: [{ type: 'server_tool_use', id: 'srv_1', name: 'web_search', input: { query: 'Nike Air Max 90 size 41 site:amazon.com' } }, { type: 'web_search_tool_result', tool_use_id: 'srv_1', content: [] }] }), { status: 200 });
+    if (fcalls.length === 2) return new Response(JSON.stringify({ model: 'claude-test', stop_reason: 'tool_use', usage: { input_tokens: 60, output_tokens: 30, server_tool_use: { web_search_requests: 1 } },
+      content: [{ type: 'text', text: 'Topdim.' }, { type: 'tool_use', id: 'toolu_l', name: 'product_links', input: { links: [
+        { title: 'Nike Air Max 90 Men', url: 'https://www.amazon.com/dp/B0EXAMPLE', store: 'Amazon', price: 119.99, currency: 'USD' },
+        { title: 'takror', url: 'https://www.amazon.com/dp/B0EXAMPLE?tag=x', store: 'Amazon' },
+        { title: 'xavfli', url: 'javascript:alert(1)', store: 'x' },
+        { title: 'http', url: 'http://example.com/p', store: 'x' },
+        { title: 'Air Max 90', url: 'https://www.nike.com/t/air-max-90-abc', store: 'Nike', price: 130, currency: 'USD' }
+      ] } }] }), { status: 200 });
+    return claudeText('Amazon va Nike da aniq sahifalar topildi.');
+  };
+  const fr = await ask('Poyabzal qidiryapman. Qaysi do\'kondan topaman?', { AI_FETCH: fakeFind }, { headers: { 'cf-connecting-ip': '3.3.3.3' }, body: { find: true } });
+  const fj = await fr.json();
+  const ws = fcalls[0].tools.find(t => t.type === 'web_search_20260209');
+  check('find: web_search vositasi qo\'shiladi (max_uses 2) va ko\'rsatma', !!ws && ws.max_uses === 2 && fcalls[0].system.some(b => /web_search/.test(b.text)), JSON.stringify(ws));
+  check('find: pause_turn davom ettiriladi, product_links natijasi 2 ta toza havola', fr.status === 200 && fcalls.length === 3 && fj.tools.length === 1 && fj.tools[0].name === 'product_links' && fj.tools[0].result.n === 2 && fj.tools[0].result.links.every(l => /^https:\/\//.test(l.url)) && fj.tools[0].result.links[0].host === 'amazon.com', JSON.stringify(fj.tools[0] && fj.tools[0].result).slice(0, 200));
+  check('find: server qidiruvlari sanaladi (2)', fj.usage.search === 2, JSON.stringify(fj.usage));
+  const off = [];
+  await ask('x', { AI_FETCH: async (u, i) => { off.push(JSON.parse(i.body)); return claudeText('ok'); }, AI_WEB_SEARCH: '0' }, { headers: { 'cf-connecting-ip': '3.3.3.4' }, body: { find: true } });
+  check('AI_WEB_SEARCH=0 — find so\'rovida ham veb-qidiruv yo\'q', off.length === 1 && !off[0].tools.some(t => t.type === 'web_search_20260209'));
+  const tl = runTool('product_links', { links: [{ title: 't', url: 'https://x.com/a' }] }, { usdRate: 12650, today: '2026-09-18' });
+  check('product_links: minimal kirish — host do\'kon nomi bo\'ladi', tl.ok && tl.links[0].store === 'x.com' && tl.links[0].price === 0);
+}
+
 /* /stats: AI sanog'i bor, IP xeshlari yo'q. */
 const stA = await (await hit('/stats?token=sir')).json();
 check('/stats da AI sanog\'i (ok, limit, err, tool:…) bor', stA.byName.ai && stA.byName.ai.ok >= 3 && stA.byName.ai.limit >= 1 && stA.byName.ai.err >= 2 && stA.byName.ai['tool:customs_duty'] === 1, JSON.stringify(stA.byName.ai));
@@ -160,7 +192,8 @@ check('tizim ko\'rsatmasida kalit yo\'q', !/sk-/.test(sys));
    maydon qaytib qo'shilib qolishidan saqlaydi. */
 check('tizim ko\'rsatmasi indeks: og\'ir maydonlar promptda yo\'q',
   !/"returns":/.test(sys) && !/"complexity":/.test(sys) && !/"limits":/.test(sys) && !/"domain":/.test(sys) && !/"note":/.test(sys));
-check('tizim ko\'rsatmasi byudjeti: 26 000 belgidan kichik', sys.length < 26000, sys.length + ' belgi');
+/* 27 000: veb-qidiruv qoidalari (product_links) uchun 26 000 dan oshirildi. */
+check('tizim ko\'rsatmasi byudjeti: 27 000 belgidan kichik', sys.length < 27000, sys.length + ' belgi');
 /* Kesilgan maydonlar vositalarda bor — indeks ularni yo'qotmadi. */
 const tDet = runTool('find_store', { query: 'taobao' }, tctx).stores[0];
 check('find_store tafsilotni beradi (qaytarish, murakkablik, domen)', !!tDet.returns && !!tDet.complexity && tDet.domain === 'taobao.com');

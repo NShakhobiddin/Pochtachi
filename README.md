@@ -213,19 +213,28 @@ yopadi, keyingina ekranni.
 
 ## Bosh sahifa (3-bosqich, 2026-09-16 da soddalashtirildi)
 
-Sahifada matn maydoni yo'q (2026-09-18): u skrinshot bilan raqobatlashib,
-asosiy yo'lni ko'rsatmay qo'yayotgan edi. O'rnida bitta katta karta —
-**"Nima mahsulot qidiryapsiz?"** — va u savol ekranini (`where`) ochadi.
-Butun ilova shu uch savolga javob beradi, shu tartibda: nima qidiryapsiz →
-qayerdan olaman va qanchaga tushadi → qanday buyurtma qilaman.
+Bosh sahifaning o'zi savol (2026-09-18, ikkinchi audit): sarlavha
+**"Nima mahsulot qidiryapsiz?"**, ostida mahsulot nomi maydoni va mikrofon,
+kategoriya chiplari, so'ng uchta yo'l (`whereVm`, `cur === 'home'`):
 
-**Savol ekrani** (`whereVm`). Tepada mahsulot nomi maydoni va yonida
-mikrofon tugmasi; ostida kategoriya chiplari ("yoki turini tanlang").
-Keyin ikkita javob: **"Topdim — qanchaga tushadi?"** (skrinshot →
-`aiShot` → natija ekrani) va **"Hali topmadim — qayerdan olaman?"**
-(originallik va byudjet chiplari → `suggest_stores`). Yozilgan nom va
-tanlangan kategoriya natija kartasiga o'tadi: skrinshotda nom
-ko'rinmasa yoki kategoriya aniqlanmasa shular ishlatiladi.
+- **"Topdim — qanchaga tushadi?"** (asosiy, binafsha) — skrinshot →
+  `aiShot` → natija ekrani. Ostida qanday olish ko'rsatmasi: "Do'kon
+  ilovasida mahsulotni oching, narx ko'ringan ekranni suratga oling va shu
+  yerdan yuklang" — ilgari bu faqat xatodan keyin aytilardi.
+- **"Hali topmadim — qayerdan olaman?"** — originallik va byudjet chiplari
+  ochiladi → "Do'konlarni ko'rsat" → `suggest_stores` + veb-qidiruv
+  (quyida).
+- **"Narxni o'zim yozaman"** — kalkulyator nom va kategoriya bilan; AI
+  o'chiq bo'lsa ham shu yo'l ishlaydi (ilgari o'chiqda asosiy oqim
+  yo'qolardi).
+
+Alohida savol ekrani, "Nima olib kelmoqchisiz?" sarlavhasi va "Jami narx"
+plitkasi olib tashlandi: ikki marta savol berilib, bitta ortiqcha bosish
+bo'layotgan, plitka esa parallel yo'l edi. Tez o'tish 3 ta ma'lumotnoma
+(Do'konlar, Kuryerlar, Taqiqni tekshirish). Yozilgan nom va tanlangan
+kategoriya natija kartasiga o'tadi. Natija chiqqach bosh sahifada
+**"Oxirgi hisob"** kartasi (`localStorage.xy_last`, `lastRes`) — chiqib
+ketilsa ham hisob yo'qolmaydi.
 
 **Ovozli kiritish** (`micToggle`). Brauzerning o'z nutq tanish moslamasi
 (Web Speech API) — server ham, API ham, qo'shimcha xarajat ham yo'q, tanish
@@ -401,9 +410,25 @@ AI matni, do'kon kartalari (logotip, davlat · narx segmenti · originallik,
 "Qidirish" yangi oynada), `landed_cost` bo'lsa "Taxminiy jami" qatori,
 "Kalkulyatorda ochish". Xato — sariq karta ("Hozir javob bera olmadim" /
 "Bugungi savollar chegarasi tugadi") + Jami narx va Do'konlar tugmalari.
-Bo'sh holat (faqat kompyuter menyusidan): "Nima kerak?" + bitta namuna. Konkret mahsulot va joriy narxni AI bilmaydi va
-shunday deydi — bu bosqichda web search yo'q (narx va sifat sabab; keyingi
-variantlar `docs/rivojlantirish-rejasi.md` 9-bosqichda).
+Bo'sh holat (faqat kompyuter menyusidan): "Nima kerak?" + bitta namuna.
+
+**Aniq mahsulot havolalari — veb-qidiruv (2026-09-18).** "Do'konlarni
+ko'rsat" so'rovi `find: true` bilan ketadi; worker shunda Claude'ning
+server tomonidagi `web_search_20260209` vositasini qo'shadi (`max_uses`
+`AI_WEB_SEARCH_USES`, standart 2; `AI_WEB_SEARCH=0` — o'chiq) va
+qoidalar bo'yicha AI indekslanadigan do'konlarda (Amazon, AliExpress,
+eBay, Trendyol, SHEIN, brend saytlari) aniq mahsulot sahifalarini topib
+`product_links` vositasiga beradi — nom, https havola, do'kon, narx,
+valyuta. Worker havolalarni tekshiradi (`toolLinks`: faqat https, takror
+va xavfli manzillar tashlanadi, 5 tagacha), ilova ularni "Topilgan
+sahifalar · bugun" kartalari qilib chizadi (`linksOf`: do'kon logotipi,
+narx joriy kurs bilan dollarga o'girilgan, "Ochish") va ostida "narx va
+mavjudlik o'zgarishi mumkin, ochib tekshiring, keyin skrinshot qiling".
+Taobao, Pinduoduo, Poizon qidiruv tizimlarida yo'q — ularga qidiruv
+havolasi qoladi. Narxi: har qidiruv $0.01 + tokenlar, bitta "find" so'rovi
+≈ $0.05–0.06; oddiy savollarda veb-qidiruv umuman yo'q. Uzun server-vosita
+navbati (`pause_turn`) davom ettiriladi, qidiruvlar soni `usage.search`
+va o'lchovda `search` sifatida sanaladi.
 
 **Qanday ishlaydi.** Ilova savolni, oxirgi 6 xabarni, tilni va joriy kursni
 o'lchov serveriga yuboradi (`METRICS_URL + 'ai'`, `worker/src/ai.js`).
@@ -428,7 +453,8 @@ vazn paneli), "Taqiqlar ro'yxati", "Do'konni ochish" — 8-bosqichning
 birinchi qismi.
 
 **Chegaralar va xarajat.** Bitta IP uchun kuniga `AI_DAILY_PER_IP` (20),
-hammasi uchun `AI_DAILY_TOTAL` (300) savol — `wrangler.toml`. IP
+hammasi uchun `AI_DAILY_TOTAL` (300) savol — `wrangler.toml`; veb-qidiruv
+`AI_WEB_SEARCH` / `AI_WEB_SEARCH_USES`. IP
 saqlanmaydi: kun va sir bilan tuzlangan xesh sanaladi, 90 kunda o'chadi.
 Savol ≤ 600 belgi, javob ≤ 2048 token (fikrlash tokenlari ham shu
 chegaradan yeydi), tizim ko'rsatmasi Claude keshida (`cache_control`).

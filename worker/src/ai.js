@@ -138,6 +138,46 @@ export const TOOLS = [
   }
 ];
 
+/* Aniq mahsulot havolalari: model veb-qidiruvdan topgan sahifalarni shu
+   vosita orqali qaytaradi — ilova ularni karta qilib chizadi. Vosita hech
+   narsa hisoblamaydi, faqat tekshiradi: https, nom, do'kon, narx. */
+TOOLS.push({
+  name: 'product_links',
+  description: 'Veb-qidiruvdan topilgan ANIQ mahsulot sahifalari (qidiruv natijalari ro\'yxati emas): 3–5 ta havola, har biriga nom, do\'kon va sahifadagi narx. Faqat "Qayerdan topaman" rejimida, web_search dan keyin chaqiriladi.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      links: { type: 'array', maxItems: 5, items: { type: 'object', properties: {
+        title: { type: 'string', description: 'Mahsulot nomi sahifadagidek' },
+        url: { type: 'string', description: 'Mahsulot sahifasining to\'liq https manzili' },
+        store: { type: 'string', description: 'Do\'kon nomi' },
+        price: { type: 'number', description: 'Sahifadagi narx raqami (ko\'rinmasa 0)' },
+        currency: { type: 'string', description: 'Valyuta kodi (USD, EUR, GBP, TRY, CNY…)' }
+      }, required: ['title', 'url', 'store'] } }
+    },
+    required: ['links']
+  }
+});
+/* Veb-qidiruv — serverda bajariladigan vosita; faqat "find" so'rovlarida
+   qo'shiladi (har qidiruv alohida to'lanadi). */
+export const WEB_SEARCH_TOOL = { type: 'web_search_20260209', name: 'web_search', max_uses: 2 };
+export function toolLinks(inp) {
+  const seen = new Set(); const out = [];
+  for (const l of Array.isArray(inp.links) ? inp.links : []) {
+    if (!l || typeof l !== 'object') continue;
+    const url = String(l.url || '').trim();
+    if (!/^https:\/\/[^\s"'<>]+$/i.test(url) || url.length > 400) continue;
+    let host = ''; try { host = new URL(url).hostname.replace(/^www\./, ''); } catch (e) { continue; }
+    const key = url.replace(/[?#].*$/, '');
+    if (seen.has(key)) continue; seen.add(key);
+    out.push({ title: String(l.title || '').trim().slice(0, 90) || host, url, host,
+      store: String(l.store || '').trim().slice(0, 40) || host,
+      price: pos(l.price) || 0, currency: String(l.currency || '').toUpperCase().slice(0, 3) });
+    if (out.length >= 5) break;
+  }
+  return { ok: out.length > 0, links: out, n: out.length };
+}
+
 /* Do'kon qidiruv havolalari: {q} o'rniga inglizcha so'rov. Faqat ochiq va
    ishonchli shablonlar; qolgan do'konlarda do'kon manzilining o'zi. */
 const SEARCH_URL = {
@@ -303,6 +343,7 @@ export function runTool(name, input, ctx) {
     if (name === 'check_banned') return toolBanned(inp);
     if (name === 'find_store') return toolStore(inp);
     if (name === 'suggest_stores') return toolSuggest(inp);
+    if (name === 'product_links') return toolLinks(inp);
     return { error: 'noma\'lum vosita: ' + name };
   } catch (e) {
     return { error: 'hisoblab bo\'lmadi: ' + (e && e.message || e) };
@@ -330,7 +371,7 @@ export function parseAiBody(text) {
   while (hist.length && hist[0].role !== 'user') hist.shift();
   if (hist.length && hist[hist.length - 1].role === 'user') hist.pop();
   const usdRate = num(d.usdRate);
-  return { q, lang, history: hist, usdRate: usdRate >= 5000 && usdRate <= 50000 ? usdRate : 0 };
+  return { q, lang, history: hist, usdRate: usdRate >= 5000 && usdRate <= 50000 ? usdRate : 0, find: d.find === true };
 }
 
 const LANG_NAME = { uz: 'o\'zbek (lotin)', uzc: 'o\'zbek (kirill)', ru: 'rus' };
@@ -403,7 +444,13 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
   /* Fikrlash tokenlari ham shu chegaradan yeydi (Sonnet 5 da u sukut
      bo'yicha yoqiq), shuning uchun javobga joy qoladigan qilib olingan.
      Chegara faqat shift — hisob haqiqatda yozilgan tokenlar bo'yicha. */
-  const body = { model: env.AI_MODEL || DEFAULT_MODEL, max_tokens: +env.AI_MAX_TOKENS || 2048, system, tools: TOOLS, messages };
+  /* "Qayerdan topaman" so'rovi: veb-qidiruv qo'shiladi (AI_WEB_SEARCH=0
+     bo'lsa yo'q). Har qidiruv alohida to'lanadi, shuning uchun bitta
+     so'rovda ko'pi bilan 2 ta va oddiy savollarda umuman yo'q. */
+  const webOn = parsed.find && String(env.AI_WEB_SEARCH || '1') !== '0';
+  const tools = webOn ? [...TOOLS, { ...WEB_SEARCH_TOOL, max_uses: Math.max(1, Math.min(3, +env.AI_WEB_SEARCH_USES || 2)) }] : TOOLS;
+  const body = { model: env.AI_MODEL || DEFAULT_MODEL, max_tokens: +env.AI_MAX_TOKENS || 2048, system, tools, messages };
+  if (webOn) system.push({ type: 'text', text: 'Bu "Qayerdan topaman" so\'rovi: suggest_stores dan keyin web_search bilan (ko\'pi bilan 2 ta qidiruv) indekslanadigan do\'konlarda ANIQ mahsulot sahifalarini top va product_links vositasiga ber. Taobao, Pinduoduo, Poizon uchun qidirma — ularga qidiruv havolasi yetadi.' });
   if (env.AI_EFFORT) body.output_config = { effort: env.AI_EFFORT };
 
   const used = []; let textOut = '', model = body.model, stop = '';
@@ -422,6 +469,11 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
     if (msg.usage) { usage.input += msg.usage.input_tokens || 0; usage.output += msg.usage.output_tokens || 0; usage.cacheRead += msg.usage.cache_read_input_tokens || 0; }
     const content = Array.isArray(msg.content) ? msg.content : [];
     textOut = content.filter(b => b.type === 'text').map(b => b.text).join('\n').trim() || textOut;
+    /* Server vositasi (web_search) qidiruvlari — sanoq uchun. */
+    const ws = msg.usage && msg.usage.server_tool_use && +msg.usage.server_tool_use.web_search_requests;
+    if (ws > 0) { usage.search = (usage.search || 0) + ws; for (let i = 0; i < ws; i++) count('search'); }
+    /* Uzun server-vosita navbati to'xtab qolsa (pause_turn) — davom ettiriladi. */
+    if (stop === 'pause_turn') { messages.push({ role: 'assistant', content }); continue; }
     const calls = content.filter(b => b.type === 'tool_use');
     if (stop !== 'tool_use' || !calls.length) break;
     messages.push({ role: 'assistant', content });

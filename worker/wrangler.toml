@@ -26,6 +26,10 @@ AI_DAILY_TOTAL = "300"
 # Javob uzunligi (token) va fikrlash darajasi (bo'sh — API standarti).
 AI_MAX_TOKENS = "2048"
 AI_EFFORT = "medium"
+# "Qayerdan topaman" so'rovlarida veb-qidiruv (aniq mahsulot havolalari):
+# "0" — o'chiq. Har qidiruv $0.01, bitta so'rovda ko'pi bilan AI_WEB_SEARCH_USES ta.
+AI_WEB_SEARCH = "1"
+AI_WEB_SEARCH_USES = "2"
 
 # READ_TOKEN — sir, toml ga yozilmaydi:  wrangler secret put READ_TOKEN
 

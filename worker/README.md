@@ -146,7 +146,17 @@ umumiy kunlik chegara), 503 (`no_key`, `key`, `upstream`).
 Qoidalar `data/ai-rules.md` da, bilimlar bazasi `src/kb.generated.js`
 (`node tools/ai-kb.mjs` tuzadi — qo'lda o'zgartirilmaydi), hisob-kitob
 `core/` vositalari orqali. Sozlamalar `wrangler.toml`: `AI_MODEL`,
-`AI_DAILY_PER_IP`, `AI_DAILY_TOTAL`, `AI_MAX_TOKENS`, `AI_EFFORT`.
+`AI_DAILY_PER_IP`, `AI_DAILY_TOTAL`, `AI_MAX_TOKENS`, `AI_EFFORT`,
+`AI_WEB_SEARCH` ("0" — o'chiq), `AI_WEB_SEARCH_USES` (bitta so'rovda
+ko'pi bilan nechta qidiruv, standart 2).
+
+`POST /ai` tanasida `find: true` bo'lsa ("Qayerdan topaman" so'rovi)
+vositalarga Claude'ning server tomonidagi `web_search_20260209` qo'shiladi
+va tizim ko'rsatmasiga qisqa yo'riqnoma: indekslanadigan do'konlarda aniq
+mahsulot sahifalarini topib `product_links` ga berish. `product_links`
+natijasi `{ ok, n, links: [{ title, url, host, store, price, currency }] }`
+— faqat https, takrorsiz, 5 tagacha. Javobdagi `usage.search` — qidiruvlar
+soni (har biri $0.01), `/stats` da `search` sanog'i.
 
 Tizim ko'rsatmasi — indeks: kuryer, do'kon va taqiq ro'yxatlari qisqa
 maydonlar bilan ketadi, tafsilotni vositalar qaytaradi (`find_store`,
