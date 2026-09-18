@@ -88,7 +88,7 @@ npm run flags        # fonts/flags-src/*.svg -> fonts/flags.woff2
 
 - **Bojxona me'yorlari** — `data/norms.json`. `from` — kuchga kirish sanasi; ilova joriy sanaga mos oxirgi qatorni oladi. Fayl yuklanmasa koddagi zaxira nusxa ishlatiladi, shuning uchun oflayn ham to'g'ri hisoblanadi. Kalkulyator matnlaridagi foizlar va summalar shu qiymatlardan hosil bo'ladi.
 - **Do'kon va kuryerlar** — hozircha `Xarid Yordamchisi v2.dc.html` ichidagi `STORES` va `COURIERS` massivlarida.
-- **Valyuta kursi** — Markaziy bankdan (cbu.uz) avtomatik olinadi, 6 soatda bir marta; olinmasa oxirgi saqlangan qiymat "oflayn zaxira" deb belgilanadi.
+- **Valyuta kursi** — Markaziy bankdan (cbu.uz) avtomatik olinadi, 6 soatda bir marta. Bitta so'rovda **barcha valyutalar** keladi (`FX_UZS`: USD, EUR, CNY, TRY, KRW, RUB, AED…), shuning uchun skrinshotdagi narx qaysi valyutada bo'lsa ham joriy kurs bo'yicha o'giriladi (`lcFxOf`); kurs olinmasa oxirgi saqlangan jadval ishlatiladi va "oflayn zaxira" deb belgilanadi, u ham bo'lmasa `data/tariffs.json` dagi zaxira kurs.
 - **Xato haqida xabar** — ilovadagi tugma `REPORT_URL` manziliga olib boradi (hozir GitHub Issues; Telegram havolasiga almashtirish mumkin).
 
 ## Tillar
@@ -214,12 +214,24 @@ yopadi, keyingina ekranni.
 ## Bosh sahifa (3-bosqich, 2026-09-16 da soddalashtirildi)
 
 Sahifada matn maydoni yo'q (2026-09-18): u skrinshot bilan raqobatlashib,
-asosiy yo'lni ko'rsatmay qo'yayotgan edi. O'rnida ketma-ket ikkita karta:
-**Skrinshot yuklash** (katta, binafsha — jami narx shu yerdan chiqadi,
-`aiShot` → natija ekrani) va ostida "Hali topmadingizmi?" yozuvi bilan
-**Qayerdan topaman?** (oq karta → `where` ekrani). Ikki karta bir
-ketma-ketlikni ko'rsatadi: topgan bo'lsang suratga ol, topmagan bo'lsang
-avval do'konni tanla.
+asosiy yo'lni ko'rsatmay qo'yayotgan edi. O'rnida bitta katta karta —
+**"Nima mahsulot qidiryapsiz?"** — va u savol ekranini (`where`) ochadi.
+Butun ilova shu uch savolga javob beradi, shu tartibda: nima qidiryapsiz →
+qayerdan olaman va qanchaga tushadi → qanday buyurtma qilaman.
+
+**Savol ekrani** (`whereVm`). Tepada mahsulot nomi maydoni va yonida
+mikrofon tugmasi; ostida kategoriya chiplari ("yoki turini tanlang").
+Keyin ikkita javob: **"Topdim — qanchaga tushadi?"** (skrinshot →
+`aiShot` → natija ekrani) va **"Hali topmadim — qayerdan olaman?"**
+(originallik va byudjet chiplari → `suggest_stores`). Yozilgan nom va
+tanlangan kategoriya natija kartasiga o'tadi: skrinshotda nom
+ko'rinmasa yoki kategoriya aniqlanmasa shular ishlatiladi.
+
+**Ovozli kiritish** (`micToggle`). Brauzerning o'z nutq tanish moslamasi
+(Web Speech API) — server ham, API ham, qo'shimcha xarajat ham yo'q, tanish
+qurilmaning o'zida bajariladi. Til ilova tiliga qarab (`uz-UZ` / `ru-RU`).
+Brauzer qo'llab-quvvatlamasa tugma umuman chizilmaydi — o'lik tugma
+ko'rsatilmaydi.
 
 Havola va nom yozish qidiruv ekraniga ko'chdi (sarlavhadagi lupa).
 `linkStore()` u yerda ishlaydi: havola bo'lsa domen bo'yicha do'kon
@@ -1067,4 +1079,4 @@ bilan ishga tushadi.
 
 ## O'lcham byudjeti
 
-`npm run check` quyidagilarni tekshiradi: kuryer logotiplari ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 120 KB, do'kon logotiplari ≤ 260 KB, qo'llanmalar ≤ 700 KB, `index.html` ≤ 800 KB (2026-09-15: TZ bosqichlari — bosh sahifa, jami narx, kuryer solishtirish paneli, Xaridlarim, Pochtam AI ekrani — uchun 680 dan 760 ga; 2026-09-17: skrinshot natija ekrani uchun 800 ga oshirildi; hozir ~780 KB, gzip ~186 KB). Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.
+`npm run check` quyidagilarni tekshiradi: kuryer logotiplari ≤ 150 KB, ikonkalar ≤ 120 KB, shriftlar ≤ 120 KB, do'kon logotiplari ≤ 260 KB, qo'llanmalar ≤ 700 KB, `index.html` ≤ 840 KB (2026-09-15: TZ bosqichlari — bosh sahifa, jami narx, kuryer solishtirish paneli, Xaridlarim, Pochtam AI ekrani — uchun 680 dan 760 ga; 2026-09-17: skrinshot natija ekrani uchun 800 ga; 2026-09-18: savol ekrani, ovozli kiritish va Markaziy bank valyuta jadvali uchun 840 ga oshirildi; hozir ~804 KB, gzip ~192 KB). Chegaradan oshsa CI yiqiladi — bu tasodifan og'ir rasm qo'shilib qolishining oldini oladi.
