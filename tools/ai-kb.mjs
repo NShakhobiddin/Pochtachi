@@ -34,7 +34,7 @@ const couriers = grab('COURIERS').map(c => ({
   ...pick(c, ['id', 'name', 'days', 'dnum', 'mode', 'countries', 'tracking', 'trusted', 'note', 'updated']),
   limits: kv(c.limits), svc: kv(c.svc)
 }));
-const stores = grab('STORES').map(s => pick(s, ['id', 'name', 'domain', 'url', 'country', 'cat', 'subcats', 'type', 'price',
+const stores = grab('STORES').map(s => pick(s, ['id', 'name', 'domain', 'url', 'country', 'from', 'cat', 'subcats', 'type', 'price',
   'segment', 'original', 'direct', 'complexity', 'tags', 'forWhom', 'returns']));
 const banned = grab('BANNED').map(b => pick(b, ['name', 'level', 'syn', 'src', 'note']));
 const services = grab('SERVICES').map(s => pick(s, ['icon', 'lane', 'title', 'sub', 'items', 'price']));

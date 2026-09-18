@@ -1117,7 +1117,7 @@
         </div>
         <div style="flex:1;display:flex;flex-direction:column;gap:6px;min-width:0">
           <div style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;letter-spacing:-.025em;font-weight:800;color:#131429">{{ store.name }}</div>
-          <div style="font-size:13px;color:#6B6C85;font-weight:500">{{ store.flag }} {{ store.country }} · {{ store.cat }}</div>
+          <div style="font-size:13px;color:#6B6C85;font-weight:500">{{ store.fromLine }} · {{ store.cat }}</div>
         </div>
         <!-- Sevimliga belgilash: belgilangani bosh sahifada alohida tasmada
              chiqadi va qidirib o'tirish shart bo'lmaydi. -->
@@ -1142,6 +1142,19 @@
         </div>
         <sc-if value="{{ store.hasCouriers }}" hint-placeholder-val="{{ true }}">
           <div style="display:flex;flex-direction:column;gap:10px">
+            <!-- Do'kon bir nechta davlatdan yuboradi: qaysi biridan olib
+                 kelish tanlanadi — kuryerlar, tarif va kalkulyator shunga
+                 qarab o'zgaradi. -->
+            <sc-if value="{{ store.hasOrigins }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85">Qaysi davlatdan olib kelamiz</span>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <sc-for list="{{ store.origins }}" as="so" hint-placeholder-count="3">
+                    <button sc-camel-on-click="{{ so.pick }}" aria-pressed="{{ so.on }}" style="flex:none;height:34px;padding:0 12px;border-radius:999px;border:1.5px solid {{ so.bd }};background:{{ so.bg }};color:{{ so.fg }};font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:13px;font-weight:700;cursor:pointer">{{ so.t }}</button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
             <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85">Eng arzon uchta kuryer</div>
             <sc-for list="{{ store.topCouriers }}" as="k" hint-placeholder-count="3">
               <button sc-camel-on-click="{{ k.open }}" style="display:flex;align-items:center;gap:12px;background:#F1F1F8;border:none;border-radius:14px;padding:10px 12px;cursor:pointer;text-align:left;width:100%;box-shadow:inset 0 0 0 1px #E3E4EE" style-hover="background:#F1F1F8">
@@ -4355,7 +4368,7 @@ const RU = {
   'Pochtam AI':'Pochtam AI',
   /* Skrinshot natija ekrani va do'kon tanlash yordamchisi */
   'Qayerdan topaman?':'Где найти?', "Mahsulot sahifasini skrinshot qiling — do'kon, davlat, eng arzon kuryer, boj va jami narxni o'zim chiqaraman.":'Сделайте скриншот страницы товара — магазин, страну, самого дешёвого курьера, пошлину и итоговую цену покажу сам.', "Havola yoki nom yozing — yoki mahsulot sahifasini skrinshot qiling, jami narxni o'zim hisoblayman.":'Введите ссылку или название — или сделайте скриншот страницы товара, итоговую цену посчитаю сам.', "Mahsulot sahifasini skrinshot qiling — do'kon, davlat, eng arzon kuryer, boj va jami narxni o'zim chiqaraman. Yonida — qayerdan topishni so'rash.":'Сделайте скриншот страницы товара — магазин, страну, самого дешёвого курьера, пошлину и итоговую цену покажу сам. Рядом — спросить, где найти.', "Nimani qidirayotganingizni yozing — qaysi do'konda borligini, qanday topish va skrinshot qilishni aytaman. Boj, kuryer, taqiq bo'yicha savol ham mumkin.":'Напишите, что ищете — скажу, в каком магазине есть, как найти и как сделать скриншот. Вопросы о пошлине, курьере, запретах тоже можно.', "Do'kon, davlat, kuryer, boj va jami narx bir necha soniyada.":'Магазин, страна, курьер, пошлина и итоговая цена — через несколько секунд.', 'Eng arzon kuryer':'Самый дешёвый курьер', 'Tezroq:':'Быстрее:', 'Boshqa kuryerlar':'Другие курьеры', 'Qanday buyurtma qilaman?':'Как заказать?', 'Vaznni aniqlashtirish':'Уточнить вес', "Rejaga qo'shish":'В план', "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. AI faqat rasmni o'qidi, hisob ilovaniki.":'Расчёт примерный — итоговую сумму определяют таможня и курьер. ИИ только прочитал картинку, расчёт — приложения.', "Do'konda mahsulot sahifasini oching.":'Откройте страницу товара в магазине.', "Narx, nom va (bo'lsa) og'irlik ko'rinadigan joyni skrinshot qiling.":'Сделайте скриншот там, где видны цена, название и (если есть) вес.', "Qayta yuklang — qolganini o'zim qilaman.":'Загрузите снова — остальное сделаю сам.', 'Qayta yuklash':'Загрузить снова', "Qo'lda hisoblash":'Посчитать вручную', 'Qayta urinish':'Попробовать снова', "Kategoriya bo'yicha eslatma":'Заметка по категории', 'Narxga ishonch past':'Уверенность в цене низкая', "Skrinshotda narx aniq ko'rinmagan — kalkulyatorda tekshiring.":'На скриншоте цена видна нечётко — проверьте в калькуляторе.', "Og'irlik {0} kg (sahifadan)":'Вес {0} кг (со страницы)', "Taxminiy og'irlik {0} kg ({1})":'Примерный вес {0} кг ({1})', 'Bu davlat uchun tarif topilmadi':'Для этой страны тариф не найден', "Do'kon aniqlanmadi":'Магазин не определён', 'taxmin':'предположительно', "do'kon":'магазин', 'Men {0} ({1}) dan \"{2}\" ({3}) buyurtma qilmoqchiman{4}. Qanday buyurtma qilaman — qadam-baqadam?':'Хочу заказать \"{2}\" ({3}) из {0} ({1}){4}. Как заказать — по шагам?',
-  "Quti bilan hajmiy og'irlik oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi.":'С коробкой объёмный вес растёт — многие курьеры предлагают отправку без коробки.', "Litiy batareya va powerbank avia bilan yuborilmaydi; telefon O'zbekistonda IMEI ro'yxatidan o'tkaziladi.":'Литиевые батареи и повербанки авиа не отправляются; телефон в Узбекистане регистрируется по IMEI.', "Aerozol va spirtli atirlar avia jo'natmada cheklanadi — kuryerning ro'yxatini tekshiring.":'Аэрозоли и спиртовые духи ограничены в авиаотправке — проверьте список курьера.', "Topgan mahsulotingizni suratga oling — jami narxni o'zim hisoblayman.":'Сфотографируйте найденный товар — итоговую цену посчитаю сам.', "Mahsulot sahifasini suratga oling — qolganini o'zim hisoblayman.":'Сфотографируйте страницу товара — остальное посчитаю сам.', "Hali topmadingizmi?":'Ещё не нашли?', "Nimani qidirayotganingizni tanlang — mos do'konlarni ko'rsataman.":'Выберите, что ищете — покажу подходящие магазины.', "Do'kon yoki mahsulot qidirish":'Поиск магазина или товара', "Havola tashlang yoki nom yozing — do'kon, kuryer va bojni ko'rsataman.":'Вставьте ссылку или введите название — покажу магазин, курьера и пошлину.', "Nima qidiryapsiz?":'Что ищете?', "Qanaqasi?":'Какой именно?', 'Byudjet':'Бюджет', "Masalan: krossovka, 41 razmer":'Например: кроссовки, 41 размер', 'Faqat original':'Только оригинал', "Arzonroq ham bo'ladi":'Можно и дешевле', "Farqi yo'q":'Не важно', 'gacha':'до', "Do'konlarni ko'rsat":'Показать магазины', "Ro'yxatimizdan tashqari do'konlarni ham tavsiya qilishi mumkin — bunday do'konga buyurtma berishdan oldin sharhlarini tekshiring.":'Может посоветовать и магазины не из нашего списка — перед заказом в таком магазине проверьте отзывы.', "Boshqa savol bormi? Pochtam AI ga yozing":'Есть другой вопрос? Напишите Pochtam AI', "Aniqroq yozing":'Уточните запрос', '{0} qidiryapman':'Ищу {0}', 'Byudjet ${0} gacha':'Бюджет до ${0}', 'Byudjet muhim emas':'Бюджет не важен', "Qaysi do'kondan topaman?":'В каком магазине это найти?', "Skrinshot — asosiy yo'l":'Скриншот — главный путь', "Mahsulot sahifasini suratga oling: do'kon, davlat, eng arzon kuryer, boj va jami narxni o'zim chiqaraman.":'Сфотографируйте страницу товара: магазин, страну, самого дешёвого курьера, пошлину и итоговую цену покажу сам.', "Tovarni hali topmagan bo'lsangiz — kategoriya va byudjetni tanlang, mos do'konlarni ko'rsataman.":'Если товар ещё не найден — выберите категорию и бюджет, покажу подходящие магазины.', "Do'kon, kuryer yoki qo'llanma nomini yozing — havola tashlasangiz do'kon sahifasi ochiladi.":'Введите название магазина, курьера или инструкции — если вставите ссылку, откроется страница магазина.', 'Nima kerak?':'Что нужно?', "Tovarni tasvirlang yoki boj, kuryer, taqiq bo'yicha savol bering.":'Опишите товар или задайте вопрос о пошлине, курьере, запретах.',
+  "Quti bilan hajmiy og'irlik oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi.":'С коробкой объёмный вес растёт — многие курьеры предлагают отправку без коробки.', "Litiy batareya va powerbank avia bilan yuborilmaydi; telefon O'zbekistonda IMEI ro'yxatidan o'tkaziladi.":'Литиевые батареи и повербанки авиа не отправляются; телефон в Узбекистане регистрируется по IMEI.', "Aerozol va spirtli atirlar avia jo'natmada cheklanadi — kuryerning ro'yxatini tekshiring.":'Аэрозоли и спиртовые духи ограничены в авиаотправке — проверьте список курьера.', "Topgan mahsulotingizni suratga oling — jami narxni o'zim hisoblayman.":'Сфотографируйте найденный товар — итоговую цену посчитаю сам.', "Mahsulot sahifasini suratga oling — qolganini o'zim hisoblayman.":'Сфотографируйте страницу товара — остальное посчитаю сам.', "Hali topmadingizmi?":'Ещё не нашли?', "Nimani qidirayotganingizni tanlang — mos do'konlarni ko'rsataman.":'Выберите, что ищете — покажу подходящие магазины.', "Do'kon yoki mahsulot qidirish":'Поиск магазина или товара', "Havola tashlang yoki nom yozing — do'kon, kuryer va bojni ko'rsataman.":'Вставьте ссылку или введите название — покажу магазин, курьера и пошлину.', "Nima qidiryapsiz?":'Что ищете?', "Qanaqasi?":'Какой именно?', 'Byudjet':'Бюджет', "Masalan: krossovka, 41 razmer":'Например: кроссовки, 41 размер', 'Faqat original':'Только оригинал', "Arzonroq ham bo'ladi":'Можно и дешевле', "Farqi yo'q":'Не важно', 'gacha':'до', "Do'konlarni ko'rsat":'Показать магазины', "Ro'yxatimizdan tashqari do'konlarni ham tavsiya qilishi mumkin — bunday do'konga buyurtma berishdan oldin sharhlarini tekshiring.":'Может посоветовать и магазины не из нашего списка — перед заказом в таком магазине проверьте отзывы.', "Boshqa savol bormi? Pochtam AI ga yozing":'Есть другой вопрос? Напишите Pochtam AI', "Aniqroq yozing":'Уточните запрос', '{0} qidiryapman':'Ищу {0}', 'Byudjet ${0} gacha':'Бюджет до ${0}', 'Byudjet muhim emas':'Бюджет не важен', "Qaysi do'kondan topaman?":'В каком магазине это найти?', "Skrinshot — asosiy yo'l":'Скриншот — главный путь', "Mahsulot sahifasini suratga oling: do'kon, davlat, eng arzon kuryer, boj va jami narxni o'zim chiqaraman.":'Сфотографируйте страницу товара: магазин, страну, самого дешёвого курьера, пошлину и итоговую цену покажу сам.', "Tovarni hali topmagan bo'lsangiz — kategoriya va byudjetni tanlang, mos do'konlarni ko'rsataman.":'Если товар ещё не найден — выберите категорию и бюджет, покажу подходящие магазины.', "Do'kon, kuryer yoki qo'llanma nomini yozing — havola tashlasangiz do'kon sahifasi ochiladi.":'Введите название магазина, курьера или инструкции — если вставите ссылку, откроется страница магазина.', "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi shu davlatdan ham yuboradi.":'Под ваш выбор подходит {0} магазинов, последние {1} отправляют и из этой страны.', "Qaysi davlatdan olib kelamiz":'Из какой страны везём', 'Yevropa omborlari':'Европейские склады', 'Texnika va kosmetika':'Техника и косметика', 'Nima kerak?':'Что нужно?', "Tovarni tasvirlang yoki boj, kuryer, taqiq bo'yicha savol bering.":'Опишите товар или задайте вопрос о пошлине, курьере, запретах.',
   'Tushundim:':'Понял:', 'original':'оригинал', '{0} gacha':'до {0}', 'Qidirish':'Искать', 'Yana savol':'Ещё вопрос', "Savol yoki tovar so'rovi":'Вопрос или запрос товара',
   'Bugungi savollar chegarasi tugadi':'Лимит вопросов на сегодня исчерпан', "Ertaga davom etamiz. Hozircha kalkulyator va do'konlar ro'yxati ishlaydi.":'Продолжим завтра. Пока работают калькулятор и список магазинов.',
   'Hozir javob bera olmadim':'Сейчас не смог ответить', "Kalkulyator va do'konlar ro'yxati ishlayveradi.":'Калькулятор и список магазинов работают.',
@@ -4445,8 +4458,8 @@ const storeHay = s => {
   let h = STORE_HAY.get(s.id);
   if (h === undefined) {
     const cat = STORE_CATS.find(c => c[0] === s.cat);
-    h = norm([s.name, s.cat, s.subcats, s.type, s.country, s.segment, s.forWhom, (s.tags || []).join(' '),
-      cat ? cat[1] + ' ' + cat[2] : '', CAT_SYN[s.cat] || '', geoSyn(String(s.country || ''))].join(' '));
+    h = norm([s.name, s.cat, s.subcats, s.type, storeFrom(s).join(' '), s.segment, s.forWhom, (s.tags || []).join(' '),
+      cat ? cat[1] + ' ' + cat[2] : '', CAT_SYN[s.cat] || '', geoSyn(storeFrom(s).join(' '))].join(' '));
     STORE_HAY.set(s.id, h);
   }
   return h;
@@ -4655,259 +4668,259 @@ const STORE_USP = {
 };
 
 const STORES = [
-  { id:"taobao", name:"Taobao", domain:"taobao.com", url:"https://www.taobao.com", mono:"Ta", color:"#FF4400", flag:"🇨🇳", country:"Xitoy", cat:"universal", subcats:"Xitoy ichki bozori, moda, uy, aksessuarlar", type:"Marketplace", price:"$", segment:"Arzon", original:"Sotuvchiga bog'liq", direct:false, complexity:"Murakkab / VPN orqali ishlaydi",
+  { id:"taobao", name:"Taobao", domain:"taobao.com", url:"https://www.taobao.com", mono:"Ta", color:"#FF4400", flag:"🇨🇳", country:"Xitoy", from:["Xitoy"], cat:"universal", subcats:"Xitoy ichki bozori, moda, uy, aksessuarlar", type:"Marketplace", price:"$", segment:"Arzon", original:"Sotuvchiga bog'liq", direct:false, complexity:"Murakkab / VPN orqali ishlaydi",
     tags:["universal","arzon","vositachi kerak"],
     pros:["Xitoy ichki bozoridagi juda katta assortiment"],
     cons:["Xitoy ichki bozori: interfeys, seller bilan aloqa, manzil va return logistika asosan Xitoyga mos.","Kuryer ishlatilsa refund oynasi O\'zbekistonga yetib kelishdan oldin tugashi mumkin."],
     forWhom:"Xitoydan keng tanlov va past narx izlaydiganlar", returns:"Ko\'p eligible mahsulotlarda 7 kunlik sababsiz qaytarish mavjud. Odatda buyer return shippingni to\'laydi; forwarding omboriga yetib kelgan sana muddat hisobiga ta\'sir qilishi mumkin.", ios:"https://apps.apple.com/us/app/taobao-online-shopping-app/id387682726", android:"https://play.google.com/store/apps/details?id=com.taobao.taobao",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"Murakkab / VPN orqali ishlaydi"}], updated:"15.08.2026" },
-  { id:"amazon", name:"Amazon", domain:"amazon.com", url:"https://www.amazon.com", mono:"Am", color:"#232F3E", flag:"🇺🇸", country:"Global", cat:"universal", subcats:"Elektronika, moda, uy-ro'zg'or va boshqalar", type:"Marketplace", price:"$$", segment:"Katta assortiment", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
+  { id:"amazon", name:"Amazon", domain:"amazon.com", url:"https://www.amazon.com", mono:"Am", color:"#232F3E", flag:"🇺🇸", country:"AQSh", from:["AQSh","Germaniya","Angliya"], cat:"universal", subcats:"Elektronika, moda, uy-ro'zg'or va boshqalar", type:"Marketplace", price:"$$", segment:"Katta assortiment", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
     tags:["universal","katta assortiment","vositachi kerak"],
     pros:["Juda katta assortiment va ko'plab sotuvchilar"],
     cons:["Marketplace bo\'lgani uchun sotuvchi sifati va return shartlari bir xil emas.","Xalqaro qaytarish qimmat","forwarding, boj va dastlabki yetkazish xarajatlari to\'liq qaytmasligi mumkin."],
     forWhom:"Turli toifadagi mahsulotlarni bir joydan izlaydiganlar", returns:"Ko\'pchilik mahsulotlarda 30 kunlik qaytarish mavjud. Mahsulot/sotuvchiga qarab istisnolar bor; xalqaro qaytarishda yetkazish xarajati refunddan ushlab qolinishi mumkin.", ios:"https://apps.apple.com/us/app/amazon-shopping/id297606951", android:"https://play.google.com/store/apps/details?id=com.amazon.mShop.android.shopping",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"pinduoduo", name:"Pinduoduo", domain:"pinduoduo.com", url:"https://www.pinduoduo.com", mono:"Pi", color:"#E02E24", flag:"🇨🇳", country:"Xitoy", cat:"universal", subcats:"Kiyim, elektronika, uy-ro'zg'or, kundalik tovarlar va boshqa kategoriyalar", type:"Marketplace", price:"$", segment:"Arzon", original:"Sotuvchiga bog'liq", direct:false, complexity:"Murakkab / VPN orqali ishlaydi",
+  { id:"pinduoduo", name:"Pinduoduo", domain:"pinduoduo.com", url:"https://www.pinduoduo.com", mono:"Pi", color:"#E02E24", flag:"🇨🇳", country:"Xitoy", from:["Xitoy"], cat:"universal", subcats:"Kiyim, elektronika, uy-ro'zg'or, kundalik tovarlar va boshqa kategoriyalar", type:"Marketplace", price:"$", segment:"Arzon", original:"Sotuvchiga bog'liq", direct:false, complexity:"Murakkab / VPN orqali ishlaydi",
     tags:["universal","arzon","vositachi kerak"],
     pros:["Juda agressiv narxlar, guruhli xarid va chegirma modeli","Xitoy ichki bozorida juda katta tanlov"],
     cons:["Xitoy ichki bozori","Chinese UI, local address/payment va qaytarish logistikasiga bog\'liq.","Juda past narx segmentida seller/quality farqi katta, xalqaro return amaliy jihatdan murakkab."],
     forWhom:"Eng arzon narx va Xitoy ichki bozoridagi ommaviy mahsulotlarni izlaydiganlar", returns:"Official help centerda return/refund va 7 kunlik sababsiz return mexanizmlari mavjud. Eligibility mahsulot kategoriyasi va seller/after-sales qoidalariga bog\'liq.", ios:"https://apps.apple.com/us/app/pinduoduo/id1044283059", android:"",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"Murakkab / VPN orqali ishlaydi"}], updated:"15.08.2026" },
-  { id:"trendyol", name:"Trendyol", domain:"trendyol.com", url:"https://www.trendyol.com", mono:"Tr", color:"#F27A1A", flag:"🇹🇷", country:"Turkiya", cat:"kiyim va moda", subcats:"Moda, kosmetika, uy va boshqa tovarlar", type:"Marketplace", price:"$", segment:"Arzon", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
+  { id:"trendyol", name:"Trendyol", domain:"trendyol.com", url:"https://www.trendyol.com", mono:"Tr", color:"#F27A1A", flag:"🇹🇷", country:"Turkiya", from:["Turkiya"], cat:"kiyim va moda", subcats:"Moda, kosmetika, uy va boshqa tovarlar", type:"Marketplace", price:"$", segment:"Arzon", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
     tags:["kiyim va moda","arzon","vositachi kerak"],
     pros:["Turkiya bozorida katta assortiment"],
     cons:["Turkiya va ayrim xalqaro bozorlarga kuchli bog\'langan.","Sellerlar sifati bir xil emas","o\'lcham va mahsulot tavsifi farqi, cross-border return muddati muammo bo\'lishi mumkin."],
     forWhom:"Turkiyadan kiyim va turli mahsulot oluvchilar", returns:"Global xizmatda odatda 14 kunlik return; eligible buyurtmalarda bepul return imkoniyati mavjud. Marketplace sabab ayrim mahsulot/seller shartlari farqlanadi.", ios:"https://apps.apple.com/us/app/trendyol-online-shopping/id524362642", android:"https://play.google.com/store/apps/details?id=trendyol.com",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"shein", name:"SHEIN", domain:"shein.com", url:"https://www.shein.com", mono:"SH", color:"#151515", flag:"🌍", country:"Global", cat:"kiyim va moda", subcats:"Trend kiyim, aksessuarlar va uy mahsulotlari", type:"Marketplace", price:"$", segment:"Arzon", original:"O'rtacha", direct:true, complexity:"Oson",
+  { id:"shein", name:"SHEIN", domain:"shein.com", url:"https://www.shein.com", mono:"SH", color:"#151515", flag:"🌍", country:"Xitoy", from:["Xitoy","Turkiya"], cat:"kiyim va moda", subcats:"Trend kiyim, aksessuarlar va uy mahsulotlari", type:"Marketplace", price:"$", segment:"Arzon", original:"O'rtacha", direct:true, complexity:"Oson",
     tags:["kiyim va moda","arzon","to'g'ridan-to'g'ri"],
     pros:["Arzon va tez yangilanadigan trend assortimenti"],
     cons:["Sifat va o\'lcham barqarorligi mahsulotga qarab farq qiladi.","Lingerie, beauty, personal-care va final-sale tovarlarda return cheklangan","fee va muddat regionga bog\'liq."],
     forWhom:"Byudjet moda xaridorlari", returns:"Ko\'p bozorlarda eligible mahsulotlar uchun 30 kun atrofida return. Birinchi return ayrim regionlarda bepul, keyingi returnlar uchun fee bo\'lishi mumkin; kategoriya istisnolari mavjud.", ios:"https://apps.apple.com/us/app/shein-shopping-online/id878577184", android:"https://play.google.com/store/apps/details?id=com.zzkko",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"ha"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$"},{"k":"Original mahsulot","v":"O'rtacha"},{"k":"Buyurtma","v":"Oson"}], updated:"15.08.2026" },
-  { id:"carters", name:"Carter\'s", domain:"carters.com", url:"https://www.carters.com", mono:"Ca", color:"#0033A0", flag:"🌍", country:"Global", cat:"bolalar", subcats:"Bolalar va chaqaloqlar kiyimi", type:"Rasmiy brend do'koni", price:"$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"carters", name:"Carter\'s", domain:"carters.com", url:"https://www.carters.com", mono:"Ca", color:"#0033A0", flag:"🌍", country:"AQSh", from:["AQSh"], cat:"bolalar", subcats:"Bolalar va chaqaloqlar kiyimi", type:"Rasmiy brend do'koni", price:"$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["bolalar","original","vositachi kerak"],
     pros:["Bolalar kiyimiga ixtisoslashgan brend"],
     cons:["Return policy mamlakatga keskin bog\'liq.","Final-sale, shipping fee va xalqaro kuryer orqali qaytarish shartlari alohida."],
     forWhom:"Bolalar kiyimi xaridorlari", returns:"AQShda ko\'p yangi/unworn mahsulotlar receipt bilan 90 kun ichida return qilinadi; boshqa bozorlarda muddat ancha qisqaroq bo\'lishi mumkin.", ios:"https://apps.apple.com/us/app/carters/id1275723118", android:"https://play.google.com/store/apps/details?id=com.carters.android",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"mytheresa", name:"Mytheresa", domain:"mytheresa.com", url:"https://www.mytheresa.com", mono:"My", color:"#1A1A1A", flag:"🌍", country:"Global", cat:"kiyim va moda", subcats:"Designer moda va aksessuarlar", type:"Premium / Luxury", price:"$$$$", segment:"Premium", original:"Yuqori", direct:true, complexity:"Oson",
+  { id:"mytheresa", name:"Mytheresa", domain:"mytheresa.com", url:"https://www.mytheresa.com", mono:"My", color:"#1A1A1A", flag:"🌍", country:"Germaniya", from:["Germaniya"], cat:"kiyim va moda", subcats:"Designer moda va aksessuarlar", type:"Premium / Luxury", price:"$$$$", segment:"Premium", original:"Yuqori", direct:true, complexity:"Oson",
     tags:["kiyim va moda","premium","to'g'ridan-to'g'ri"],
     pros:["Luxury designer kolleksiyalari"],
     cons:["Premium narx juda yuqori.","Return tag/packaging talablariga qat\'iy rioya kerak","import duties/tax modeli davlatga qarab farq qiladi."],
     forWhom:"Premium moda xaridorlari", returns:"Ko\'p bozorlarda 30 kunlik bepul return; mahsulot original holatda, tag va packaging bilan bo\'lishi shart. Refund qaytgan mahsulot tekshirilgach amalga oshiriladi.", ios:"https://apps.apple.com/us/app/mytheresa-shop-luxury-brands/id484615570", android:"https://play.google.com/store/apps/details?id=com.mytheresa.app.mytheresa",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"ha"},{"k":"Do'kon turi","v":"Premium / Luxury"},{"k":"Narx darajasi","v":"$$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"Oson"}], updated:"15.08.2026" },
-  { id:"tmall", name:"Tmall", domain:"tmall.com", url:"https://www.tmall.com", mono:"Tm", color:"#FF0036", flag:"🇨🇳", country:"Xitoy", cat:"universal", subcats:"Brendlar va rasmiy sotuvchilar", type:"Marketplace", price:"$$", segment:"Original", original:"Yuqori", direct:false, complexity:"Murakkab",
+  { id:"tmall", name:"Tmall", domain:"tmall.com", url:"https://www.tmall.com", mono:"Tm", color:"#FF0036", flag:"🇨🇳", country:"Xitoy", from:["Xitoy"], cat:"universal", subcats:"Brendlar va rasmiy sotuvchilar", type:"Marketplace", price:"$$", segment:"Original", original:"Yuqori", direct:false, complexity:"Murakkab",
     tags:["universal","original","vositachi kerak"],
     pros:["Brend va rasmiy do'konlar ulushi yuqori"],
     cons:["Xitoy ichki servislariga kuchli bog\'langan.","Barcha tovarlar 7 kunlik return\'ga kirmaydi","forwarding va chet eldan qaytarish amaliy jihatdan qimmat va vaqt talab qiladi."],
     forWhom:"Xitoy bozorida brend mahsulot izlaydiganlar", returns:"Eligible mahsulotlarda 7 kunlik sababsiz return. Fikr o\'zgargan holatda return shipping odatda buyer zimmasida; sifat muammosi yoki tavsifga nomuvofiqlikda seller xarajatni qoplaydi.", ios:"https://apps.apple.com/gb/app/%E5%A4%A9%E7%8C%AB-%E5%A5%BD%E5%93%81%E7%89%8C-%E5%A5%BD%E4%BB%B7%E6%A0%BC-%E4%B8%8A%E5%A4%A9%E7%8C%AB/id518966501", android:"",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"Murakkab"}], updated:"15.08.2026" },
-  { id:"farfetch", name:"Farfetch", domain:"farfetch.com", url:"https://www.farfetch.com", mono:"Fa", color:"#1A1A1A", flag:"🌍", country:"Global", cat:"kiyim va moda", subcats:"Designer kiyim, poyabzal va aksessuarlar", type:"Premium / Luxury", price:"$$$$", segment:"Premium", original:"Yuqori", direct:true, complexity:"Oson",
+  { id:"farfetch", name:"Farfetch", domain:"farfetch.com", url:"https://www.farfetch.com", mono:"Fa", color:"#1A1A1A", flag:"🌍", country:"Angliya", from:["Angliya","Germaniya"], cat:"kiyim va moda", subcats:"Designer kiyim, poyabzal va aksessuarlar", type:"Premium / Luxury", price:"$$$$", segment:"Premium", original:"Yuqori", direct:true, complexity:"Oson",
     tags:["kiyim va moda","premium","to'g'ridan-to'g'ri"],
     pros:["Ko'plab luxury brendlar bir platformada"],
     cons:["Luxury narx segmenti yuqori.","Partner-boutique modeli sabab packaging va return yo\'nalishi qat\'iy","final-sale/custom mahsulotlar va duties/taxes refundi regionga bog\'liq."],
     forWhom:"Premium va designer moda xaridorlari", returns:"Odatda 30 kun ichida return; mahsulot kiyilmagan, teg va original packaging bilan bo\'lishi kerak. Ko\'p bozorlarda return collection tashkil qilinadi.", ios:"https://apps.apple.com/us/app/farfetch-shop-luxury-fashion/id906698760", android:"https://play.google.com/store/apps/details?id=com.farfetch.farfetchshop",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"ha"},{"k":"Do'kon turi","v":"Premium / Luxury"},{"k":"Narx darajasi","v":"$$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"Oson"}], updated:"15.08.2026" },
-  { id:"ebay", name:"eBay", domain:"ebay.com", url:"https://www.ebay.com", mono:"eB", color:"#0064D2", flag:"🇺🇸", country:"Global", cat:"universal", subcats:"Yangi, ishlatilgan va kolleksiya tovarlari", type:"Marketplace", price:"$$", segment:"Katta assortiment", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
+  { id:"ebay", name:"eBay", domain:"ebay.com", url:"https://www.ebay.com", mono:"eB", color:"#0064D2", flag:"🇺🇸", country:"AQSh", from:["AQSh","Angliya","Germaniya"], cat:"universal", subcats:"Yangi, ishlatilgan va kolleksiya tovarlari", type:"Marketplace", price:"$$", segment:"Katta assortiment", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
     tags:["universal","katta assortiment","vositachi kerak"],
     pros:["Yangi va ishlatilgan mahsulotlarni topish imkoniyati"],
     cons:["Har bir sellerning return siyosati boshqacha.","Used/collectible tovarlarda holat bo\'yicha nizolar ko\'p","xalqaro qaytarishda tracking va pochta xarajati muhim."],
     forWhom:"Noyob yoki ishlatilgan mahsulot izlaydiganlar", returns:"Qaytarish muddati va sharti sotuvchiga bog\'liq. Tovar tavsifga mos kelmasa yoki nuqsonli bo\'lsa, eBay Money Back Guarantee doirasida refund talab qilish mumkin.", ios:"https://apps.apple.com/us/app/ebay-online-shopping-selling/id282614216", android:"https://play.google.com/store/apps/details?id=com.ebay.mobile",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"poizon", name:"POIZON / DEWU", domain:"poizon.com", url:"https://www.poizon.com", mono:"PD", color:"#1A1A1A", flag:"🇨🇳", country:"Xitoy", cat:"poyabzal", subcats:"Sneaker, streetwear, premium moda, aksessuarlar va kolleksiya mahsulotlari", type:"Marketplace", price:"$$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha / VPN orqali ishlaydi",
+  { id:"poizon", name:"POIZON / DEWU", domain:"poizon.com", url:"https://www.poizon.com", mono:"PD", color:"#1A1A1A", flag:"🇨🇳", country:"Xitoy", from:["Xitoy"], cat:"poyabzal", subcats:"Sneaker, streetwear, premium moda, aksessuarlar va kolleksiya mahsulotlari", type:"Marketplace", price:"$$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha / VPN orqali ishlaydi",
     tags:["poyabzal","original","vositachi kerak"],
     pros:["Sneaker va premium moda mahsulotlarini autentifikatsiya qilishga yo'naltirilgan marketplace"],
     cons:["Inspection juda qat\'iy: shoe box, tags, packaging va try-on belgisi refundni rad etishga sabab bo\'lishi mumkin.","Return shipping buyerga","DEWU China va global POIZON siyosati farq qiladi."],
     forWhom:"Original sneaker, streetwear va premium moda mahsulotlarini izlaydiganlar", returns:"POIZON xalqaro siyosatida ko\'p mahsulotlarda delivery\'dan keyin 15 kun ichida return request; underwear/swimwear istisno. Refunddan return shipping ushlab qolinadi.", ios:"https://apps.apple.com/us/app/poizon-sneakers-apparel/id1509915974", android:"https://play.google.com/store/apps/details?id=com.shizhuang.poizon.hk",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha / VPN orqali ishlaydi"}], updated:"15.08.2026" },
-  { id:"walmart", name:"Walmart", domain:"walmart.com", url:"https://www.walmart.com", mono:"Wa", color:"#0071DC", flag:"🇺🇸", country:"AQSh", cat:"universal", subcats:"Kundalik tovarlar, elektronika, uy-ro'zg'or", type:"Marketplace", price:"$", segment:"Arzon", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
+  { id:"walmart", name:"Walmart", domain:"walmart.com", url:"https://www.walmart.com", mono:"Wa", color:"#0071DC", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"universal", subcats:"Kundalik tovarlar, elektronika, uy-ro'zg'or", type:"Marketplace", price:"$", segment:"Arzon", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
     tags:["universal","arzon","vositachi kerak"],
     pros:["Keng assortiment va ommaviy narx segmenti"],
     cons:["Asosan AQSh bozori uchun.","Marketplace sellerlari alohida shart qo\'llashi mumkin","elektronika va maxsus kategoriyalarda qisqa muddatlar, kuryer orqali return esa murakkab."],
     forWhom:"AQSh bozoridan kundalik mahsulot oluvchilar", returns:"Walmart sotadigan ko\'p mahsulotlarda 90 kungacha return mavjud; Marketplace va elektronika uchun muddat odatda qisqaroq. Mahsulot kategoriyasiga qarab istisnolar mavjud.", ios:"https://apps.apple.com/us/app/walmart-shopping-savings/id338137227", android:"https://play.google.com/store/apps/details?id=com.walmart.android",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"jomashop", name:"Jomashop", domain:"jomashop.com", url:"https://www.jomashop.com", mono:"Jo", color:"#1A1A1A", flag:"🇺🇸", country:"AQSh", cat:"kiyim va moda", subcats:"Luxury soatlar, sumkalar, atirlar, ko'zoynak, zargarlik va aksessuarlar", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Chegirma", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"jomashop", name:"Jomashop", domain:"jomashop.com", url:"https://www.jomashop.com", mono:"Jo", color:"#1A1A1A", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"kiyim va moda", subcats:"Luxury soatlar, sumkalar, atirlar, ko'zoynak, zargarlik va aksessuarlar", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Chegirma", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["kiyim va moda","chegirma","vositachi kerak"],
     pros:["Luxury mahsulotlarni MSRPdan past narxlarda topish imkoniyati","soat, sumka, fragrance va aksessuarlar assortimenti katta.","Jomashop barcha mahsulotlarini 100% authentic deb kafolatlaydi va ko'plab xalqaro buyurtmalarni qabul qiladi."],
     cons:["Soatlarda ko'pincha ishlab chiqaruvchining rasmiy warranty-si o'rniga Jomashop'ning 1–5 yillik warranty-si qo'llanadi.","Xalqaro return qimmat: return shipping, dastlabki shipping hamda duties/VAT qaytmasligi mumkin.","Used/damaged returnlarda 25% gacha restocking fee xavfi bor"],
     forWhom:"Original luxury soat, sumka va aksessuarlarni rasmiy retail narxidan arzonroq izlaydiganlar", returns:"Yangi mahsulotlar 30 kun, pre-owned mahsulotlar 14 kun ichida qaytarilishi mumkin. RMA talab qilinadi; return shipping xaridor zimmasida va dastlabki shipping xarajati refunddan ushlab qolinadi. Xalqaro buyurtmalarda duties/VAT Jomashop orqali qaytarilmaydi. $7,000+ yoki special-order mahsulotlarda 8% restocking fee yoki final-sale sharti bo'lishi mumkin.", ios:"https://apps.apple.com/us/app/jomashop-designer-shopping/id6444218472", android:"https://play.google.com/store/apps/details?id=com.jomashop.app",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"aliexpress", name:"AliExpress", domain:"aliexpress.com", url:"https://www.aliexpress.com", mono:"Al", color:"#E62E04", flag:"🌍", country:"Global", cat:"universal", subcats:"Elektronika, moda, uy, aksessuarlar", type:"Marketplace", price:"$", segment:"Arzon", original:"Sotuvchiga bog'liq", direct:true, complexity:"Oson",
+  { id:"aliexpress", name:"AliExpress", domain:"aliexpress.com", url:"https://www.aliexpress.com", mono:"Al", color:"#E62E04", flag:"🌍", country:"Xitoy", from:["Xitoy"], cat:"universal", subcats:"Elektronika, moda, uy, aksessuarlar", type:"Marketplace", price:"$", segment:"Arzon", original:"Sotuvchiga bog'liq", direct:true, complexity:"Oson",
     tags:["universal","arzon","to'g'ridan-to'g'ri"],
     pros:["Xitoydan chakana xarid uchun katta tanlov"],
     cons:["Barcha listinglarda bepul return yo\'q.","Seller sifati keskin farq qiladi","dalil yuklash/dispute talab qilinadi, xalqaro return logistikasida vaqt va xarajat yuqori bo\'lishi mumkin."],
     forWhom:"Arzon va turli mahsulot izlaydiganlar", returns:"“Free Return” belgili mahsulotlarda odatda qabul qilinganidan keyin 15 kun ichida sababsiz return ochish mumkin. Boshqa holatlar dispute va seller siyosatiga bog\'liq.", ios:"https://apps.apple.com/us/app/aliexpress-shopping-app/id436672029", android:"https://play.google.com/store/apps/details?id=com.alibaba.aliexpresshd",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"ha"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"Oson"}], updated:"15.08.2026" },
-  { id:"zara", name:"Zara", domain:"zara.com", url:"https://www.zara.com", mono:"Za", color:"#1A1A1A", flag:"🌍", country:"Global", cat:"kiyim va moda", subcats:"Kiyim, poyabzal, aksessuarlar", type:"Rasmiy brend do'koni", price:"$$", segment:"Original", original:"Yuqori", direct:true, complexity:"O'rtacha",
+  { id:"zara", name:"Zara", domain:"zara.com", url:"https://www.zara.com", mono:"Za", color:"#1A1A1A", flag:"🌍", country:"Turkiya", from:["Turkiya","Germaniya"], cat:"kiyim va moda", subcats:"Kiyim, poyabzal, aksessuarlar", type:"Rasmiy brend do'koni", price:"$$", segment:"Original", original:"Yuqori", direct:true, complexity:"O'rtacha",
     tags:["kiyim va moda","original","to'g'ridan-to'g'ri"],
     pros:["Trendga mos rasmiy brend kolleksiyalari"],
     cons:["Return odatda xarid qilingan region bilan bog\'langan.","Kuryer bilan boshqa davlatga olib chiqilgach qaytarish qiyinlashadi","ayrim gigiyenik/custom mahsulotlar istisno."],
     forWhom:"Zara kolleksiyalarini original xarid qiluvchilar", returns:"Ko\'p bozorlarda jo\'natilgan sanadan boshlab 30 kun atrofida return; mahsulot yangi holatda, teglar bilan va xarid qilingan bozor/region doirasida qaytariladi.", ios:"https://apps.apple.com/us/app/zara/id547951480", android:"https://play.google.com/store/apps/details?id=com.inditex.zara",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"ha"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"nike", name:"Nike", domain:"nike.com", url:"https://www.nike.com", mono:"Ni", color:"#111111", flag:"🌍", country:"Global", cat:"poyabzal", subcats:"Sport poyabzali, kiyim va aksessuarlar", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"Murakkab",
+  { id:"nike", name:"Nike", domain:"nike.com", url:"https://www.nike.com", mono:"Ni", color:"#111111", flag:"🌍", country:"AQSh", from:["AQSh","Angliya","Turkiya"], cat:"poyabzal", subcats:"Sport poyabzali, kiyim va aksessuarlar", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"Murakkab",
     tags:["poyabzal","original","vositachi kerak"],
     pros:["Rasmiy Nike kolleksiyalari"],
     cons:["Nike AQSh sayti xalqaro shipping va re-shipper manzillarini cheklaydi.","Shu sabab O\'zbekistondan forwarding bilan xarid/return riskli","limited releases tez tugaydi."],
     forWhom:"Original Nike mahsulot izlaydiganlar", returns:"AQShda ko\'p Nike xaridlarida 60 kunlik return; boshqa bozorlarda muddat farq qiladi. Special/final-sale mahsulotlarga alohida shartlar qo\'llanadi.", ios:"https://apps.apple.com/us/app/nike-engineered-for-athletes/id1095459556", android:"https://play.google.com/store/apps/details?id=com.nike.omega",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"Murakkab"}], updated:"15.08.2026" },
-  { id:"hm", name:"H&M", domain:"hm.com", url:"https://www.hm.com", mono:"HM", color:"#E50010", flag:"🌍", country:"Global", cat:"kiyim va moda", subcats:"Kiyim va aksessuarlar", type:"Rasmiy brend do'koni", price:"$", segment:"Arzon", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"hm", name:"H&M", domain:"hm.com", url:"https://www.hm.com", mono:"HM", color:"#E50010", flag:"🌍", country:"Turkiya", from:["Turkiya","Germaniya","AQSh"], cat:"kiyim va moda", subcats:"Kiyim va aksessuarlar", type:"Rasmiy brend do'koni", price:"$", segment:"Arzon", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["kiyim va moda","arzon","vositachi kerak"],
     pros:["Ommabop va nisbatan qulay narxli moda"],
     cons:["Siyosat davlatga qarab farq qiladi.","Return fee va yetkazish xarajati qolishi mumkin","online buyurtmani boshqa mamlakatdagi do\'konda qaytarish odatda mumkin emas."],
     forWhom:"Kundalik kiyim izlaydiganlar", returns:"Ko\'p bozorlarda 30 kunlik return. Ayrim mamlakatlarda pochta orqali return uchun label fee undiriladi; dastlabki shipping/handling har doim ham refund qilinmaydi.", ios:"https://apps.apple.com/gb/app/h-m/id834465911", android:"https://play.google.com/store/apps/details?id=com.hm.goe",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"noon", name:"Noon", domain:"noon.com", url:"https://www.noon.com", mono:"No", color:"#3A3A3A", flag:"🇦🇪", country:"BAA", cat:"universal", subcats:"Elektronika, moda, uy-ro'zg'or", type:"Marketplace", price:"$$", segment:"Universal", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
+  { id:"noon", name:"Noon", domain:"noon.com", url:"https://www.noon.com", mono:"No", color:"#3A3A3A", flag:"🇦🇪", country:"BAA", from:["BAA"], cat:"universal", subcats:"Elektronika, moda, uy-ro'zg'or", type:"Marketplace", price:"$$", segment:"Universal", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
     tags:["universal","universal","vositachi kerak"],
     pros:["BAA va GCC bozoridagi ommabop marketplace"],
     cons:["GCC bozori uchun optimallashtirilgan.","Hygiene, beauty, grocery va ayrim seller mahsulotlarida cheklovlar bor","O\'zbekistondan bevosita return modeli qulay emas."],
     forWhom:"BAA bozoridan turli mahsulot xarid qiluvchilar", returns:"Ko\'p eligible mahsulotlarda 15 kun ichida return; ayrim refurbished/kategoriyalarda qisqaroq muddat yoki cheklovlar mavjud. Wrong/damaged/not-as-described holatlar refundga asos bo\'ladi.", ios:"https://apps.apple.com/us/app/noon-shopping-food-grocery/id1269038866", android:"https://play.google.com/store/apps/details?id=com.noon.buyerapp",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"adidas", name:"Adidas", domain:"adidas.com", url:"https://www.adidas.com", mono:"Ad", color:"#1A1A1A", flag:"🌍", country:"Global", cat:"poyabzal", subcats:"Sport poyabzali va kiyim", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"adidas", name:"Adidas", domain:"adidas.com", url:"https://www.adidas.com", mono:"Ad", color:"#1A1A1A", flag:"🌍", country:"Germaniya", from:["Germaniya","AQSh","Turkiya"], cat:"poyabzal", subcats:"Sport poyabzali va kiyim", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["poyabzal","original","vositachi kerak"],
     pros:["Rasmiy Adidas kolleksiyalari"],
     cons:["Mamlakat saytlari va return qoidalari farq qiladi.","Limited/hype mahsulotlarda qaytarish cheklanishi mumkin","xalqaro kuryer bilan return xarajati oshadi."],
     forWhom:"Original Adidas mahsulot izlaydiganlar", returns:"AQShda ko\'p mahsulotlar 30 kun ichida return qilinadi. Mahsulot original holatda bo\'lishi kerak; hype/final-sale va ayrim maxsus mahsulotlarda cheklovlar mavjud.", ios:"https://apps.apple.com/us/app/adidas-shop-shoes-clothing/id1266591536", android:"https://play.google.com/store/apps/details?id=com.adidas.app",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"puma", name:"Puma", domain:"puma.com", url:"https://www.puma.com", mono:"Pu", color:"#1A1A1A", flag:"🌍", country:"Global", cat:"poyabzal", subcats:"Sport va lifestyle poyabzal", type:"Rasmiy brend do'koni", price:"$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"puma", name:"Puma", domain:"puma.com", url:"https://www.puma.com", mono:"Pu", color:"#1A1A1A", flag:"🌍", country:"Germaniya", from:["Germaniya","AQSh"], cat:"poyabzal", subcats:"Sport va lifestyle poyabzal", type:"Rasmiy brend do'koni", price:"$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["poyabzal","original","vositachi kerak"],
     pros:["Sport va lifestyle assortiment"],
     cons:["Return oynasi davlatga qarab farq qiladi.","Shipping fee va cross-border logistika qolishi mumkin","ayrim final-sale/custom mahsulotlar qaytarilmaydi."],
     forWhom:"Puma brendi xaridorlari", returns:"AQShda odatda 45 kunlik return; mahsulot original holatda bo\'lishi kerak. Refund original paymentga qaytariladi, processing bir necha ish kuni/hafta olishi mumkin.", ios:"https://apps.apple.com/us/app/puma-clothes-sneakers-app/id1563024677", android:"https://play.google.com/store/apps/details?id=com.puma.newstore.app",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"uniqlo", name:"Uniqlo", domain:"uniqlo.com", url:"https://www.uniqlo.com", mono:"Un", color:"#FF0000", flag:"🌍", country:"Global", cat:"kiyim va moda", subcats:"Basic kiyim va funksional kolleksiyalar", type:"Rasmiy brend do'koni", price:"$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"uniqlo", name:"Uniqlo", domain:"uniqlo.com", url:"https://www.uniqlo.com", mono:"Un", color:"#FF0000", flag:"🌍", country:"AQSh", from:["AQSh","Angliya"], cat:"kiyim va moda", subcats:"Basic kiyim va funksional kolleksiyalar", type:"Rasmiy brend do'koni", price:"$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["kiyim va moda","original","vositachi kerak"],
     pros:["Sodda va funksional basic kiyimlar"],
     cons:["Online va store return qoidalari hamda mamlakatlar bo\'yicha siyosat turlicha.","Altered/modified mahsulotlar qaytarilmasligi mumkin","kuryer bilan xalqaro return noqulay."],
     forWhom:"Sifatli basic kiyim izlaydiganlar", returns:"Ko\'p bozorlarda taxminan 30 kunlik return; mahsulot yuvilmagan/kiyilmagan bo\'lishi kerak. Ayrim bozorlarda return-label fee va yetkazish haqining qaytmasligi mavjud.", ios:"https://apps.apple.com/us/app/uniqlo-clothes-shopping/id1284609872", android:"https://play.google.com/store/apps/details?id=com.uniqlo.usa.catalogue",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"newbalance", name:"New Balance", domain:"newbalance.com", url:"https://www.newbalance.com", mono:"NB", color:"#CF0A2C", flag:"🌍", country:"Global", cat:"poyabzal", subcats:"Krossovka va sport kiyimi", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"newbalance", name:"New Balance", domain:"newbalance.com", url:"https://www.newbalance.com", mono:"NB", color:"#CF0A2C", flag:"🌍", country:"AQSh", from:["AQSh","Angliya"], cat:"poyabzal", subcats:"Krossovka va sport kiyimi", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["poyabzal","original","vositachi kerak"],
     pros:["Krossovka va sportga ixtisoslashgan"],
     cons:["Fee va region qoidalari xarajatni oshiradi.","Limited/final-sale mahsulotlar, mamlakatlararo return va kuryer orqali qaytarish qulay emas."],
     forWhom:"New Balance modellari izlovchilar", returns:"AQShda odatda 45 kunlik return. Ayrim online returnlarda non-member uchun restocking/return fee mavjud; final-sale mahsulotlar istisno.", ios:"https://apps.apple.com/jp/app/new-balance-%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%88%E3%82%A2%E3%82%A2%E3%83%97%E3%83%AA-nb-shop/id1163952575", android:"https://play.google.com/store/apps/details?id=li.yapp.app18EB4D42",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"footlocker", name:"Foot Locker", domain:"footlocker.com", url:"https://www.footlocker.com", mono:"FL", color:"#1A1A1A", flag:"🇺🇸", country:"AQSh", cat:"poyabzal", subcats:"Sneaker va sport brendlari", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"footlocker", name:"Foot Locker", domain:"footlocker.com", url:"https://www.footlocker.com", mono:"FL", color:"#1A1A1A", flag:"🇺🇸", country:"AQSh", from:["AQSh","Angliya"], cat:"poyabzal", subcats:"Sneaker va sport brendlari", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["poyabzal","katta assortiment","vositachi kerak"],
     pros:["Ko'p brendli sneaker assortimenti"],
     cons:["Country-site siyosati farq qiladi","non-member return fee bo\'lishi mumkin.","Sneaker launch/limited mahsulotlar va kuryer orqali return murakkab."],
     forWhom:"Turli sneaker brendlarini solishtiruvchilar", returns:"AQShda odatda 45 kun ichida yangi holatdagi mahsulot return qilinadi. Ayrim mijozlar uchun pochta return fee mavjud; refund processing bir necha kun/hafta.", ios:"https://apps.apple.com/us/app/foot-locker-shop-releases/id934030757", android:"https://play.google.com/store/apps/details?id=com.footlocker.approved",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"jdsports", name:"JD Sports", domain:"jdsports.com", url:"https://www.jdsports.com", mono:"JS", color:"#1A1A1A", flag:"🌍", country:"Global", cat:"poyabzal", subcats:"Sneaker, streetwear va sport", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"Oson",
+  { id:"jdsports", name:"JD Sports", domain:"jdsports.com", url:"https://www.jdsports.com", mono:"JS", color:"#1A1A1A", flag:"🌍", country:"Angliya", from:["Angliya","AQSh"], cat:"poyabzal", subcats:"Sneaker, streetwear va sport", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"Oson",
     tags:["poyabzal","katta assortiment","vositachi kerak"],
     pros:["Sneaker va streetwear brendlari"],
     cons:["Return oynasi nisbatan qisqa.","Mamlakatlararo siyosat farq qiladi","o\'lcham almashtirish uchun qayta buyurtma qilish talab qilinishi mumkin."],
     forWhom:"Sport va streetwear xaridorlari", returns:"Global/ayrim bozorlarda online xaridlar uchun taxminan 14 kunlik return; refund original paymentga. Ayrim kanallarda online exchange emas, faqat return+qayta buyurtma.", ios:"https://apps.apple.com/gb/app/jd-sports/id690602681", android:"https://play.google.com/store/apps/details?id=com.jd.jdsports",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"Oson"}], updated:"15.08.2026" },
-  { id:"bestbuy", name:"Best Buy", domain:"bestbuy.com", url:"https://www.bestbuy.com", mono:"BB", color:"#0046BE", flag:"🇺🇸", country:"AQSh", cat:"elektronika", subcats:"Consumer electronics va maishiy texnika", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
+  { id:"bestbuy", name:"Best Buy", domain:"bestbuy.com", url:"https://www.bestbuy.com", mono:"BB", color:"#0046BE", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"elektronika", subcats:"Consumer electronics va maishiy texnika", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
     tags:["elektronika","katta assortiment","vositachi kerak"],
     pros:["Elektronika bo'yicha keng assortiment"],
     cons:["Elektronika uchun return oynasi qisqa.","AQSh bozori va warranty tizimiga bog\'liq","Marketplace sellerlari hamda kuryer orqali return qo\'shimcha risk tug\'diradi."],
     forWhom:"AQShdan elektronika xarid qiluvchilar", returns:"Standard mijozlarda ko\'p mahsulotlar uchun return oynasi taxminan 15 kun; membership darajasiga qarab uzayishi mumkin. Marketplace seller mahsulotlarida alohida shartlar mavjud.", ios:"https://apps.apple.com/us/app/best-buy-tech-deals-savings/id314855255", android:"https://play.google.com/store/apps/details?id=com.bestbuy.android",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"newegg", name:"Newegg", domain:"newegg.com", url:"https://www.newegg.com", mono:"Ne", color:"#FF6B00", flag:"🇺🇸", country:"AQSh", cat:"elektronika", subcats:"PC, komponentlar va elektronika", type:"Marketplace", price:"$$", segment:"Katta assortiment", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
+  { id:"newegg", name:"Newegg", domain:"newegg.com", url:"https://www.newegg.com", mono:"Ne", color:"#FF6B00", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"elektronika", subcats:"PC, komponentlar va elektronika", type:"Marketplace", price:"$$", segment:"Katta assortiment", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
     tags:["elektronika","katta assortiment","vositachi kerak"],
     pros:["Kompyuter va komponentlarga kuchli yo'nalish"],
     cons:["PC komponentlarida opened/used, bundle va restocking shartlari murakkab bo\'lishi mumkin.","Marketplace sellerlari, warranty va xalqaro return alohida tekshiruv talab qiladi."],
     forWhom:"PC yig'uvchi va texnika xaridorlari", returns:"Ko\'p mahsulotlarda 30 kun atrofidagi return/refund yoki replacement oynasi mavjud; product va Marketplace seller siyosatiga qarab farq qiladi.", ios:"https://apps.apple.com/gb/app/newegg-tech-shopping-online/id345188269", android:"https://play.google.com/store/apps/details?id=com.newegg.app",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"bhphoto", name:"B&H Photo", domain:"bhphotovideo.com", url:"https://www.bhphotovideo.com", mono:"BP", color:"#1A1A1A", flag:"🇺🇸", country:"AQSh", cat:"elektronika", subcats:"Kamera, audio, kompyuter, professional texnika", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"Oson",
+  { id:"bhphoto", name:"B&H Photo", domain:"bhphotovideo.com", url:"https://www.bhphotovideo.com", mono:"BP", color:"#1A1A1A", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"elektronika", subcats:"Kamera, audio, kompyuter, professional texnika", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"Oson",
     tags:["elektronika","original","vositachi kerak"],
     pros:["Professional elektronika va foto-video assortimenti"],
     cons:["Professional texnika qimmat va ayrim mahsulotlarda return istisnolari ko\'p.","Xalqaro qaytarish, sug\'urta va boj xarajati sezilarli bo\'lishi mumkin."],
     forWhom:"Foto-video va professional texnika xaridorlari", returns:"Ko\'p mahsulotlar 30 kun ichida return qilinadi; maxsus/non-returnable kategoriyalar mavjud. Xalqaro buyurtmada shipping, customs va import xarajatlari ko\'pincha qaytarilmaydi.", ios:"https://apps.apple.com/us/app/b-h-photo-video-pro-audio/id390928219", android:"https://play.google.com/store/apps/details?id=com.bhphoto",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"Oson"}], updated:"15.08.2026" },
-  { id:"asos", name:"ASOS", domain:"asos.com", url:"https://www.asos.com", mono:"AS", color:"#2D2D2D", flag:"🌍", country:"Global", cat:"kiyim va moda", subcats:"Kiyim, poyabzal, aksessuarlar", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:true, complexity:"Oson",
+  { id:"asos", name:"ASOS", domain:"asos.com", url:"https://www.asos.com", mono:"AS", color:"#2D2D2D", flag:"🌍", country:"Angliya", from:["Angliya"], cat:"kiyim va moda", subcats:"Kiyim, poyabzal, aksessuarlar", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:true, complexity:"Oson",
     tags:["kiyim va moda","katta assortiment","to'g'ridan-to'g'ri"],
     pros:["Ko'p brendli moda assortimenti"],
     cons:["Ko\'p qaytarish qiladigan akkauntlarga cheklov/fee qo\'llanishi mumkin.","O\'lcham mos kelmasligi keng tarqalgan","xalqaro qaytarish va boj xarajatlari mintaqaga qarab farq qiladi."],
     forWhom:"Moda va turli brendlarni bir joyda izlaydiganlar", returns:"Odatda 28 kun ichida return. Mahsulot original holatda bo\'lishi kerak; refund tekshiruvdan keyin amalga oshiriladi. Fair-use qoidalari va ayrim return fee holatlari mavjud.", ios:"https://apps.apple.com/us/app/asos-discover-fashion-online/id457876088", android:"https://play.google.com/store/apps/details?id=com.asos.app",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"ha"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"Oson"}], updated:"15.08.2026" },
-  { id:"microcenter", name:"Micro Center", domain:"microcenter.com", url:"https://www.microcenter.com", mono:"MC", color:"#0057B8", flag:"🇺🇸", country:"AQSh", cat:"elektronika", subcats:"PC komponentlari va kompyuter texnikasi", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"microcenter", name:"Micro Center", domain:"microcenter.com", url:"https://www.microcenter.com", mono:"MC", color:"#0057B8", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"elektronika", subcats:"PC komponentlari va kompyuter texnikasi", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["elektronika","katta assortiment","vositachi kerak"],
     pros:["PC va komponentlarga ixtisoslashgan"],
     cons:["Asosan AQShdagi physical-store modeliga tayangan.","Qimmat elektronika uchun qisqa muddat","xalqaro shipping/return imkoniyatlari cheklangan."],
     forWhom:"Kompyuter yig'ish uchun detal izlaydiganlar", returns:"Ko\'p mahsulotlar 30 kun, ammo kompyuter, CPU, motherboard, kamera va ayrim elektronika uchun qisqaroq return oynasi qo\'llanishi mumkin.", ios:"", android:"",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"apple", name:"Apple Store", domain:"apple.com", url:"https://www.apple.com", mono:"Ap", color:"#1A1A1A", flag:"🌍", country:"Global", cat:"elektronika", subcats:"iPhone, Mac, iPad va aksessuarlar", type:"Rasmiy brend do'koni", price:"$$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"apple", name:"Apple Store", domain:"apple.com", url:"https://www.apple.com", mono:"Ap", color:"#1A1A1A", flag:"🌍", country:"AQSh", from:["AQSh","Angliya","Germaniya"], cat:"elektronika", subcats:"iPhone, Mac, iPad va aksessuarlar", type:"Rasmiy brend do'koni", price:"$$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["elektronika","original","vositachi kerak"],
     pros:["Rasmiy Apple mahsulotlari"],
     cons:["Return oynasi juda qisqa.","Xarid qilingan mamlakat/Apple Store bilan bog\'liq","activated/configured mahsulotlar va xalqaro warranty/region masalalari qo\'shimcha e\'tibor talab qiladi."],
     forWhom:"Apple mahsulotlarini rasmiy manbadan oluvchilar", returns:"Apple\'dan to\'g\'ridan-to\'g\'ri olingan ko\'p mahsulotlar AQShda 14 kalendar kun ichida return qilinadi; mamlakatlar bo\'yicha muddat va huquqlar farq qiladi.", ios:"https://apps.apple.com/us/app/apple-store/id375380948", android:"",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"samsung", name:"Samsung Store", domain:"samsung.com", url:"https://www.samsung.com", mono:"SS", color:"#1428A0", flag:"🌍", country:"Global", cat:"elektronika", subcats:"Smartfon, TV, maishiy elektronika", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"samsung", name:"Samsung Store", domain:"samsung.com", url:"https://www.samsung.com", mono:"SS", color:"#1428A0", flag:"🌍", country:"AQSh", from:["AQSh","Koreya"], cat:"elektronika", subcats:"Smartfon, TV, maishiy elektronika", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["elektronika","original","vositachi kerak"],
     pros:["Rasmiy Samsung mahsulotlari"],
     cons:["Muddat qisqa va country-site bo\'yicha farqlanadi.","Telefon, appliance va o\'rnatilgan mahsulotlarda alohida shartlar","kuryer/warranty regioni muhim."],
     forWhom:"Samsung texnikasi xaridorlari", returns:"Ko\'p bozorlarda 14–15 kun atrofida return oynasi; requestdan keyin mahsulotni belgilangan muddatda jo\'natish va inspection talab qilinadi.", ios:"https://apps.apple.com/us/app/shop-samsung/id1274679179", android:"https://play.google.com/store/apps/details?id=com.samsung.ecomm",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"xiaomi", name:"Xiaomi", domain:"mi.com", url:"https://www.mi.com", mono:"Xi", color:"#FF6900", flag:"🌍", country:"Global", cat:"elektronika", subcats:"Smartfon, gadget va smart-home", type:"Rasmiy brend do'koni", price:"$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"xiaomi", name:"Xiaomi", domain:"mi.com", url:"https://www.mi.com", mono:"Xi", color:"#FF6900", flag:"🌍", country:"Xitoy", from:["Xitoy"], cat:"elektronika", subcats:"Smartfon, gadget va smart-home", type:"Rasmiy brend do'koni", price:"$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["elektronika","original","vositachi kerak"],
     pros:["Xiaomi ekotizimi mahsulotlari"],
     cons:["Yagona global return standarti yo\'q.","Region ROM, warranty va country-store cheklovlari bor","boshqa davlatdan olingan qurilmani mahalliy servis qabul qilmasligi mumkin."],
     forWhom:"Xiaomi gadgetlarini izlaydiganlar", returns:"Return muddati mamlakatga qarab farq qiladi; odatda 7–14 kunlik change-of-mind va nuqsonlar uchun uzoqroq repair/replacement/refund huquqlari mavjud.", ios:"https://apps.apple.com/gb/app/mi-store/id1268565993", android:"https://play.google.com/store/apps/details?id=com.mi.global.shop",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"lenovo", name:"Lenovo", domain:"lenovo.com", url:"https://www.lenovo.com", mono:"Le", color:"#E2231A", flag:"🌍", country:"Global", cat:"elektronika", subcats:"Noutbuk, PC va aksessuarlar", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"lenovo", name:"Lenovo", domain:"lenovo.com", url:"https://www.lenovo.com", mono:"Le", color:"#E2231A", flag:"🌍", country:"Xitoy", from:["Xitoy","AQSh"], cat:"elektronika", subcats:"Noutbuk, PC va aksessuarlar", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["elektronika","original","vositachi kerak"],
     pros:["Rasmiy Lenovo kompyuter mahsulotlari"],
     cons:["CTO/custom konfiguratsiya va country policy farq qiladi.","Ba\'zi bozorlarda restocking yoki return cheklovi mavjud","xalqaro warranty ham modelga bog\'liq."],
     forWhom:"Noutbuk va PC xaridorlari", returns:"AQShda ko\'p yangi mahsulotlar uchun 30 kunlik return; Outlet odatda qisqaroq, ayrim business/PRO dasturlarida uzunroq muddat bo\'lishi mumkin.", ios:"https://apps.apple.com/gb/app/lenovo/id1398650553", android:"https://play.google.com/store/apps/details?id=com.lenovo.serviceit",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"sephora", name:"Sephora", domain:"sephora.com", url:"https://www.sephora.com", mono:"Se", color:"#1A1A1A", flag:"🌍", country:"Global", cat:"kosmetika", subcats:"Kosmetika, parfyumeriya va skincare", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Premium", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"sephora", name:"Sephora", domain:"sephora.com", url:"https://www.sephora.com", mono:"Se", color:"#1A1A1A", flag:"🌍", country:"AQSh", from:["AQSh"], cat:"kosmetika", subcats:"Kosmetika, parfyumeriya va skincare", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Premium", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["kosmetika","premium","vositachi kerak"],
     pros:["Ko'plab beauty brendlar bir joyda"],
     cons:["Forwarding kompaniyasiga yetkazilgandan keyingi yo\'qolish/damage claimlari cheklanishi mumkin.","Country policy, beauty hygiene istisnolari va high-return monitoring mavjud."],
     forWhom:"Premium kosmetika xaridorlari", returns:"AQShda ko\'p yangi yoki yengil ishlatilgan mahsulotlar 30 kun ichida original paymentga refund qilinadi; final-sale va ayrim mahsulotlar istisno.", ios:"https://apps.apple.com/us/app/sephora-us-makeup-skincare/id393328150", android:"https://play.google.com/store/apps/details?id=com.sephora",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"ulta", name:"Ulta Beauty", domain:"ulta.com", url:"https://www.ulta.com", mono:"UB", color:"#E4007C", flag:"🇺🇸", country:"AQSh", cat:"kosmetika", subcats:"Mass-market va premium beauty", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"ulta", name:"Ulta Beauty", domain:"ulta.com", url:"https://www.ulta.com", mono:"UB", color:"#E4007C", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"kosmetika", subcats:"Mass-market va premium beauty", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["kosmetika","katta assortiment","vositachi kerak"],
     pros:["Turli narx segmentidagi beauty assortiment"],
     cons:["AQShga kuchli bog\'langan","ayrim marketplace va third-party delivery xaridlari alohida tartibda.","ID/proof talab qilinadi, excessive return holatlarida cheklov qo\'yilishi mumkin."],
     forWhom:"Kosmetikani ko'p brend ichidan tanlaydiganlar", returns:"Ko\'p yangi yoki yengil ishlatilgan mahsulotlar 30 kun ichida original paymentga refund; 31–60 kun oralig\'ida odatda merchandise credit. 60 kundan keyin refund yo\'q.", ios:"https://apps.apple.com/us/app/ulta-beauty-makeup-skincare/id561930308", android:"https://play.google.com/store/apps/details?id=com.ulta",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"beautybay", name:"Beauty Bay", domain:"beautybay.com", url:"https://www.beautybay.com", mono:"BY", color:"#1A1A1A", flag:"🌍", country:"Global", cat:"kosmetika", subcats:"Kosmetika va skincare", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"Oson",
+  { id:"beautybay", name:"Beauty Bay", domain:"beautybay.com", url:"https://www.beautybay.com", mono:"BY", color:"#1A1A1A", flag:"🌍", country:"Angliya", from:["Angliya"], cat:"kosmetika", subcats:"Kosmetika va skincare", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"Oson",
     tags:["kosmetika","katta assortiment","vositachi kerak"],
     pros:["Trend beauty brendlar assortimenti"],
     cons:["Opened cosmetics va hygiene mahsulotlarining qaytarilishi cheklangan.","Xalqaro shipping/customs qaytmasligi mumkin","refund warehouse inspectionga bog\'liq."],
     forWhom:"Trend kosmetika izlaydiganlar", returns:"Eligible mahsulotlar odatda 30 kun ichida, unused/unopened va seal buzilmagan holatda qaytariladi. Refund return tekshirilgandan keyin qayta ishlanadi.", ios:"https://apps.apple.com/us/app/beauty-bay/id1319809419", android:"https://play.google.com/store/apps/details?id=com.beautybay",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"Oson"}], updated:"15.08.2026" },
-  { id:"lego", name:"LEGO", domain:"lego.com", url:"https://www.lego.com", mono:"LE", color:"#D01012", flag:"🌍", country:"Global", cat:"bolalar", subcats:"Konstruktor va kolleksiya setlari", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"lego", name:"LEGO", domain:"lego.com", url:"https://www.lego.com", mono:"LE", color:"#D01012", flag:"🌍", country:"Angliya", from:["Angliya","AQSh","Germaniya"], cat:"bolalar", subcats:"Konstruktor va kolleksiya setlari", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["bolalar","original","vositachi kerak"],
     pros:["Rasmiy LEGO mahsulotlari"],
     cons:["Country policy turlicha","collector setlarda packaging holati muhim.","Ochilgan set, promotional/gift va xalqaro kuryer buyurtmalarida shartlar alohida bo\'lishi mumkin."],
     forWhom:"LEGO va konstruktor xaridorlari", returns:"Return muddati bozorga qarab farq qiladi: AQShda 90 kungacha, ayrim Yevropa/Osiyo bozorlarida qisqaroq. Eligible mahsulot original holatda bo\'lishi kerak.", ios:"https://apps.apple.com/gb/app/lego-insiders-shop-rewards/id6740403375", android:"https://play.google.com/store/apps/details?id=com.lego.membership",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"hamleys", name:"Hamleys", domain:"hamleys.com", url:"https://www.hamleys.com", mono:"Ha", color:"#E30613", flag:"🇬🇧", country:"Buyuk Britaniya", cat:"bolalar", subcats:"O'yinchoqlar va sovg'alar", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Premium", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"hamleys", name:"Hamleys", domain:"hamleys.com", url:"https://www.hamleys.com", mono:"Ha", color:"#E30613", flag:"🇬🇧", country:"Angliya", from:["Angliya"], cat:"bolalar", subcats:"O'yinchoqlar va sovg'alar", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Premium", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["bolalar","premium","vositachi kerak"],
     pros:["Premium o'yinchoq assortimenti"],
     cons:["Asosan UK retail modeli.","Ochilgan o\'yinchoqlar return qilinmasligi mumkin","xalqaro shipping va refund processing uzoqroq/qo\'shimcha xarajatli."],
     forWhom:"Sifatli va sovg'abop o'yinchoq izlaydiganlar", returns:"UK siyosatida unopened/unused mahsulotlarga 60 kungacha refund va ayrim holatlarda 90 kungacha exchange mavjud. Proof va original packaging talab qilinadi.", ios:"https://apps.apple.com/in/app/hamleys/id6755169519", android:"https://play.google.com/store/apps/details?id=com.hamleys_webapp",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"victoriassecret", name:"Victoria's Secret", domain:"victoriassecret.com", url:"https://www.victoriassecret.com", mono:"VS", color:"#E31C79", flag:"🇺🇸", country:"AQSh", cat:"kiyim va moda", subcats:"Ichki kiyim, lingerie, sleepwear, sport kiyimi, atir, body care va aksessuarlar", type:"Rasmiy brend do'koni", price:"$$", segment:"Original", original:"Yuqori", direct:true, complexity:"Oson",
+  { id:"victoriassecret", name:"Victoria's Secret", domain:"victoriassecret.com", url:"https://www.victoriassecret.com", mono:"VS", color:"#E31C79", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"kiyim va moda", subcats:"Ichki kiyim, lingerie, sleepwear, sport kiyimi, atir, body care va aksessuarlar", type:"Rasmiy brend do'koni", price:"$$", segment:"Original", original:"Yuqori", direct:true, complexity:"Oson",
     tags:["kiyim va moda","original","to'g'ridan-to'g'ri"],
     pros:["Dunyoga mashhur lingerie va beauty brendi","O'zbekistonga ham to'g'ridan-to'g'ri xalqaro yetkazish mavjud."],
     cons:["O'lcham tanlash muhim","xalqaro return shipping pullik bo'lishi mumkin.","Ayrim beauty/fragrance mahsulotlarida transport cheklovlari, duties/tax va yetkazish muddati destinationga qarab farq qiladi."],
     forWhom:"Original Victoria's Secret lingerie, sleepwear, PINK va fragrance mahsulotlarini xarid qiluvchilar", returns:"Xalqaro buyurtmalar Global-e orqali 60 kun ichida qaytarilishi mumkin. Return shipping haqi manzilga qarab farq qiladi; xalqaro online returnlar odatda mahalliy Victoria's Secret do'konlarida qabul qilinmaydi.", ios:"https://apps.apple.com/us/app/victorias-secret-bras-more/id336860594", android:"https://play.google.com/store/apps/details?id=com.victoriassecret.vsaa",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"ha"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"Oson"}], updated:"15.08.2026" },
-  { id:"toysrus", name:"Toys\"R\"Us", domain:"toysrus.com", url:"https://www.toysrus.com", mono:"To", color:"#0067B1", flag:"🇺🇸", country:"AQSh", cat:"bolalar", subcats:"O'yinchoqlar, LEGO, qo'g'irchoqlar, action figures, learning toys, outdoor toys va baby mahsulotlar", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"toysrus", name:"Toys\"R\"Us", domain:"toysrus.com", url:"https://www.toysrus.com", mono:"To", color:"#0067B1", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"bolalar", subcats:"O'yinchoqlar, LEGO, qo'g'irchoqlar, action figures, learning toys, outdoor toys va baby mahsulotlar", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["bolalar","katta assortiment","vositachi kerak"],
     pros:["Eng mashhur universal o'yinchoq retailerlaridan biri","yosh va kategoriya bo'yicha juda katta assortiment."],
     cons:["ToysRUs.com hozir xalqaro shipping qilmaydi","O'zbekiston uchun kuryer kerak.","Alaska/Hawaii va katta buyumlarda surcharge bo'lishi mumkin"],
     forWhom:"Bir joydan turli yoshdagi bolalar uchun mashhur brend o'yinchoqlarini izlaydiganlar", returns:"Returnni mahsulot olinganidan keyin 30 kun ichida boshlash kerak; original packaging talab qilinadi. Approved refund original paymentga yoki ayrim holatlarda store credit shaklida berilishi mumkin.", ios:"", android:"",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"smythstoys", name:"Smyths Toys", domain:"smythstoys.com", url:"https://www.smythstoys.com", mono:"ST", color:"#E2001A", flag:"🇬🇧", country:"Buyuk Britaniya", cat:"bolalar", subcats:"O'yinchoqlar, LEGO, gaming, outdoor, baby, nursery, bikes va electronic toys", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"smythstoys", name:"Smyths Toys", domain:"smythstoys.com", url:"https://www.smythstoys.com", mono:"ST", color:"#E2001A", flag:"🇬🇧", country:"Angliya", from:["Angliya"], cat:"bolalar", subcats:"O'yinchoqlar, LEGO, gaming, outdoor, baby, nursery, bikes va electronic toys", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["bolalar","katta assortiment","vositachi kerak"],
     pros:["Yevropadagi eng yirik toy retailerlaridan biri","300+ do'kon va bir nechta Yevropa mamlakatida kuchli online savdo."],
     cons:["O'zbekistonga bevosita jo'natmaydi.","Online store va return jarayoni davlatga bog'langan","katta outdoor/baby mahsulotlarda logistika va kuryer xarajati yuqori."],
     forWhom:"Yevropadan LEGO, gaming, bolalar va outdoor o'yinchoqlarini xarid qiluvchilar", returns:"Ko'p bozorlarda unused va unopened mahsulotlar xariddan keyin 28 kun ichida qaytariladi; original packaging, receipt/order reference talab qilinadi. Opened software/games va ayrim nursery mahsulotlari istisno.", ios:"", android:"",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"faoschwarz", name:"FAO Schwarz", domain:"faoschwarz.com", url:"https://faoschwarz.com", mono:"FS", color:"#A6192E", flag:"🇺🇸", country:"AQSh", cat:"bolalar", subcats:"Premium o'yinchoqlar, plush, dolls, ride-ons, collectibles, gifts va eksklyuziv mahsulotlar", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Premium", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"faoschwarz", name:"FAO Schwarz", domain:"faoschwarz.com", url:"https://faoschwarz.com", mono:"FS", color:"#A6192E", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"bolalar", subcats:"Premium o'yinchoqlar, plush, dolls, ride-ons, collectibles, gifts va eksklyuziv mahsulotlar", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Premium", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["bolalar","premium","vositachi kerak"],
     pros:["Ikonik premium toy store","noodatiy, sovg'abop va eksklyuziv o'yinchoqlar hamda kolleksiya mahsulotlari kuchli."],
     cons:["Xalqaro shipping mavjud emas","faqat continental AQShga yo'naltirilgan.","Return uchun $10 fee bor"],
     forWhom:"Premium, noodatiy va sovg'abop o'yinchoqlar hamda collectible izlaydiganlar", returns:"Eligible mahsulotlar deliverydan keyin 30 kun ichida qaytariladi. Har bir return shipment uchun $10 fee olinadi; online buyurtmalarni storega qaytarib bo'lmaydi. Ayrim bulky/partner mahsulotlarda 10–20% restocking fee mavjud.", ios:"", android:"",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
-  { id:"mattel", name:"Mattel Creations", domain:"creations.mattel.com", url:"https://creations.mattel.com", mono:"MT", color:"#E4002B", flag:"🇺🇸", country:"Global", cat:"bolalar", subcats:"Barbie Signature, Hot Wheels Collectors, Matchbox, Monster High, Masters of the Universe, action figures va limited-edition collectibles", type:"Rasmiy brend do'koni", price:"$$$", segment:"Exclusive", original:"Yuqori", direct:false, complexity:"O'rtacha",
+  { id:"mattel", name:"Mattel Creations", domain:"creations.mattel.com", url:"https://creations.mattel.com", mono:"MT", color:"#E4002B", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"bolalar", subcats:"Barbie Signature, Hot Wheels Collectors, Matchbox, Monster High, Masters of the Universe, action figures va limited-edition collectibles", type:"Rasmiy brend do'koni", price:"$$$", segment:"Exclusive", original:"Yuqori", direct:false, complexity:"O'rtacha",
     tags:["bolalar","exclusive","vositachi kerak"],
     pros:["Mattel'ning rasmiy collector platformasi","limited-edition Barbie, Hot Wheels, Monster High va boshqa eksklyuziv drop'lar."],
     cons:["O'zbekistonga shipping yo'q.","International orders qaytarilmaydi","limited drops tez sotiladi, purchase limits va product-specific shipping restrictions mavjud."],
@@ -4932,14 +4945,24 @@ const STORE_CATS = [
   ['kosmetika',     'Kosmetika',      'Parvarish va bo\'yoq',         'icons/dok-kosmetika.webp'],
   ['bolalar',       'Bolalar',        'Bolalar va chaqaloqlar uchun','icons/dok-bolalar.webp']
 ];
+/* Do'konlar davlat bo'yicha: "Global" papkasi olib tashlandi (2026-09-18) —
+   u 24 ta do'konni bitta tushunarsiz uyaga yig'ardi. Endi har bir do'kon
+   `from` maydonida haqiqiy yetkazish davlatlarini ko'rsatadi va shu
+   davlatlarning har birida ko'rinadi. Ro'yxat — kuryer tarifi bor
+   davlatlar (LC_COUNTRIES bilan bir xil), shuning uchun papkadan kuryerga
+   va kalkulyatorga o'tish har doim ishlaydi. */
 const STORE_COUNTRIES = [
-  ['Xitoy',            'Xitoy',            'Arzon narx, keng tanlov',      '🇨🇳'],
-  ['AQSh',             'AQSh',             'Original brend va texnika',    '🇺🇸'],
-  ['Turkiya',          'Turkiya',          'Yaqin ombor, tez yetkazish',   '🇹🇷'],
-  ['Buyuk Britaniya',  'Buyuk Britaniya',  'Moda va kosmetika',            '🇬🇧'],
-  ['BAA',              'BAA',              'Dubay omborlari orqali',       '🇦🇪'],
-  ['Global',           'Global',           'Ko\'p davlatga yuboradi',      '🌍']
+  ['Xitoy',      'Xitoy',      'Arzon narx, keng tanlov',       '🇨🇳'],
+  ['AQSh',       'AQSh',       'Original brend va texnika',     '🇺🇸'],
+  ['Turkiya',    'Turkiya',    'Yaqin ombor, tez yetkazish',    '🇹🇷'],
+  ['Angliya',    'Angliya',    'Moda va kosmetika',             '🇬🇧'],
+  ['Germaniya',  'Germaniya',  'Yevropa omborlari',             '🇩🇪'],
+  ['Koreya',     'Koreya',     'Texnika va kosmetika',          '🇰🇷'],
+  ['BAA',        'BAA',        'Dubay omborlari orqali',        '🇦🇪']
 ];
+/* Do'konning yetkazish davlatlari: `from` bo'lmasa — bitta `country`. */
+const storeFrom = s => (Array.isArray(s.from) && s.from.length ? s.from : [s.country]).filter(Boolean);
+const COUNTRY_FLAG = Object.fromEntries(STORE_COUNTRIES.map(([k, , , f]) => [k, f]));
 
 /* Kuryerlar bo'limi ham papkalarga bo'lingan — yo'nalish (qaysi davlatdan
    olib keladi) bo'yicha. Bitta kuryer bir nechta yo'nalishda ishlashi mumkin,
@@ -5465,13 +5488,15 @@ const WIZ_COUNTRIES = [
   { label:'🇨🇳 Xitoy', key:'Xitoy', note:'Eng arzon, muddat uzunroq' },
   { label:'🇹🇷 Turkiya', key:'Turkiya', note:'Kiyimda kuchli, 10-18 kun' },
   { label:'🇺🇸 AQSh', key:'AQSh', note:'Brend va elektronika' },
-  { label:'🇬🇧 Buyuk Britaniya', key:'Buyuk Britaniya', note:'Brend do\'konlari, avia' },
+  { label:'🇬🇧 Angliya', key:'Angliya', note:'Brend do\'konlari, avia' },
+  { label:'🇩🇪 Germaniya', key:'Germaniya', note:'Yevropa omborlari' },
   { label:'🇦🇪 BAA', key:'BAA', note:'Dubay orqali, tez' },
   { label:'🌍 Farqi yo\'q', key:'Global', note:'Barcha yo\'nalishlarni ko\'rsataman' }
 ];
 const CUR_MATCH = {
   Xitoy:/xitoy|china/i, Turkiya:/turkiya|turkey/i, AQSh:/aqsh|aqsh|usa|amerika/i,
-  'Buyuk Britaniya':/angliya|britaniya|london|yevropa/i, BAA:/baa|dubay|amirlik|emirat/i, Global:/./
+  Angliya:/angliya|britaniya|london|yevropa/i, Germaniya:/germaniya|nemis|yevropa|europe/i,
+  BAA:/baa|dubay|amirlik|emirat/i, Global:/./
 };
 const WIZ_LABELS = ['Mahsulot','Davlat','Do\'kon','Kuryer','Hisob'];
 /* «Orqaga» tugmasi uchun tushum kelishigidagi shakl: qo'shimcha so'zga
@@ -5500,7 +5525,8 @@ const PLAN_STATUS = [
 const STORE_ROUTE = {
   Xitoy:/xitoy|china|hitoy/i, AQSh:/aqsh|usa|amerika/i, Turkiya:/turkiya|turkey/i,
   BAA:/baa|dubay|amirlik|emirat/i, Koreya:/koreya|korea/i, Rossiya:/rossiya|russia/i,
-  Yaponiya:/yaponiya|japan/i, 'Buyuk Britaniya':/angliya|britaniya|london|yevropa/i
+  Yaponiya:/yaponiya|japan/i, Angliya:/angliya|britaniya|london|yevropa/i,
+  Germaniya:/germaniya|nemis|yevropa|europe/i, 'Buyuk Britaniya':/angliya|britaniya|london|yevropa/i
 };
 
 class Component extends DCLogic {
@@ -5543,6 +5569,9 @@ class Component extends DCLogic {
     /* "Qayerdan topaman?" tanlovi: kategoriya, ixtiyoriy matn, originallik,
        byudjet. Chatga savol shu tanlovlardan tuziladi. */
     where: { cat: '', text: '', orig: '', budget: '' },
+    /* Do'kon sahifasida tanlangan yetkazish davlati (bir nechtasi bo'lsa).
+       Do'konda yo'q davlat tanlangan bo'lsa birinchisiga qaytadi. */
+    storeOrigin: '',
     /* AI yoqilganmi (Worker'da kalit bormi). Oxirgi ma'lum holat
        localStorage'da — ikkinchi ochilishda kamera darrov joyida; haqiqiy
        holat checkAi() bilan yangilanadi. Noma'lum bo'lsa — o'chiq: o'lik
@@ -5670,9 +5699,9 @@ class Component extends DCLogic {
     const q = norm(st.storeQuery);
     const list = STORES.filter(s => {
       if (fKind === 'cat' && s.cat !== fVal) return false;
-      if (fKind === 'country' && s.country !== fVal) return false;
+      if (fKind === 'country' && !storeFrom(s).includes(fVal)) return false;
       if (q && !matches(storeHay(s), q)) return false;
-      if (st.storeCountries.length && !st.storeCountries.includes(s.country)) return false;
+      if (st.storeCountries.length && !storeFrom(s).some(c => st.storeCountries.includes(c))) return false;
       if (st.storeCats.length && !st.storeCats.includes(s.cat)) return false;
       if (st.storeDirect && !s.direct) return false;
       return true;
@@ -6279,10 +6308,14 @@ class Component extends DCLogic {
     if (this.state.moOpen || this.state.moPlaying) this.setState({ moOpen: false, moStep: 0, moPlaying: false });
   }
 
-  couriersForStore(s) {
-    const re = STORE_ROUTE[s.country] || null;
-    const list = re
-      ? COURIERS.filter(c => re.test(c.countries || '') || (c.from || []).some(x => re.test(x)))
+  couriersForStore(s, only) {
+    /* Do'kon bir nechta davlatdan yuborsa (Amazon — AQSh, Germaniya,
+       Angliya), ularning har biridagi kuryerlar birlashtiriladi; `only`
+       berilsa faqat o'sha davlat. */
+    const cs = only ? [only] : storeFrom(s);
+    const res = cs.map(c => STORE_ROUTE[c]).filter(Boolean);
+    const list = res.length
+      ? COURIERS.filter(c => res.some(re => re.test(c.countries || '') || (c.from || []).some(x => re.test(x))))
       : [...COURIERS];
     return (list.length ? list : [...COURIERS]).slice().sort((a, b) => a.price - b.price);
   }
@@ -6811,7 +6844,11 @@ class Component extends DCLogic {
         askDoc: () => this.askSvc('svc-taqiq', tx(st.lang, 'Tovar: {0}', b.name))
       }));
 
-    const storeCouriers = cur === 'store' ? this.couriersForStore(store) : [];
+    /* Do'konning faol yetkazish davlati: foydalanuvchi tanlagani yoki
+       birinchisi (asosiysi). */
+    const storeOrigins = cur === 'store' ? storeFrom(store) : [];
+    const storeOrigin = storeOrigins.includes(st.storeOrigin) ? st.storeOrigin : (storeOrigins[0] || '');
+    const storeCouriers = cur === 'store' ? this.couriersForStore(store, storeOrigin) : [];
     const pl = st.plans.find(p => p.id === st.planId) || st.plans[0] || null;
     /* Ochilgan papkaning ta'rifi: 'cat:elektronika' -> STORE_CATS dagi qator. */
     const folderDef = (() => {
@@ -6844,20 +6881,19 @@ class Component extends DCLogic {
     const catKey = (WIZ_CATS.find(c => c.label === st.wizCat) || {}).key || null;
     const cKey = (WIZ_COUNTRIES.find(c => c.label === st.wizCountry) || {}).key || 'Global';
     const onWizard = cur === 'wizard';
-    /* Davlat tanlansa, avval o'sha davlatning do'konlari, keyin "Global"
-       (ko'p davlatga yuboradigan: Nike, Adidas, Sephora...) chiqadi.
-       Ilgari Global'lar umuman chiqmasdi: "Poyabzal + AQSh" tanlagan
-       foydalanuvchi Nike va Adidas'ni ko'rmay, faqat Walmart va Foot
-       Locker'ni ko'rardi. */
-    const wizLocal = !onWizard ? [] : (cKey === 'Global' ? STORES : STORES.filter(s => s.country === cKey));
-    const wizGlobal = !onWizard || cKey === 'Global' ? [] : STORES.filter(s => s.country === 'Global');
+    /* Davlat tanlansa — o'sha davlatdan yuboradigan barcha do'konlar
+       (2026-09-18): avval shu davlat asosiy bo'lganlar, keyin qo'shimcha
+       yo'nalish sifatida yuboradiganlar. Ilgari ko'p davlatga yuboradigan
+       do'konlar "Global" uyasida turardi va "Poyabzal + AQSh" tanlagan
+       foydalanuvchi Nike'ni ko'rmasdi. */
     const wizCatOk = s => !catKey ? true : (s.cat === catKey || (catKey !== 'universal' && s.cat === 'universal'));
-    const wizInCountry = [...wizLocal, ...wizGlobal];
-    /* Global'lar ichida avval toifaning o'zi (Nike, Adidas), keyin
-       universal marketpleyslar (Amazon, eBay). */
-    const wizGlobalCat = wizGlobal.filter(wizCatOk).sort((a, b) => (a.cat === catKey ? 0 : 1) - (b.cat === catKey ? 0 : 1));
-    const wizStores = [...wizLocal.filter(wizCatOk), ...wizGlobalCat];
-    const wizGlobalN = wizGlobal.filter(wizCatOk).length;
+    const wizInCountry = !onWizard ? []
+      : (cKey === 'Global' ? [...STORES]
+        : STORES.filter(s => storeFrom(s).includes(cKey))
+          .sort((a, b) => (storeFrom(a)[0] === cKey ? 0 : 1) - (storeFrom(b)[0] === cKey ? 0 : 1)));
+    const wizStores = wizInCountry.filter(wizCatOk);
+    /* Qo'shimcha yo'nalish sifatida kelganlar soni — izoh uchun. */
+    const wizGlobalN = cKey === 'Global' ? 0 : wizStores.filter(s => storeFrom(s)[0] !== cKey).length;
     const wizCouriers = !onWizard ? [] : [...COURIERS].filter(k =>
       cKey === 'Global' ? true : (CUR_MATCH[cKey].test(k.countries || '') || (k.from || []).some(x => CUR_MATCH[cKey].test(x)))
     ).sort((a, b) => a.price - b.price);
@@ -6882,7 +6918,7 @@ class Component extends DCLogic {
       if (st.wizStep === 2) return (wizStores.length ? wizStores
         : (wizInCountry.length ? wizInCountry : STORES)).map(s => ({
         /* Izoh qismlarga bo'lib tarjima qilinadi: yaxlit satr lug'atda yo'q. */
-        label:s.name, note:tr(st.lang, s.type) + ' · ' + tr(st.lang, s.country) + ' · ' + tr(st.lang, s.direct ? 'to\'g\'ridan-to\'g\'ri' : 'vositachi kerak'),
+        label:s.name, note:tr(st.lang, s.type) + ' · ' + tr(st.lang, cKey === 'Global' ? s.country : cKey) + ' · ' + tr(st.lang, s.direct ? 'to\'g\'ridan-to\'g\'ri' : 'vositachi kerak'),
         pick:() => this.setState({ wizStore:s.name, wizStep:3 }),
         hasMono:true, hasPrice:true, plain:false, color:s.color, ink:s.ink, mono:s.mono,
         logoCss:s.logoCss, logoFit:'contain', logoBg:'transparent', boxW:'48px', logoInset:'0',
@@ -6904,7 +6940,7 @@ class Component extends DCLogic {
       'Yo\'nalish narx va muddatni belgilaydi.',
       wizStores.length
         ? (wizGlobalN && wizGlobalN < wizStores.length
-          ? tx(st.lang, "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi ko'p davlatga yuboradi.", wizStores.length, wizGlobalN)
+          ? tx(st.lang, "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi shu davlatdan ham yuboradi.", wizStores.length, wizGlobalN)
           : tx(st.lang, "Tanlovingizga mos {0} ta do'kon.", wizStores.length))
         : (wizInCountry.length
           ? 'Bu kategoriyada mos do\'kon yo\'q — shu yo\'nalishdagi qolganlari.'
@@ -7519,7 +7555,7 @@ class Component extends DCLogic {
         };
         const inFolder = cur === 'storefolder' ? this.storesFiltered() : [];
         const folders = defs.map(([key, title, sub, icon]) => {
-          const n = STORES.filter(x => x[field] === key).length;
+          const n = STORES.filter(x => byCountry ? storeFrom(x).includes(key) : x[field] === key).length;
           /* Toifalarda chiziqli ikonka, davlatlarda bayroq — bayroq davlat
              uchun eng tushunarli belgi va u loyihadagi shriftdan chiqadi. */
           return { key, title, sub, count: n + ' ta', n, open: () => openFolder(key),
@@ -7571,8 +7607,19 @@ class Component extends DCLogic {
       })(),
 
       store: { ...store, apps: storeApps, hasApps: storeApps.length > 0,
+        /* Yetkazish davlatlari: bittadan ko'p bo'lsa chip bo'lib chiqadi va
+           kuryerlar, tarif va kalkulyator tanlangan davlat bo'yicha. */
+        fromLine: storeOrigins.map(c => tr(st.lang, c)).join(' · '),
+        hasOrigins: storeOrigins.length > 1,
+        origins: storeOrigins.map(c => ({
+          t: (COUNTRY_FLAG[c] ? COUNTRY_FLAG[c] + ' ' : '') + tr(st.lang, c), on: c === storeOrigin,
+          bg: c === storeOrigin ? '#1A1FB0' : '#FFFFFF', fg: c === storeOrigin ? '#FFFFFF' : '#131429',
+          bd: c === storeOrigin ? '#1A1FB0' : '#DCDDFA',
+          pick: () => this.setState({ storeOrigin: c })
+        })),
+        originName: tr(st.lang, storeOrigin),
         calcFrom: () => this.openLanded({ storeId: store.id, cat: CATEGORIES.some(c => c.id === store.cat) ? store.cat : 'universal',
-          country: LC_COUNTRIES.find(c => (STORE_ROUTE[c === 'Angliya' ? 'Buyuk Britaniya' : c] || /$^/).test(store.country || '')) || 'Xitoy' }),
+          country: LC_COUNTRIES.includes(storeOrigin) ? storeOrigin : 'Xitoy' }),
         linkLabel: store.isAff ? store.domain + ' · ' + tr(st.lang, 'hamkorlik havolasi') : store.domain,
         plate: (store.logoCss && store.logoCss !== 'none') ? 'transparent' : store.tint,
         hasFullGuide: !!storeFull,
@@ -7596,7 +7643,7 @@ class Component extends DCLogic {
              bo'lsa o'sha papka, aks holda "Barcha kuryerlar". Ilgari "20
              kuryerni ko'rish" tugmasi papka tanlash ekraniga olib chiqardi. */
           const regions = [...new Set(storeCouriers.slice(0, 8).flatMap(k => k.from || []))]
-            .filter(r => STORE_ROUTE[store.country] ? STORE_ROUTE[store.country].test(r) : false);
+            .filter(r => STORE_ROUTE[storeOrigin] ? STORE_ROUTE[storeOrigin].test(r) : false);
           const one = regions.length === 1 && COURIER_ORIGINS.some(o => o[0] === regions[0]) ? regions[0] : null;
           this.setState({ courierFolder: one ? 'from:' + one : 'all:', courierCountries: one ? [] : regions,
             courierMode: null, sort: 'price', compareMode: false, selected: [] });
@@ -8111,7 +8158,7 @@ class Component extends DCLogic {
         { title:'Yuborish turi', items: ['avia','quruqlik'].map(m => this.chip(m === 'avia' ? 'Avia' : 'Quruqlik', st.courierMode === m, () => this.setState(x => ({ courierMode: x.courierMode === m ? null : m })))) },
         { title:'Saralash', items: [{k:'price',l:'Narx'},{k:'days',l:'Muddat'},{k:'routes',l:'Yo\'nalishlar'}].map(s => this.chip(s.l, st.sort === s.k, () => this.setState({ sort:s.k }))) }
       ] : [
-        { title:'Davlat', items: ['Xitoy','Turkiya','AQSH','Rossiya','Buyuk Britaniya'].map(k => this.chip(k, st.storeCountries.includes(k), () => this.toggleIn('storeCountries', k))) },
+        { title:'Davlat', items: STORE_COUNTRIES.map(([k]) => this.chip(k, st.storeCountries.includes(k), () => this.toggleIn('storeCountries', k))) },
         { title:'Yetkazish', items: [this.chip('O\'zbekistonga to\'g\'ridan-to\'g\'ri', st.storeDirect, () => this.setState(x => ({ storeDirect: !x.storeDirect })))] },
         { title:'Kategoriya', items: ['kiyim','elektronika','vitamin','hammasi'].map(k => this.chip(k, st.storeQuery === k, () => this.setState(x => ({ storeQuery: x.storeQuery === k ? '' : k })))) }
       ],

@@ -411,7 +411,7 @@ try {
        tashqi o'ram ham mos keladi — ichkarisini olamiz. */
     const bosh = [...document.querySelectorAll('main span')]
       .filter(x => x.children.length === 0 &&
-        /^(Xitoy|Turkiya|AQSh|Global|Buyuk Britaniya|BAA)$/.test((x.textContent || '').trim()));
+        /^(Xitoy|Turkiya|AQSh|Angliya|Germaniya|Koreya|BAA)$/.test((x.textContent || '').trim()));
     const kart = [...document.querySelectorAll('main button')]
       .filter(x => /BO'LIM/.test(x.innerText));
     const oq = kart.every(x => getComputedStyle(x).backgroundColor === 'rgb(255, 255, 255)');
@@ -1222,6 +1222,37 @@ try {
     qollanmaBelgi.belgili >= 3 && qollanmaBelgi.belgili < qollanmaBelgi.jami,
     `${qollanmaBelgi.belgili}/${qollanmaBelgi.jami} do'konda`);
 
+  /* Do'konlar davlat bo'yicha: "Global" papkasi yo'q (2026-09-18) — ko'p
+     davlatdan yuboradigan do'kon har bir davlat papkasida ko'rinadi va
+     do'kon sahifasida qaysi davlatdan olib kelish tanlanadi. */
+  await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(500);
+  await homeCard("Do'konlar").click(); await page.waitForTimeout(600);
+  await page.locator('main button').filter({ hasText: /^Davlat$/ }).first().click(); await page.waitForTimeout(500);
+  const davPapka = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
+  check('do\'kon papkalari: davlatlar bo\'yicha, "Global" yo\'q',
+    /Xitoy/.test(davPapka) && /AQSh/.test(davPapka) && /Angliya/.test(davPapka) && /Germaniya/.test(davPapka) && !/Global/.test(davPapka) && !/Buyuk Britaniya/.test(davPapka), davPapka.slice(0, 120));
+  await page.locator('main button').filter({ hasText: /Angliya/ }).first().click(); await page.waitForTimeout(700);
+  const angl = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
+  check('ko\'p davlatdan yuboradigan do\'kon davlat papkasida ham bor (Angliya → Amazon, ASOS)',
+    /Amazon/.test(angl) && /ASOS/.test(angl), angl.slice(0, 120));
+  await page.locator('main button').filter({ hasText: /Amazon/ }).first().click(); await page.waitForTimeout(800);
+  const amz = await page.evaluate(() => ({
+    t: document.querySelector('main').innerText.replace(/\s+/g, ' '),
+    chips: [...document.querySelectorAll('main button[aria-pressed]')].map(b => b.innerText.replace(/\s+/g, ' ').trim()),
+    on: [...document.querySelectorAll('main button[aria-pressed="true"]')].map(b => b.innerText.trim())
+  }));
+  check('do\'kon sahifasi: yetkazish davlatlari qatori va chiplari',
+    /AQSh · Germaniya · Angliya/.test(amz.t) && amz.chips.length === 3 && amz.on.length === 1 && /AQSh/.test(amz.on[0]), amz.chips.join(' | ') + ' · ' + amz.on.join());
+  const kuryer1 = await page.evaluate(() => [...document.querySelectorAll('main button')].map(b => b.innerText.replace(/\s+/g, ' ')).filter(t => /\$\d|kun/.test(t)).slice(0, 3).join(' | '));
+  await page.locator('main button[aria-pressed]').filter({ hasText: /Germaniya/ }).first().click(); await page.waitForTimeout(600);
+  const kuryer2 = await page.evaluate(() => [...document.querySelectorAll('main button')].map(b => b.innerText.replace(/\s+/g, ' ')).filter(t => /\$\d|kun/.test(t)).slice(0, 3).join(' | '));
+  check('davlat chipi kuryerlarni almashtiradi (AQSh → Germaniya)', kuryer1 !== kuryer2 && kuryer2.length > 0, kuryer2.slice(0, 80));
+  /* Kalkulyator ham tanlangan davlat bilan ochiladi. */
+  await page.locator('main button').filter({ hasText: /xarajatni hisoblash/ }).first().click(); await page.waitForTimeout(700);
+  const amzCalc = await page.evaluate(() => [...document.querySelectorAll('main button[aria-pressed="true"]')].map(b => b.innerText.trim()));
+  check('do\'kondan kalkulyator tanlangan davlat bilan ochiladi', amzCalc.includes('Germaniya'), amzCalc.join('|'));
+  await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(500);
+
   /* Taqqoslash rejimi yoqilganda nima qilish kerakligi yozilib turadi. */
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(500);
@@ -1354,10 +1385,10 @@ try {
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(500);
 
-  /* Sehrgarda davlat tanlansa avval o'sha davlatning do'konlari, keyin
-     "Global" (ko'p davlatga yuboradigan) do'konlar chiqadi — ular umuman
-     chiqmasa, "Poyabzal + AQSh" tanlagan odam Nike'ni ko'rmasdi. Xitoyni
-     tanlab, ro'yxat Xitoy bilan boshlanib Global bilan tugashini qaraymiz. */
+  /* Sehrgarda davlat tanlansa — o'sha davlatdan yuboradigan do'konlar
+     (2026-09-18: "Global" uyasi yo'q, har do'konning `from` ro'yxati bor).
+     Xitoyni tanlab, barcha qator "Xitoy" deb belgilanishini qaraymiz;
+     keyin AQShda ko'p davlatdan yuboradigan Nike ham borligini. */
   await page.locator('nav button', { hasText: 'Reja' }).first().click();
   await page.waitForTimeout(700);
   await page.locator('main button').filter({ hasText: 'Elektronika' }).first().click();
@@ -1370,10 +1401,8 @@ try {
       .filter(L => L.length >= 2 && /·/.test(L[1]));
     return kart.map(L => L[1].split('·')[1].trim());
   });
-  const wizGlobalIdx = wizDav.indexOf('Global');
-  check('sehrgarda davlat tanlansa avval o\'sha davlat, keyin Global do\'konlar',
-    wizDav.length > 0 && wizDav[0] === 'Xitoy' && wizGlobalIdx > 0 &&
-    wizDav.every((x, i) => i < wizGlobalIdx ? x === 'Xitoy' : x === 'Global'),
+  check('sehrgar: Xitoy tanlansa faqat Xitoydan yuboradigan do\'konlar',
+    wizDav.length > 2 && wizDav.every(x => x === 'Xitoy') && !wizDav.includes('Global'),
     wizDav.join(', ') || 'do\'kon topilmadi');
   await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click();
   await page.waitForTimeout(500);
@@ -1513,17 +1542,18 @@ try {
   await page.waitForTimeout(450);
   await page.locator('button:visible').filter({ hasText: /Xitoy|AQSh|Turkiya/ }).first().click();
   await page.waitForTimeout(550);
-  /* Davlat tanlanganda ham ko'p davlatga yuboradigan (Global) do'konlar
-     ro'yxatda, lekin o'sha davlatnikidan keyin: "Kiyim + Xitoy" da SHEIN,
-     "Poyabzal + AQSh" da Nike ko'rinishi kerak. */
+  /* Davlat tanlanganda o'sha davlatdan yuboradigan barcha do'konlar
+     chiqadi: avval davlati asosiy bo'lganlar, keyin qo'shimcha yo'nalish
+     sifatida yuboradiganlar (izohda "shu davlatdan ham yuboradi"). */
   const wizRo = await page.evaluate(() => {
     const rows = [...document.querySelectorAll('main button')].map(b => b.innerText.replace(/\s+/g, ' ')).filter(t => /vositachi kerak|to'g'ridan-to'g'ri/.test(t));
     return { n: rows.length, birinchi: rows[0] || '', global: rows.filter(t => /· Global ·/.test(t)).length,
+      davlatlar: [...new Set(rows.map(t => (t.match(/· ([^·]+) ·/) || [])[1] || ''))],
       sub: (document.querySelector('main').innerText.match(/Tanlovingizga mos[^\n]*/) || [''])[0] };
   });
-  check('rejada Global do\'konlar davlatnikidan keyin chiqadi',
-    wizRo.n > 2 && wizRo.global > 0 && !/· Global ·/.test(wizRo.birinchi) && /ko'p davlatga/.test(wizRo.sub),
-    `${wizRo.n} ta, ${wizRo.global} global · ${wizRo.sub}`);
+  check('rejada do\'konlar tanlangan davlat bilan belgilanadi, "Global" yo\'q',
+    wizRo.n > 2 && wizRo.global === 0 && wizRo.davlatlar.length === 1 && /Tanlovingizga mos/.test(wizRo.sub),
+    `${wizRo.n} ta · ${wizRo.davlatlar.join('/')} · ${wizRo.sub}`);
   await page.locator('button:visible').filter({ hasText: /Marketplace/ }).first().click();
   await page.waitForTimeout(550);
   const kk = page.locator('main button:visible');

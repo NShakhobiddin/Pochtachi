@@ -49,7 +49,7 @@ const LEVEL = { red: 'taqiqlangan', amber: 'cheklangan (ruxsat/sertifikat yoki m
 export function buildSystem() {
   const cur = Core.normsAt(KB.NORMS, isoDay()) || {};
   const couriers = KB.COURIERS.map(c => ({ name: c.name, countries: c.countries, days: c.days, mode: c.mode, tracking: c.tracking }));
-  const stores = KB.STORES.map(s => ({ name: s.name, country: s.country, cat: s.cat, price: s.price, original: s.original, direct: s.direct }));
+  const stores = KB.STORES.map(s => ({ name: s.name, country: (s.from || [s.country]).join('/'), cat: s.cat, price: s.price, original: s.original, direct: s.direct }));
   const banned = KB.BANNED.map(b => ({ name: b.name, level: LEVEL[b.level] || b.level }));
   return [
     KB.RULES.trim(),
@@ -189,7 +189,7 @@ function toolSuggest(inp) {
   return {
     found: true, query: q,
     stores: scored.map(({ s }) => ({
-      id: s.id, name: s.name, country: s.country, cat: s.cat, price: s.price, original: s.original,
+      id: s.id, name: s.name, country: s.country, from: s.from || [s.country], cat: s.cat, price: s.price, original: s.original,
       direct: !!s.direct, complexity: s.complexity, guide: KB.GUIDES.some(g => g.id === s.id),
       searchUrl: searchUrl(s, q)
     })),

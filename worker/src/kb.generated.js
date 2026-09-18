@@ -1524,6 +1524,9 @@ export const STORES = [
   "domain": "taobao.com",
   "url": "https://www.taobao.com",
   "country": "Xitoy",
+  "from": [
+   "Xitoy"
+  ],
   "cat": "universal",
   "subcats": "Xitoy ichki bozori, moda, uy, aksessuarlar",
   "type": "Marketplace",
@@ -1545,7 +1548,12 @@ export const STORES = [
   "name": "Amazon",
   "domain": "amazon.com",
   "url": "https://www.amazon.com",
-  "country": "Global",
+  "country": "AQSh",
+  "from": [
+   "AQSh",
+   "Germaniya",
+   "Angliya"
+  ],
   "cat": "universal",
   "subcats": "Elektronika, moda, uy-ro'zg'or va boshqalar",
   "type": "Marketplace",
@@ -1568,6 +1576,9 @@ export const STORES = [
   "domain": "pinduoduo.com",
   "url": "https://www.pinduoduo.com",
   "country": "Xitoy",
+  "from": [
+   "Xitoy"
+  ],
   "cat": "universal",
   "subcats": "Kiyim, elektronika, uy-ro'zg'or, kundalik tovarlar va boshqa kategoriyalar",
   "type": "Marketplace",
@@ -1590,6 +1601,9 @@ export const STORES = [
   "domain": "trendyol.com",
   "url": "https://www.trendyol.com",
   "country": "Turkiya",
+  "from": [
+   "Turkiya"
+  ],
   "cat": "kiyim va moda",
   "subcats": "Moda, kosmetika, uy va boshqa tovarlar",
   "type": "Marketplace",
@@ -1611,7 +1625,11 @@ export const STORES = [
   "name": "SHEIN",
   "domain": "shein.com",
   "url": "https://www.shein.com",
-  "country": "Global",
+  "country": "Xitoy",
+  "from": [
+   "Xitoy",
+   "Turkiya"
+  ],
   "cat": "kiyim va moda",
   "subcats": "Trend kiyim, aksessuarlar va uy mahsulotlari",
   "type": "Marketplace",
@@ -1633,7 +1651,10 @@ export const STORES = [
   "name": "Carter's",
   "domain": "carters.com",
   "url": "https://www.carters.com",
-  "country": "Global",
+  "country": "AQSh",
+  "from": [
+   "AQSh"
+  ],
   "cat": "bolalar",
   "subcats": "Bolalar va chaqaloqlar kiyimi",
   "type": "Rasmiy brend do'koni",
@@ -1655,7 +1676,10 @@ export const STORES = [
   "name": "Mytheresa",
   "domain": "mytheresa.com",
   "url": "https://www.mytheresa.com",
-  "country": "Global",
+  "country": "Germaniya",
+  "from": [
+   "Germaniya"
+  ],
   "cat": "kiyim va moda",
   "subcats": "Designer moda va aksessuarlar",
   "type": "Premium / Luxury",
@@ -1678,6 +1702,9 @@ export const STORES = [
   "domain": "tmall.com",
   "url": "https://www.tmall.com",
   "country": "Xitoy",
+  "from": [
+   "Xitoy"
+  ],
   "cat": "universal",
   "subcats": "Brendlar va rasmiy sotuvchilar",
   "type": "Marketplace",
@@ -1699,7 +1726,11 @@ export const STORES = [
   "name": "Farfetch",
   "domain": "farfetch.com",
   "url": "https://www.farfetch.com",
-  "country": "Global",
+  "country": "Angliya",
+  "from": [
+   "Angliya",
+   "Germaniya"
+  ],
   "cat": "kiyim va moda",
   "subcats": "Designer kiyim, poyabzal va aksessuarlar",
   "type": "Premium / Luxury",
@@ -1721,7 +1752,12 @@ export const STORES = [
   "name": "eBay",
   "domain": "ebay.com",
   "url": "https://www.ebay.com",
-  "country": "Global",
+  "country": "AQSh",
+  "from": [
+   "AQSh",
+   "Angliya",
+   "Germaniya"
+  ],
   "cat": "universal",
   "subcats": "Yangi, ishlatilgan va kolleksiya tovarlari",
   "type": "Marketplace",
@@ -1744,6 +1780,9 @@ export const STORES = [
   "domain": "poizon.com",
   "url": "https://www.poizon.com",
   "country": "Xitoy",
+  "from": [
+   "Xitoy"
+  ],
   "cat": "poyabzal",
   "subcats": "Sneaker, streetwear, premium moda, aksessuarlar va kolleksiya mahsulotlari",
   "type": "Marketplace",
@@ -1766,6 +1805,9 @@ export const STORES = [
   "domain": "walmart.com",
   "url": "https://www.walmart.com",
   "country": "AQSh",
+  "from": [
+   "AQSh"
+  ],
   "cat": "universal",
   "subcats": "Kundalik tovarlar, elektronika, uy-ro'zg'or",
   "type": "Marketplace",
@@ -1788,6 +1830,9 @@ export const STORES = [
   "domain": "jomashop.com",
   "url": "https://www.jomashop.com",
   "country": "AQSh",
+  "from": [
+   "AQSh"
+  ],
   "cat": "kiyim va moda",
   "subcats": "Luxury soatlar, sumkalar, atirlar, ko'zoynak, zargarlik va aksessuarlar",
   "type": "Ixtisoslashgan do'kon",
@@ -1809,7 +1854,10 @@ export const STORES = [
   "name": "AliExpress",
   "domain": "aliexpress.com",
   "url": "https://www.aliexpress.com",
-  "country": "Global",
+  "country": "Xitoy",
+  "from": [
+   "Xitoy"
+  ],
   "cat": "universal",
   "subcats": "Elektronika, moda, uy, aksessuarlar",
   "type": "Marketplace",
@@ -1831,7 +1879,11 @@ export const STORES = [
   "name": "Zara",
   "domain": "zara.com",
   "url": "https://www.zara.com",
-  "country": "Global",
+  "country": "Turkiya",
+  "from": [
+   "Turkiya",
+   "Germaniya"
+  ],
   "cat": "kiyim va moda",
   "subcats": "Kiyim, poyabzal, aksessuarlar",
   "type": "Rasmiy brend do'koni",
@@ -1853,7 +1905,12 @@ export const STORES = [
   "name": "Nike",
   "domain": "nike.com",
   "url": "https://www.nike.com",
-  "country": "Global",
+  "country": "AQSh",
+  "from": [
+   "AQSh",
+   "Angliya",
+   "Turkiya"
+  ],
   "cat": "poyabzal",
   "subcats": "Sport poyabzali, kiyim va aksessuarlar",
   "type": "Rasmiy brend do'koni",
@@ -1875,7 +1932,12 @@ export const STORES = [
   "name": "H&M",
   "domain": "hm.com",
   "url": "https://www.hm.com",
-  "country": "Global",
+  "country": "Turkiya",
+  "from": [
+   "Turkiya",
+   "Germaniya",
+   "AQSh"
+  ],
   "cat": "kiyim va moda",
   "subcats": "Kiyim va aksessuarlar",
   "type": "Rasmiy brend do'koni",
@@ -1898,6 +1960,9 @@ export const STORES = [
   "domain": "noon.com",
   "url": "https://www.noon.com",
   "country": "BAA",
+  "from": [
+   "BAA"
+  ],
   "cat": "universal",
   "subcats": "Elektronika, moda, uy-ro'zg'or",
   "type": "Marketplace",
@@ -1919,7 +1984,12 @@ export const STORES = [
   "name": "Adidas",
   "domain": "adidas.com",
   "url": "https://www.adidas.com",
-  "country": "Global",
+  "country": "Germaniya",
+  "from": [
+   "Germaniya",
+   "AQSh",
+   "Turkiya"
+  ],
   "cat": "poyabzal",
   "subcats": "Sport poyabzali va kiyim",
   "type": "Rasmiy brend do'koni",
@@ -1941,7 +2011,11 @@ export const STORES = [
   "name": "Puma",
   "domain": "puma.com",
   "url": "https://www.puma.com",
-  "country": "Global",
+  "country": "Germaniya",
+  "from": [
+   "Germaniya",
+   "AQSh"
+  ],
   "cat": "poyabzal",
   "subcats": "Sport va lifestyle poyabzal",
   "type": "Rasmiy brend do'koni",
@@ -1963,7 +2037,11 @@ export const STORES = [
   "name": "Uniqlo",
   "domain": "uniqlo.com",
   "url": "https://www.uniqlo.com",
-  "country": "Global",
+  "country": "AQSh",
+  "from": [
+   "AQSh",
+   "Angliya"
+  ],
   "cat": "kiyim va moda",
   "subcats": "Basic kiyim va funksional kolleksiyalar",
   "type": "Rasmiy brend do'koni",
@@ -1985,7 +2063,11 @@ export const STORES = [
   "name": "New Balance",
   "domain": "newbalance.com",
   "url": "https://www.newbalance.com",
-  "country": "Global",
+  "country": "AQSh",
+  "from": [
+   "AQSh",
+   "Angliya"
+  ],
   "cat": "poyabzal",
   "subcats": "Krossovka va sport kiyimi",
   "type": "Rasmiy brend do'koni",
@@ -2008,6 +2090,10 @@ export const STORES = [
   "domain": "footlocker.com",
   "url": "https://www.footlocker.com",
   "country": "AQSh",
+  "from": [
+   "AQSh",
+   "Angliya"
+  ],
   "cat": "poyabzal",
   "subcats": "Sneaker va sport brendlari",
   "type": "Ixtisoslashgan do'kon",
@@ -2029,7 +2115,11 @@ export const STORES = [
   "name": "JD Sports",
   "domain": "jdsports.com",
   "url": "https://www.jdsports.com",
-  "country": "Global",
+  "country": "Angliya",
+  "from": [
+   "Angliya",
+   "AQSh"
+  ],
   "cat": "poyabzal",
   "subcats": "Sneaker, streetwear va sport",
   "type": "Ixtisoslashgan do'kon",
@@ -2052,6 +2142,9 @@ export const STORES = [
   "domain": "bestbuy.com",
   "url": "https://www.bestbuy.com",
   "country": "AQSh",
+  "from": [
+   "AQSh"
+  ],
   "cat": "elektronika",
   "subcats": "Consumer electronics va maishiy texnika",
   "type": "Ixtisoslashgan do'kon",
@@ -2074,6 +2167,9 @@ export const STORES = [
   "domain": "newegg.com",
   "url": "https://www.newegg.com",
   "country": "AQSh",
+  "from": [
+   "AQSh"
+  ],
   "cat": "elektronika",
   "subcats": "PC, komponentlar va elektronika",
   "type": "Marketplace",
@@ -2096,6 +2192,9 @@ export const STORES = [
   "domain": "bhphotovideo.com",
   "url": "https://www.bhphotovideo.com",
   "country": "AQSh",
+  "from": [
+   "AQSh"
+  ],
   "cat": "elektronika",
   "subcats": "Kamera, audio, kompyuter, professional texnika",
   "type": "Ixtisoslashgan do'kon",
@@ -2117,7 +2216,10 @@ export const STORES = [
   "name": "ASOS",
   "domain": "asos.com",
   "url": "https://www.asos.com",
-  "country": "Global",
+  "country": "Angliya",
+  "from": [
+   "Angliya"
+  ],
   "cat": "kiyim va moda",
   "subcats": "Kiyim, poyabzal, aksessuarlar",
   "type": "Ixtisoslashgan do'kon",
@@ -2140,6 +2242,9 @@ export const STORES = [
   "domain": "microcenter.com",
   "url": "https://www.microcenter.com",
   "country": "AQSh",
+  "from": [
+   "AQSh"
+  ],
   "cat": "elektronika",
   "subcats": "PC komponentlari va kompyuter texnikasi",
   "type": "Ixtisoslashgan do'kon",
@@ -2161,7 +2266,12 @@ export const STORES = [
   "name": "Apple Store",
   "domain": "apple.com",
   "url": "https://www.apple.com",
-  "country": "Global",
+  "country": "AQSh",
+  "from": [
+   "AQSh",
+   "Angliya",
+   "Germaniya"
+  ],
   "cat": "elektronika",
   "subcats": "iPhone, Mac, iPad va aksessuarlar",
   "type": "Rasmiy brend do'koni",
@@ -2183,7 +2293,11 @@ export const STORES = [
   "name": "Samsung Store",
   "domain": "samsung.com",
   "url": "https://www.samsung.com",
-  "country": "Global",
+  "country": "AQSh",
+  "from": [
+   "AQSh",
+   "Koreya"
+  ],
   "cat": "elektronika",
   "subcats": "Smartfon, TV, maishiy elektronika",
   "type": "Rasmiy brend do'koni",
@@ -2205,7 +2319,10 @@ export const STORES = [
   "name": "Xiaomi",
   "domain": "mi.com",
   "url": "https://www.mi.com",
-  "country": "Global",
+  "country": "Xitoy",
+  "from": [
+   "Xitoy"
+  ],
   "cat": "elektronika",
   "subcats": "Smartfon, gadget va smart-home",
   "type": "Rasmiy brend do'koni",
@@ -2227,7 +2344,11 @@ export const STORES = [
   "name": "Lenovo",
   "domain": "lenovo.com",
   "url": "https://www.lenovo.com",
-  "country": "Global",
+  "country": "Xitoy",
+  "from": [
+   "Xitoy",
+   "AQSh"
+  ],
   "cat": "elektronika",
   "subcats": "Noutbuk, PC va aksessuarlar",
   "type": "Rasmiy brend do'koni",
@@ -2249,7 +2370,10 @@ export const STORES = [
   "name": "Sephora",
   "domain": "sephora.com",
   "url": "https://www.sephora.com",
-  "country": "Global",
+  "country": "AQSh",
+  "from": [
+   "AQSh"
+  ],
   "cat": "kosmetika",
   "subcats": "Kosmetika, parfyumeriya va skincare",
   "type": "Ixtisoslashgan do'kon",
@@ -2272,6 +2396,9 @@ export const STORES = [
   "domain": "ulta.com",
   "url": "https://www.ulta.com",
   "country": "AQSh",
+  "from": [
+   "AQSh"
+  ],
   "cat": "kosmetika",
   "subcats": "Mass-market va premium beauty",
   "type": "Ixtisoslashgan do'kon",
@@ -2293,7 +2420,10 @@ export const STORES = [
   "name": "Beauty Bay",
   "domain": "beautybay.com",
   "url": "https://www.beautybay.com",
-  "country": "Global",
+  "country": "Angliya",
+  "from": [
+   "Angliya"
+  ],
   "cat": "kosmetika",
   "subcats": "Kosmetika va skincare",
   "type": "Ixtisoslashgan do'kon",
@@ -2315,7 +2445,12 @@ export const STORES = [
   "name": "LEGO",
   "domain": "lego.com",
   "url": "https://www.lego.com",
-  "country": "Global",
+  "country": "Angliya",
+  "from": [
+   "Angliya",
+   "AQSh",
+   "Germaniya"
+  ],
   "cat": "bolalar",
   "subcats": "Konstruktor va kolleksiya setlari",
   "type": "Rasmiy brend do'koni",
@@ -2337,7 +2472,10 @@ export const STORES = [
   "name": "Hamleys",
   "domain": "hamleys.com",
   "url": "https://www.hamleys.com",
-  "country": "Buyuk Britaniya",
+  "country": "Angliya",
+  "from": [
+   "Angliya"
+  ],
   "cat": "bolalar",
   "subcats": "O'yinchoqlar va sovg'alar",
   "type": "Ixtisoslashgan do'kon",
@@ -2360,6 +2498,9 @@ export const STORES = [
   "domain": "victoriassecret.com",
   "url": "https://www.victoriassecret.com",
   "country": "AQSh",
+  "from": [
+   "AQSh"
+  ],
   "cat": "kiyim va moda",
   "subcats": "Ichki kiyim, lingerie, sleepwear, sport kiyimi, atir, body care va aksessuarlar",
   "type": "Rasmiy brend do'koni",
@@ -2382,6 +2523,9 @@ export const STORES = [
   "domain": "toysrus.com",
   "url": "https://www.toysrus.com",
   "country": "AQSh",
+  "from": [
+   "AQSh"
+  ],
   "cat": "bolalar",
   "subcats": "O'yinchoqlar, LEGO, qo'g'irchoqlar, action figures, learning toys, outdoor toys va baby mahsulotlar",
   "type": "Ixtisoslashgan do'kon",
@@ -2403,7 +2547,10 @@ export const STORES = [
   "name": "Smyths Toys",
   "domain": "smythstoys.com",
   "url": "https://www.smythstoys.com",
-  "country": "Buyuk Britaniya",
+  "country": "Angliya",
+  "from": [
+   "Angliya"
+  ],
   "cat": "bolalar",
   "subcats": "O'yinchoqlar, LEGO, gaming, outdoor, baby, nursery, bikes va electronic toys",
   "type": "Ixtisoslashgan do'kon",
@@ -2426,6 +2573,9 @@ export const STORES = [
   "domain": "faoschwarz.com",
   "url": "https://faoschwarz.com",
   "country": "AQSh",
+  "from": [
+   "AQSh"
+  ],
   "cat": "bolalar",
   "subcats": "Premium o'yinchoqlar, plush, dolls, ride-ons, collectibles, gifts va eksklyuziv mahsulotlar",
   "type": "Ixtisoslashgan do'kon",
@@ -2447,7 +2597,10 @@ export const STORES = [
   "name": "Mattel Creations",
   "domain": "creations.mattel.com",
   "url": "https://creations.mattel.com",
-  "country": "Global",
+  "country": "AQSh",
+  "from": [
+   "AQSh"
+  ],
   "cat": "bolalar",
   "subcats": "Barbie Signature, Hot Wheels Collectors, Matchbox, Monster High, Masters of the Universe, action figures va limited-edition collectibles",
   "type": "Rasmiy brend do'koni",

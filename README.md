@@ -173,12 +173,12 @@ Taqiqlangan tovarlar qidiruvi ham `norm` dan o'tadi va pozitsiyalarda
 ## Reja sehrgari
 
 Besh qadam: mahsulot toifasi, davlat, do'kon, kuryer, hisob; keyin
-"Sizning rejangiz" ko'rinishi va saqlash. Davlat tanlanganda do'kon
-ro'yxatida avval o'sha davlatning do'konlari, keyin "Global" (ko'p
-davlatga yuboradigan: Nike, Adidas, Sephora, Amazon) turadi — Global'lar
-ichida ham toifaning o'zi universal marketpleyslardan oldin. Tagsarlavha
-nechtasi global ekanini aytadi. Ilgari Global'lar umuman chiqmasdi va
-"Poyabzal + AQSh" tanlagan foydalanuvchi Nike'ni ko'rmasdi.
+"Sizning rejangiz" ko'rinishi va saqlash. Davlat tanlanganda o'sha
+davlatdan yuboradigan barcha do'konlar chiqadi (`storeFrom(s)` —
+do'konning `from` ro'yxati): avval davlati asosiy bo'lganlar, keyin
+qo'shimcha yo'nalish sifatida yuboradiganlar; tagsarlavha nechtasi
+qo'shimcha ekanini aytadi. Qatorda tanlangan davlat yoziladi, "Global"
+degan uya yo'q (2026-09-18).
 
 Saqlangan rejalar bosh sahifada, kuzatuvda va Reja tabining birinchi
 qadamida (sehrgar ustida, "Saqlangan rejalar") ko'rinadi.
@@ -186,9 +186,24 @@ qadamida (sehrgar ustida, "Saqlangan rejalar") ko'rinadi.
 ## Do'konlar va kuryerlar
 
 Ikkala bo'lim papka bilan ochiladi (do'konlar: tovar turi yoki davlat;
-kuryerlar: yo'nalish). Do'kon sahifasidagi "N kuryerni ko'rish" tugmasi
-do'kon davlatiga mos yo'nalish papkasini ochadi (Taobao -> Xitoy
-yo'nalishi), Global do'konda "Barcha kuryerlar".
+kuryerlar: yo'nalish).
+
+**Do'konning yetkazish davlatlari.** Har bir do'konda `from: [...]` —
+u qaysi davlat(lar)dan olib kelinadi (`country` — birinchisi, ya'ni
+asosiysi). Ro'yxat faqat kuryer tarifi bor davlatlardan iborat (Xitoy,
+AQSh, Turkiya, Angliya, Germaniya, Koreya, BAA — `LC_COUNTRIES` bilan bir
+xil), shuning uchun papkadan kuryerga va kalkulyatorga o'tish har doim
+ishlaydi; buni `tests/core.mjs` tekshiradi. Ilgari 43 do'konning 24 tasi
+"Global" deb belgilangan edi va bitta tushunarsiz uyaga yig'ilardi
+(2026-09-18 da tarqatildi): endi Amazon AQSh, Germaniya va Angliya
+papkalarida, SHEIN Xitoy va Turkiyada ko'rinadi. Do'kon sahifasida
+sarlavha ostida davlatlar qatori, bittadan ko'p bo'lsa "Qaysi davlatdan
+olib kelamiz" chiplari — chip almashtirilganda eng arzon uchta kuryer,
+"N kuryerni ko'rish" papkasi va kalkulyator o'sha davlat bo'yicha
+qayta hisoblanadi (`couriersForStore(store, origin)`).
+
+Do'kon sahifasidagi "N kuryerni ko'rish" tugmasi tanlangan davlatga mos
+yo'nalish papkasini ochadi (Taobao -> Xitoy yo'nalishi).
 
 Kuryer papkasida "Taqqoslash" rejimi shu papkaga tegishli: boshqa papka
 ochilganda yoki bo'lim almashganda o'chadi. Sarlavhadagi filtr varag'i

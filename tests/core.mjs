@@ -138,5 +138,21 @@ check('foydalimi: tejash hisoblanadi', L4.worth === true && near(L4.savingUzs, 4
 const L5 = core.landedCost({ priceUsd: 250, kg: 1, shipUsd: 15, norms: N, usdRate: RATE, localPriceUzs: 3000000 });
 check('foydalimi: mahalliy arzon bo\'lsa worth=false', L5.worth === false);
 
+/* ---- Do'konlarning yetkazish davlatlari (from) ---- */
+const KB = await import('../worker/src/kb.generated.js');
+const tarifDavlat = new Set();
+for (const rows of Object.values(TAR.couriers)) for (const r of rows) tarifDavlat.add(r.c);
+const yomon = [];
+for (const s of KB.STORES) {
+  const from = Array.isArray(s.from) ? s.from : [];
+  if (!from.length) { yomon.push(s.id + ': from yo\'q'); continue; }
+  if (s.country !== from[0]) yomon.push(s.id + ': country ≠ from[0]');
+  for (const c of from) if (!tarifDavlat.has(c)) yomon.push(s.id + ': ' + c + ' — kuryer tarifi yo\'q');
+}
+check('har bir do\'kon kuryer tarifi bor davlatlardan yuboradi', yomon.length === 0, yomon.slice(0, 4).join(' | '));
+check('"Global" davlat qolmadi', !KB.STORES.some(s => s.country === 'Global' || (s.from || []).includes('Global')));
+const kopDavlat = KB.STORES.filter(s => (s.from || []).length > 1).length;
+check('ko\'p davlatdan yuboradigan do\'konlar belgilangan', kopDavlat >= 10, kopDavlat + ' ta do\'kon');
+
 console.log(fails ? `\n${fails} ta tekshiruv o'tmadi.` : '\nCore testlari o\'tdi.');
 process.exit(fails ? 1 : 0);
