@@ -198,18 +198,20 @@ yopadi, keyingina ekranni.
 
 ## Bosh sahifa (3-bosqich, 2026-09-16 da soddalashtirildi)
 
-Sahifa vazifadan boshlanadi: **bitta maydon** ("Nima olib
-kelmoqchisiz?") havola, mahsulot nomi, erkin so'rov yoki skrinshotni
-qabul qiladi — kirish nuqtasi bitta (2026-09-17, "bitta maydon → bitta
-natija"). `heroGo()`: havola bo'lsa domen bo'yicha do'kon topiladi
-(`STORES.domain` yoki `DOMAIN_ALIAS` — `tb.cn`, `amzn.to`, `dewu.com` kabi
-qisqa va mobil manzillar) va do'kon sahifasi ochiladi; ro'yxatda yo'q
-domen — domen so'zi bilan qidiruvga; savol (so'roq belgisi yoki so'roq
-so'zi) yoki tovar so'rovi ("olmoqchiman", "razmer", "gacha", ikki vergul)
-— Pochtam AI; oddiy so'z — qidiruv ekrani. Maydon ostida ikkita tugma
-(AI yoqiq bo'lsa): **Skrinshot yuklash** (asosiy — jami narx shu yerdan,
-`aiShot` → natija ekrani) va **Qayerdan topaman?** (yordamchi — Pochtam AI
-ga o'tadi: qaysi do'konda borligi, qanday topish va skrinshot qilish).
+Sahifada matn maydoni yo'q (2026-09-18): u skrinshot bilan raqobatlashib,
+asosiy yo'lni ko'rsatmay qo'yayotgan edi. O'rnida ketma-ket ikkita karta:
+**Skrinshot yuklash** (katta, binafsha — jami narx shu yerdan chiqadi,
+`aiShot` → natija ekrani) va ostida "Hali topmadingizmi?" yozuvi bilan
+**Qayerdan topaman?** (oq karta → `where` ekrani). Ikki karta bir
+ketma-ketlikni ko'rsatadi: topgan bo'lsang suratga ol, topmagan bo'lsang
+avval do'konni tanla.
+
+Havola va nom yozish qidiruv ekraniga ko'chdi (sarlavhadagi lupa).
+`linkStore()` u yerda ishlaydi: havola bo'lsa domen bo'yicha do'kon
+topiladi (`STORES.domain` yoki `DOMAIN_ALIAS` — `tb.cn`, `amzn.to`,
+`dewu.com` kabi qisqa va mobil manzillar) va natijaning tepasida turadi;
+ro'yxatda yo'q domen — domen so'zi bilan izlanadi. AI o'chiq bo'lsa bosh
+sahifada bitta karta qoladi: **Do'kon yoki mahsulot qidirish** → qidiruv.
 Oqim hech qachon to'xtab qolmaydi (TZ 21).
 
 **AI bayrog'i.** Ilova ochilganda Worker'dan `GET /ai/status` →
@@ -314,10 +316,11 @@ shunday deb yoziladi; holat qo'lda belgilanadi. Kuryer API uchun joy:
 
 AI — suhbatdosh emas, shakl to'ldiruvchi: skrinshotdan narxni o'qiydi,
 erkin so'rovni tushunadi, hisobni esa `core/` bajaradi. Kirish nuqtalari
-(2026-09-17 dan): bosh sahifadagi bitta maydon (savol, tovar so'rovi —
-`heroGo`), "Skrinshot yuklash" (asosiy), "Qayerdan topaman?" (yordamchi
-chat), kompyuter menyusidagi bo'lim. "Qanday ishlaydi" yo'q. AI o'chiq
-bo'lsa (`/ai/status`) bularning hech biri ko'rinmaydi. Suhbat faqat brauzer xotirasida
+(2026-09-18 dan): bosh sahifadagi "Skrinshot yuklash" kartasi (asosiy),
+"Qayerdan topaman?" kartasi → `where` tanlov ekrani, natija ekranidagi
+"Qanday buyurtma qilaman?", `where` ekranidagi "Boshqa savol bormi?" va
+kompyuter menyusidagi bo'lim. "Qanday ishlaydi" yo'q. AI o'chiq bo'lsa
+(`/ai/status`) bularning hech biri ko'rinmaydi. Suhbat faqat brauzer xotirasida
 (`aiMsgs`), saqlanmaydi.
 
 **Skrinshot yuklash** (`aiShot`). Fayl brauzerda canvas bilan 1280 px ga
@@ -350,9 +353,17 @@ urinish / Qo'lda hisoblash. Rasm serverda saqlanmaydi va log qilinmaydi.
 Narx: bir skrinshot ≈ 1 500 kirish tokeni, chat savolidan bir necha
 barobar arzon.
 
-**Qayerdan topaman?** (yordamchi chat). Tugma bo'sh AI ekranini ochadi
-("Qayerdan topaman?" sarlavhasi, namuna); "krossovka, 41 razmer, $100
-gacha" kabi so'rov → `data/ai-rules.md` "Qayerdan topaman" bo'limi: AI
+**Qayerdan topaman?** (tanlov ekrani, `where` — `whereVm`). Chat emas,
+bosiladigan tanlov: 1-qadam "Nima qidiryapsiz?" — `data/categories.json`
+dagi 6 kategoriya chipi va ixtiyoriy aniqlik maydoni ("41 razmer");
+kategoriya tanlangach 2-qadam "Qanaqasi?" — Faqat original / Arzonroq ham
+bo'ladi va byudjet ($50 / $100 / $300 / Farqi yo'q). "Do'konlarni ko'rsat"
+bosilganda savolni ilova o'zi tuzadi ("Poyabzal va krossovka qidiryapman
+(41 razmer). Faqat original. Byudjet $100 gacha. Qaysi do'kondan
+topaman?") va Pochtam AI ga yuboradi — foydalanuvchi gap tuzmaydi. Pastda
+"Boshqa savol bormi? Pochtam AI ga yozing" — erkin savol yo'li (telefonda
+AI ekraniga yagona kirish). So'rov → `data/ai-rules.md` "Qayerdan topaman"
+bo'limi: AI
 kategoriya, originallik, o'lcham, byudjetni ajratadi, `suggest_stores`
 vositasi (`worker/src/ai.js`) bazadan mos do'konlarni tanlaydi (kategoriya
 hal qiluvchi, originallik "Yuqori", byudjet → narx segmenti) va har biriga
@@ -436,8 +447,9 @@ chiplari, do'kon kartalari, taxminiy jami), xato kartasi, bo'sh holat,
 skrinshot → natija ekrani (soxta `/ai/shot`: nom, narx, do'kon · davlat,
 eng arzon kuryer, jami $102.26, tugmalar), "Vaznni aniqlashtirish" →
 to'ldirilgan kalkulyator, "Qanday buyurtma qilaman?" → AI savoli,
-"topilmadi" kartasi → bo'sh kalkulyator, AI o'chiq holati (soxta
-`/ai/status`: kamera ham, "Qayerdan topaman?" ham yo'q).
+"topilmadi" kartasi → bo'sh kalkulyator, `where` tanlov ekrani (chiplar,
+tuzilgan savol), qidiruvdagi havola (Taobao, `amzn.to`, noma'lum domen),
+AI o'chiq holati (soxta `/ai/status`: kartalar o'rnida qidiruv).
 
 Rejadagi `ai/index.html` iframe o'rniga ekran ilovaning o'zida: javob
 ostidagi tugmalar ilova holatini to'ldirishi kerak (kalkulyator, kuryer
