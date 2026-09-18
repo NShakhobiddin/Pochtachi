@@ -201,6 +201,16 @@ jobs:
             fi
             [ "$code2" = "200" ] || { echo "::error::Kalit qo'yilgan, lekin /ai/shot $code2 qaytardi — $(head -c 300 /tmp/ai2)"; exit 1; }
             echo "::notice::Pochtam AI ishlayapti — /ai 200, /ai/shot 200, model: $MODEL"
+            # "Qayerdan topaman" (find:true) — veb-qidiruv va aniq havolalar.
+            # Natija internetga bog'liq, shuning uchun xato emas, faqat xabar:
+            # nechta qidiruv bo'ldi va product_links keldimi. Narxi ≈ $0.05.
+            echo "== POST /ai (find:true — veb-qidiruv)"
+            code3=$(curl -s -m 120 -o /tmp/ai3 -w '%{http_code}' -X POST "${URL}ai" -H 'origin: https://nshakhobiddin.github.io' -H 'content-type: text/plain' \
+              -d '{"q":"Poyabzal va krossovka qidiryapman (Nike Air Max 90, 42 razmer). Faqat original. Byudjet $150 gacha. Qaysi do'"'"'kondan topaman?","lang":"uz","usdRate":12650,"find":true}')
+            echo "[$code3] $(head -c 500 /tmp/ai3)"
+            FIND=$(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/ai3','utf8'));const pl=(j.tools||[]).find(t=>t.name==='product_links');process.stdout.write('qidiruvlar='+((j.usage&&j.usage.search)||0)+' havolalar='+(pl?pl.result.n:0)+(pl?' ('+pl.result.links.map(l=>l.host).join(', ')+')':''))}catch(e){}")
+            [ -n "$FIND" ] || FIND='?'
+            if [ "$code3" = "200" ]; then echo "::notice::Veb-qidiruv: $FIND"; else echo "::warning::find so'rovi $code3 qaytardi — $(head -c 200 /tmp/ai3)"; fi
           else
             case "$code" in
               503) grep -q no_key /tmp/ai1 \
