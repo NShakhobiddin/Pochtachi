@@ -350,6 +350,31 @@ shunday deb yoziladi; holat qo'lda belgilanadi. Kuryer API uchun joy:
 
 ## Pochtam AI (7–8-bosqich)
 
+**Yagona yordamchi (2026-09-19).** Ommabop ilovalar (Amazon Rufus →
+Alexa for Shopping, Taobao Pailitao va AI qidiruvi, Google Lens) bitta
+naqshga keldi: bitta kirish hamma narsani qabul qiladi, foydalanuvchi
+rejim tanlamaydi, javob karta bo'lib chiqadi. Pochtam ham shunday:
+
+- **Bitta manzil.** Matn, rasm, havola va joriy xarid `POST /ai` ga
+  ketadi. `/ai/shot` eski manzil sifatida qoladi (worker uni ham shu
+  kodga ulaydi), ilova endi undan foydalanmaydi.
+- **Bitta kirish.** Bosh sahifadagi maydon: yozish, aytish (mikrofon),
+  havola tashlash, rasm biriktirish (`whSubmit` kirish turini o'zi
+  ajratadi: havola → do'kon yoki AI sahifani o'qiydi, savol → AI, nom →
+  keyingi qadam kartalari).
+- **Bitta xarid obyekti** (`cart`, `localStorage.xy_cart`): tovar,
+  do'kon, davlat, narx, valyuta, vazn, kuryer, ilova hisoblagan jami.
+  Har so'rov bilan AI ga ketadi (`cartForAi()`), skrinshot uni
+  to'ldiradi (`mergeCart`) — foydalanuvchi bir narsani ikki marta
+  aytmaydi.
+- **Bitta javob shakli.** Worker `cards[]` qaytaradi: `product`, `total`,
+  `couriers`, `links`, `stores`, `warning`, `ask`, `cart`. Ilova ularni
+  bir xil chizadi. `ask` — yangi: AI bitta narsani so'rasa, foydalanuvchi
+  yozmaydi, bosiladigan variant tanlaydi (`ask_user` vositasi).
+- **Narx o'zgarmadi.** Rasmni arzon model o'qiydi (`readShot`), asosiy
+  modelga rasm ko'rsatilmaydi; savolsiz skrinshotda asosiy model umuman
+  chaqirilmaydi — bitta skrinshot ≈ $0.002.
+
 AI — suhbatdosh emas, shakl to'ldiruvchi: skrinshotdan narxni o'qiydi,
 erkin so'rovni tushunadi, hisobni esa `core/` bajaradi. Kirish nuqtalari
 (2026-09-18 dan): bosh sahifadagi "Skrinshot yuklash" kartasi (asosiy),

@@ -1,5 +1,5 @@
 {
-  "note": "Pochtam AI sinov to'plami. `AI_URL=https://<worker>/ai node tests/ai.mjs` bilan ishga tushadi (kalit o'rnatilgan worker kerak). Mezonlar: tool — shu vosita chaqirilishi shart; noTool — vosita chaqirilmasligi kerak; must — javobda shu ifoda (regex, i) bo'lishi; mustNot — bo'lmasligi; lang — javob tili (uz|ru). tool=suggest_stores — tovar so'rovi; mustNot https — havolalar matnda emas, tugmada.",
+  "note": "Pochtam AI sinov to'plami. `AI_URL=https://<worker>/ai node tests/ai.mjs` bilan ishga tushadi (kalit o'rnatilgan worker kerak). Mezonlar: tool — shu vosita chaqirilishi shart; noTool — vosita chaqirilmasligi kerak; card — javobda shu turdagi karta bo'lishi shart; must/mustNot — javob matni; cart — so'rov bilan yuboriladigan joriy xarid; find — veb-qidiruv yoqiladi.",
   "cases": [
     {
       "q": "$320 lik 2,5 kg tovar uchun boj qancha bo'ladi?",
@@ -108,6 +108,53 @@
       "q": "Хочу кроссовки женские 38 размер до 80 долларов, оригинал",
       "tool": "suggest_stores",
       "must": "US 7|24 см|Nike|Adidas",
+      "lang": "ru"
+    },
+    {
+      "q": "Buni qanday buyurtma qilaman?",
+      "cart": {
+        "name": "Nike Air Max 90",
+        "store": "Taobao",
+        "country": "Xitoy",
+        "price": 699,
+        "cur": "CNY",
+        "kg": 0.8,
+        "courier": "D2D",
+        "totalUsd": 102.2
+      },
+      "must": "1[.)]",
+      "mustNot": "qaysi (do'kon|tovar)",
+      "lang": "uz"
+    },
+    {
+      "q": "Shu tovarga boj tushadimi?",
+      "cart": {
+        "name": "iPhone 15",
+        "country": "AQSh",
+        "price": 800,
+        "cur": "USD",
+        "kg": 0.5,
+        "totalUsd": 830
+      },
+      "tool": "customs_duty",
+      "mustNot": "narxini ayting|qaysi davlat",
+      "lang": "uz"
+    },
+    {
+      "q": "Krossovka olmoqchiman",
+      "card": "ask",
+      "lang": "uz"
+    },
+    {
+      "q": "Сколько будет стоить доставка этого?",
+      "cart": {
+        "name": "Куртка",
+        "country": "Turkiya",
+        "price": 120,
+        "cur": "USD",
+        "kg": 1.2
+      },
+      "tool": "courier_quotes",
       "lang": "ru"
     }
   ]

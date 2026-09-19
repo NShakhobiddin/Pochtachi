@@ -73,7 +73,7 @@ check('/hisobot yorliqlar to\'liq', ['Do\'konga o\'tish', 'Pullik xizmat', 'Boj 
 check('/hisobot indekslanmaydi', hs.headers.get('x-robots-tag') === 'noindex');
 
 /* --- Pochtam AI (/ai): soxta Claude API (env.AI_FETCH), haqiqiy vositalar --- */
-const { runTool, buildSystem, TOOLS, parseAiBody } = await import('./src/ai.js');
+const { runTool, buildSystem, TOOLS, parseAiBody, buildCards, mergeCart, toolAsk, parseCart, parseUrl } = await import('./src/ai.js');
 import '../core/customs.js';
 const Core = globalThis.PochtamCore;
 const aiEnv = (extra = {}) => ({ ...env, ANTHROPIC_API_KEY: 'sk-test', AI_DAILY_PER_IP: '3', AI_DAILY_TOTAL: '100', ...extra });
@@ -162,6 +162,64 @@ check('/ai refusal — rad javobi matni', refused.status === 200 && /javob bera 
   check('AI_WEB_SEARCH=0 — find so\'rovida ham veb-qidiruv yo\'q', off.length === 1 && !off[0].tools.some(t => t.type === 'web_search_20260209'));
   const tl = runTool('product_links', { links: [{ title: 't', url: 'https://x.com/a' }] }, { usdRate: 12650, today: '2026-09-18' });
   check('product_links: minimal kirish — host do\'kon nomi bo\'ladi', tl.ok && tl.links[0].store === 'x.com' && tl.links[0].price === 0);
+}
+
+/* Yagona kirish: matn, rasm, havola va joriy xarid bitta so'rovda. */
+{
+  check('parseAiBody: bo\'sh so\'rov rad etiladi', parseAiBody(JSON.stringify({ lang: 'uz' })) === 'savol bo\'sh');
+  const onlyImg = parseAiBody(JSON.stringify({ image: 'data:image/png;base64,iVBORw0KGgo=', lang: 'uz' }));
+  check('parseAiBody: faqat rasm ham yetadi', typeof onlyImg === 'object' && onlyImg.q === '' && onlyImg.shot.mime === 'image/png');
+  const onlyUrl = parseAiBody(JSON.stringify({ url: 'https://www.amazon.com/dp/B0X', lang: 'uz' }));
+  check('parseAiBody: faqat havola ham yetadi', typeof onlyUrl === 'object' && onlyUrl.url === 'https://www.amazon.com/dp/B0X');
+  check('parseUrl: faqat http(s)', parseUrl('javascript:alert(1)') === '' && parseUrl('https://x.com/a') === 'https://x.com/a');
+  const c = parseCart({ name: 'Nike Air Max', price: '699', cur: 'cny', kg: 99, qty: 0, junk: 'x' });
+  check('parseCart: tozalanadi (vazn 50 kg gacha, valyuta katta harf, miqdor ≥1)', c.name === 'Nike Air Max' && c.price === 699 && c.cur === 'CNY' && c.kg === 50 && c.qty === 1 && !('junk' in c), JSON.stringify(c));
+  check('parseCart: bo\'sh — null', parseCart({}) === null && parseCart(null) === null);
+  const merged = mergeCart({ name: 'eski', country: 'AQSh', courier: 'D2D', price: 0, kg: 0, qty: 1, totalUsd: 50 },
+    { found: true, name: 'Nike Air Max 90', store: 'Taobao', country: 'Xitoy', category: 'poyabzal', currency: 'CNY', price: 699, qty: 1, weightKg: 0.8 });
+  check('mergeCart: skrinshot joriy xaridni to\'ldiradi, kuryer saqlanadi, jami tozalanadi', merged.name === 'Nike Air Max 90' && merged.country === 'Xitoy' && merged.courier === 'D2D' && merged.price === 699 && merged.kg === 0.8 && merged.totalUsd === 0, JSON.stringify(merged));
+  const ask = toolAsk({ question: 'Qaysi davlatdan olib kelamiz?', options: ['Xitoy', 'AQSh', ''] });
+  check('ask_user: savol va variantlar tozalanadi', ask.ok && ask.options.length === 2, JSON.stringify(ask));
+  check('ask_user: bitta variant — xato', !!toolAsk({ question: 'x', options: ['bitta'] }).error);
+  const cc = { usdRate: 12650, today: new Date().toISOString().slice(0, 10) };
+  const cards = buildCards({ shot: { found: true, name: 'Nike' }, cart: { name: 'Nike', price: 699 }, used: [
+    { name: 'ask_user', result: ask },
+    { name: 'suggest_stores', input: { category: 'poyabzal' }, result: runTool('suggest_stores', { category: 'poyabzal', query: 'sneakers' }, cc) },
+    { name: 'check_banned', result: runTool('check_banned', { query: 'dron' }, cc) },
+    { name: 'courier_quotes', result: runTool('courier_quotes', { country: 'Xitoy', kg: 2 }, cc) },
+    { name: 'landed_cost', result: runTool('landed_cost', { priceUsd: 320, country: 'Xitoy', kg: 2.5 }, cc) },
+    { name: 'customs_duty', result: { error: 'x' } }
+  ] });
+  check('buildCards: har vosita o\'z kartasiga, xato vosita kartasiz', cards.map(x => x.type).join(',') === 'product,ask,stores,warning,couriers,total,cart', cards.map(x => x.type).join(','));
+}
+
+/* Faqat rasm yuborilsa asosiy model umuman chaqirilmaydi (arzon yo'l). */
+{
+  const seen = [];
+  const fake = async (url, init) => { const b = JSON.parse(init.body); seen.push(b.model); 
+    return new Response(JSON.stringify({ model: b.model, stop_reason: 'end_turn', usage: { input_tokens: 900, output_tokens: 40 },
+      content: [{ type: 'text', text: JSON.stringify({ name: 'Nike Air Max 90', price: 699, currency: 'CNY', qty: 1, store: 'Taobao', category: 'poyabzal', country: 'Xitoy', weightKg: 0.8, confidence: 0.9 }) }] }), { status: 200 }); };
+  const r = await ask('', { AI_FETCH: fake }, { headers: { 'cf-connecting-ip': '2.2.2.9' }, body: { image: 'data:image/png;base64,iVBORw0KGgo=' } });
+  const j = await r.json();
+  check('faqat rasm: bitta arzon chaqiruv, asosiy model chaqirilmaydi', r.status === 200 && seen.length === 1 && seen[0] === 'claude-haiku-4-5' && j.stop === 'shot' && j.text === '', seen.join(',') + ' · ' + j.stop);
+  check('faqat rasm: mahsulot kartasi va joriy xarid qaytadi', j.cards.map(c => c.type).join(',') === 'product,cart' && j.cart.name === 'Nike Air Max 90' && j.cart.cur === 'CNY' && j.cart.kg === 0.8, JSON.stringify(j.cart));
+  /* Rasm + savol: rasm arzon modelda, savol asosiy modelda; xarid holati ko'rsatmada. */
+  const seen2 = [];
+  const fake2 = async (url, init) => { const b = JSON.parse(init.body); seen2.push(b);
+    if (b.model === 'claude-haiku-4-5') return new Response(JSON.stringify({ model: b.model, stop_reason: 'end_turn', usage: {},
+      content: [{ type: 'text', text: JSON.stringify({ name: 'Nike Air Max 90', price: 699, currency: 'CNY', qty: 1, store: 'Taobao', category: 'poyabzal', country: 'Xitoy', weightKg: 0.8, confidence: 0.9 }) }] }), { status: 200 });
+    return claudeText('Taobao dan buyurtma tartibi shunday.'); };
+  const r2 = await ask('Buni qanday buyurtma qilaman?', { AI_FETCH: fake2 }, { headers: { 'cf-connecting-ip': '2.2.2.10' }, body: { image: 'data:image/png;base64,iVBORw0KGgo=' } });
+  const j2 = await r2.json();
+  const sys = (seen2[1].system || []).map(b => b.text).join(' ');
+  check('rasm + savol: rasm arzon modelda, savol asosiyda, xarid holati ko\'rsatmada', r2.status === 200 && seen2.length === 2 && seen2[0].model === 'claude-haiku-4-5' && seen2[1].model === 'claude-sonnet-5' && /Joriy xarid/.test(sys) && /Nike Air Max 90/.test(sys) && /699 CNY/.test(sys), sys.slice(-200));
+  check('rasm + savol: rasm asosiy modelga ko\'rsatilmaydi', !JSON.stringify(seen2[1].messages).includes('image'));
+  /* Havola: web_fetch faqat o'sha domenga ruxsat bilan qo'shiladi. */
+  const seen3 = [];
+  const r3 = await ask('Bu qancha turadi?', { AI_FETCH: async (u, i) => { seen3.push(JSON.parse(i.body)); return claudeText('ok'); } },
+    { headers: { 'cf-connecting-ip': '2.2.2.11' }, body: { url: 'https://www.amazon.com/dp/B0X' } });
+  const wf = (seen3[0].tools || []).find(t => t.type === 'web_fetch_20260209');
+  check('havola: web_fetch qo\'shiladi va faqat o\'sha domenga', r3.status === 200 && !!wf && wf.allowed_domains.join() === 'amazon.com' && /amazon\.com\/dp\/B0X/.test(JSON.stringify(seen3[0].messages)), JSON.stringify(wf));
 }
 
 /* /stats: AI sanog'i bor, IP xeshlari yo'q. */

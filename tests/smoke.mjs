@@ -693,9 +693,23 @@ try {
        javob ostidagi tugma kalkulyatorni to'ldirib ochadi; xato holatida
        "vaqtincha mavjud emas"; bosh sahifadagi savol AI ga boradi. Mobil
        pastki menyu 5 ta qoladi. */
-    const aiBodies = []; let aiMode = 'ok';
+    const aiBodies = []; const shotBodies = []; let aiMode = 'ok';
+    /* Savollar (rasmsiz so'rovlar) — sanoq shular bo'yicha. */
+    const qBodies = () => aiBodies.filter(b => b && b.q);
+    /* Skrinshot javoblari: 1 — CNY Nike, 2 va 4 — topilmadi, 3 — KRW. */
+    const shotOf = n => n === 2 || n === 4 ? { found: false }
+      : n === 3 ? { found: true, name: 'Koreya kremi', price: 46000, currency: 'KRW', priceUsd: 0, fxApprox: true, qty: 1, store: '', confidence: 0.8, category: 'kosmetika', country: 'Koreya', weightKg: 0.3 }
+      : { found: true, name: 'Nike Air Max 90', price: 699, currency: 'CNY', priceUsd: 97.86, fxApprox: true, qty: 1, store: 'Taobao', confidence: 0.9, category: 'poyabzal', country: 'Xitoy', weightKg: 0.8 };
+    const cartOf = sh => sh.found ? { name: sh.name, store: sh.store, country: sh.country, cat: sh.category, cur: sh.currency, price: sh.price, kg: sh.weightKg, qty: sh.qty, courier: '', totalUsd: 0 } : null;
     await context.route(METRICS_URL + 'ai', async r => {
-      aiBodies.push(JSON.parse(r.request().postData() || '{}'));
+      const body = JSON.parse(r.request().postData() || '{}');
+      aiBodies.push(body);
+      /* Yagona manzil: rasm kelsa skrinshot javobi (savolsiz — kartalar). */
+      if (body.image) {
+        shotBodies.push(body);
+        const sh = shotOf(shotBodies.length);
+        return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: '', shot: sh, cart: cartOf(sh), cards: sh.found ? [{ type: 'product', ...sh }] : [], tools: [], model: 'm', usage: {}, stop: 'shot' }) });
+      }
       if (aiMode === '503') return r.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: 'AI vaqtincha mavjud emas', code: 'no_key' }) });
       if (aiMode === '429') return r.fulfill({ status: 429, contentType: 'application/json', body: JSON.stringify({ error: 'limit', code: 'limit' }) });
       const q = (aiBodies[aiBodies.length - 1] || {}).q || '';
@@ -703,18 +717,10 @@ try {
       if (/krossovka|Krossovka/i.test(q)) return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: 'Original krossovka uchun Nike va Adidas rasmiy do\'konlari mos. 41 EU = US 8.',
         tools: [{ name: 'suggest_stores', input: { category: 'poyabzal', original: true, budgetUsd: 100, query: 'men sneakers size 41' }, result: { found: true, stores: [{ id: 'nike', name: 'Nike', searchUrl: 'https://www.nike.com/w?q=men+sneakers+size+41' }, { id: 'adidas', name: 'Adidas', searchUrl: 'https://www.adidas.com/us/search?q=men+sneakers' }] } },
           { name: 'product_links', input: {}, result: { ok: true, n: 2, links: [{ title: 'Nike Air Max 90 Men', url: 'https://www.amazon.com/dp/B0EXAMPLE', host: 'amazon.com', store: 'Amazon', price: 119.99, currency: 'USD' }, { title: 'Air Max 90 Essential', url: 'https://www.nike.com/t/air-max-90', host: 'nike.com', store: 'Nike', price: 130, currency: 'USD' }] } }], model: 'm', usage: {} }) });
+      if (/^Termos$/i.test(q)) return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: 'Aniqlashtiraylik.',
+        cards: [{ type: 'ask', question: 'Qaysi davlatdan olib kelamiz?', options: ['Xitoy', 'AQSh'] }], tools: [], model: 'm', usage: {} }) });
       return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: 'Boj $15.00, yig\'im 110 000 so\'m.\nTaxminiy hisob.',
         tools: [{ name: 'customs_duty', input: { goodsUsd: 250, kg: 0.5 }, result: { dutyUsd: 15 } }, { name: 'courier_quotes', input: { country: 'Xitoy', kg: 2 }, result: { country: 'Xitoy' } }], model: 'm', usage: {} }) });
-    });
-    /* Skrinshot: soxta /ai/shot — CNY narx, taxminiy kurs bilan. */
-    const shotBodies = [];
-    await context.route(METRICS_URL + 'ai/shot', async r => {
-      shotBodies.push(JSON.parse(r.request().postData() || '{}'));
-      if (shotBodies.length === 2 || shotBodies.length === 4) return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ found: false }) });
-      /* Uchinchi skrinshot — chiplarda yo'q valyuta (KRW): Markaziy bank
-         kursi bo'lgani uchun u ham qabul qilinadi. */
-      if (shotBodies.length === 3) return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ found: true, name: 'Koreya kremi', price: 46000, currency: 'KRW', priceUsd: 0, fxApprox: true, qty: 1, store: '', confidence: 0.8, category: 'kosmetika', country: 'Koreya', weightKg: 0.3 }) });
-      return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ found: true, name: 'Nike Air Max 90', price: 699, currency: 'CNY', priceUsd: 97.86, fxApprox: true, qty: 1, store: 'Taobao', confidence: 0.9, category: 'poyabzal', country: 'Xitoy', weightKg: 0.8 }) });
     });
     const aiMain = () => page.locator('main').innerText().then(t => t.replace(/\s+/g, ' '));
     /* Bosh sahifaning o'zi savol: "Nima mahsulot qidiryapsiz?" — maydon,
@@ -737,21 +743,37 @@ try {
     check('tanlangan chiplar belgilanadi', whPressed.join('|') === "Poyabzal va krossovka|Faqat original|$100 gacha", whPressed.join('|'));
     await page.locator('main button').filter({ hasText: /^Do'konlarni ko'rsat$/ }).first().click(); await page.waitForTimeout(800);
     const aiHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
-    check('tanlovlardan savol tuziladi, find bayrog\'i bilan Pochtam AI ga yuboriladi', /Pochtam AI/.test(aiHead) && aiBodies.length === 1 && aiBodies[0].find === true && aiBodies[0].q === "Poyabzal va krossovka qidiryapman (41 razmer). Faqat original. Byudjet $100 gacha. Qaysi do'kondan topaman?", JSON.stringify(aiBodies[0] && aiBodies[0].q));
+    check('tanlovlardan savol tuziladi, find bayrog\'i bilan Pochtam AI ga yuboriladi', /Pochtam AI/.test(aiHead) && qBodies().length === 1 && qBodies()[0].find === true && qBodies()[0].q === "Poyabzal va krossovka qidiryapman (41 razmer). Faqat original. Byudjet $100 gacha. Qaysi do'kondan topaman?", JSON.stringify(aiBodies[0] && aiBodies[0].q));
     const links = await page.evaluate(() => [...document.querySelectorAll('main a[target="_blank"]')].map(a => a.innerText.replace(/\s+/g, ' ').trim() + '→' + a.href));
     const gotTxt = await aiMain();
     check('Pochtam AI: aniq havola kartalari (nom, do\'kon, narx) do\'kon kartalaridan oldin', links.length === 4 && /^Nike Air Max 90 Men/.test(links[0]) && /amazon\.com\/dp\/B0EXAMPLE/.test(links[0]) && /Amazon · 119\.99 USD/.test(links[0]) && /Ochish/.test(links[0]) && /Topilgan sahifalar/i.test(gotTxt), links.join(' | '));
     check('Pochtam AI: tovar so\'rovi — do\'kon kartalari (yangi oynada), "Tushundim" chiplari va "Skrinshot yuklash"', /^Nike/.test(links[2]) && /Qidirish/.test(links[2]) && /nike\.com\/w\?q=men\+sneakers/.test(links[2]) && /noopener/.test((await page.locator('main a[target="_blank"]').first().getAttribute('rel')) || '') && /Tushundim: Poyabzal va krossovka original \$100 gacha/.test(gotTxt) && (await page.locator('main button').filter({ hasText: /^Skrinshot yuklash$/ }).count()) === 1 && !/Qanday ishlaydi/.test(gotTxt), links.join(' | ') + ' · ' + gotTxt.slice(0, 80));
-    /* Skrinshot: fayl → /ai/shot (JPEG, kurs) → chatsiz, to'g'ridan-to'g'ri
+    /* Yagona kirish: maydonga havola yozilsa do'kon ochiladi, savol yozilsa
+       AI ga boradi — rejim tanlash yo'q. */
+    await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
+    const heroField = page.locator('main input[aria-label="Mahsulot nomi"]');
+    check('yagona kirish: maydon, mikrofon, rasm biriktirish va yuborish bitta qatorda',
+      (await page.locator('main form').first().locator('button[aria-label="Rasm biriktirish"]').count()) === 1 && (await page.locator('main button[aria-label="Ovoz bilan aytish"]').count()) <= 1);
+    await heroField.fill('https://item.taobao.com/item.htm?id=1'); await page.waitForTimeout(200);
+    await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(700);
+    check('yagona kirish: havola → do\'kon sahifasi', /Taobao/.test(await page.locator('header').innerText()));
+    await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
+    await heroField.fill("Boj qancha bo'ladi?"); await page.waitForTimeout(200);
+    await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(800);
+    check('yagona kirish: savol → Pochtam AI (joriy xarid bilan)', /Pochtam AI/.test(await page.locator('header').innerText()) && (qBodies()[qBodies().length - 1] || {}).q === "Boj qancha bo'ladi?" && 'cart' in aiBodies[aiBodies.length - 1]);
+    await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
+    await heroField.fill('41 razmer'); await page.waitForTimeout(200);
+    aiBodies.length = 0; /* yuqoridagi sinov savollari keyingi sanoqqa kirmasin */
+
+    /* Skrinshot: fayl → /ai (JPEG, kurs) → chatsiz, to'g'ridan-to'g'ri
        "Jami narx" natija ekrani: mahsulot, do'kon · davlat, eng arzon
        kuryer va muddat, vazn (sahifadan), qatorlar, jami, eslatma. */
     const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFklEQVR42mP8z8BQz0AEYBxVSF+FAAhKDveksOjmAAAAAElFTkSuQmCC', 'base64');
-    await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(500);
-    check('bosh sahifaga qaytdi, yozilgan nom va tur turibdi', await camBtn.count() === 1 && (await page.locator('main input[aria-label="Mahsulot nomi"]').inputValue()) === '41 razmer');
+    check('bosh sahifada yozilgan nom turibdi', await camBtn.count() === 1 && (await page.locator('main input[aria-label="Mahsulot nomi"]').inputValue()) === '41 razmer');
     await page.locator('input[type="file"][data-shot]').first().setInputFiles({ name: 'shot.png', mimeType: 'image/png', buffer: PNG }); await page.waitForTimeout(1200);
     const mainBtns = () => page.evaluate(() => [...document.querySelectorAll('main button')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).filter(Boolean));
     const shotRes = { h: (await page.locator('header').innerText()).replace(/\s+/g, ' '), t: await aiMain(), b: await mainBtns() };
-    check('Skrinshot: narx Markaziy bank kursi bo\'yicha o\'giriladi, natijada do\'kon, kuryer va vazn', shotBodies.length === 1 && /^data:image\/jpeg;base64,/.test(shotBodies[0].image) && shotBodies[0].usdRate > 1000 && /Jami narx/.test(shotRes.h) && /Nike Air Max 90/.test(shotRes.t) && /699 CNY ≈ \$97\.80/.test(shotRes.t) && !/taxminiy kurs/.test(shotRes.t) && /Taobao · Xitoy/.test(shotRes.t) && /eng arzon kuryer/i.test(shotRes.t) && /Og'irlik 0,8 kg \(sahifadan\)/.test(shotRes.t), shotRes.t.slice(0, 160));
+    check('Skrinshot: yagona /ai manziliga rasm va joriy xarid, narx Markaziy bank kursi bo\'yicha', shotBodies.length === 1 && /^data:image\/jpeg;base64,/.test(shotBodies[0].image) && shotBodies[0].usdRate > 1000 && 'cart' in shotBodies[0] && /Jami narx/.test(shotRes.h) && /Nike Air Max 90/.test(shotRes.t) && /699 CNY ≈ \$97\.80/.test(shotRes.t) && !/taxminiy kurs/.test(shotRes.t) && /Taobao · Xitoy/.test(shotRes.t) && /eng arzon kuryer/i.test(shotRes.t) && /Og'irlik 0,8 kg \(sahifadan\)/.test(shotRes.t), shotRes.t.slice(0, 160));
     check('Skrinshot natijasi: jami tepada, kuryer · muddat · taxminiy sana, so\'mda ham', /^JAMI \$102\.20 1 292 890 so'm D2D · 20–25 kun · taxminan \d{1,2}-\w+gacha/.test(shotRes.t) && /Kargo · \S+ \(0,8 kg\) \$\d+\.\d\d/.test(shotRes.t) && /so'm/.test(shotRes.t) && /me'yor ichida — boj va yig'im yo'q/.test(shotRes.t) && !/Topildi|Skrinshotdan o'qildi/.test(shotRes.t), shotRes.t.slice(160, 360));
     check('Skrinshot natijasi tugmalari: Qanday buyurtma qilaman? · Vaznni aniqlashtirish · Rejaga qo\'shish · Boshqa kuryerlar', ['Qanday buyurtma qilaman?', 'Vaznni aniqlashtirish', "Rejaga qo'shish", 'Boshqa kuryerlar'].every(t => shotRes.b.some(b => b.indexOf(t) === 0)), shotRes.b.join(' | '));
     /* "Vaznni aniqlashtirish" → kalkulyator to'ldirilgan (nom, 699, ¥,
@@ -765,7 +787,7 @@ try {
     /* Qo'llanmasi bor do'kon (Taobao): "Qanday buyurtma qilaman?" AI emas,
        ilovadagi bosqichli qo'llanmani ochadi — aniq, tez, bepul. */
     await orderBtn.first().click(); await page.waitForTimeout(800);
-    check('"Qanday buyurtma qilaman?" (Taobao) → Taobao qo\'llanmasi ochiladi, AI so\'rovi ketmaydi', /Taobao/.test(await page.locator('header').innerText()) && aiBodies.length === 1);
+    check('"Qanday buyurtma qilaman?" (Taobao) → Taobao qo\'llanmasi ochiladi, AI so\'rovi ketmaydi', /Taobao/.test(await page.locator('header').innerText()) && qBodies().length === 0);
     /* Oxirgi hisob bosh sahifada saqlanadi va qayta ochiladi. */
     await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(500);
     const lastCard = page.locator('main button').filter({ hasText: /Oxirgi hisob/ });
@@ -781,8 +803,8 @@ try {
     const krw = await aiMain();
     check('KRW skrinshoti: Markaziy bank kursi bo\'yicha o\'giriladi', shotBodies.length === 3 && /46000 KRW ≈ \$33\.45/.test(krw) && !/taxminiy kurs/.test(krw) && /Koreya/.test(krw), krw.slice(0, 110));
     await page.locator('main button').filter({ hasText: /Qanday buyurtma qilaman\?/ }).first().click(); await page.waitForTimeout(800);
-    const orderQ = (aiBodies[aiBodies.length - 1] || {}).q || '';
-    check('"Qanday buyurtma qilaman?" (qo\'llanmasiz do\'kon) → Pochtam AI: savolda mahsulot, davlat, narx, kuryer', aiBodies.length === 2 && /Pochtam AI/.test(await page.locator('header').innerText()) && /^Men do'kon \(Koreya\) dan "Koreya kremi" \(46000 KRW ≈ \$33\.45\) buyurtma qilmoqchiman, kuryer \S+\. Qanday buyurtma qilaman — qadam-baqadam\?$/.test(orderQ), orderQ);
+    const orderQ = (qBodies()[qBodies().length - 1] || {}).q || '';
+    check('"Qanday buyurtma qilaman?" (qo\'llanmasiz do\'kon) → Pochtam AI: savolda mahsulot, davlat, narx, kuryer', qBodies().length === 1 && /Pochtam AI/.test(await page.locator('header').innerText()) && /^Men do'kon \(Koreya\) dan "Koreya kremi" \(46000 KRW ≈ \$33\.45\) buyurtma qilmoqchiman, kuryer \S+\. Qanday buyurtma qilaman — qadam-baqadam\?$/.test(orderQ), orderQ);
     const steps = page.locator('main button[aria-pressed]').filter({ hasText: /ilovasini o'rnating|reytingini|ombori manzilini|to'lang|kuryer ilovasiga/ });
     check('AI javobidagi raqamli qadamlar belgilanadigan ro\'yxat bo\'lib chiqadi', (await steps.count()) === 5 && (await steps.nth(0).getAttribute('aria-pressed')) === 'false', String(await steps.count()));
     await steps.nth(0).click(); await page.waitForTimeout(200);
@@ -795,14 +817,21 @@ try {
     aiBodies.length = 0; /* yuqoridagi tovar so'rovi sanalmasin */
     await page.locator('input[aria-label="Savolingiz"]').fill("$250 lik telefon uchun boj qancha bo'ladi?"); await page.keyboard.press('Enter'); await page.waitForTimeout(700);
     const aiT1 = await aiMain();
-    check('Pochtam AI: savol yuborildi (q, lang, usdRate), javob va vosita tugmalari', aiBodies.length === 1 && /telefon uchun boj/.test(aiBodies[0].q) && aiBodies[0].lang === 'uz' && aiBodies[0].usdRate > 1000 && /Boj \$15\.00/.test(aiT1) && /Kalkulyatorda ochish/.test(aiT1) && /Kuryerlarni ko'rish/.test(aiT1), JSON.stringify(aiBodies[0]).slice(0, 120));
+    check('Pochtam AI: savol yuborildi (q, lang, usdRate, joriy xarid), javob va vosita tugmalari', qBodies().length === 1 && 'cart' in aiBodies[0] && /telefon uchun boj/.test(aiBodies[0].q) && aiBodies[0].lang === 'uz' && aiBodies[0].usdRate > 1000 && /Boj \$15\.00/.test(aiT1) && /Kalkulyatorda ochish/.test(aiT1) && /Kuryerlarni ko'rish/.test(aiT1), JSON.stringify(aiBodies[0]).slice(0, 120));
     await page.locator('main button').filter({ hasText: 'Kalkulyatorda ochish' }).first().click(); await page.waitForTimeout(500);
     const aiCalc = await page.evaluate(() => ({ h: document.querySelector('header').innerText.replace(/\s+/g, ' '), p: document.querySelector('input[aria-label="Mahsulot narxi"]')?.value, kg: document.querySelector('input[aria-label="Og\'irligi, kilogrammda"]')?.value }));
     check('Pochtam AI → kalkulyator to\'ldirilgan ($250, 0.5 kg)', /Jami narx/.test(aiCalc.h) && aiCalc.p === '250' && aiCalc.kg === '0.5', JSON.stringify(aiCalc));
     await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(400);
     const aiInp = page.locator('input[aria-label="Savolingiz"]');
     await aiInp.fill('Ikkinchi savol'); await page.keyboard.press('Enter'); await page.waitForTimeout(700);
-    check('Pochtam AI: tarix (oldingi savol-javob) yuboriladi', aiBodies.length === 2 && aiBodies[1].q === 'Ikkinchi savol' && aiBodies[1].history.length === 2 && aiBodies[1].history[0].role === 'user' && aiBodies[1].history[1].role === 'assistant', JSON.stringify(aiBodies[1] && aiBodies[1].history).slice(0, 120));
+    const lastQ = qBodies()[qBodies().length - 1] || {};
+    check('Pochtam AI: tarix (oldingi savol-javob) yuboriladi', lastQ.q === 'Ikkinchi savol' && lastQ.history.length >= 2 && lastQ.history[lastQ.history.length - 2].role === 'user' && lastQ.history[lastQ.history.length - 1].role === 'assistant', JSON.stringify(lastQ.history).slice(0, 120));
+    /* Aniqlashtiruvchi savol: erkin matn emas, bosiladigan variantlar. */
+    await aiInp.fill('Termos'); await page.keyboard.press('Enter'); await page.waitForTimeout(700);
+    const askOpts = page.locator('main button').filter({ hasText: /^(Xitoy|AQSh)$/ });
+    check('AI aniqlashtiruvchi savol bersa — bosiladigan variantlar chiqadi', /Qaysi davlatdan olib kelamiz\?/.test(await aiMain()) && (await askOpts.count()) === 2, String(await askOpts.count()));
+    await askOpts.first().click(); await page.waitForTimeout(700);
+    check('variant bosilsa javob sifatida yuboriladi', (qBodies()[qBodies().length - 1] || {}).q === 'Xitoy');
     aiExpectErr = true;
     aiMode = '503'; await aiInp.fill('uchinchi'); await page.keyboard.press('Enter'); await page.waitForTimeout(600);
     check('Pochtam AI: server 503 — sariq karta "javob bera olmadim" + Jami narx / Do\'konlar tugmalari', /Hozir javob bera olmadim/.test(await aiMain()) && (await page.locator('main button').filter({ hasText: /^Jami narx$/ }).count()) === 1 && (await page.locator('main button').filter({ hasText: /^Do'konlar$/ }).count()) === 1 && (await page.locator('main input[aria-label="Savolingiz"]').getAttribute('placeholder')) === 'Yana savol');

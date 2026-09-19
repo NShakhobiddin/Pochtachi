@@ -26,12 +26,15 @@ for (const c of cases) {
   let j, status;
   try {
     const r = await fetch(URL_, { method: 'POST', headers: { 'content-type': 'text/plain;charset=UTF-8', origin: ORIGIN },
-      body: JSON.stringify({ q: c.q, lang: c.lang === 'ru' ? 'ru' : 'uz', usdRate: 12650 }) });
+      body: JSON.stringify({ q: c.q, lang: c.lang === 'ru' ? 'ru' : 'uz', usdRate: 12650,
+        ...(c.cart ? { cart: c.cart } : {}), ...(c.url ? { url: c.url } : {}), ...(c.find ? { find: true } : {}) }) });
     status = r.status; j = await r.json();
   } catch (e) { check(c.q, false, 'so\'rov xatosi: ' + e.message); continue; }
   if (status !== 200 || !j || !j.text) { check(c.q, false, `HTTP ${status} ${JSON.stringify(j).slice(0, 120)}`); continue; }
   const text = String(j.text), tools = (j.tools || []).map(t => t.name);
+  const cards = (j.cards || []).map(x => x.type);
   const problems = [];
+  if (c.card && !cards.includes(c.card)) problems.push(`karta ${c.card} yo'q (${cards.join(',') || 'kartasiz'})`);
   if (c.tool && !tools.includes(c.tool)) problems.push(`vosita ${c.tool} chaqirilmadi (${tools.join(',') || 'hech biri'})`);
   if (c.noTool && tools.length) problems.push('vosita chaqirilmasligi kerak edi: ' + tools.join(','));
   if (c.must && !new RegExp(c.must, 'i').test(text)) problems.push(`kutilgan ifoda yo'q: /${c.must}/`);
@@ -40,7 +43,7 @@ for (const c of cases) {
   if (c.lang === 'ru' && cyr(text) < lat(text)) problems.push('javob ruscha emas');
   if (c.lang === 'uz' && cyr(text) > lat(text)) problems.push('javob o\'zbekcha (lotin) emas');
   if (/[#*]{2,}|^\s*#/m.test(text)) problems.push('markdown belgilari');
-  check(c.q, problems.length === 0, problems.join('; ') || (text.replace(/\s+/g, ' ').slice(0, 90) + ` · ${tools.join(',') || 'vositasiz'} · ${j.usage ? j.usage.input + '/' + j.usage.output : ''}`));
+  check(c.q, problems.length === 0, problems.join('; ') || (text.replace(/\s+/g, ' ').slice(0, 90) + ` · ${cards.join(',') || 'kartasiz'} · ${j.usage ? j.usage.input + '/' + j.usage.output : ''}`));
 }
 console.log(fails ? `\n${fails}/${n} savol o'tmadi.` : `\nAI sinovi o'tdi: ${n} savol.`);
 process.exit(fails ? 1 : 0);

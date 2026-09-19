@@ -150,6 +150,16 @@ Qoidalar `data/ai-rules.md` da, bilimlar bazasi `src/kb.generated.js`
 `AI_WEB_SEARCH` ("0" — o'chiq), `AI_WEB_SEARCH_USES` (bitta so'rovda
 ko'pi bilan nechta qidiruv, standart 2).
 
+`POST /ai` yagona kirish: `{ q?, image?, mime?, url?, cart?, lang, usdRate,
+history?, find? }` — uchalasidan (savol, rasm, havola) kamida bittasi
+kerak. Rasm bo'lsa avval arzon model o'qiydi (`readShot`, `AI_SHOT_MODEL`)
+va natija joriy xaridga qo'shiladi (`mergeCart`); savol yo'q bo'lsa asosiy
+model umuman chaqirilmaydi (`stop: "shot"`). Havola bo'lsa `web_fetch`
+faqat o'sha domenga ruxsat bilan qo'shiladi. Javob: `{ text, cards, cart,
+shot, tools, model, usage, stop }`; `cards` turlari — `product`, `total`,
+`couriers`, `links`, `stores`, `warning`, `ask`, `cart`. `ask_user`
+vositasi bitta savol va 2–4 bosiladigan variant qaytaradi.
+
 `POST /ai` tanasida `find: true` bo'lsa ("Qayerdan topaman" so'rovi)
 vositalarga Claude'ning server tomonidagi `web_search_20260209` qo'shiladi
 va tizim ko'rsatmasiga qisqa yo'riqnoma: indekslanadigan do'konlarda aniq

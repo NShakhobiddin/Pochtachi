@@ -22,7 +22,7 @@ import '../../core/landed.js';
 import * as KB from './kb.generated.js';
 
 const Core = globalThis.PochtamCore;
-export const AI_LIMITS = { q: 600, hist: 6, histText: 800, body: 12288, rounds: 4 };
+export const AI_LIMITS = { q: 600, hist: 6, histText: 800, body: 1500000, rounds: 4 };
 const API_URL = 'https://api.anthropic.com/v1/messages';
 const DEFAULT_MODEL = 'claude-sonnet-5';
 const FALLBACK_RATE = 12700;
@@ -137,6 +137,29 @@ export const TOOLS = [
     }
   }
 ];
+
+/* Aniqlashtiruvchi savol: model javob berish uchun bitta narsa yetmasa,
+   erkin matn o'rniga shu vositani chaqiradi va ilova bosiladigan
+   variantlarni chizadi (Taobao AI yordamchisidagi kabi — foydalanuvchi
+   yozmaydi, bosadi). Bitta savol, 2–4 variant. */
+TOOLS.push({
+  name: 'ask_user',
+  description: 'Javob uchun bitta muhim narsa yetishmasa (masalan, qaysi davlatdan olib kelish yoki tovar turi) — shu vosita bilan BITTA qisqa savol va 2–4 ta bosiladigan variant ber. Faqat javobni butunlay o\'zgartiradigan narsa uchun; taxmin qilish mumkin bo\'lsa chaqirma.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      question: { type: 'string', description: 'Qisqa savol, foydalanuvchi tilida' },
+      options: { type: 'array', maxItems: 4, items: { type: 'string', description: 'Bosiladigan variant matni' } }
+    },
+    required: ['question', 'options']
+  }
+});
+export function toolAsk(inp) {
+  const q = String(inp.question || '').trim().slice(0, 120);
+  const opts = (Array.isArray(inp.options) ? inp.options : []).map(o => String(o || '').trim().slice(0, 40)).filter(Boolean).slice(0, 4);
+  if (!q || opts.length < 2) return { error: 'savol va kamida 2 variant kerak' };
+  return { ok: true, question: q, options: opts };
+}
 
 /* Aniq mahsulot havolalari: model veb-qidiruvdan topgan sahifalarni shu
    vosita orqali qaytaradi — ilova ularni karta qilib chizadi. Vosita hech
@@ -344,6 +367,7 @@ export function runTool(name, input, ctx) {
     if (name === 'find_store') return toolStore(inp);
     if (name === 'suggest_stores') return toolSuggest(inp);
     if (name === 'product_links') return toolLinks(inp);
+    if (name === 'ask_user') return toolAsk(inp);
     return { error: 'noma\'lum vosita: ' + name };
   } catch (e) {
     return { error: 'hisoblab bo\'lmadi: ' + (e && e.message || e) };
@@ -351,12 +375,18 @@ export function runTool(name, input, ctx) {
 }
 
 /* --- So'rovni tekshirish. Xato bo'lsa satr, aks holda tozalangan obyekt. --- */
+/* Yagona kirish: matn, rasm (skrinshot), havola va joriy xarid holati.
+   Uchalasidan kamida bittasi bo'lishi kerak — foydalanuvchi rejim
+   tanlamaydi, ilova nimasi borligini yuboradi. */
 export function parseAiBody(text) {
   let d;
   try { d = JSON.parse(text); } catch (e) { return 'JSON kutilgan edi'; }
   if (!d || typeof d !== 'object') return 'obyekt kutilgan edi';
   const q = String(d.q == null ? '' : d.q).replace(/[\x00-\x08\x0b-\x1f]/g, '').trim();
-  if (!q) return 'savol bo\'sh';
+  const shot = parseImage(d);
+  if (typeof shot === 'string') return shot;
+  const url = parseUrl(d.url);
+  if (!q && !shot && !url) return 'savol bo\'sh';
   if (q.length > AI_LIMITS.q) return 'savol ' + AI_LIMITS.q + ' belgidan uzun';
   const lang = ['uz', 'uzc', 'ru'].includes(d.lang) ? d.lang : 'uz';
   const hist = [];
@@ -371,7 +401,53 @@ export function parseAiBody(text) {
   while (hist.length && hist[0].role !== 'user') hist.shift();
   if (hist.length && hist[hist.length - 1].role === 'user') hist.pop();
   const usdRate = num(d.usdRate);
-  return { q, lang, history: hist, usdRate: usdRate >= 5000 && usdRate <= 50000 ? usdRate : 0, find: d.find === true };
+  return { q, shot, url, cart: parseCart(d.cart), lang, history: hist,
+    usdRate: usdRate >= 5000 && usdRate <= 50000 ? usdRate : 0, find: d.find === true };
+}
+
+/* Rasm: data URL yoki { image, mime }. Yo'q bo'lsa null, buzuq bo'lsa xato matni. */
+export function parseImage(d) {
+  let img = String(d.image || '');
+  if (!img) return null;
+  let mime = String(d.mime || '').toLowerCase();
+  const m = /^data:(image\/(?:jpeg|png|webp));base64,(.+)$/i.exec(img);
+  if (m) { mime = m[1].toLowerCase(); img = m[2]; }
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(mime)) return 'rasm turi: jpeg, png yoki webp';
+  if (!/^[A-Za-z0-9+/=\s]+$/.test(img.slice(0, 4000))) return 'rasm base64 emas';
+  return { image: img.replace(/\s/g, ''), mime };
+}
+/* Mahsulot havolasi: faqat http(s), 400 belgigacha. */
+export function hostOf(u) {
+  try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return ''; }
+}
+export function parseUrl(v) {
+  const u = String(v || '').trim();
+  if (!u || u.length > 400) return '';
+  return /^https?:\/\/[^\s"'<>]+$/i.test(u) ? u : '';
+}
+/* Joriy xarid: ilova nimani bilsa shuni yuboradi — AI qayta so'ramaydi. */
+export function parseCart(c) {
+  if (!c || typeof c !== 'object') return null;
+  const str = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
+  const out = { name: str(c.name, 90), store: str(c.store, 40), country: str(c.country, 30),
+    cat: str(c.cat, 30), cur: str(c.cur, 3).toUpperCase(), courier: str(c.courier, 40),
+    price: pos(c.price) || 0, kg: Math.min(50, pos(c.kg) || 0), totalUsd: pos(c.totalUsd) || 0, qty: Math.max(1, Math.round(pos(c.qty) || 1)) };
+  return Object.values(out).some(v => v && v !== 1) ? out : null;
+}
+/* Xarid holatini modelga bitta qatorda beradi. */
+function cartLine(c) {
+  if (!c) return '';
+  const p = [];
+  if (c.name) p.push('tovar: ' + c.name);
+  if (c.cat) p.push('turi: ' + c.cat);
+  if (c.store) p.push('do\'kon: ' + c.store);
+  if (c.country) p.push('davlat: ' + c.country);
+  if (c.price > 0) p.push('narx: ' + c.price + ' ' + (c.cur || 'USD'));
+  if (c.qty > 1) p.push('miqdor: ' + c.qty);
+  if (c.kg > 0) p.push('vazn: ' + c.kg + ' kg');
+  if (c.courier) p.push('kuryer: ' + c.courier);
+  if (c.totalUsd > 0) p.push('ilova hisoblagan jami: $' + c.totalUsd.toFixed(2));
+  return p.length ? 'Joriy xarid (ilovada tanlangan, qayta so\'rama): ' + p.join(', ') + '.' : '';
 }
 
 const LANG_NAME = { uz: 'o\'zbek (lotin)', uzc: 'o\'zbek (kirill)', ru: 'rus' };
@@ -424,6 +500,43 @@ async function gate({ request, env, ctx, origin, originOk, cors, counter, maxBod
   return { text, json, count, limit };
 }
 
+/* Javob har doim bitta shaklda: qisqa matn + kartalar. Ilova kartalarni
+   bir xil chizadi — natija ekrani ham, suhbat ham. Kartalar vositalar
+   natijasidan yig'iladi, shuning uchun ilova vosita nomlarini bilishi
+   shart emas. */
+export function buildCards({ shot, used, cart }) {
+  const cards = [];
+  if (shot && shot.found) cards.push({ type: 'product', ...shot });
+  for (const t of used) {
+    const r = t.result || {};
+    if (r.error) continue;
+    if (t.name === 'ask_user' && r.ok) cards.push({ type: 'ask', question: r.question, options: r.options });
+    else if (t.name === 'product_links' && r.ok) cards.push({ type: 'links', links: r.links });
+    else if (t.name === 'suggest_stores' && r.found) cards.push({ type: 'stores', stores: r.stores, got: t.input || {} });
+    else if (t.name === 'check_banned' && r.found && Array.isArray(r.items) && r.items.length) cards.push({ type: 'warning', items: r.items.slice(0, 2) });
+    else if (t.name === 'landed_cost' && r.totalUsd > 0) cards.push({ type: 'total', total: r });
+    else if (t.name === 'courier_quotes' && Array.isArray(r.quotes) && r.quotes.length) cards.push({ type: 'couriers', country: r.country, quotes: r.quotes.slice(0, 3) });
+  }
+  if (cart && (cart.name || cart.price > 0)) cards.push({ type: 'cart', cart });
+  return cards;
+}
+/* Skrinshotdan o'qilgani joriy xaridga qo'shiladi (bo'sh maydonlar ustiga
+   yozilmaydi: foydalanuvchi tanlagani ustun). */
+export function mergeCart(cart, shot) {
+  const c = cart ? { ...cart } : { name: '', store: '', country: '', cat: '', cur: '', courier: '', price: 0, kg: 0, totalUsd: 0, qty: 1 };
+  if (!shot || !shot.found) return cart;
+  if (shot.name) c.name = shot.name;
+  if (shot.store) c.store = shot.store;
+  if (shot.country) c.country = shot.country;
+  if (shot.category) c.cat = shot.category;
+  if (shot.currency) c.cur = shot.currency;
+  if (shot.price > 0) c.price = shot.price;
+  if (shot.qty > 1) c.qty = shot.qty;
+  if (shot.weightKg > 0) c.kg = shot.weightKg;
+  c.totalUsd = 0;
+  return c;
+}
+
 export async function handleAi({ request, env, ctx, origin, originOk, cors, counter, fetchImpl }) {
   const g = await gate({ request, env, ctx, origin, originOk, cors, counter, maxBody: AI_LIMITS.body });
   if (g.res) return g.res;
@@ -435,12 +548,41 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
 
   const usdRate = parsed.usdRate || FALLBACK_RATE;
   const toolCtx = { usdRate, today };
+  const fetchFn0 = fetchImpl || globalThis.fetch;
+  const usage = { input: 0, output: 0, cacheRead: 0 };
+
+  /* 1) Rasm bo'lsa — avval arzon model o'qiydi (asosiy modelga rasm
+     ko'rsatilmaydi). Natija joriy xaridga qo'shiladi. */
+  let shot = null;
+  if (parsed.shot) {
+    const rs = await readShot({ image: parsed.shot.image, mime: parsed.shot.mime, usdRate, env, fetchFn: fetchFn0 });
+    if (rs.err) {
+      console.log('ai shot upstream', rs.err.status, rs.err.type || '', rs.err.error);
+      count('shot_err');
+      return json({ error: 'AI vaqtincha mavjud emas', code: rs.err.status === 401 || rs.err.status === 403 ? 'key' : 'upstream' }, 503);
+    }
+    if (rs.usage) { usage.input += rs.usage.input; usage.output += rs.usage.output; }
+    shot = rs.unreadable ? { found: false } : rs.out;
+    count(shot.found ? 'shot' : 'shot_empty');
+  }
+  const cart = mergeCart(parsed.cart, shot);
+
+  /* 2) Savol yo'q, faqat rasm — asosiy modelni umuman chaqirmaymiz:
+     hisobni ilova o'zi qiladi (core), javob $0.002 da tugaydi. */
+  if (!parsed.q && !parsed.url) {
+    count('ok');
+    return json({ text: '', cards: buildCards({ shot, used: [], cart }), cart, shot, tools: [], model: '', usage, stop: 'shot' });
+  }
+
   const system = [
     { type: 'text', text: buildSystem(), cache_control: { type: 'ephemeral' } },
     { type: 'text', text: 'Bugun: ' + today + '. Foydalanuvchi tili: ' + LANG_NAME[parsed.lang] + '. Kurs: 1 USD = ' + usdRate + ' so\'m' + (parsed.usdRate ? '' : ' (taxminiy, ilova kursni yubormadi)') + '.' }
   ];
+  const cl = cartLine(cart);
+  if (cl) system.push({ type: 'text', text: cl });
+  if (shot && shot.found) system.push({ type: 'text', text: 'Foydalanuvchi hozir skrinshot yubordi, undan o\'qildi (yuqoridagi joriy xarid shundan). Jami narxni ilova o\'zi hisoblab ko\'rsatdi — uni takrorlama, savolga javob ber.' });
   const messages = parsed.history.map(h => ({ role: h.role, content: h.text }));
-  messages.push({ role: 'user', content: parsed.q });
+  messages.push({ role: 'user', content: [parsed.q, parsed.url ? 'Mahsulot havolasi: ' + parsed.url + ' — web_fetch bilan ochib, nom, narx va valyutani o\'qi.' : ''].filter(Boolean).join('\n') });
   /* Fikrlash tokenlari ham shu chegaradan yeydi (Sonnet 5 da u sukut
      bo'yicha yoqiq), shuning uchun javobga joy qoladigan qilib olingan.
      Chegara faqat shift — hisob haqiqatda yozilgan tokenlar bo'yicha. */
@@ -448,14 +590,17 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
      bo'lsa yo'q). Har qidiruv alohida to'lanadi, shuning uchun bitta
      so'rovda ko'pi bilan 2 ta va oddiy savollarda umuman yo'q. */
   const webOn = parsed.find && String(env.AI_WEB_SEARCH || '1') !== '0';
-  const tools = webOn ? [...TOOLS, { ...WEB_SEARCH_TOOL, max_uses: Math.max(1, Math.min(3, +env.AI_WEB_SEARCH_USES || 2)) }] : TOOLS;
+  const tools = [...TOOLS];
+  if (webOn) tools.push({ ...WEB_SEARCH_TOOL, max_uses: Math.max(1, Math.min(3, +env.AI_WEB_SEARCH_USES || 2)) });
+  /* Havola berilgan bo'lsa sahifani o'qish: qo'shimcha to'lovsiz, faqat
+     o'qilgan matn tokeni. */
+  if (parsed.url) tools.push({ type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 2, max_content_tokens: 6000, allowed_domains: [hostOf(parsed.url)] });
   const body = { model: env.AI_MODEL || DEFAULT_MODEL, max_tokens: +env.AI_MAX_TOKENS || 2048, system, tools, messages };
   if (webOn) system.push({ type: 'text', text: 'Bu "Qayerdan topaman" so\'rovi: suggest_stores dan keyin web_search bilan (ko\'pi bilan 2 ta qidiruv) indekslanadigan do\'konlarda ANIQ mahsulot sahifalarini top va product_links vositasiga ber. Taobao, Pinduoduo, Poizon uchun qidirma — ularga qidiruv havolasi yetadi.' });
   if (env.AI_EFFORT) body.output_config = { effort: env.AI_EFFORT };
 
   const used = []; let textOut = '', model = body.model, stop = '';
-  const usage = { input: 0, output: 0, cacheRead: 0 };
-  const fetchFn = fetchImpl || globalThis.fetch;
+  const fetchFn = fetchFn0;
   for (let round = 0; round < AI_LIMITS.rounds; round++) {
     const r = await callClaude(body, env, fetchFn);
     if (r.error) {
@@ -491,7 +636,7 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
   if (stop === 'max_tokens' && textOut) textOut += '\n' + 'Javob uzun bo\'lgani uchun qisqartirildi — savolni aniqroq bering.';
   if (!textOut) textOut = 'Javob tayyorlab bo\'lmadi. Savolni boshqacha yozib ko\'ring yoki ilovadagi "Jami narx" kalkulyatoridan foydalaning.';
   count('ok');
-  return json({ text: textOut, tools: used, model, usage, stop });
+  return json({ text: textOut, cards: buildCards({ shot, used, cart }), cart, shot, tools: used, model, usage, stop });
 }
 
 /* --- Skrinshot → mahsulot ma'lumoti (POST /ai/shot). Rasm base64 (JPEG/PNG/
@@ -559,6 +704,30 @@ export function normalizeShot(raw, usdRate) {
   };
 }
 
+/* Rasmni arzon model bilan o'qiydi (/ai va /ai/shot uchun umumiy). Asosiy
+   modelga rasm ko'rsatilmaydi: u to'rt barobar qimmat, vazifa esa oddiy
+   o'qish. Javob: { out, model, usage } yoki { err }. */
+export async function readShot({ image, mime, usdRate, env, fetchFn }) {
+  const base = {
+    model: env.AI_SHOT_MODEL || 'claude-haiku-4-5', max_tokens: SHOT_LIMITS.maxTokens,
+    messages: [{ role: 'user', content: [
+      { type: 'image', source: { type: 'base64', media_type: mime, data: image } },
+      { type: 'text', text: SHOT_PROMPT }
+    ] }]
+  };
+  let r = await callClaude({ ...base, output_config: { format: { type: 'json_schema', schema: SHOT_SCHEMA } } }, env, fetchFn);
+  /* Tuzilgan chiqish rad etilsa (eski model/proksi) — oddiy matndan JSON. */
+  if (r.error && r.status === 400 && /output_config|format|schema/i.test(r.error)) r = await callClaude(base, env, fetchFn);
+  if (r.error) return { err: r, model: base.model };
+  const msg = r.data || {};
+  const text = (Array.isArray(msg.content) ? msg.content : []).filter(b => b.type === 'text').map(b => b.text).join('\n');
+  let raw = null;
+  try { raw = JSON.parse(text); } catch (e) { const m = /\{[\s\S]*\}/.exec(text); if (m) { try { raw = JSON.parse(m[0]); } catch (e2) { raw = null; } } }
+  const u = msg.usage || {};
+  if (msg.stop_reason === 'refusal' || !raw) return { unreadable: true, model: msg.model || base.model, usage: { input: u.input_tokens || 0, output: u.output_tokens || 0 } };
+  return { out: normalizeShot(raw, usdRate), model: msg.model || base.model, usage: { input: u.input_tokens || 0, output: u.output_tokens || 0 } };
+}
+
 export async function handleShot({ request, env, ctx, origin, originOk, cors, counter, fetchImpl }) {
   const g = await gate({ request, env, ctx, origin, originOk, cors, counter, maxBody: SHOT_LIMITS.body });
   if (g.res) return g.res;
@@ -568,28 +737,14 @@ export async function handleShot({ request, env, ctx, origin, originOk, cors, co
   const limited = await g.limit(); if (limited) return limited;
   const usdRate = parsed.usdRate || FALLBACK_RATE;
   const fetchFn = fetchImpl || globalThis.fetch;
-  const base = {
-    model: env.AI_SHOT_MODEL || 'claude-haiku-4-5', max_tokens: SHOT_LIMITS.maxTokens,
-    messages: [{ role: 'user', content: [
-      { type: 'image', source: { type: 'base64', media_type: parsed.mime, data: parsed.image } },
-      { type: 'text', text: SHOT_PROMPT }
-    ] }]
-  };
-  let r = await callClaude({ ...base, output_config: { format: { type: 'json_schema', schema: SHOT_SCHEMA } } }, env, fetchFn);
-  /* Tuzilgan chiqish rad etilsa (eski model/proksi) — oddiy matndan JSON. */
-  if (r.error && r.status === 400 && /output_config|format|schema/i.test(r.error)) r = await callClaude(base, env, fetchFn);
-  if (r.error) {
-    console.log('ai shot upstream', r.status, r.type || '', r.error);
+  const r = await readShot({ image: parsed.image, mime: parsed.mime, usdRate, env, fetchFn });
+  if (r.err) {
+    console.log('ai shot upstream', r.err.status, r.err.type || '', r.err.error);
     count('shot_err');
-    return json({ error: 'AI vaqtincha mavjud emas', code: r.status === 401 || r.status === 403 ? 'key' : 'upstream' }, 503);
+    return json({ error: 'AI vaqtincha mavjud emas', code: r.err.status === 401 || r.err.status === 403 ? 'key' : 'upstream' }, 503);
   }
-  const msg = r.data || {};
-  const text = (Array.isArray(msg.content) ? msg.content : []).filter(b => b.type === 'text').map(b => b.text).join('\n');
-  let raw = null;
-  try { raw = JSON.parse(text); } catch (e) { const m = /\{[\s\S]*\}/.exec(text); if (m) { try { raw = JSON.parse(m[0]); } catch (e2) { raw = null; } } }
-  if (msg.stop_reason === 'refusal' || !raw) { count('shot_err'); return json({ found: false, error: 'Rasmdan ma\'lumot o\'qilmadi', code: 'unreadable', model: msg.model || base.model }, 200); }
-  const out = normalizeShot(raw, usdRate);
+  if (r.unreadable) { count('shot_err'); return json({ found: false, error: 'Rasmdan ma\'lumot o\'qilmadi', code: 'unreadable', model: r.model }, 200); }
+  const out = r.out;
   count(out.found ? 'shot' : 'shot_empty');
-  const u = msg.usage || {};
-  return json({ ...out, model: msg.model || base.model, usage: { input: u.input_tokens || 0, output: u.output_tokens || 0 } });
+  return json({ ...out, model: r.model, usage: r.usage });
 }
