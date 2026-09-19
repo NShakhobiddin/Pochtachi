@@ -475,6 +475,14 @@ function cartLine(c) {
 }
 
 const LANG_NAME = { uz: 'o\'zbek (lotin)', uzc: 'o\'zbek (kirill)', ru: 'rus' };
+/* Model qoidaga qaramay markdown yozsa: **qalin**, *kursiv*, `kod`,
+   # sarlavha va "- " ro'yxat belgisi o'rniga "— ". Raqamli qadamlar qoladi. */
+export function plainText(t) {
+  return String(t || '')
+    .replace(/\*\*(.+?)\*\*/g, '$1').replace(/(^|[^*])\*(?!\s)([^*\n]+?)\*(?!\*)/g, '$1$2').replace(/`([^`\n]+)`/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '').replace(/^\s*[-*•]\s+/gm, '— ')
+    .replace(/[ \t]+$/gm, '').replace(/\n{3,}/g, '\n\n').trim();
+}
 
 async function ipKey(request, env, today) {
   const ip = request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for') || '';
@@ -672,6 +680,9 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
     messages.push({ role: 'user', content: results });
     if (round === AI_LIMITS.rounds - 1) stop = 'rounds';
   }
+  /* Qo'riqlov kodda, promptga ishonib emas: markdown belgilari (qalin,
+     sarlavha) ilovada oddiy matn bo'lib ko'rinardi — olib tashlanadi. */
+  textOut = plainText(textOut);
   if (stop === 'refusal') textOut = textOut || 'Bu savolga javob bera olmayman. Bojxona, kuryer yoki do\'kon haqida so\'rang.';
   /* Chegaraga urilib kesilgan javob yarim gapda tugamasin. */
   if (stop === 'max_tokens' && textOut) textOut += '\n' + 'Javob uzun bo\'lgani uchun qisqartirildi — savolni aniqroq bering.';

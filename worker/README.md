@@ -163,6 +163,11 @@ Qoidalar `data/ai-rules.md` da, bilimlar bazasi `src/kb.generated.js`
 `AI_SHOT_MODEL`, `AI_DAILY_PER_IP`, `AI_DAILY_TOTAL`, `AI_MAX_TOKENS`,
 `AI_EFFORT`, `AI_WEB_SEARCH` ("0" — o'chiq), `AI_WEB_SEARCH_USES`.
 
+Qo'riqlov kodda: javob matnidan markdown belgilari (`**`, `#`, `` ` ``,
+"- ") olib tashlanadi (`plainText`) — qoidaga ishonib emas, ilovada
+oddiy matn ko'rinadi; raqamlar faqat vositalardan (test: vositasiz "$…"
+chiqsa xato).
+
 Kesh (Claude prompt caching, prefiks tools → system → messages): statik
 vositalarning oxirgisida va tizim ko'rsatmasining katta blokida
 `cache_control`; server vositalari (web_search, web_fetch) ro'yxat

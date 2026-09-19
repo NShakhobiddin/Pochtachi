@@ -73,7 +73,8 @@ check('/hisobot yorliqlar to\'liq', ['Do\'konga o\'tish', 'Pullik xizmat', 'Boj 
 check('/hisobot indekslanmaydi', hs.headers.get('x-robots-tag') === 'noindex');
 
 /* --- Pochtam AI (/ai): soxta Claude API (env.AI_FETCH), haqiqiy vositalar --- */
-const { runTool, buildSystem, TOOLS, parseAiBody, buildCards, mergeCart, toolAsk, parseCart, parseUrl } = await import('./src/ai.js');
+const { runTool, buildSystem, TOOLS, parseAiBody, buildCards, mergeCart, toolAsk, parseCart, parseUrl, plainText } = await import('./src/ai.js');
+check('plainText: markdown belgilari olib tashlanadi, raqamli qadamlar qoladi', plainText('**Nike.com** — rasmiy.\n## Sarlavha\n- birinchi\n1. Qadam *muhim* `kod`') === 'Nike.com — rasmiy.\nSarlavha\n— birinchi\n1. Qadam muhim kod', JSON.stringify(plainText('**Nike.com** — rasmiy.\n## Sarlavha\n- birinchi\n1. Qadam *muhim* `kod`')));
 import '../core/customs.js';
 const Core = globalThis.PochtamCore;
 const aiEnv = (extra = {}) => ({ ...env, ANTHROPIC_API_KEY: 'sk-test', AI_DAILY_PER_IP: '3', AI_DAILY_TOTAL: '100', ...extra });
@@ -133,6 +134,8 @@ const netErr = await ask('x', { AI_FETCH: () => { throw new Error('ECONNRESET');
 check('/ai tarmoq xatosi — 503 upstream', netErr.status === 503);
 const refused = await ask('x', { AI_FETCH: () => new Response(JSON.stringify({ model: 'm', stop_reason: 'refusal', content: [] }), { status: 200 }) }, { headers: { 'cf-connecting-ip': '4.4.4.4' } });
 check('/ai refusal — rad javobi matni', refused.status === 200 && /javob bera olmayman/.test((await refused.json()).text));
+const md = await ask('x', { AI_FETCH: () => claudeText('**Boj yo\'q.** Me\'yor ichida.') }, { headers: { 'cf-connecting-ip': '4.4.4.5' } });
+check('/ai javobida markdown yo\'q (kodda qo\'riqlov)', (await md.json()).text === 'Boj yo\'q. Me\'yor ichida.');
 
 /* "Qayerdan topaman" (find:true): veb-qidiruv vositasi qo'shiladi (max 2),
    server qidiruvlari sanaladi, pause_turn davom ettiriladi, product_links
