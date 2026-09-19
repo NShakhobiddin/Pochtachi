@@ -688,8 +688,8 @@ try {
     check('hisob qayta ochiladi (kirishlar bilan)', /Jami narx/.test((await page.locator('header').innerText())) && reopened === 'Sinov mahsulot', reopened);
     await page.locator('nav button', { hasText: 'Bosh sahifa' }).first().click(); await page.waitForTimeout(400);
 
-    /* 7-bosqich: Pochtam AI. Worker /ai soxta (route): javob vosita bilan,
-       keyin 503 va 429. Ilova savolni tarix, til va kurs bilan yuboradi;
+    /* 7-bosqich: Pochtam AI. Worker /ai soxta (route): javob kartalar bilan
+       (ilova faqat `cards` ni o'qiydi), keyin 503 va 429. Ilova savolni tarix, til va kurs bilan yuboradi;
        javob ostidagi tugma kalkulyatorni to'ldirib ochadi; xato holatida
        "vaqtincha mavjud emas"; bosh sahifadagi savol AI ga boradi. Mobil
        pastki menyu 5 ta qoladi. */
@@ -713,14 +713,14 @@ try {
       if (aiMode === '503') return r.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: 'AI vaqtincha mavjud emas', code: 'no_key' }) });
       if (aiMode === '429') return r.fulfill({ status: 429, contentType: 'application/json', body: JSON.stringify({ error: 'limit', code: 'limit' }) });
       const q = (aiBodies[aiBodies.length - 1] || {}).q || '';
-      if (/buyurtma qilmoqchiman/.test(q)) return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: "Tartib:\n1. Do'kon ilovasini o'rnating va ro'yxatdan o'ting.\n2. Sotuvchi reytingini va sharhlarni tekshiring.\n3. Kuryer ombori manzilini do'konga yozing.\n4. Karta bilan to'lang.\n5. Trek raqamini kuryer ilovasiga kiriting.\nTaxminiy muddat 7–14 kun.", tools: [], model: 'm', usage: {} }) });
+      if (/buyurtma qilmoqchiman/.test(q)) return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: "Tartib:\n1. Do'kon ilovasini o'rnating va ro'yxatdan o'ting.\n2. Sotuvchi reytingini va sharhlarni tekshiring.\n3. Kuryer ombori manzilini do'konga yozing.\n4. Karta bilan to'lang.\n5. Trek raqamini kuryer ilovasiga kiriting.\nTaxminiy muddat 7–14 kun.", cards: [], tools: [], model: 'm', usage: {} }) });
       if (/krossovka|Krossovka/i.test(q)) return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: 'Original krossovka uchun Nike va Adidas rasmiy do\'konlari mos. 41 EU = US 8.',
-        tools: [{ name: 'suggest_stores', input: { category: 'poyabzal', original: true, budgetUsd: 100, query: 'men sneakers size 41' }, result: { found: true, stores: [{ id: 'nike', name: 'Nike', searchUrl: 'https://www.nike.com/w?q=men+sneakers+size+41' }, { id: 'adidas', name: 'Adidas', searchUrl: 'https://www.adidas.com/us/search?q=men+sneakers' }] } },
-          { name: 'product_links', input: {}, result: { ok: true, n: 2, links: [{ title: 'Nike Air Max 90 Men', url: 'https://www.amazon.com/dp/B0EXAMPLE', host: 'amazon.com', store: 'Amazon', price: 119.99, currency: 'USD' }, { title: 'Air Max 90 Essential', url: 'https://www.nike.com/t/air-max-90', host: 'nike.com', store: 'Nike', price: 130, currency: 'USD' }] } }], model: 'm', usage: {} }) });
+        cards: [{ type: 'stores', got: { category: 'poyabzal', original: true, budgetUsd: 100, query: 'men sneakers size 41' }, stores: [{ id: 'nike', name: 'Nike', searchUrl: 'https://www.nike.com/w?q=men+sneakers+size+41' }, { id: 'adidas', name: 'Adidas', searchUrl: 'https://www.adidas.com/us/search?q=men+sneakers' }] },
+          { type: 'links', links: [{ title: 'Nike Air Max 90 Men', url: 'https://www.amazon.com/dp/B0EXAMPLE', host: 'amazon.com', store: 'Amazon', price: 119.99, currency: 'USD' }, { title: 'Air Max 90 Essential', url: 'https://www.nike.com/t/air-max-90', host: 'nike.com', store: 'Nike', price: 130, currency: 'USD' }] }], tools: ['suggest_stores', 'product_links'], model: 'm', usage: {} }) });
       if (/^Termos$/i.test(q)) return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: 'Aniqlashtiraylik.',
         cards: [{ type: 'ask', question: 'Qaysi davlatdan olib kelamiz?', options: ['Xitoy', 'AQSh'] }], tools: [], model: 'm', usage: {} }) });
       return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: 'Boj $15.00, yig\'im 110 000 so\'m.\nTaxminiy hisob.',
-        tools: [{ name: 'customs_duty', input: { goodsUsd: 250, kg: 0.5 }, result: { dutyUsd: 15 } }, { name: 'courier_quotes', input: { country: 'Xitoy', kg: 2 }, result: { country: 'Xitoy' } }], model: 'm', usage: {} }) });
+        cards: [{ type: 'duty', got: { goodsUsd: 250, kg: 0.5 }, duty: { dutyUsd: 15, totalUzs: 110000 } }, { type: 'couriers', country: 'Xitoy', kg: 2, quotes: [{ courier: 'D2D', usd: 12 }] }], tools: ['customs_duty', 'courier_quotes'], model: 'm', usage: {} }) });
     });
     const aiMain = () => page.locator('main').innerText().then(t => t.replace(/\s+/g, ' '));
     /* Bosh sahifaning o'zi savol: "Nima mahsulot qidiryapsiz?" — maydon,
@@ -1194,8 +1194,14 @@ try {
   const tarjimaSkan = async (lang) => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
     await aiStatusRoute(ctx, true);
-    await ctx.route(METRICS_URL + 'ai', r => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: 'USD 15', tools: [], model: 'm', usage: {} }) }));
-    await ctx.route(METRICS_URL + 'ai/shot', r => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ found: true, name: 'Nike Air Max 90', price: 699, currency: 'CNY', priceUsd: 97.86, fxApprox: true, qty: 1, store: 'Taobao', confidence: 0.5, category: 'poyabzal', country: 'Xitoy', weightKg: 0.8 }) }));
+    /* Yagona /ai: rasm kelsa skrinshot javobi (stop:shot), aks holda matn. */
+    await ctx.route(METRICS_URL + 'ai', r => {
+      const body = JSON.parse(r.request().postData() || '{}');
+      const sh = { found: true, name: 'Nike Air Max 90', price: 699, currency: 'CNY', priceUsd: 97.86, fxApprox: true, qty: 1, store: 'Taobao', confidence: 0.5, category: 'poyabzal', country: 'Xitoy', weightKg: 0.8 };
+      return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body.image
+        ? { text: '', shot: sh, cards: [{ type: 'product', ...sh }], tools: [], model: 'm', usage: {}, stop: 'shot' }
+        : { text: 'USD 15', cards: [], tools: [], model: 'm', usage: {} }) });
+    });
     /* Tirik kurs holati ham skanerlansin: CI da cbu.uz ochiq, lokalda yopiq
        bo'lishi mumkin — ikkalasida ham bir xil natija uchun javob soxta. */
     await ctx.route('**cbu.uz/**', r => r.fulfill({ status: 200, contentType: 'application/json',

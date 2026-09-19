@@ -356,21 +356,28 @@ naqshga keldi: bitta kirish hamma narsani qabul qiladi, foydalanuvchi
 rejim tanlamaydi, javob karta bo'lib chiqadi. Pochtam ham shunday:
 
 - **Bitta manzil.** Matn, rasm, havola va joriy xarid `POST /ai` ga
-  ketadi. `/ai/shot` eski manzil sifatida qoladi (worker uni ham shu
-  kodga ulaydi), ilova endi undan foydalanmaydi.
+  ketadi. Alohida `/ai/shot` yo'q (2026-09-19 da olib tashlandi — ikki
+  yo'l bitta ishni qilardi).
 - **Bitta kirish.** Bosh sahifadagi maydon: yozish, aytish (mikrofon),
   havola tashlash, rasm biriktirish (`whSubmit` kirish turini o'zi
   ajratadi: havola → do'kon yoki AI sahifani o'qiydi, savol → AI, nom →
   keyingi qadam kartalari).
-- **Bitta xarid obyekti** (`cart`, `localStorage.xy_cart`): tovar,
-  do'kon, davlat, narx, valyuta, vazn, kuryer, ilova hisoblagan jami.
-  Har so'rov bilan AI ga ketadi (`cartForAi()`), skrinshot uni
-  to'ldiradi (`mergeCart`) — foydalanuvchi bir narsani ikki marta
-  aytmaydi.
-- **Bitta javob shakli.** Worker `cards[]` qaytaradi: `product`, `total`,
-  `couriers`, `links`, `stores`, `warning`, `ask`, `cart`. Ilova ularni
-  bir xil chizadi. `ask` — yangi: AI bitta narsani so'rasa, foydalanuvchi
-  yozmaydi, bosiladigan variant tanlaydi (`ask_user` vositasi).
+- **Bitta xarid holati** — oxirgi skrinshot natijasi (`lastRes`,
+  `localStorage.xy_last`): tovar, do'kon, davlat, narx, valyuta, vazn.
+  Har AI so'rovi bilan `cartForAi()` shundan xarid obyektini tuzadi
+  (ilova hisoblagan jami va kuryer bilan), worker uni ko'rsatmaga qo'shadi
+  (`cartLine`), skrinshot uni to'ldiradi (`mergeCart`) — foydalanuvchi bir
+  narsani ikki marta aytmaydi. Alohida `cart` nusxasi yo'q (2026-09-19:
+  ikki joyda saqlanardi, bittasi hech qayerda o'qilmasdi).
+- **Bitta javob shakli.** Worker `cards[]` qaytaradi: `product`, `ask`,
+  `links`, `stores`, `store`, `warning`, `duty`, `total`, `couriers`,
+  `cart`; har karta o'zi bilan ilovaga kerak hamma narsani olib keladi
+  (vosita kirishi `got` — "Kalkulyatorda ochish" to'ldirilgan holda ochilsin
+  — va natija). Ilova FAQAT `cards` ni chizadi, vosita nomlarini va ichki
+  natijalarni bilmaydi (`tools` javobda faqat nomlar, sanoq uchun). Bu
+  Rufus naqshi: model yo'naltiradi, kartani ishonchli manba (core) to'ldiradi.
+  `ask` — AI bitta narsani so'rasa, foydalanuvchi yozmaydi, bosiladigan
+  variant tanlaydi (`ask_user` vositasi).
 - **Narx o'zgarmadi.** Rasmni arzon model o'qiydi (`readShot`), asosiy
   modelga rasm ko'rsatilmaydi; savolsiz skrinshotda asosiy model umuman
   chaqirilmaydi — bitta skrinshot ≈ $0.002.
@@ -385,8 +392,8 @@ kompyuter menyusidagi bo'lim. "Qanday ishlaydi" yo'q. AI o'chiq bo'lsa
 (`aiMsgs`), saqlanmaydi.
 
 **Skrinshot yuklash** (`aiShot`). Fayl brauzerda canvas bilan 1280 px ga
-kichraytirilib JPEG (0.82) qilinadi va `POST /ai/shot` ga ketadi (`image`
-data URL, `lang`, `usdRate`). Worker (`handleShot`) bitta chaqiruv bilan,
+kichraytirilib JPEG (0.82) qilinadi va `POST /ai` ga ketadi (`image`
+data URL, `lang`, `usdRate`, `cart`). Worker (`readShot`) bitta chaqiruv bilan,
 vositasiz, arzon modelga (`AI_SHOT_MODEL`, standart `claude-haiku-4-5`)
 tuzilgan JSON so'raydi: nom, narx, valyuta, miqdor, do'kon, kategoriya,
 davlat, og'irlik (sahifada bo'lsa), ishonch (`SHOT_SCHEMA`,
@@ -519,10 +526,10 @@ bilan; `AI_URL` bo'lmasa o'tkazib yuboriladi.
 
 Sinov: `tests/ai-eval.json` da tovar so'rovi uchun 3 savol (vosita
 `suggest_stores`, javobda havola matni emas — tugma). Worker testlari:
-`/ai/shot` (rasm bloki, JSON sxema, zaxira yo'l, CNY → USD), `suggest_stores`
-reytingi. Smoke: bosh sahifa maydoni va namuna, natija kartasi ("Tushundim"
+`/ai` ga rasm (rasm bloki, JSON sxema, zaxira yo'l, CNY → USD, `stop:
+"shot"`), `suggest_stores` reytingi, `buildCards` shartnomasi. Smoke: bosh sahifa maydoni va namuna, natija kartasi ("Tushundim"
 chiplari, do'kon kartalari, taxminiy jami), xato kartasi, bo'sh holat,
-skrinshot → natija ekrani (soxta `/ai/shot`: nom, narx, do'kon · davlat,
+skrinshot → natija ekrani (soxta `/ai`: nom, narx, do'kon · davlat,
 eng arzon kuryer, jami $102.26, tugmalar), "Vaznni aniqlashtirish" →
 to'ldirilgan kalkulyator, "Qanday buyurtma qilaman?" → AI savoli,
 "topilmadi" kartasi → bo'sh kalkulyator, `where` tanlov ekrani (chiplar,

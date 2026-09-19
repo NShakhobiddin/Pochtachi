@@ -110,7 +110,9 @@ const fakeClaude = async (url, init) => {
 };
 const a1 = await ask('320 dollarlik 2.5 kg tovar uchun boj qancha?', { AI_FETCH: fakeClaude });
 const j1 = await a1.json();
-check('/ai vosita bilan javob — 200, matn va vosita ro\'yxati', a1.status === 200 && /Boj 38\.53/.test(j1.text) && j1.tools.length === 1 && j1.tools[0].name === 'customs_duty' && j1.usage.input === 110, JSON.stringify(j1).slice(0, 160));
+check('/ai vosita bilan javob — 200, matn, vosita nomi va boj kartasi (kirish bilan)', a1.status === 200 && /Boj 38\.53/.test(j1.text) && j1.tools.join() === 'customs_duty' && j1.cards.length === 1 && j1.cards[0].type === 'duty' && j1.cards[0].got.goodsUsd === 320 && j1.cards[0].duty.dutyUsd > 0 && j1.usage.input === 110, JSON.stringify(j1).slice(0, 200));
+/* Vositalarda kesh nuqtasi: statik ro'yxatning oxirgisida, server vositalari undan keyin. */
+check('vositalar: oxirgi statik vositada cache_control, tizim blokida ham', calls[0].tools[calls[0].tools.length - 1].cache_control && calls[0].tools[calls[0].tools.length - 1].cache_control.type === 'ephemeral' && calls[0].system[0].cache_control && calls[0].system[0].cache_control.type === 'ephemeral');
 check('/ai tarixi Claude\'ga o\'tadi (navbat bilan)', calls[0].messages.length === 1 && calls[1].messages.length === 3 && calls[1].messages[1].role === 'assistant');
 
 /* Kunlik chegara: IP uchun 3 ta (yuqoridagi 1 ta sanalgan), 4-si 429. */
@@ -155,7 +157,9 @@ check('/ai refusal — rad javobi matni', refused.status === 200 && /javob bera 
   const fj = await fr.json();
   const ws = fcalls[0].tools.find(t => t.type === 'web_search_20260209');
   check('find: web_search vositasi qo\'shiladi (max_uses 2) va ko\'rsatma', !!ws && ws.max_uses === 2 && fcalls[0].system.some(b => /web_search/.test(b.text)), JSON.stringify(ws));
-  check('find: pause_turn davom ettiriladi, product_links natijasi 2 ta toza havola', fr.status === 200 && fcalls.length === 3 && fj.tools.length === 1 && fj.tools[0].name === 'product_links' && fj.tools[0].result.n === 2 && fj.tools[0].result.links.every(l => /^https:\/\//.test(l.url)) && fj.tools[0].result.links[0].host === 'amazon.com', JSON.stringify(fj.tools[0] && fj.tools[0].result).slice(0, 200));
+  const pl = fj.cards.find(c => c.type === 'links');
+  check('find: pause_turn davom ettiriladi, links kartasida 2 ta toza havola, vosita nomi', fr.status === 200 && fcalls.length === 3 && fj.tools.join() === 'product_links' && !!pl && pl.links.length === 2 && pl.links.every(l => /^https:\/\//.test(l.url)) && pl.links[0].host === 'amazon.com' && !fj.cards.some(c => c.type === 'cart'), JSON.stringify(fj.cards).slice(0, 200));
+  check('find: web_search statik vositalardan KEYIN (statik prefiks keshda qoladi)', fcalls[0].tools.findIndex(t => t.type === 'web_search_20260209') === fcalls[0].tools.length - 1);
   check('find: server qidiruvlari sanaladi (2)', fj.usage.search === 2, JSON.stringify(fj.usage));
   const off = [];
   await ask('x', { AI_FETCH: async (u, i) => { off.push(JSON.parse(i.body)); return claudeText('ok'); }, AI_WEB_SEARCH: '0' }, { headers: { 'cf-connecting-ip': '3.3.3.4' }, body: { find: true } });
@@ -187,10 +191,13 @@ check('/ai refusal — rad javobi matni', refused.status === 200 && /javob bera 
     { name: 'suggest_stores', input: { category: 'poyabzal' }, result: runTool('suggest_stores', { category: 'poyabzal', query: 'sneakers' }, cc) },
     { name: 'check_banned', result: runTool('check_banned', { query: 'dron' }, cc) },
     { name: 'courier_quotes', result: runTool('courier_quotes', { country: 'Xitoy', kg: 2 }, cc) },
-    { name: 'landed_cost', result: runTool('landed_cost', { priceUsd: 320, country: 'Xitoy', kg: 2.5 }, cc) },
+    { name: 'landed_cost', input: { priceUsd: 320, country: 'Xitoy', kg: 2.5 }, result: runTool('landed_cost', { priceUsd: 320, country: 'Xitoy', kg: 2.5 }, cc) },
+    { name: 'find_store', result: runTool('find_store', { query: 'taobao' }, cc) },
     { name: 'customs_duty', result: { error: 'x' } }
   ] });
-  check('buildCards: har vosita o\'z kartasiga, xato vosita kartasiz', cards.map(x => x.type).join(',') === 'product,ask,stores,warning,couriers,total,cart', cards.map(x => x.type).join(','));
+  check('buildCards: har vosita o\'z kartasiga, xato vosita kartasiz', cards.map(x => x.type).join(',') === 'product,ask,stores,warning,couriers,total,store,cart', cards.map(x => x.type).join(','));
+  check('buildCards: kartada ilovaga kerak hamma narsa — kirish (got), davlat, vazn, do\'kon id', cards.find(x => x.type === 'total').got.priceUsd === 320 && cards.find(x => x.type === 'couriers').kg === 2 && cards.find(x => x.type === 'store').id === 'taobao' && !!cards.find(x => x.type === 'stores').got.category);
+  check('suggest_stores: o\'lcham eslatmasi faqat poyabzal/kiyimda, keyingi qadam skrinshot (JIT ko\'rsatma)', /41 = US 8 = 26 sm/.test(runTool('suggest_stores', { category: 'poyabzal', query: 'x' }, cc).sizeNote) && runTool('suggest_stores', { category: 'elektronika', query: 'x' }, cc).sizeNote === '' && /skrinshot/i.test(runTool('suggest_stores', { category: 'elektronika', query: 'x' }, cc).next));
 }
 
 /* Faqat rasm yuborilsa asosiy model umuman chaqirilmaydi (arzon yo'l). */
@@ -250,21 +257,26 @@ check('tizim ko\'rsatmasida kalit yo\'q', !/sk-/.test(sys));
    maydon qaytib qo'shilib qolishidan saqlaydi. */
 check('tizim ko\'rsatmasi indeks: og\'ir maydonlar promptda yo\'q',
   !/"returns":/.test(sys) && !/"complexity":/.test(sys) && !/"limits":/.test(sys) && !/"domain":/.test(sys) && !/"note":/.test(sys));
-/* 27 000: veb-qidiruv qoidalari (product_links) uchun 26 000 dan oshirildi. */
-check('tizim ko\'rsatmasi byudjeti: 27 000 belgidan kichik', sys.length < 27000, sys.length + ' belgi');
+/* 24 000: qoidalar qisqartirildi (takror va ziddiyatlar olib tashlandi,
+   o'lcham jadvali va veb-qidiruv ko'rsatmasi vositaga/dinamik blokka
+   ko'chdi) — 26 700 dan 22 600 ga. Oshirishdan oldin: buni vosita bera oladimi? */
+check('tizim ko\'rsatmasi byudjeti: 24 000 belgidan kichik', sys.length < 24000, sys.length + ' belgi');
+check('tizim ko\'rsatmasi keshlanadi (bir kunda bir marta tuziladi)', buildSystem() === sys);
+check('qoidalarda o\'lcham jadvali va web_search tafsiloti yo\'q (JIT)', !/EU 40 = US 7/.test(sys) && !/Amazon, AliExpress, eBay/.test(sys));
 /* Kesilgan maydonlar vositalarda bor — indeks ularni yo'qotmadi. */
 const tDet = runTool('find_store', { query: 'taobao' }, tctx).stores[0];
 check('find_store tafsilotni beradi (qaytarish, murakkablik, domen)', !!tDet.returns && !!tDet.complexity && tDet.domain === 'taobao.com');
 check('check_banned manba va izohni beradi', !!runTool('check_banned', { query: 'qurol' }, tctx).items[0].src);
 check('parseAiBody: rollar navbat bilan, oxirgi assistant', JSON.stringify(parseAiBody(JSON.stringify({ q: 'a', history: [{ role: 'assistant', text: 'x' }, { role: 'user', text: 'u1' }, { role: 'user', text: 'u2' }, { role: 'assistant', text: 'a1' }, { role: 'user', text: 'u3' }] })).history) === JSON.stringify([{ role: 'user', text: 'u1\nu2' }, { role: 'assistant', text: 'a1' }]));
 
-/* --- Skrinshot (/ai/shot) va do'kon tavsiyasi (suggest_stores) --- */
-const { parseShotBody, normalizeShot, searchUrl } = await import('./src/ai.js');
+/* --- Skrinshot (/ai ga rasm) va do'kon tavsiyasi (suggest_stores) --- */
+const { parseImage, normalizeShot, searchUrl } = await import('./src/ai.js');
 const PNG1 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
-const shot = (body, extra = {}, ip = '3.3.3.3') => worker.fetch(new Request('https://w/ai/shot', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': ip }, body: JSON.stringify(body) }), aiEnv(extra), ctx);
-check('parseShotBody: data URL dan mime va base64', (() => { const p = parseShotBody(JSON.stringify({ image: 'data:image/png;base64,' + PNG1 })); return typeof p === 'object' && p.mime === 'image/png' && p.image === PNG1; })());
-check('parseShotBody: rasmsiz — xato', typeof parseShotBody(JSON.stringify({ lang: 'uz' })) === 'string');
-check('parseShotBody: begona tur — xato', typeof parseShotBody(JSON.stringify({ image: PNG1, mime: 'image/gif' })) === 'string');
+const shot = (body, extra = {}, ip = '3.3.3.3') => worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': ip }, body: JSON.stringify(body) }), aiEnv(extra), ctx);
+check('parseImage: data URL dan mime va base64', (() => { const p = parseImage({ image: 'data:image/png;base64,' + PNG1 }); return typeof p === 'object' && p.mime === 'image/png' && p.image === PNG1; })());
+check('parseImage: rasmsiz — null', parseImage({ lang: 'uz' }) === null);
+check('parseImage: begona tur — xato', typeof parseImage({ image: PNG1, mime: 'image/gif' }) === 'string');
+check('/ai/shot manzili yo\'q — 404 (yagona manzil /ai)', (await worker.fetch(new Request('https://w/ai/shot', { method: 'POST', headers: { origin: 'https://x' }, body: '{}' }), aiEnv(), ctx)).status === 404);
 const n1 = normalizeShot({ name: ' Nike Air Max 90 ', price: '129.99', currency: 'usd', qty: 0, store: 'Amazon', category: 'Poyabzal', country: 'USA', weightKg: 0.9, confidence: 0.9 }, 12650);
 check('normalizeShot: USD narx, nom, miqdor 1', n1.found && n1.priceUsd === 129.99 && n1.name === 'Nike Air Max 90' && n1.qty === 1 && !n1.fxApprox, JSON.stringify(n1));
 /* Natija kartasi uchun maydonlar: kategoriya faqat bazadagi id, davlat taxallusdan (USA → AQSh), vazn chegaralangan. */
@@ -274,8 +286,8 @@ check('normalizeShot: noma\'lum kategoriya/davlat bo\'sh, vazn 50 kg dan oshmayd
 const n2 = normalizeShot({ name: 'Kurtka', price: 699, currency: 'CNY', qty: 2, store: 'Taobao', confidence: 0.7 }, 12650);
 check('normalizeShot: CNY → USD taxminiy kurs bilan, belgi', n2.found && n2.priceUsd > 80 && n2.priceUsd < 110 && n2.fxApprox && n2.qty === 2, JSON.stringify(n2));
 check('normalizeShot: narx yo\'q — found=false', !normalizeShot({ price: 0, currency: '' }, 12650).found);
-check('shot: kalitsiz 503', (await worker.fetch(new Request('https://w/ai/shot', { method: 'POST', headers: { origin: 'https://x' }, body: JSON.stringify({ image: PNG1, mime: 'image/png' }) }), { ...env }, ctx)).status === 503);
-check('shot: rasmsiz 400', (await shot({ lang: 'uz' }, { AI_FETCH: () => claudeText('{}') })).status === 400);
+check('shot: kalitsiz 503', (await worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x' }, body: JSON.stringify({ image: PNG1, mime: 'image/png' }) }), { ...env }, ctx)).status === 503);
+check('shot: rasm ham, savol ham yo\'q — 400', (await shot({ lang: 'uz' }, { AI_FETCH: () => claudeText('{}') })).status === 400);
 let shotReq = null;
 const fakeShot = async (url, init) => {
   shotReq = JSON.parse(init.body);
@@ -284,17 +296,17 @@ const fakeShot = async (url, init) => {
 };
 const sr = await shot({ image: 'data:image/png;base64,' + PNG1, lang: 'uz', usdRate: 12650 }, { AI_FETCH: fakeShot });
 const sj = await sr.json();
-check('shot: rasm Claude\'ga base64 blok bilan, JSON sxema so\'raladi, arzon model', shotReq && shotReq.model === 'claude-haiku-4-5' && shotReq.messages[0].content[0].type === 'image' && shotReq.messages[0].content[0].source.data === PNG1 && shotReq.output_config && shotReq.output_config.format.type === 'json_schema' && !shotReq.tools, JSON.stringify(shotReq).slice(0, 160));
-check('shot: javob — nom, narx, USD, ishonch', sr.status === 200 && sj.found && sj.name === 'Nike Air Max 90' && sj.priceUsd === 129.99 && sj.confidence === 0.92 && sj.usage.input === 1500, JSON.stringify(sj).slice(0, 160));
-check('shot: sxemada kategoriya, davlat, vazn so\'raladi va javobda keladi', shotReq.output_config.format.schema.required.includes('category') && shotReq.output_config.format.schema.required.includes('country') && shotReq.output_config.format.schema.required.includes('weightKg') && sj.category === 'poyabzal' && sj.country === 'AQSh' && sj.weightKg === 0, JSON.stringify([sj.category, sj.country, sj.weightKg]));
+check('shot: rasm Claude\'ga base64 blok bilan, JSON sxema so\'raladi, arzon model, vositasiz', shotReq && shotReq.model === 'claude-haiku-4-5' && shotReq.messages[0].content[0].type === 'image' && shotReq.messages[0].content[0].source.data === PNG1 && shotReq.output_config && shotReq.output_config.format.type === 'json_schema' && !shotReq.tools, JSON.stringify(shotReq).slice(0, 120));
+check('shot: javob — shot (nom, narx, USD, ishonch), mahsulot kartasi, stop shot', sr.status === 200 && sj.stop === 'shot' && sj.shot.found && sj.shot.name === 'Nike Air Max 90' && sj.shot.priceUsd === 129.99 && sj.shot.confidence === 0.92 && sj.usage.input === 1500 && sj.cards[0].type === 'product', JSON.stringify(sj).slice(0, 160));
+check('shot: sxemada kategoriya, davlat, vazn so\'raladi va javobda keladi', shotReq.output_config.format.schema.required.includes('category') && shotReq.output_config.format.schema.required.includes('country') && shotReq.output_config.format.schema.required.includes('weightKg') && sj.shot.category === 'poyabzal' && sj.shot.country === 'AQSh' && sj.shot.weightKg === 0, JSON.stringify([sj.shot.category, sj.shot.country, sj.shot.weightKg]));
 /* Tuzilgan chiqish 400 bersa — oddiy so'rov, matn ichidan JSON. */
 let calls2 = 0;
 const fallbackShot = async (url, init) => { calls2++; const b = JSON.parse(init.body); if (b.output_config) return new Response(JSON.stringify({ error: { type: 'invalid_request_error', message: 'output_config.format is not supported' } }), { status: 400 });
   return new Response(JSON.stringify({ model: 'm', stop_reason: 'end_turn', content: [{ type: 'text', text: 'Mana: {"name":"Kurtka","price":699,"currency":"CNY","qty":1,"store":"Taobao","confidence":0.6} tayyor' }] }), { status: 200 }); };
-const sr2 = await (await shot({ image: PNG1, mime: 'image/png', usdRate: 12650 }, { AI_FETCH: fallbackShot }, '3.3.3.4')).json();
+const sr2 = (await (await shot({ image: PNG1, mime: 'image/png', usdRate: 12650 }, { AI_FETCH: fallbackShot }, '3.3.3.4')).json()).shot;
 check('shot: sxema rad etilsa matndan JSON, CNY → USD', calls2 === 2 && sr2.found && sr2.currency === 'CNY' && sr2.fxApprox && sr2.priceUsd > 80, JSON.stringify(sr2).slice(0, 120));
 const sr3 = await (await shot({ image: PNG1, mime: 'image/png' }, { AI_FETCH: () => claudeText('rasmda narx ko\'rinmayapti') }, '3.3.3.5')).json();
-check('shot: JSON topilmasa found=false, code unreadable', sr3.found === false && sr3.code === 'unreadable');
+check('shot: JSON topilmasa shot.found=false, kartasiz, stop shot', sr3.shot.found === false && sr3.cards.length === 0 && sr3.stop === 'shot');
 const sr4 = await shot({ image: PNG1, mime: 'image/png' }, { AI_FETCH: () => new Response('{}', { status: 529 }) }, '3.3.3.6');
 check('shot: Claude yiqilsa 503', sr4.status === 503);
 /* suggest_stores */

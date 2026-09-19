@@ -21,14 +21,14 @@
  *                        1 soat keshlanadi (ilovadagi "tirik signal" uchun)
  *   GET  /hisobot      — o'qiladigan hisobot sahifasi (parol sahifada so'raladi)
  *   GET  /ai/status    — { ai: true|false } — kalit bormi (ilova tugmalarni shunga qarab ko'rsatadi)
- *   POST /ai           — Pochtam AI (src/ai.js): Claude API proksisi, kalit sirda,
+ *   POST /ai           — Pochtam AI (src/ai.js): matn, skrinshot, havola va joriy
+ *                        xarid bitta manzilda; Claude API proksisi, kalit sirda,
  *                        kunlik chegara shu Durable Object'da sanaladi
- *   POST /ai/shot      — skrinshotdan mahsulot nomi/narxi (JSON), o'sha chegara
  *   GET  /             — "ok"
  */
 
 import { hisobotHtml } from './hisobot.js';
-import { handleAi, handleShot } from './ai.js';
+import { handleAi } from './ai.js';
 
 const NAMES = new Set(['screen', 'store', 'courier', 'guide', 'wizard', 'svcAsk', 'hamkor',
   /* bosh sahifa va yangi funksiyalar */ 'hero', 'quick', 'courier_compare', 'calc_open', 'calc_done', 'add_to_plan', 'consult_click', 'ai_question']);
@@ -184,9 +184,8 @@ export default {
         headers: cors(env, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300' }, origin) });
     }
 
-    if (request.method === 'POST' && (url.pathname === '/ai/shot' || url.pathname === '/ai')) {
-      const h = url.pathname === '/ai/shot' ? handleShot : handleAi;
-      return h({ request, env, ctx, origin, originOk: originOk(env, origin), cors, counter,
+    if (request.method === 'POST' && url.pathname === '/ai') {
+      return handleAi({ request, env, ctx, origin, originOk: originOk(env, origin), cors, counter,
         /* Testda soxta Claude: env.AI_FETCH funksiyasi. Ishlab chiqarishda yo'q. */
         fetchImpl: typeof env.AI_FETCH === 'function' ? env.AI_FETCH : undefined });
     }

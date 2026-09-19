@@ -5676,11 +5676,10 @@ class Component extends DCLogic {
     micBusy: false,
     /* AI javobidagi belgilangan qadamlar: "xabar:qadam" → true. */
     aiDone: {},
-    /* Joriy xarid — yagona holat: mahsulot, do'kon, davlat, narx, vazn,
-       kuryer, jami. Skrinshot uni to'ldiradi, AI har so'rovda ko'radi,
-       natija va kalkulyator shundan o'qiydi (localStorage xy_cart). */
-    cart: (() => { try { const c = JSON.parse(localStorage.getItem('xy_cart') || 'null'); return c && typeof c === 'object' ? c : null; } catch (e) { return null; } })(),
-    /* Oxirgi skrinshot natijasi (localStorage xy_last). */
+    /* Joriy xarid — yagona saqlanadigan holat (localStorage xy_last):
+       oxirgi skrinshot natijasi. Natija ekrani, "Oxirgi hisob" va AI ga
+       ketadigan xarid (cartForAi) shundan o'qiladi; alohida "cart"
+       nusxasi yo'q. */
     lastRes: (() => { try { const r = JSON.parse(localStorage.getItem('xy_last') || 'null'); return r && r.state === 'ok' && r.lc ? r : null; } catch (e) { return null; } })(),
     /* Do'kon sahifasida tanlangan yetkazish davlati (bir nechtasi bo'lsa).
        Do'konda yo'q davlat tanlangan bo'lsa birinchisiga qaytadi. */
@@ -6623,38 +6622,22 @@ class Component extends DCLogic {
         if (!r.ok || !j || !j.text) { const e = new Error('ai'); e.code = (j && j.code) || (r.status === 429 ? 'limit' : 'upstream'); throw e; }
         return j;
       })
-      .then(j => {
-        if (j.cart) this.setCart(j.cart);
-        this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', text: String(j.text), tools: Array.isArray(j.tools) ? j.tools : [], cards: Array.isArray(j.cards) ? j.cards : [] }] }));
-      })
+      .then(j => this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', text: String(j.text), cards: Array.isArray(j.cards) ? j.cards : [] }] })))
       .catch(e => this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', err: (e && e.code) || 'net' }] })))
       .then(() => { clearTimeout(timer); this.setState({ aiBusy: false }); this._aiScroll(); });
   }
-  /* Skrinshot: fayl → 1280 px JPEG (brauzerda) → /ai/shot → nom, narx,
-     valyuta, do'kon → kalkulyator to'ldiriladi. Chat yo'q: skrinshotning
-     yagona maqsadi — narxni yozmaslik. Kalkulyator tepasidagi banner
-     (lcShot) holatni aytadi: o'qilmoqda / o'qildi / o'qilmadi / xato.
-     Rasm serverda saqlanmaydi. */
-  /* Joriy xaridni saqlash: ilova holati ham, brauzer xotirasi ham. */
-  setCart(c) {
-    const cart = c && typeof c === 'object' ? c : null;
-    this.setState({ cart });
-    try { cart ? localStorage.setItem('xy_cart', JSON.stringify(cart)) : localStorage.removeItem('xy_cart'); } catch (e) {}
-  }
-  /* AI ga yuboriladigan ko'rinish: kalkulyator kirishlari va hisoblangan
-     jami qo'shiladi, shunda AI qayta so'ramaydi. */
+  /* Joriy xarid AI uchun: ochiq natija (shotRes) yoki oxirgi saqlangan
+     hisob (lastRes) — nom, do'kon, davlat, kategoriya, narx, valyuta,
+     vazn, ilova hisoblagan jami va kuryer. AI shuni ko'rib qayta
+     so'ramaydi. Hech narsa bo'lmasa null. */
   cartForAi() {
     const st = this.state;
-    const c = { ...(st.cart || {}) };
-    const r = st.shotRes;
-    if (r && r.state === 'ok' && r.lc) {
-      const lc = r.lc;
-      c.name = c.name || lc.name; c.country = c.country || lc.country; c.cat = c.cat || lc.cat;
-      c.cur = c.cur || lc.cur; c.price = c.price || num(lc.price); c.kg = c.kg || num(lc.kg);
-      if (r.storeName) c.store = c.store || r.storeName;
-      try { const C = this.landedCalc(lc, st); c.totalUsd = C.L.totalUsd; if (C.sel) c.courier = C.sel.name; } catch (e) {}
-    }
-    return Object.keys(c).length ? c : null;
+    const r = (st.shotRes && st.shotRes.state === 'ok' && st.shotRes.lc) ? st.shotRes : st.lastRes;
+    if (!r || !r.lc) return null;
+    const lc = r.lc;
+    const c = { name: lc.name, store: r.storeName || '', country: lc.country, cat: lc.cat, cur: lc.cur, price: num(lc.price), kg: num(lc.kg), qty: num(lc.qty) || 1 };
+    try { const C = this.landedCalc(lc, st); c.totalUsd = C.L.totalUsd; if (C.sel) c.courier = C.sel.name; } catch (e) {}
+    return c;
   }
   shotPick() {
     const root = this._rootRef.current;
@@ -6700,11 +6683,8 @@ class Component extends DCLogic {
           return j;
         })
         .then(j => {
-          /* Yangi javob: { shot, cart, cards }. Eski ko'rinish (to'g'ridan
-             maydonlar) ham qabul qilinadi. */
-          const sh = j.shot || j;
-          if (j.cart) this.setCart(j.cart);
-          if (!sh.found) { done({ state: 'none' }); return; }
+          const sh = j.shot;
+          if (!sh || !sh.found) { done({ state: 'none' }); return; }
           const ok = { state: 'ok', ...this.shotToLc(sh), at: Date.now() };
           done(ok);
           /* Oxirgi natija saqlanadi: chiqib ketilsa ham bosh sahifada
@@ -6946,33 +6926,39 @@ class Component extends DCLogic {
   _aiScroll() {
     requestAnimationFrame(() => { const m = this._mainEl(); if (m && this.cur() === 'ai') m.scrollTop = m.scrollHeight; });
   }
-  /* AI ekranining VM qismi: xabarlar, tez savollar, javob ostidagi tugmalar
-     (vosita chaqirilgan bo'lsa — kalkulyator, kuryerlar, taqiqlar, do'kon
-     to'ldirilgan holda ochiladi; 8-bosqich). */
+  /* AI ekranining VM qismi: xabarlar, namuna, javob kartalari (worker
+     `cards` — boshqa manba yo'q) va ostidagi tugmalar (karta bo'lsa —
+     kalkulyator, kuryerlar, taqiqlar, do'kon to'ldirilgan holda ochiladi). */
   aiVm(st) {
     const lang = st.lang;
     const HINT = 'krossovka, 41 razmer, $100 gacha';
     const usd = v => '$' + num(v).toFixed(2);
-    /* Javob ostidagi tugmalar: vosita chaqirilgan bo'lsa kalkulyator,
-       kuryerlar, taqiqlar, do'kon to'ldirilgan holda ochiladi. */
+    /* Javob — faqat worker qaytargan kartalar (`cards`): ilova vosita
+       nomlarini va ichki natijalarni bilmaydi, har karta o'zi bilan kerakli
+       hamma narsani olib keladi (kirish `got`, natija). Natija ekrani va
+       suhbat bitta shartnomadan chizadi. */
+    const card = (m, type) => (m.cards || []).find(c => c && c.type === type) || null;
+    /* Javob ostidagi tugmalar: karta bo'lsa kalkulyator, kuryerlar,
+       taqiqlar, do'kon to'ldirilgan holda ochiladi. */
     const acts = m => {
       const out = [], seen = new Set();
-      for (const t of m.tools || []) {
-        const inp = t.input || {}, res = t.result || {};
-        if (!t.name || res.error) continue;
+      for (const c of m.cards || []) {
+        if (!c || !c.type) continue;
+        const got = c.got || {};
         let a = null;
-        if (t.name === 'customs_duty' || t.name === 'landed_cost') {
-          a = ['calc', 'Kalkulyatorda ochish', () => this.openLanded({ price: String(inp.goodsUsd != null ? inp.goodsUsd : (inp.priceUsd || '')), cur: 'USD',
-            qty: String(inp.qty || 1), kg: num(inp.kg) > 0 ? String(inp.kg) : '', country: LC_COUNTRIES.includes(res.country) ? res.country : LC_DEFAULT.country,
-            local: num(inp.localPriceUzs) > 0 ? String(inp.localPriceUzs) : '' })];
-        } else if (t.name === 'courier_quotes') {
-          a = ['cour', "Kuryerlarni ko'rish", () => this.openCourierCalc(res.country || inp.country, num(inp.kg) || 2)];
-        } else if (t.name === 'check_banned') {
+        if (c.type === 'duty' || c.type === 'total') {
+          const res = c.type === 'duty' ? (c.duty || {}) : (c.total || {});
+          a = ['calc', 'Kalkulyatorda ochish', () => this.openLanded({ price: String(got.goodsUsd != null ? got.goodsUsd : (got.priceUsd || '')), cur: 'USD',
+            qty: String(got.qty || 1), kg: num(got.kg) > 0 ? String(got.kg) : '', country: LC_COUNTRIES.includes(res.country) ? res.country : LC_DEFAULT.country,
+            local: num(got.localPriceUzs) > 0 ? String(got.localPriceUzs) : '' })];
+        } else if (c.type === 'couriers') {
+          a = ['cour', "Kuryerlarni ko'rish", () => this.openCourierCalc(c.country, num(c.kg) || 2)];
+        } else if (c.type === 'warning') {
           a = ['ban', "Taqiqlar ro'yxati", () => this.openSec(2)];
-        } else if (t.name === 'find_store' && res.stores && res.stores[0] && STORES.some(x => x.id === res.stores[0].id)) {
-          const id = res.stores[0].id;
+        } else if (c.type === 'store' && STORES.some(x => x.id === c.id)) {
+          const id = c.id;
           a = ['store', "Do'konni ochish", () => { this.warmGuide(id); this.setState({ storeId: id }); this.push('store'); }];
-        } else if (t.name === 'suggest_stores') {
+        } else if (c.type === 'stores') {
           /* Do'kon topildi — keyingi qadam skrinshot: jami narx shundan chiqadi. */
           a = ['shot', 'Skrinshot yuklash', () => this.shotPick()];
         }
@@ -6980,21 +6966,17 @@ class Component extends DCLogic {
       }
       return out;
     };
-    /* Tovar so'rovi: "Tushundim" chiplari (vosita kirishidan), do'kon
-       kartalari (qidiruv havolasi yangi oynada) va taxminiy jami. */
-    const tool = (m, name) => (m.tools || []).find(t => t.name === name && t.result && !t.result.error) || null;
-    /* Aniqlashtiruvchi savol (ask_user): foydalanuvchi yozmaydi, bosadi.
+    /* Aniqlashtiruvchi savol (ask): foydalanuvchi yozmaydi, bosadi.
        Variant bosilishi bilan javob savol sifatida ketadi. */
     const asksOf = m => {
-      const c = (m.cards || []).find(x => x && x.type === 'ask');
-      const t = c || (tool(m, 'ask_user') || {}).result;
-      if (!t || !t.question || !Array.isArray(t.options) || t.options.length < 2) return null;
-      return { q: t.question, opts: t.options.map(o => ({ t: o, pick: () => { metrics.hit('quick', 'ai:ask'); this.aiAsk(o); } })) };
+      const c = card(m, 'ask');
+      if (!c || !c.question || !Array.isArray(c.options) || c.options.length < 2) return null;
+      return { q: c.question, opts: c.options.map(o => ({ t: o, pick: () => { metrics.hit('quick', 'ai:ask'); this.aiAsk(o); } })) };
     };
-    /* Veb-qidiruvdan topilgan aniq mahsulot sahifalari (product_links). */
+    /* Veb-qidiruvdan topilgan aniq mahsulot sahifalari (links). */
     const linksOf = m => {
-      const t = tool(m, 'product_links'); if (!t || !Array.isArray(t.result.links)) return [];
-      return t.result.links.slice(0, 5).map(l => {
+      const c = card(m, 'links'); if (!c || !Array.isArray(c.links)) return [];
+      return c.links.slice(0, 5).map(l => {
         const loc = STORES.find(x => x.domain && (l.host === x.domain || String(l.host || '').endsWith('.' + x.domain)));
         const bor = !!(loc && loc.logoCss && loc.logoCss !== 'none');
         const cur = String(l.currency || '');
@@ -7006,18 +6988,19 @@ class Component extends DCLogic {
           hit: () => metrics.hit('quick', 'ai:plink') };
       });
     };
+    /* "Tushundim" chiplari — do'kon kartasining kirishidan (got). */
     const gotOf = m => {
-      const t = tool(m, 'suggest_stores'); if (!t) return [];
-      const inp = t.input || {}, out = [];
-      const cat = CATEGORIES.find(c => c.id === inp.category);
+      const c = card(m, 'stores'); if (!c) return [];
+      const inp = c.got || {}, out = [];
+      const cat = CATEGORIES.find(x => x.id === inp.category);
       if (cat) out.push(tr(lang, cat.label));
       if (inp.original) out.push(tr(lang, 'original'));
       if (num(inp.budgetUsd) > 0) out.push(tx(lang, '{0} gacha', '$' + num(inp.budgetUsd)));
       return out;
     };
     const storesOf = m => {
-      const t = tool(m, 'suggest_stores'); if (!t || !Array.isArray(t.result.stores)) return [];
-      return t.result.stores.slice(0, 4).filter(sg => /^https:\/\//.test(sg.searchUrl || '')).map(sg => {
+      const c = card(m, 'stores'); if (!c || !Array.isArray(c.stores)) return [];
+      return c.stores.slice(0, 4).filter(sg => /^https:\/\//.test(sg.searchUrl || '')).map(sg => {
         const loc = STORES.find(x => x.id === sg.id);
         const bor = !!(loc && loc.logoCss && loc.logoCss !== 'none');
         return { name: sg.name, href: sg.searchUrl, logoCss: bor ? loc.logoCss : 'none', plate: bor ? 'transparent' : '#F1F1F8',
@@ -7026,8 +7009,7 @@ class Component extends DCLogic {
       });
     };
     const totalOf = m => {
-      const t = tool(m, 'landed_cost'); if (!t || !(num(t.result.totalUsd) > 0)) return null;
-      const r = t.result;
+      const c = card(m, 'total'); const r = c && c.total; if (!r || !(num(r.totalUsd) > 0)) return null;
       return { total: usd(r.totalUsd), sub: [tr(lang, 'Kargo') + ' ' + usd(r.shipUsd), tr(lang, 'Boj') + ' ' + usd(r.dutyUsd), r.courier && r.courier.name].filter(Boolean).join(' · ') };
     };
     /* Xato — sariq karta, ostida ishlaydigan yo'llar. */

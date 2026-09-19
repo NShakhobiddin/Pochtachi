@@ -5,8 +5,12 @@
  * ilovadagi core/ modullarini chaqiradi, shuning uchun AI raqamni "to'qiy"
  * olmaydi: boj, kargo va jami narx ilovadagi kalkulyator bilan bir xil.
  *
- * So'rov:  { q, history?: [{role:'user'|'assistant', text}], lang?, usdRate? }
- * Javob:   { text, tools:[{name, input, result}], model, usage, stop }
+ * Bitta kirish, bitta chiqish (Rufus/Sidekick naqshi: model yo'naltiradi,
+ * raqam va kartani ishonchli manba beradi):
+ * So'rov:  { q?, image?, mime?, url?, cart?, history?, lang?, usdRate?, find? }
+ *          — savol, rasm yoki havoladan kamida bittasi.
+ * Javob:   { text, cards, cart, shot, tools:[nom…], model, usage, stop }
+ *          — ilova FAQAT `cards` ni chizadi; vosita nomlari sanoq uchun.
  * Xatolar: 400 (kirish), 403 (begona Origin), 429 (kunlik chegara, code:'limit'),
  *          503 (kalit yo'q yoki Claude API javob bermadi, code:'no_key'|'upstream').
  * Cheklovlar: IP uchun kuniga AI_DAILY_PER_IP savol (IP saqlanmaydi — kun
@@ -14,7 +18,14 @@
  *
  * Claude API'ga Anthropic SDK'siz, oddiy fetch bilan murojaat qilinadi:
  * Worker'da qo'shimcha bog'liqlik yo'q (bundle kichik) va so'rov shakli
- * ikki chaqiruvdan iborat (xabar → vosita natijasi → xabar). */
+ * ikki chaqiruvdan iborat (xabar → vosita natijasi → xabar).
+ *
+ * Kesh (Claude prompt caching): prefiks tartibi tools → system → messages.
+ * Statik vositalar oxirgisida va tizim ko'rsatmasining katta blokida
+ * cache_control bor; server vositalari (web_search, web_fetch) faqat
+ * kerak bo'lganda va ro'yxat OXIRIDA qo'shiladi — shunda statik qism
+ * keshdan o'qiladi. Kun, til, kurs va joriy xarid — keshdan keyingi
+ * kichik bloklar. */
 
 import '../../core/customs.js';
 import '../../core/tariffs.js';
@@ -46,12 +57,15 @@ const LEVEL = { red: 'taqiqlangan', amber: 'cheklangan (ruxsat/sertifikat yoki m
    bularning hammasi matn bo'lib har chaqiruvda ketardi (12 400 token);
    indeksda ~7 200. Maydon qo'shishdan oldin o'ylab ko'ring: uni
    vosita qaytara oladimi? */
+let sysMemo = { day: '', text: '' };
 export function buildSystem() {
-  const cur = Core.normsAt(KB.NORMS, isoDay()) || {};
+  const day = isoDay();
+  if (sysMemo.day === day) return sysMemo.text;
+  const cur = Core.normsAt(KB.NORMS, day) || {};
   const couriers = KB.COURIERS.map(c => ({ name: c.name, countries: c.countries, days: c.days, mode: c.mode, tracking: c.tracking }));
   const stores = KB.STORES.map(s => ({ name: s.name, country: (s.from || [s.country]).join('/'), cat: s.cat, price: s.price, original: s.original, direct: s.direct }));
   const banned = KB.BANNED.map(b => ({ name: b.name, level: LEVEL[b.level] || b.level }));
-  return [
+  const text = [
     KB.RULES.trim(),
     '## Joriy me\'yor (NORMS)\n' + JSON.stringify(cur),
     '## Kuryerlar indeksi (' + couriers.length + ') — summa, muddat va cheklov uchun courier_quotes\n' + JSON.stringify(couriers),
@@ -62,6 +76,8 @@ export function buildSystem() {
     '## Xizmatlar (pullik konsultatsiya)\n' + JSON.stringify(KB.SERVICES.map(s => ({ title: s.title, sub: s.sub, lane: s.lane }))),
     '## Qo\'llanmalar\n' + JSON.stringify(KB.GUIDES)
   ].join('\n\n');
+  sysMemo = { day, text };
+  return text;
 }
 
 /* --- Vositalar: hisob faqat core/ orqali. --- */
@@ -224,6 +240,12 @@ export function searchUrl(store, q) {
   return t && query ? t.replace('{q}', query) : (store.url || '');
 }
 const PRICE_RANK = { '$': 1, '$$': 2, '$$$': 3, '$$$$': 4 };
+/* O'lcham jadvali — faqat poyabzal/kiyim so'rovida, vosita natijasi bilan
+   keladi (tizim ko'rsatmasida turmaydi: har savolda kerak emas). */
+const SIZE_NOTE = {
+  poyabzal: 'O\'lcham (taxminiy, brendga qarab farq qiladi): erkaklar EU 40 = US 7 = 25 sm, 41 = US 8 = 26 sm, 42 = US 8,5 = 26,5 sm, 43 = US 9,5 = 27,5 sm, 44 = US 10 = 28 sm, 45 = US 11 = 29 sm; ayollar EU 36 = US 5,5 = 22,5 sm, 37 = US 6,5 = 23,5 sm, 38 = US 7,5 = 24 sm, 39 = US 8 = 25 sm, 40 = US 8,5 = 25,5 sm. Do\'kon jadvalini tekshirishni ayt.',
+  'kiyim va moda': 'Xitoy do\'konlarida o\'lchamlar Yevropadan bir pog\'ona kichik — S/M/L harfiga emas, jadvaldagi sm (ko\'krak, bel, bo\'y) ga qarashni ayt.'
+};
 
 /* Mahsulot so'rovi uchun do'konlar: kategoriya, originallik va byudjetga
    qarab bazadan tanlanadi, qidiruv havolasi bilan. Reyting: originallik
@@ -256,7 +278,9 @@ function toolSuggest(inp) {
       direct: !!s.direct, complexity: s.complexity, guide: KB.GUIDES.some(g => g.id === s.id),
       searchUrl: searchUrl(s, q)
     })),
-    note: wantOrig ? 'Original talab qilinsa "Yuqori" originallikdagi do\'konlar birinchi; marketplace\'larda originallik sotuvchiga bog\'liq — sotuvchi reytingini tekshirish kerak.' : ''
+    note: wantOrig ? 'Original talab qilinsa "Yuqori" originallikdagi do\'konlar birinchi; marketplace\'larda originallik sotuvchiga bog\'liq — sotuvchi reytingini tekshirish kerak; replika bojxonada olib qo\'yiladi.' : '',
+    sizeNote: SIZE_NOTE[cat] || '',
+    next: 'Foydalanuvchini mahsulot sahifasining skrinshotiga chaqir (narx, nom, og\'irlik ko\'ringan joy) — jami narxni ilova o\'zi hisoblaydi; landed_cost chaqirma.'
   };
 }
 
@@ -473,7 +497,7 @@ async function callClaude(body, env, fetchImpl) {
   return { data };
 }
 
-/* /ai va /ai/shot uchun umumiy darvoza: Origin, kalit, tana hajmi. Xato
+/* Darvoza: Origin, kalit, tana hajmi. Xato
    bo'lsa { res } (tayyor Response), aks holda { text, json, count, limit }.
    Kunlik chegara `limit()` bilan — chaqiruvchi kirishni tekshirgach chaqiradi,
    shunda noto'g'ri so'rov kvotani yemaydi. */
@@ -500,22 +524,35 @@ async function gate({ request, env, ctx, origin, originOk, cors, counter, maxBod
   return { text, json, count, limit };
 }
 
-/* Javob har doim bitta shaklda: qisqa matn + kartalar. Ilova kartalarni
-   bir xil chizadi — natija ekrani ham, suhbat ham. Kartalar vositalar
-   natijasidan yig'iladi, shuning uchun ilova vosita nomlarini bilishi
-   shart emas. */
+/* Javob har doim bitta shaklda: qisqa matn + kartalar. Ilova FAQAT shu
+   kartalarni chizadi (vosita nomi va ichki natijani bilmaydi), shuning
+   uchun har karta o'zi bilan ilovaga kerak bo'lgan hamma narsani olib
+   keladi: vosita kirishi (`got` — "Kalkulyatorda ochish" to'ldirilgan
+   holda ochilsin) va natijasi. Turlar:
+   product  — skrinshotdan o'qilgan mahsulot (readShot natijasi)
+   ask      — bitta savol va 2–4 bosiladigan variant
+   links    — aniq mahsulot sahifalari (veb-qidiruvdan)
+   stores   — mos do'konlar (qidiruv havolasi bilan) + got
+   store    — bazadagi do'kon (find_store)
+   warning  — taqiq/cheklov
+   duty     — boj va yig'im (customs_duty) + got
+   total    — jami tannarx (landed_cost) + got
+   couriers — kuryer takliflari + davlat, vazn
+   cart     — joriy xarid holati (ilovaga qaytariladi) */
 export function buildCards({ shot, used, cart }) {
   const cards = [];
   if (shot && shot.found) cards.push({ type: 'product', ...shot });
   for (const t of used) {
-    const r = t.result || {};
+    const r = t.result || {}, got = t.input && typeof t.input === 'object' ? t.input : {};
     if (r.error) continue;
     if (t.name === 'ask_user' && r.ok) cards.push({ type: 'ask', question: r.question, options: r.options });
     else if (t.name === 'product_links' && r.ok) cards.push({ type: 'links', links: r.links });
-    else if (t.name === 'suggest_stores' && r.found) cards.push({ type: 'stores', stores: r.stores, got: t.input || {} });
+    else if (t.name === 'suggest_stores' && r.found) cards.push({ type: 'stores', stores: r.stores, got });
+    else if (t.name === 'find_store' && r.found && r.stores[0]) cards.push({ type: 'store', id: r.stores[0].id, name: r.stores[0].name });
     else if (t.name === 'check_banned' && r.found && Array.isArray(r.items) && r.items.length) cards.push({ type: 'warning', items: r.items.slice(0, 2) });
-    else if (t.name === 'landed_cost' && r.totalUsd > 0) cards.push({ type: 'total', total: r });
-    else if (t.name === 'courier_quotes' && Array.isArray(r.quotes) && r.quotes.length) cards.push({ type: 'couriers', country: r.country, quotes: r.quotes.slice(0, 3) });
+    else if (t.name === 'customs_duty' && r.totalUzs >= 0) cards.push({ type: 'duty', duty: r, got });
+    else if (t.name === 'landed_cost' && r.totalUsd > 0) cards.push({ type: 'total', total: r, got });
+    else if (t.name === 'courier_quotes' && Array.isArray(r.quotes) && r.quotes.length) cards.push({ type: 'couriers', country: r.country, kg: r.kg, quotes: r.quotes.slice(0, 3) });
   }
   if (cart && (cart.name || cart.price > 0)) cards.push({ type: 'cart', cart });
   return cards;
@@ -590,13 +627,17 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
      bo'lsa yo'q). Har qidiruv alohida to'lanadi, shuning uchun bitta
      so'rovda ko'pi bilan 2 ta va oddiy savollarda umuman yo'q. */
   const webOn = parsed.find && String(env.AI_WEB_SEARCH || '1') !== '0';
-  const tools = [...TOOLS];
+  /* Statik vositalar oldinda, oxirgisida kesh nuqtasi; server vositalari
+     undan keyin — ular o'zgarsa ham statik prefiks keshda qoladi. */
+  const tools = TOOLS.map((t, i) => i === TOOLS.length - 1 ? { ...t, cache_control: { type: 'ephemeral' } } : t);
   if (webOn) tools.push({ ...WEB_SEARCH_TOOL, max_uses: Math.max(1, Math.min(3, +env.AI_WEB_SEARCH_USES || 2)) });
   /* Havola berilgan bo'lsa sahifani o'qish: qo'shimcha to'lovsiz, faqat
      o'qilgan matn tokeni. */
   if (parsed.url) tools.push({ type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 2, max_content_tokens: 6000, allowed_domains: [hostOf(parsed.url)] });
   const body = { model: env.AI_MODEL || DEFAULT_MODEL, max_tokens: +env.AI_MAX_TOKENS || 2048, system, tools, messages };
-  if (webOn) system.push({ type: 'text', text: 'Bu "Qayerdan topaman" so\'rovi: suggest_stores dan keyin web_search bilan (ko\'pi bilan 2 ta qidiruv) indekslanadigan do\'konlarda ANIQ mahsulot sahifalarini top va product_links vositasiga ber. Taobao, Pinduoduo, Poizon uchun qidirma — ularga qidiruv havolasi yetadi.' });
+  /* Veb-qidiruv ko'rsatmasi faqat shu yerda (qoidalar faylida yo'q):
+     vosita bo'lmaganda model uni o'qimasin. */
+  if (webOn) system.push({ type: 'text', text: 'Bu "Qayerdan topaman" so\'rovi: suggest_stores dan keyin web_search bilan (ko\'pi bilan 2 ta qidiruv) indekslanadigan do\'konlarda (Amazon, AliExpress, eBay, Trendyol, SHEIN, brend saytlari) ANIQ mahsulot sahifalarini top va product_links vositasiga ber: nom, https havola, do\'kon, narx, valyuta. Qidiruv natijalari sahifasini berma; Taobao, Pinduoduo, Poizon uchun qidirma — ularga qidiruv havolasi yetadi; topilmasa vositani chaqirma.' });
   if (env.AI_EFFORT) body.output_config = { effort: env.AI_EFFORT };
 
   const used = []; let textOut = '', model = body.model, stop = '';
@@ -636,15 +677,15 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
   if (stop === 'max_tokens' && textOut) textOut += '\n' + 'Javob uzun bo\'lgani uchun qisqartirildi — savolni aniqroq bering.';
   if (!textOut) textOut = 'Javob tayyorlab bo\'lmadi. Savolni boshqacha yozib ko\'ring yoki ilovadagi "Jami narx" kalkulyatoridan foydalaning.';
   count('ok');
-  return json({ text: textOut, cards: buildCards({ shot, used, cart }), cart, shot, tools: used, model, usage, stop });
+  return json({ text: textOut, cards: buildCards({ shot, used, cart }), cart, shot, tools: used.map(t => t.name), model, usage, stop });
 }
 
-/* --- Skrinshot → mahsulot ma'lumoti (POST /ai/shot). Rasm base64 (JPEG/PNG/
-   WebP, ≤ ~1 MB — ilova 1280 px ga kichraytirib yuboradi). Bitta chaqiruv,
-   vositasiz, qisqa ko'rsatma: model faqat rasmda ko'ringan nom, narx,
-   valyuta, miqdor, do'konni JSON qilib beradi; hisob-kitob ilovada (core/).
-   Model arzon (AI_SHOT_MODEL, standart Haiku 4.5). Rasm saqlanmaydi. --- */
-export const SHOT_LIMITS = { body: 1500000, maxTokens: 300 };
+/* --- Skrinshot → mahsulot ma'lumoti. Rasm base64 (JPEG/PNG/WebP, ≤ ~1 MB —
+   ilova 1280 px ga kichraytirib yuboradi). Bitta chaqiruv, vositasiz, qisqa
+   ko'rsatma: model faqat rasmda ko'ringan nom, narx, valyuta, miqdor,
+   do'konni JSON qilib beradi; hisob-kitob ilovada (core/). Model arzon
+   (AI_SHOT_MODEL, standart Haiku 4.5). Rasm saqlanmaydi. --- */
+const SHOT_MAX_TOKENS = 300;
 const SHOT_SCHEMA = {
   type: 'object',
   properties: {
@@ -662,22 +703,6 @@ const SHOT_SCHEMA = {
   additionalProperties: false
 };
 const SHOT_PROMPT = 'Bu do\'kon sahifasining skrinshoti. Faqat rasmda ko\'ringan ma\'lumotni yoz: mahsulot nomi, joriy narx (chegirma bo\'lsa chegirmali narx, eski narx emas), valyuta (belgi yoki kod bo\'yicha: ¥ Xitoy saytida CNY, ₺ TRY, $ USD, € EUR, £ GBP, ₩ KRW, AED, ₽ RUB, so\'m UZS), miqdor, do\'kon nomi, mahsulot kategoriyasi (ro\'yxatdan bittasi), do\'kon qaysi davlatdan yuborishi (domen, til va valyutadan xulosa qil; aniq bo\'lmasa bo\'sh) va sahifada og\'irlik ko\'rinsa kilogrammda (ko\'rinmasa 0). Taxmin qilma: narx ko\'rinmasa price 0 va confidence 0. Javob faqat JSON.';
-
-export function parseShotBody(text) {
-  let d;
-  try { d = JSON.parse(text); } catch (e) { return 'JSON kutilgan edi'; }
-  if (!d || typeof d !== 'object') return 'obyekt kutilgan edi';
-  let img = String(d.image || '');
-  let mime = String(d.mime || '').toLowerCase();
-  const m = /^data:(image\/(?:jpeg|png|webp));base64,(.+)$/i.exec(img);
-  if (m) { mime = m[1].toLowerCase(); img = m[2]; }
-  if (!img) return 'rasm yo\'q';
-  if (!['image/jpeg', 'image/png', 'image/webp'].includes(mime)) return 'rasm turi: jpeg, png yoki webp';
-  if (!/^[A-Za-z0-9+/=\s]+$/.test(img.slice(0, 4000))) return 'rasm base64 emas';
-  const lang = ['uz', 'uzc', 'ru'].includes(d.lang) ? d.lang : 'uz';
-  const usdRate = num(d.usdRate);
-  return { image: img.replace(/\s/g, ''), mime, lang, usdRate: usdRate >= 5000 && usdRate <= 50000 ? usdRate : 0 };
-}
 
 /* Modelning JSON javobini tekshirib, ilova uchun tayyor obyektga keltiradi. */
 export function normalizeShot(raw, usdRate) {
@@ -704,12 +729,11 @@ export function normalizeShot(raw, usdRate) {
   };
 }
 
-/* Rasmni arzon model bilan o'qiydi (/ai va /ai/shot uchun umumiy). Asosiy
-   modelga rasm ko'rsatilmaydi: u to'rt barobar qimmat, vazifa esa oddiy
+/* Rasmni arzon model bilan o'qiydi. Asosiy modelga rasm ko'rsatilmaydi: u to'rt barobar qimmat, vazifa esa oddiy
    o'qish. Javob: { out, model, usage } yoki { err }. */
 export async function readShot({ image, mime, usdRate, env, fetchFn }) {
   const base = {
-    model: env.AI_SHOT_MODEL || 'claude-haiku-4-5', max_tokens: SHOT_LIMITS.maxTokens,
+    model: env.AI_SHOT_MODEL || 'claude-haiku-4-5', max_tokens: SHOT_MAX_TOKENS,
     messages: [{ role: 'user', content: [
       { type: 'image', source: { type: 'base64', media_type: mime, data: image } },
       { type: 'text', text: SHOT_PROMPT }
@@ -726,25 +750,4 @@ export async function readShot({ image, mime, usdRate, env, fetchFn }) {
   const u = msg.usage || {};
   if (msg.stop_reason === 'refusal' || !raw) return { unreadable: true, model: msg.model || base.model, usage: { input: u.input_tokens || 0, output: u.output_tokens || 0 } };
   return { out: normalizeShot(raw, usdRate), model: msg.model || base.model, usage: { input: u.input_tokens || 0, output: u.output_tokens || 0 } };
-}
-
-export async function handleShot({ request, env, ctx, origin, originOk, cors, counter, fetchImpl }) {
-  const g = await gate({ request, env, ctx, origin, originOk, cors, counter, maxBody: SHOT_LIMITS.body });
-  if (g.res) return g.res;
-  const { json, count } = g;
-  const parsed = parseShotBody(g.text);
-  if (typeof parsed === 'string') return json({ error: parsed, code: 'bad_input' }, 400);
-  const limited = await g.limit(); if (limited) return limited;
-  const usdRate = parsed.usdRate || FALLBACK_RATE;
-  const fetchFn = fetchImpl || globalThis.fetch;
-  const r = await readShot({ image: parsed.image, mime: parsed.mime, usdRate, env, fetchFn });
-  if (r.err) {
-    console.log('ai shot upstream', r.err.status, r.err.type || '', r.err.error);
-    count('shot_err');
-    return json({ error: 'AI vaqtincha mavjud emas', code: r.err.status === 401 || r.err.status === 403 ? 'key' : 'upstream' }, 503);
-  }
-  if (r.unreadable) { count('shot_err'); return json({ found: false, error: 'Rasmdan ma\'lumot o\'qilmadi', code: 'unreadable', model: r.model }, 200); }
-  const out = r.out;
-  count(out.found ? 'shot' : 'shot_empty');
-  return json({ ...out, model: r.model, usage: r.usage });
 }

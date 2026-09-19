@@ -31,7 +31,7 @@ for (const c of cases) {
     status = r.status; j = await r.json();
   } catch (e) { check(c.q, false, 'so\'rov xatosi: ' + e.message); continue; }
   if (status !== 200 || !j || !j.text) { check(c.q, false, `HTTP ${status} ${JSON.stringify(j).slice(0, 120)}`); continue; }
-  const text = String(j.text), tools = (j.tools || []).map(t => t.name);
+  const text = String(j.text), tools = (j.tools || []).map(t => typeof t === 'string' ? t : t.name);
   const cards = (j.cards || []).map(x => x.type);
   const problems = [];
   if (c.card && !cards.includes(c.card)) problems.push(`karta ${c.card} yo'q (${cards.join(',') || 'kartasiz'})`);

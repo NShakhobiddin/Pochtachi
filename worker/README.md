@@ -121,67 +121,73 @@ Kalitsiz `/ai` 503 `{"code":"no_key"}` qaytaradi. Ilova ochilganda
 `false` bo'lsa AI tugmalarini umuman ko'rsatmaydi — foydalanuvchi "AI
 mavjud emas" xabarini ko'rmaydi, savollar oddiy qidiruvga boradi.
 
-So'rov (Origin tekshiriladi, `ALLOW_ORIGIN`):
+So'rov (Origin tekshiriladi, `ALLOW_ORIGIN`) — yagona kirish: savol, rasm
+yoki havoladan kamida bittasi, yoniga joriy xarid va tarix:
 
 ```json
-{ "q": "320 dollarlik 2.5 kg tovar uchun boj qancha?", "lang": "uz",
-  "usdRate": 12650, "history": [{ "role": "user", "text": "…" }, { "role": "assistant", "text": "…" }] }
+{ "q": "Shu tovarga boj tushadimi?", "lang": "uz", "usdRate": 12650,
+  "image": "data:image/jpeg;base64,…", "url": "https://…", "find": true,
+  "cart": { "name": "…", "store": "…", "country": "Xitoy", "price": 699, "cur": "CNY", "kg": 0.8, "courier": "D2D", "totalUsd": 102.2 },
+  "history": [{ "role": "user", "text": "…" }, { "role": "assistant", "text": "…" }] }
 ```
 
-Javob: `{ text, tools: [{ name, input, result }], model, usage, stop }`.
-Vositalar: `customs_duty`, `courier_quotes`, `landed_cost`, `check_banned`,
-`find_store`, `suggest_stores` (tovar so'rovi → do'konlar + qidiruv havolasi).
+Javob: `{ text, cards, cart, shot, tools: ["customs_duty", …], model, usage, stop }`.
+Ilova FAQAT `cards` ni chizadi — har karta o'zi bilan kerakli hamma
+narsani olib keladi (vosita kirishi `got` va natija), vosita nomlari
+sanoq uchun. Turlar: `product` (skrinshotdan o'qilgan mahsulot), `ask`
+(bitta savol, 2–4 variant), `links` (aniq mahsulot sahifalari), `stores`
+(mos do'konlar + `got`), `store` (bazadagi do'kon), `warning` (taqiq),
+`duty` (boj + `got`), `total` (jami + `got`), `couriers` (takliflar,
+davlat, vazn), `cart` (joriy xarid). Vositalar: `customs_duty`,
+`courier_quotes`, `landed_cost`, `check_banned`, `find_store`,
+`suggest_stores` (natijasida `sizeNote`/`note`/`next` — kerak bo'lgandagina
+keladigan ko'rsatma), `product_links`, `ask_user`.
 
-`POST /ai/shot` — skrinshot: `{ image: "data:image/jpeg;base64,…", lang, usdRate }`
-(≤ ~1 MB; ilova 1280 px ga kichraytiradi) → `{ found, name, price, currency,
-priceUsd, fxApprox, qty, store, category, country, weightKg, confidence,
-model, usage }` (`category` — `data/categories.json` id yoki `""`;
-`country` — ilovadagi davlat nomi yoki `""`; `weightKg` — sahifada
-ko'rinsa, 0–50). Bitta arzon
-chaqiruv (`AI_SHOT_MODEL`, standart `claude-haiku-4-5`), tuzilgan JSON
-chiqish; rasm saqlanmaydi. Chegara va xatolar `/ai` bilan bir xil.
+Rasm (`image`, ≤ ~1 MB; ilova 1280 px ga kichraytiradi) avval arzon model
+bilan o'qiladi (`readShot`, `AI_SHOT_MODEL`, standart `claude-haiku-4-5`,
+tuzilgan JSON: nom, narx, valyuta, miqdor, do'kon, kategoriya, davlat,
+og'irlik, ishonch) va natija joriy xaridga qo'shiladi (`mergeCart`); savol
+ham, havola ham yo'q bo'lsa asosiy model umuman chaqirilmaydi
+(`stop: "shot"`, ≈ $0.002). Rasm asosiy modelga ko'rsatilmaydi va
+saqlanmaydi. Havola bo'lsa `web_fetch` faqat o'sha domenga ruxsat bilan
+qo'shiladi. `find: true` ("Qayerdan topaman") bo'lsa Claude'ning server
+tomonidagi `web_search_20260209` (ko'pi bilan `AI_WEB_SEARCH_USES`, har
+qidiruv $0.01) va tizim ko'rsatmasiga faqat shu holatda qisqa yo'riqnoma
+qo'shiladi; `usage.search` — qidiruvlar soni, `/stats` da `search`.
 Xatolar: 400 (kirish), 403 (begona Origin), 429 (`code: "limit"` — IP yoki
 umumiy kunlik chegara), 503 (`no_key`, `key`, `upstream`).
 
 Qoidalar `data/ai-rules.md` da, bilimlar bazasi `src/kb.generated.js`
 (`node tools/ai-kb.mjs` tuzadi — qo'lda o'zgartirilmaydi), hisob-kitob
 `core/` vositalari orqali. Sozlamalar `wrangler.toml`: `AI_MODEL`,
-`AI_DAILY_PER_IP`, `AI_DAILY_TOTAL`, `AI_MAX_TOKENS`, `AI_EFFORT`,
-`AI_WEB_SEARCH` ("0" — o'chiq), `AI_WEB_SEARCH_USES` (bitta so'rovda
-ko'pi bilan nechta qidiruv, standart 2).
+`AI_SHOT_MODEL`, `AI_DAILY_PER_IP`, `AI_DAILY_TOTAL`, `AI_MAX_TOKENS`,
+`AI_EFFORT`, `AI_WEB_SEARCH` ("0" — o'chiq), `AI_WEB_SEARCH_USES`.
 
-`POST /ai` yagona kirish: `{ q?, image?, mime?, url?, cart?, lang, usdRate,
-history?, find? }` — uchalasidan (savol, rasm, havola) kamida bittasi
-kerak. Rasm bo'lsa avval arzon model o'qiydi (`readShot`, `AI_SHOT_MODEL`)
-va natija joriy xaridga qo'shiladi (`mergeCart`); savol yo'q bo'lsa asosiy
-model umuman chaqirilmaydi (`stop: "shot"`). Havola bo'lsa `web_fetch`
-faqat o'sha domenga ruxsat bilan qo'shiladi. Javob: `{ text, cards, cart,
-shot, tools, model, usage, stop }`; `cards` turlari — `product`, `total`,
-`couriers`, `links`, `stores`, `warning`, `ask`, `cart`. `ask_user`
-vositasi bitta savol va 2–4 bosiladigan variant qaytaradi.
-
-`POST /ai` tanasida `find: true` bo'lsa ("Qayerdan topaman" so'rovi)
-vositalarga Claude'ning server tomonidagi `web_search_20260209` qo'shiladi
-va tizim ko'rsatmasiga qisqa yo'riqnoma: indekslanadigan do'konlarda aniq
-mahsulot sahifalarini topib `product_links` ga berish. `product_links`
-natijasi `{ ok, n, links: [{ title, url, host, store, price, currency }] }`
-— faqat https, takrorsiz, 5 tagacha. Javobdagi `usage.search` — qidiruvlar
-soni (har biri $0.01), `/stats` da `search` sanog'i.
+Kesh (Claude prompt caching, prefiks tools → system → messages): statik
+vositalarning oxirgisida va tizim ko'rsatmasining katta blokida
+`cache_control`; server vositalari (web_search, web_fetch) ro'yxat
+OXIRIDA — o'zgarsa ham statik qism keshdan o'qiladi. Tizim ko'rsatmasi
+kunda bir marta tuziladi (`buildSystem` memo). Kun, til, kurs, joriy
+xarid va vaziyat ko'rsatmalari — keshdan keyingi kichik bloklar.
 
 Tizim ko'rsatmasi — indeks: kuryer, do'kon va taqiq ro'yxatlari qisqa
 maydonlar bilan ketadi, tafsilotni vositalar qaytaradi (`find_store`,
 `check_banned`, `courier_quotes`). Shuning uchun `buildSystem()` ga
 maydon qo'shishdan oldin tekshiring — uni vosita bera oladimi? Test
-byudjetni (26 000 belgi) va og'ir maydonlar yo'qligini kuzatadi.
+byudjetni (24 000 belgi; hozir ≈ 22 600) va og'ir maydonlar yo'qligini
+kuzatadi. Vositaga tegishli ko'rsatma (o'lcham jadvali, veb-qidiruv
+tartibi) qoidalar faylida emas — vosita natijasida yoki faqat o'sha
+holatda qo'shiladigan blokda keladi (Shopify Sidekick "just-in-time
+instructions" naqshi).
 
-Xarajat mo'ljali: tizim ko'rsatmasi ≈ 7,6 ming token keshda (o'qish
+Xarajat mo'ljali: tizim ko'rsatmasi ≈ 6,5 ming token keshda (o'qish
 arzon), savol-javob ≈ 1–2 ming token; vosita bilan bir savol ≈ $0.03
 (Sonnet 5). Kunlik umumiy chegara 300 savol ≈ $9/kun eng ko'pi bilan. Hisobotda
 "Pochtam AI" bo'limi sanoqni ko'rsatadi (`ai`: ok, limit, err,
 tool:…). Savol matni saqlanmaydi va log qilinmaydi.
 
 Sinov: `AI_URL=https://pochtam-metrics.<hisob>.workers.dev/ai node
-tests/ai.mjs` (ildizdan) — `tests/ai-eval.json` dagi 16 savol.
+tests/ai.mjs` (ildizdan) — `tests/ai-eval.json` dagi savollar.
 
 ## Saqlash muddati va xarajat
 
