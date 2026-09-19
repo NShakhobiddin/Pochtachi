@@ -211,6 +211,15 @@ jobs:
             FIND=$(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/ai3','utf8'));const pl=(j.tools||[]).find(t=>t.name==='product_links');process.stdout.write('qidiruvlar='+((j.usage&&j.usage.search)||0)+' havolalar='+(pl?pl.result.n:0)+(pl?' ('+pl.result.links.map(l=>l.host).join(', ')+')':''))}catch(e){}")
             [ -n "$FIND" ] || FIND='?'
             if [ "$code3" = "200" ]; then echo "::notice::Veb-qidiruv: $FIND"; else echo "::warning::find so'rovi $code3 qaytardi — $(head -c 200 /tmp/ai3)"; fi
+            # Yagona kirish: joriy xarid (cart) bilan savol — AI qayta
+            # so'ramasligi va kartalar qaytishi tekshiriladi.
+            echo "== POST /ai (joriy xarid bilan)"
+            code4=$(curl -s -m 90 -o /tmp/ai4 -w '%{http_code}' -X POST "${URL}ai" -H 'origin: https://nshakhobiddin.github.io' -H 'content-type: text/plain' \
+              -d '{"q":"Shu tovarga boj tushadimi?","lang":"uz","usdRate":12650,"cart":{"name":"Nike Air Max 90","store":"Taobao","country":"Xitoy","price":699,"cur":"CNY","kg":0.8,"courier":"D2D","totalUsd":102.2}}')
+            echo "[$code4] $(head -c 400 /tmp/ai4)"
+            CARDS=$(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/ai4','utf8'));process.stdout.write('kartalar='+((j.cards||[]).map(c=>c.type).join(',')||'yo\'q')+' vositalar='+((j.tools||[]).map(t=>t.name).join(',')||'yo\'q'))}catch(e){}")
+            [ -n "$CARDS" ] || CARDS='?'
+            if [ "$code4" = "200" ]; then echo "::notice::Joriy xarid bilan: $CARDS"; else echo "::warning::cart so'rovi $code4 qaytardi — $(head -c 200 /tmp/ai4)"; fi
           else
             case "$code" in
               503) grep -q no_key /tmp/ai1 \
