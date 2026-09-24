@@ -357,6 +357,20 @@ reyting chiqmaydi (TZ 7).
 
 ## Xaridlarim va jo'natma holatlari (6-bosqich)
 
+**Kuryer siz uchun sotib oladi (2026-09-24, 3-bosqich).** ZenMarket/Buyee
+naqshi: foydalanuvchi do'konda ro'yxatdan o'tmaydi, to'lamaydi, manzil
+yozmaydi — kuryer o'zi sotib olib, olib keladi. Natija ekranida (kuryer
+kartasi ostida) va xarid ekranida ("Narx" holatida) blok: shu davlatdan
+olib keladigan va `svc` da "Buy for me" bor 3 tagacha kuryer
+(`buyersFor`) — xizmat haqi matndan ("10%", "10% (min $5)" → ≈ $),
+bo'lmasa "Haqini kuryer aytadi"; kargo va muddat tarifdan. "Yozish"
+kuryer Telegramini `?text=` tayyor xabar bilan ochadi (`b4mVm`: tovar,
+do'kon va davlat, narx, miqdor, og'irlik, havola yoki "skrinshotni
+yuboraman"), xabar buferga ham nusxalanadi; Telegram ichida
+`openTelegramLink`. Xarid kartasida "Kuryer men uchun sotib olsin" —
+xarid ekranidagi blokka olib boradi. Pochtam AI ham biladi: kuryerlar
+indeksida `buy` maydoni, qoidalarda to'lov qadamida shu variant.
+
 **Xarid kartasi (2026-09-24, soddalashtirishning 2-bosqichi).** Xaridlarimda
 tablar yo'q — bitta ro'yxat. Har xarid bitta karta: nom, do'kon · kuryer,
 jami, besh holatli chiziq **Topish → Narx → Buyurtma → Yo'lda → Keldi** va

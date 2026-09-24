@@ -799,6 +799,15 @@ try {
     check('Skrinshot: yagona /ai manziliga rasm va joriy xarid, narx Markaziy bank kursi bo\'yicha', shotBodies.length === 1 && /^data:image\/jpeg;base64,/.test(shotBodies[0].image) && shotBodies[0].usdRate > 1000 && 'cart' in shotBodies[0] && /Jami narx/.test(shotRes.h) && /Nike Air Max 90/.test(shotRes.t) && /699 CNY ≈ \$97\.80/.test(shotRes.t) && !/taxminiy kurs/.test(shotRes.t) && /Taobao · Xitoy/.test(shotRes.t) && /eng arzon kuryer/i.test(shotRes.t) && /Og'irlik 0,8 kg \(sahifadan\)/.test(shotRes.t), shotRes.t.slice(0, 160));
     check('Skrinshot natijasi: jami tepada, kuryer · muddat · taxminiy sana, so\'mda ham', /^JAMI \$102\.20 1 292 890 so'm D2D · 20–25 kun · taxminan \d{1,2}-\w+gacha/.test(shotRes.t) && /Kargo · \S+ \(0,8 kg\) \$\d+\.\d\d/.test(shotRes.t) && /so'm/.test(shotRes.t) && /me'yor ichida — boj va yig'im yo'q/.test(shotRes.t) && !/Topildi|Skrinshotdan o'qildi/.test(shotRes.t), shotRes.t.slice(160, 360));
     check('Skrinshot natijasi tugmalari: Qanday buyurtma qilaman? · Vaznni aniqlashtirish · Xaridlarimga qo\'shish · Boshqa kuryerlar', ['Qanday buyurtma qilaman?', 'Vaznni aniqlashtirish', "Xaridlarimga qo'shish", 'Boshqa kuryerlar'].every(t => shotRes.b.some(b => b.indexOf(t) === 0)), shotRes.b.join(' | '));
+    /* Kuryer siz uchun sotib oladi: Xitoy uchun "Buy for me" kuryerlari,
+       "Yozish" kuryer Telegramini tayyor xabar bilan ochadi (tovar, do'kon,
+       narx, og'irlik). */
+    const b4m = (await page.locator('main [data-b4m]').first().innerText().catch(() => '')).replace(/\s+/g, ' ');
+    await page.evaluate(() => { window.__opened = []; window.__open0 = window.open; window.open = u => { window.__opened.push(u); return {}; }; });
+    await page.locator('main [data-b4m] button').filter({ hasText: /^\s*Yozish\s*$/ }).first().click(); await page.waitForTimeout(300);
+    const b4mUrl = await page.evaluate(() => { const u = (window.__opened || [])[0] || ''; window.open = window.__open0; return u; });
+    const b4mMsg = decodeURIComponent((b4mUrl.split('?text=')[1] || ''));
+    check('natija: "Kuryer siz uchun sotib oladi" — kuryerlar, Telegram tayyor xabar bilan', /KURYER SIZ UCHUN SOTIB OLADI/i.test(b4m) && (b4m.match(/Yozish/g) || []).length >= 2 && /^https:\/\/t\.me\/[A-Za-z0-9_]+\?text=/.test(b4mUrl) && /Tovar: Nike Air Max 90/.test(b4mMsg) && /Do'kon: Taobao \(Xitoy\)/.test(b4mMsg) && /699 CNY/.test(b4mMsg) && /Og'irlik: 0,8 kg/.test(b4mMsg), b4mUrl.slice(0, 60) + ' · ' + b4m.slice(0, 120));
     /* "Vaznni aniqlashtirish" → kalkulyator to'ldirilgan (nom, 699, ¥,
        Xitoy) va "Skrinshotdan o'qildi" banneri. */
     await page.locator('main button').filter({ hasText: /^Vaznni aniqlashtirish$/ }).first().click(); await page.waitForTimeout(600);
@@ -1736,7 +1745,7 @@ try {
   const karta = await page.evaluate(() => { const c = document.querySelector('main [data-buy]'); if (!c) return null;
     const on = [...c.querySelectorAll('span')].find(sp => sp.style.fontWeight === '700' && /^(Topish|Narx|Buyurtma|Yo'lda|Keldi)$/.test(sp.textContent.trim()));
     return { t: c.innerText.replace(/\s+/g, ' '), holat: on ? on.textContent.trim() : '' }; });
-  check('saqlangan reja — Xaridlarimda karta: "Narx" holati, "Buyurtma qildim"', !!karta && karta.holat === 'Narx' && /Buyurtma qildim/.test(karta.t) && /Topish Narx Buyurtma Yo'lda Keldi/.test(karta.t), JSON.stringify(karta));
+  check('saqlangan reja — Xaridlarimda karta: "Narx" holati, "Buyurtma qildim"', !!karta && karta.holat === 'Narx' && /Buyurtma qildim/.test(karta.t) && /Kuryer men uchun sotib olsin/.test(karta.t) && /Topish Narx Buyurtma Yo'lda Keldi/.test(karta.t), JSON.stringify(karta));
 
   /* Kartada: "Buyurtma qildim" → jo'natma raqami maydoni chiqadi, raqam
      bo'shliqsiz saqlanadi (kuryer sayti "RB 1234 CN" ni topmaydi), keyingi

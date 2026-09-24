@@ -2658,6 +2658,9 @@
           <sc-if value="{{ b.hasHelp }}" hint-placeholder-val="{{ false }}">
             <button sc-camel-on-click="{{ b.help }}" style="align-self:flex-start;min-height:40px;background:none;border:none;padding:0;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;text-align:left">{{ b.helpLabel }}</button>
           </sc-if>
+          <sc-if value="{{ b.hasB4mLink }}" hint-placeholder-val="{{ false }}">
+            <button sc-camel-on-click="{{ b.b4mOpen }}" style="align-self:flex-start;min-height:40px;background:none;border:none;padding:0;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;text-align:left">Kuryer men uchun sotib olsin</button>
+          </sc-if>
           <sc-if value="{{ b.isFind }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
               <sc-if value="{{ b.hasFindAgain }}" hint-placeholder-val="{{ true }}">
@@ -3022,8 +3025,32 @@
             <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">Tezroq: {{ rsFast }}</span>
           </sc-if>
           <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">{{ rsKg }}</span>
-          <button sc-camel-on-click="{{ rsCouriers }}" style="align-self:flex-start;background:none;border:none;padding:0;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer">Boshqa kuryerlar</button>
+          <button sc-camel-on-click="{{ rsCouriers }}" style="align-self:flex-start;min-height:40px;background:none;border:none;padding:0;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer">Boshqa kuryerlar</button>
         </div>
+        <!-- Kuryer siz uchun sotib oladi (2026-09-24, ZenMarket/Buyee naqshi):
+             do'konda ro'yxatdan o'tish, to'lov va manzil — kuryerning ishi.
+             "Yozish" kuryer Telegramini tayyor xabar bilan ochadi. -->
+        <sc-if value="{{ hasB4m }}" hint-placeholder-val="{{ false }}">
+          <div data-b4m="1" style="background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85">Kuryer siz uchun sotib oladi</span>
+              <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5;text-wrap:pretty">Do'konda ro'yxatdan o'tish, to'lov va manzil kerak emas — kuryer o'zi sotib olib, olib keladi.</span>
+            </div>
+            <sc-for list="{{ b4m }}" as="by" hint-placeholder-count="2">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="width:40px;height:40px;border-radius:12px;flex:none;position:relative;background:{{ by.logoBg }}">
+                  <div style="position:absolute;inset:0;background-image:{{ by.logoCss }};background-size:{{ by.logoFit }};background-repeat:no-repeat;background-position:center"></div>
+                </div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                  <span style="font-size:15px;font-weight:700;color:#131429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ by.name }}</span>
+                  <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">{{ by.sub }}</span>
+                </div>
+                <button sc-camel-on-click="{{ by.go }}" aria-label="{{ by.aria }}" style="flex:none;height:40px;padding:0 14px;border-radius:12px;border:none;cursor:pointer;background:#E9EAFD;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700">Yozish</button>
+              </div>
+            </sc-for>
+            <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">Telegramda tayyor xabar ochiladi — skrinshotni ham yuboring. Xizmat haqi kuryer ma'lumotidan; yakuniy summani kuryer aytadi.</span>
+          </div>
+        </sc-if>
         <!-- Tafsilot qatorlari -->
         <div style="background:#FFFFFF;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
           <sc-for list="{{ rsRows }}" as="r" hint-placeholder-count="4">
@@ -3320,6 +3347,31 @@
           <button sc-camel-on-click="{{ planStuckAsk }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 16px;border:none;border-radius:14px;background:#FDF3E3;color:#B45309;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:left">{{ planStuckLabel }}<svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg></button>
         </sc-if>
       </div>
+
+      <!-- Kuryer siz uchun sotib oladi (2026-09-24, ZenMarket/Buyee naqshi):
+           do'konda ro'yxatdan o'tish, to'lov va manzil — kuryerning ishi.
+           "Yozish" kuryer Telegramini tayyor xabar bilan ochadi. -->
+      <sc-if value="{{ hasB4m }}" hint-placeholder-val="{{ false }}">
+        <div data-b4m="1" style="background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85">Kuryer siz uchun sotib oladi</span>
+            <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5;text-wrap:pretty">Do'konda ro'yxatdan o'tish, to'lov va manzil kerak emas — kuryer o'zi sotib olib, olib keladi.</span>
+          </div>
+          <sc-for list="{{ b4m }}" as="by" hint-placeholder-count="2">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:40px;height:40px;border-radius:12px;flex:none;position:relative;background:{{ by.logoBg }}">
+                <div style="position:absolute;inset:0;background-image:{{ by.logoCss }};background-size:{{ by.logoFit }};background-repeat:no-repeat;background-position:center"></div>
+              </div>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                <span style="font-size:15px;font-weight:700;color:#131429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ by.name }}</span>
+                <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">{{ by.sub }}</span>
+              </div>
+              <button sc-camel-on-click="{{ by.go }}" aria-label="{{ by.aria }}" style="flex:none;height:40px;padding:0 14px;border-radius:12px;border:none;cursor:pointer;background:#E9EAFD;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700">Yozish</button>
+            </div>
+          </sc-for>
+          <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">Telegramda tayyor xabar ochiladi — skrinshotni ham yuboring. Xizmat haqi kuryer ma'lumotidan; yakuniy summani kuryer aytadi.</span>
+        </div>
+      </sc-if>
 
       <div style="background:#FFFFFF;border-radius:20px;overflow:hidden;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
         <div style="padding:16px 18px 10px;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Batafsil holat</div>
@@ -3784,6 +3836,27 @@ const toCyr = s => {
 };
 
 const RU = {
+  /* Kuryer siz uchun sotib oladi (2026-09-24) */
+  "Kuryer siz uchun sotib oladi":"Курьер купит за вас",
+  "Do'konda ro'yxatdan o'tish, to'lov va manzil kerak emas — kuryer o'zi sotib olib, olib keladi.":"Не нужно регистрироваться в магазине, платить и указывать адрес — курьер сам купит и привезёт.",
+  "Yozish":"Написать",
+  "Telegramda tayyor xabar ochiladi — skrinshotni ham yuboring. Xizmat haqi kuryer ma'lumotidan; yakuniy summani kuryer aytadi.":"В Telegram откроется готовое сообщение — отправьте и скриншот. Комиссия — по данным курьера; итоговую сумму назовёт курьер.",
+  "Assalomu alaykum! Pochtam orqali yozyapman. Menga shu tovarni sotib olib, O'zbekistonga olib kelib bera olasizmi?":"Здравствуйте! Пишу через Pochtam. Можете купить этот товар и доставить его в Узбекистан?",
+  "Do'kon: {0} ({1})":"Магазин: {0} ({1})",
+  "Davlat: {0}":"Страна: {0}",
+  "Narx: {0}":"Цена: {0}",
+  "Og'irlik: {0} kg":"Вес: {0} кг",
+  "Havola: {0}":"Ссылка: {0}",
+  "Mahsulot sahifasining skrinshotini keyingi xabarda yuboraman.":"Скриншот страницы товара пришлю следующим сообщением.",
+  "Xizmat haqi va yakuniy summani ayting, iltimos.":"Подскажите, пожалуйста, комиссию и итоговую сумму.",
+  "Xizmat haqi {0}%":"Комиссия {0}%",
+  "Haqini kuryer aytadi":"Комиссию назовёт курьер",
+  "kargo ${0}":"доставка ${0}",
+  "{0} ga Telegramda yozish":"Написать {0} в Telegram",
+  "Telegram: {0}":"Telegram: {0}",
+  "Xabar tayyor — skrinshotni ham yuboring":"Сообщение готово — отправьте и скриншот",
+  "Kuryer men uchun sotib olsin":"Пусть курьер купит за меня",
+  "{0} dona":"{0} шт.",
   /* Xarid kartasi (2026-09-24) */
   "Topish":"Поиск",
   "Buyurtma qildim":"Я заказал",
@@ -6342,6 +6415,64 @@ class Component extends DCLogic {
     const store = STORES.find(x => alias ? x.id === DOMAIN_ALIAS[alias] : (host === x.domain || host.endsWith('.' + x.domain) || base === x.domain)) || null;
     return { host, word: base.split('.')[0], store };
   }
+  /* "Buy for me": shu davlatdan olib keladigan va o'zi sotib olib beradigan
+     kuryerlar (svc "Buy for me"). Xizmat haqi matndan: "10%", "10% (min
+     $5)"; bo'lmasa — "haqini kuryer aytadi". Kargo va muddat kuryer
+     tarifidan (quotes). Avval haqi ma'lumlari, keyin arzon kargo. */
+  buyersFor(country, quotes, goodsUsd) {
+    const re = STORE_ROUTE[country];
+    if (!re) return [];
+    const q = quotes || [];
+    return COURIERS.map(c => {
+      const sv = (c.svc || []).find(x => /buy for me/i.test(x.k || ''));
+      const v = sv ? String(sv.v || '') : '';
+      if (!v || /^(topilmadi|yo'q|mavjud emas|-)/i.test(v.trim())) return null;
+      if (!(re.test(c.countries || '') || (c.from || []).some(x => re.test(x)))) return null;
+      const tg = ((c.links || []).find(l => l.l === 'Telegram') || {}).u || '';
+      const tgUrl = (/https:\/\/t\.me\/[A-Za-z0-9_]+/.exec(tg) || [])[0] || '';
+      if (!tgUrl) return null;
+      const pm = /(\d+(?:[.,]\d+)?)\s*%/.exec(v), mm = /min\.?\s*\$?\s*(\d+(?:[.,]\d+)?)/i.exec(v);
+      const pct = pm ? num(pm[1]) : 0, min = mm ? num(mm[1]) : 0;
+      const fee = pct > 0 && goodsUsd > 0 ? Math.max(goodsUsd * pct / 100, min) : 0;
+      const qt = q.find(x => x.id === c.id) || null;
+      return { c, pct, min, fee, ship: qt ? qt.usd : 0, days: qt ? qt.days : (c.days || ''), tg: tgUrl };
+    }).filter(Boolean)
+      .sort((a, b) => (b.pct > 0) - (a.pct > 0) || (a.ship || 999) - (b.ship || 999))
+      .slice(0, 3);
+  }
+  /* Kuryerga tayyor xabar: tovar, do'kon, narx, miqdor, og'irlik, havola. */
+  b4mVm(o) {
+    const lang = this.state.lang, L = k => tr(lang, k);
+    const list = this.buyersFor(o.country, o.quotes, o.goodsUsd);
+    if (!list.length) return { hasB4m: false, b4m: [] };
+    const lines = [
+      L("Assalomu alaykum! Pochtam orqali yozyapman. Menga shu tovarni sotib olib, O'zbekistonga olib kelib bera olasizmi?"),
+      tx(lang, 'Tovar: {0}', o.name || L('mahsulot')),
+      o.store ? tx(lang, "Do'kon: {0} ({1})", o.store, tr(lang, o.country)) : tx(lang, 'Davlat: {0}', tr(lang, o.country)),
+      tx(lang, 'Narx: {0}', o.priceTxt) + (o.qty > 1 ? ', ' + tx(lang, '{0} dona', o.qty) : ''),
+      o.kg > 0 ? tx(lang, "Og'irlik: {0} kg", String(o.kg).replace('.', ',')) : '',
+      o.url ? tx(lang, 'Havola: {0}', o.url) : L("Mahsulot sahifasining skrinshotini keyingi xabarda yuboraman."),
+      L("Xizmat haqi va yakuniy summani ayting, iltimos.")
+    ].filter(Boolean);
+    const msg = lines.join('\n');
+    return {
+      hasB4m: true,
+      b4m: list.map(b => ({
+        name: b.c.name, logoCss: b.c.logoCss, logoFit: b.c.logoFit, logoBg: b.c.logoBg,
+        sub: [b.pct > 0 ? tx(lang, 'Xizmat haqi {0}%', b.pct) + (b.fee > 0 ? ' ≈ $' + b.fee.toFixed(2) : '') : L('Haqini kuryer aytadi'),
+          b.ship > 0 ? tx(lang, 'kargo ${0}', b.ship.toFixed(2)) : '', b.days ? tr(lang, b.days) : ''].filter(Boolean).join(' · '),
+        aria: tx(lang, '{0} ga Telegramda yozish', b.c.name),
+        go: () => {
+          metrics.hit('quick', 'b4m:' + b.c.id);
+          try { if (navigator.clipboard) navigator.clipboard.writeText(msg).catch(() => {}); } catch (e) {}
+          const url = b.tg + '?text=' + encodeURIComponent(msg);
+          if (!openTg(url)) this.toast(tx(lang, 'Telegram: {0}', b.tg.replace('https://t.me/', '@')));
+          else this.toast(L('Xabar tayyor — skrinshotni ham yuboring'));
+          if (o.planId) this.setState(x => ({ plans: x.plans.map(p => p.id === o.planId ? { ...p, via: b.c.id } : p) }));
+        }
+      }))
+    };
+  }
   /* Buyurtma yordami — natija ekrani va xarid kartasi uchun bitta yo'l:
      do'konning bosqichli qo'llanmasi bo'lsa o'sha (aniq, tez, bepul),
      bo'lmasa Pochtam AI ga tayyor savol. */
@@ -6396,6 +6527,9 @@ class Component extends DCLogic {
       },
       /* "Narx" holatida: qanday buyurtma qilish (qo'llanma yoki AI). */
       hasHelp: si === 1 && (!!(store && FULL_GUIDES.some(f => f.id === store.id)) || !!st.aiOn),
+      /* Kuryer siz uchun sotib olsin — xarid ekranidagi blokka olib boradi. */
+      hasB4mLink: si === 1 && !!STORE_ROUTE[p.country] && this.buyersFor(p.country, [], 0).length > 0,
+      b4mOpen: () => { metrics.hit('quick', 'buy:b4m'); this.setState({ planId: p.id, justSaved: false }); this.push('plan'); },
       helpLabel: store && FULL_GUIDES.some(f => f.id === store.id) ? tx(lang, "{0} qo'llanmasi — qanday buyurtma qilaman?", store.name) : L('Qanday buyurtma qilaman?'),
       help: () => this.orderHelp(store, orderQ),
       /* "Topish" holatida: do'konlarni qayta ko'rsatish. */
@@ -6876,6 +7010,7 @@ class Component extends DCLogic {
       /* Buyurtma: do'konning bosqichli qo'llanmasi bo'lsa — o'sha (aniq,
          tez, bepul); bo'lmasa — Pochtam AI ga tayyor savol. */
       rsOrder: () => this.orderHelp(store, orderQ),
+      ...this.b4mVm({ country: r.lc.country, quotes, goodsUsd: L.goodsUsd, name: r.lc.name, store: r.storeName, priceTxt: r.priceTxt, qty, kg: kgIn > 0 ? kgIn : 0, url: r.lc.url || '' }),
       rsOrderSub: store && FULL_GUIDES.some(f => f.id === store.id) ? tx(lang, "{0} qo'llanmasi — qadam-baqadam", store.name) : L_("Pochtam AI qadam-baqadam tushuntiradi"),
       rsAdjust: () => { metrics.hit('quick', 'shot:adjust'); this.openLanded({ ...r.lc }, { state: 'ok', name: r.lc.name || L_('mahsulot'), priceTxt: r.priceTxt, store: r.storeName, low: r.low }); },
       rsCouriers: () => { metrics.hit('quick', 'shot:couriers'); this.openCourierCalc(r.lc.country, Math.max(1, Math.round(billKg * 10) / 10)); },
@@ -7368,7 +7503,11 @@ class Component extends DCLogic {
       ...(() => {
         if (cur !== 'plan' || !pl) return {};
         const b = this.buyVm(pl);
-        return { planSegs: b.segs, planStageAria: tx(st.lang, 'Holat: {0}', b.stage),
+        /* "Narx" holatida: kuryer siz uchun sotib oladi. */
+        const b4 = stageOf(pl) === 1 ? this.b4mVm({ country: pl.country, goodsUsd: num(pl.price), name: pl.name || tr(st.lang, pl.cat), store: pl.storeName && pl.storeName !== '—' ? pl.storeName : '',
+          priceTxt: '$' + num(pl.price).toFixed(2), qty: num(pl.qty) || 1, kg: num(pl.kg), url: pl.url || '', planId: pl.id,
+          quotes: PochtamCore.rankQuotes(PochtamCore.courierQuotes({ couriers: COURIERS, tariffs: TARIFFS, country: pl.country, kg: Math.max(0.5, num(pl.kg) || 1), usdRate: USD_RATE }), 'cheap').filter(q => q.ok) }) : { hasB4m: false, b4m: [] };
+        return { ...b4, planSegs: b.segs, planStageAria: tx(st.lang, 'Holat: {0}', b.stage),
           planHasDetail: !!b.detail, planDetail: b.detail,
           planHasTrack: b.hasTrack, planTrack: b.track, planTrackSet: b.trackSet, planOnTrack: b.onTrack, planCopyTrack: b.copyTrack,
           planHasSite: b.hasSite, planSite: b.site,

@@ -62,7 +62,11 @@ export function buildSystem() {
   const day = isoDay();
   if (sysMemo.day === day) return sysMemo.text;
   const cur = Core.normsAt(KB.NORMS, day) || {};
-  const couriers = KB.COURIERS.map(c => ({ name: c.name, countries: c.countries, days: c.days, mode: c.mode, tracking: c.tracking }));
+  /* buy — "Buy for me" (kuryer o'zi sotib oladi) va haqi, bo'lsa: foydalanuvchi
+     do'konda to'lay olmasa AI shu kuryerlarni aytadi. */
+  const buyOf = c => { const v = (c.svc || []).find(x => /^buy for me:/i.test(x)); const t = v ? v.replace(/^buy for me:\s*/i, '').trim() : '';
+    return t && !/^(topilmadi|yo'q|-)/i.test(t) ? t.slice(0, 32) : undefined; };
+  const couriers = KB.COURIERS.map(c => ({ name: c.name, countries: c.countries, days: c.days, mode: c.mode, tracking: c.tracking, buy: buyOf(c) }));
   const stores = KB.STORES.map(s => ({ name: s.name, country: (s.from || [s.country]).join('/'), cat: s.cat, price: s.price, original: s.original, direct: s.direct }));
   const banned = KB.BANNED.map(b => ({ name: b.name, level: LEVEL[b.level] || b.level }));
   const text = [

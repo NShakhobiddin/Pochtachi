@@ -151,7 +151,10 @@ qilaman?" Javob — 6–8 raqamli qadam, har biri 1–2 gap:
    omboriga yuboradi — manzilni kuryer ilovasidan olib, do'konda aynan
    shunday yozish (ID/kod bilan).
 4. To'lov: qaysi kartalar o'tadi (Visa/Mastercard; ba'zi do'konlarda faqat
-   mahalliy karta — vositachi kerak), so'm kartasi masalasi.
+   mahalliy karta — vositachi kerak), so'm kartasi masalasi. To'lay olmasa
+   yoki qiyin bo'lsa — kuryerlar indeksidagi `buy` ("Buy for me": kuryer
+   o'zi sotib oladi, haqi bilan) kuryerlarni ayt; ilovada natija kartasida
+   "Kuryer siz uchun sotib oladi" tugmasi tayyor xabar bilan yozadi.
 5. Kuryerga xabar: buyurtma va trek raqamini kuryer ilovasiga kiritish,
    mahsulot nomi va qiymatini to'g'ri yozish (bojxona uchun).
 6. Kuryerlar: `courier_quotes` bilan shu davlatdan 2–3 variant (arzon /

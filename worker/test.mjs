@@ -265,6 +265,7 @@ check('tizim ko\'rsatmasi indeks: og\'ir maydonlar promptda yo\'q',
    ko'chdi) — 26 700 dan 22 600 ga. Oshirishdan oldin: buni vosita bera oladimi? */
 check('tizim ko\'rsatmasi byudjeti: 24 000 belgidan kichik', sys.length < 24000, sys.length + ' belgi');
 check('tizim ko\'rsatmasi keshlanadi (bir kunda bir marta tuziladi)', buildSystem() === sys);
+check('kuryerlar indeksida "Buy for me" (buy) — haqi bilan, yo\'q bo\'lsa maydon yo\'q', /"name":"BOXETTE"[^}]*"buy":"Mavjud, 10% \(min \$5\)"/.test(sys) && !/"name":"D2D"[^}]*"buy"/.test(sys), (sys.match(/"name":"BOXETTE"[^}]*}/) || [''])[0]);
 check('qoidalarda o\'lcham jadvali va web_search tafsiloti yo\'q (JIT)', !/EU 40 = US 7/.test(sys) && !/Amazon, AliExpress, eBay/.test(sys));
 /* Kesilgan maydonlar vositalarda bor — indeks ularni yo'qotmadi. */
 const tDet = runTool('find_store', { query: 'taobao' }, tctx).stores[0];
