@@ -46,6 +46,16 @@ class_name = "Counter"
 tag = "v1"
 new_sqlite_classes = ["Counter"]
 
+# Hamkor kuryerlar yuborgan jo'natma holatlari (src/track.js). Kalitlar —
+# sir, toml ga yozilmaydi:  wrangler secret put PARTNER_KEYS  ("d2d:kalit,…")
+[[durable_objects.bindings]]
+name = "TRACKS"
+class_name = "Tracks"
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["Tracks"]
+
 # Har kuni 03:00 UTC da 90 kundan eski sanoq o'chiriladi.
 [triggers]
 crons = ["0 3 * * *"]

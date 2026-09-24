@@ -194,6 +194,29 @@ tool:…). Savol matni saqlanmaydi va log qilinmaydi.
 Sinov: `AI_URL=https://pochtam-metrics.<hisob>.workers.dev/ai node
 tests/ai.mjs` (ildizdan) — `tests/ai-eval.json` dagi savollar.
 
+## Hamkor kuryer holat API (`POST /partner/status`, `POST /track`)
+
+Hamkor kuryer jo'natma holatini o'z tizimidan yuboradi (`received`,
+`shipped`, `customs`, `held`, `ready`, `delivered`), ilova esa xarid
+kartasini o'zi oldinga suradi. To'liq tavsif kuryerlar uchun:
+[`docs/hamkor-api.md`](../docs/hamkor-api.md). Kod: `src/track.js`.
+
+- Kalitlar `PARTNER_KEYS` sirida: `"d2d:pk_…,globbing:pk_…"`. Yangi kalit:
+  `node hamkor-kalit.mjs d2d`. GitHub'da shu nomli sir bo'lsa, workflow
+  uni o'zi o'rnatadi. Kalit qaysi kuryerniki ekanini o'zi aytadi, boshqa
+  kuryer nomidan yozib bo'lmaydi. 24 belgidan qisqa kalit hisobga
+  olinmaydi.
+- `READ_TOKEN` egasi istalgan kuryer nomidan yoza oladi (body'da
+  `courier`). Bu API'si yo'q kuryerning holatini qo'lda kiritish va
+  workflow'dagi `sinov` tekshiruvi uchun.
+- Ombor — alohida Durable Object (`Tracks`, migratsiya `v2`). Kalit
+  SHA-256(kuryer + raqam), ya'ni raqam ochiq saqlanmaydi. Tarixda 12
+  tagacha hodisa turadi. 90 kun yangilanmagan yozuv kunlik cron'da
+  o'chadi.
+- Ilova `GET /ai/status` dan `partners` ro'yxatini oladi va faqat shu
+  kuryerlar uchun `POST /track` so'raydi (20 tagacha, faqat ALLOW_ORIGIN
+  dan).
+
 ## Saqlash muddati va xarajat
 
 Har kuni 03:00 UTC da 90 kundan eski qatorlar o'chiriladi (`crons`).

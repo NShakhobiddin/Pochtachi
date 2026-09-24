@@ -377,6 +377,22 @@ yuboraman"), xabar buferga ham nusxalanadi; Telegram ichida
 xarid ekranidagi blokka olib boradi. Pochtam AI ham biladi: kuryerlar
 indeksida `buy` maydoni, qoidalarda to'lov qadamida shu variant.
 
+**Holat o'zi yangilanadi (2026-09-24, 5-bosqich).** Kuryeri hamkor
+(`partners`, Worker `/ai/status` dan) va jo'natma raqami yozilgan xarid
+uchun ilova Xaridlarim yoki xarid ekrani ochilganda Worker'dan
+(`POST /track`) holat so'raydi (`syncTracks`). Har xarid uchun so'rov
+10 daqiqada ko'pi bilan bir marta, raqam yangi yozilganda esa darhol
+ketadi. Kuryer holati (`PARTNER_ST`) reja qadamiga aylanadi, qadam orqaga
+qaytmaydi. Kartada "Kuryer tizimidan · sana" bloki chiqadi.
+"Ushlandi" holatida blok qizil bo'ladi va "Ushlansa nima qilish kerak?"
+tugmasi Bojxonaning 3-sahifasini ochadi; aloqa bo'lsa, mutaxassisga
+murojaat tugmasi ham chiqadi. "Olib ketishga tayyor" yashil
+ko'rsatiladi. Hamkor kuryer sahifasida xizmatlarning birinchisi —
+"Holat o'zi yangilanadi". Hamkor bo'lmagan kuryerda hammasi avvalgidek
+qo'lda qoladi: "Kuryer sayti" tugmasi endi kuryerning "Sayt" havolasini
+ochadi (ilgari mavjud bo'lmagan maydonga qarab, umuman chiqmasdi).
+Kuryerlar uchun API: [`docs/hamkor-api.md`](docs/hamkor-api.md).
+
 **Xarid kartasi (2026-09-24, soddalashtirishning 2-bosqichi).** Xaridlarimda
 tablar yo'q — bitta ro'yxat. Har xarid bitta karta: nom, do'kon · kuryer,
 jami, besh holatli chiziq **Topish → Narx → Buyurtma → Yo'lda → Keldi** va

@@ -320,5 +320,63 @@ const sg2 = runTool('suggest_stores', { category: 'elektronika', original: false
 check('suggest_stores: arzon elektronika — arzon marketplace ham ro\'yxatda', sg2.found && sg2.stores.slice(0, 3).some(x => ['aliexpress', 'taobao', 'pinduoduo', 'walmart'].includes(x.id)), sg2.stores.map(x => x.id).join(','));
 check('searchUrl: shablonsiz do\'kon — o\'z manzili', /^https:\/\//.test(searchUrl({ id: 'yoq', url: 'https://example.com' }, 'x')) && searchUrl({ id: 'amazon', url: 'https://www.amazon.com' }, 'red shoes') === 'https://www.amazon.com/s?k=red+shoes');
 
+/* --- Hamkor kuryer holat API (src/track.js): soxta Durable Object ombori --- */
+const { Tracks, partnerKeys, partnerIds, parseEvent, whoIs } = await import('./src/track.js');
+function fakeKv() {
+  const m = new Map();
+  return {
+    m,
+    async get(keys) { return new Map(keys.filter(k => m.has(k)).map(k => [k, structuredClone(m.get(k))])); },
+    async put(obj) { for (const [k, v] of Object.entries(obj)) m.set(k, structuredClone(v)); },
+    async delete(keys) { for (const k of keys) m.delete(k); },
+    async list({ prefix, limit, startAfter }) { return new Map([...m].filter(([k]) => k.startsWith(prefix) && (!startAfter || k > startAfter)).sort().slice(0, limit)); }
+  };
+}
+const kv = fakeKv();
+const tracks = new Tracks({ storage: kv });
+const D2D = 'd2d-kalit-uzun-kamida-24-belgi', GLB = 'globbing-kalit-uzun-24-belgi-bor';
+const tEnv = { ...env, PARTNER_KEYS: `d2d:${D2D}, globbing:${GLB}, qisqa:abc, sinov:sinov-kalit-uzun-kamida-24-belgi`,
+  TRACKS: { idFromName: () => 'main', get: () => ({ fetch: (u, i) => tracks.fetch(new Request(u, i)) }) } };
+const tHit = (path, init) => worker.fetch(new Request('https://w' + path, init), tEnv, ctx);
+check('PARTNER_KEYS: qisqa kalit hisobga olinmaydi', partnerKeys(tEnv).size === 3 && !partnerKeys(tEnv).has('abc'));
+check('partnerIds: "sinov" ro\'yxatga chiqmaydi', partnerIds(tEnv).join(',') === 'd2d,globbing');
+check('whoIs: kalit kuryerni aytadi, READ_TOKEN — egasi', whoIs(tEnv, 'Bearer ' + D2D).id === 'd2d' && whoIs(tEnv, 'Bearer sir').owner === true && whoIs(tEnv, 'Bearer yoq') === null);
+check('parseEvent: noto\'g\'ri status va raqam rad etiladi', !!parseEvent({ number: 'AB12', status: 'customs' }).error && !!parseEvent({ number: 'AB123456', status: 'lost' }).error);
+check('parseEvent: bo\'shliq va kichik harf tozalanadi, kelajak vaqt — hozir', (() => { const e = parseEvent({ number: ' rb 1234 5678 cn ', status: 'Customs', at: '2099-01-01T00:00:00Z', note: 'Toshkent <b>' }); return e.n === 'RB12345678CN' && e.st === 'customs' && e.at <= Date.now() && !/[<>]/.test(e.note); })());
+const post = (key, body) => tHit('/partner/status', { method: 'POST', headers: key ? { authorization: 'Bearer ' + key } : {}, body: JSON.stringify(body) });
+check('/partner/status kalitsiz — 401', (await post('', { number: 'RB123456789CN', status: 'shipped' })).status === 401);
+const ps = await post(D2D, { events: [
+  { number: 'RB123456789CN', status: 'received', at: '2026-09-20T08:00:00Z' },
+  { number: 'RB123456789CN', status: 'customs', at: '2026-09-23T10:00:00Z', note: 'Toshkent-AERO' },
+  { number: 'RB123456789CN', status: 'shipped', at: '2026-09-21T09:00:00Z' },
+  { number: 'X', status: 'shipped' }
+] });
+const psj = await ps.json();
+check('/partner/status: to\'g\'ri hodisalar yoziladi, noto\'g\'risi sababi bilan', ps.status === 200 && psj.ok === 3 && psj.courier === 'd2d' && psj.rejected.length === 1 && psj.rejected[0].i === 3, JSON.stringify(psj));
+check('omborda jo\'natma raqami ochiq saqlanmaydi', [...kv.m.keys()].every(k => /^t:[0-9a-f]{64}$/.test(k)) && !JSON.stringify([...kv.m.values()]).includes('RB123456789CN'));
+await post(D2D, { number: 'RB123456789CN', status: 'customs', at: '2026-09-23T10:00:00Z', note: 'Toshkent-AERO' });
+const tq = body => tHit('/track', { method: 'POST', headers: { origin: 'https://x' }, body: JSON.stringify(body) });
+const tr1 = await (await tq({ q: [{ c: 'd2d', n: 'rb123456789cn' }, { c: 'globbing', n: 'RB123456789CN' }, { c: 'cpost', n: 'RB123456789CN' }] })).json();
+const a = tr1.r[0];
+check('/track: joriy holat — eng kech vaqtli hodisa (tartibsiz kelsa ham)', a.found && a.st === 'customs' && a.note === 'Toshkent-AERO' && a.at === '2026-09-23T10:00:00.000Z', JSON.stringify(a));
+check('/track: tarix yangisi oldinda, takror hodisa qo\'shilmaydi', a.h.length === 3 && a.h.map(e => e.st).join(',') === 'customs,shipped,received');
+check('/track: boshqa kuryerdagi xuddi shu raqam ko\'rinmaydi', tr1.r[1].found === false && tr1.r[1].partner === true);
+check('/track: hamkor bo\'lmagan kuryer — partner:false', tr1.r[2].found === false && tr1.r[2].partner === false);
+check('/track: begona Origin — 403', (await tHit('/track', { method: 'POST', headers: { origin: 'https://boshqa' }, body: '{"q":[]}' })).status === 403);
+check('/track: 20 tadan ortiq so\'rov kesiladi', (await (await tq({ q: Array.from({ length: 30 }, (_, i) => ({ c: 'd2d', n: 'AB12345' + i })) })).json()).r.length === 20);
+check('/partner/status: kuryer boshqa kuryer nomidan yoza olmaydi', (await (await post(GLB, { courier: 'd2d', number: 'ZZ99999999', status: 'delivered' })).json()).courier === 'globbing');
+const own = await post('sir', { courier: 'sinov', number: 'CI-12345', status: 'ready', note: 'workflow' });
+check('/partner/status: egasi "sinov" nomidan yozadi, /track o\'qiydi', own.status === 200 && (await (await tq({ q: [{ c: 'sinov', n: 'ci-12345' }] })).json()).r[0].st === 'ready');
+check('/partner/status: egasi courier\'siz — 400', (await post('sir', { number: 'CI-12345', status: 'ready' })).status === 400);
+check('/ai/status: partners ro\'yxati', JSON.stringify((await (await tHit('/ai/status')).json()).partners) === '["d2d","globbing"]');
+check('/track: Origin javobda qaytadi (bir nechta manzil)', (await tHit('/track', { method: 'POST', headers: { origin: 'https://x' }, body: '{"q":[]}' })).headers.get('access-control-allow-origin') === 'https://x');
+for (const v of kv.m.values()) v.u = Date.now() - 91 * 86400000;
+const firstKey = [...kv.m.keys()][0];
+kv.m.get(firstKey).u = Date.now();
+const pr = await (await tracks.fetch(new Request('https://tracks/purge', { method: 'DELETE' }))).json();
+check('purge: 90 kun yangilanmagan holat o\'chadi, yangisi qoladi', kv.m.size === 1 && kv.m.has(firstKey) && pr.removed >= 2, JSON.stringify(pr));
+check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit('/partner/status', { method: 'POST', headers: { authorization: 'Bearer sir' }, body: '{}' })).status === 503
+  && JSON.stringify(await (await hit('/track', { method: 'POST', headers: { origin: 'https://x' }, body: '{"q":[{"c":"d2d","n":"RB123456789CN"}]}' })).json()) === '{"r":[]}');
+
 console.log(fails ? `\n${fails} ta tekshiruv o'tmadi.` : '\nWorker testlari o\'tdi.');
 process.exit(fails ? 1 : 0);

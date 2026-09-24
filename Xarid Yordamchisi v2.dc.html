@@ -2594,6 +2594,15 @@
           <sc-if value="{{ b.hasDetail }}" hint-placeholder-val="{{ false }}">
             <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5">{{ b.detail }}</span>
           </sc-if>
+          <sc-if value="{{ b.hasRemote }}" hint-placeholder-val="{{ false }}">
+            <div data-remote="1" style="display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:14px;background:{{ b.remoteBg }}">
+              <span style="font-size:13px;font-weight:700;color:{{ b.remoteFg }};line-height:1.5">{{ b.remoteTitle }}</span>
+              <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.5">{{ b.remoteSub }}</span>
+              <sc-if value="{{ b.remoteHeld }}" hint-placeholder-val="{{ false }}">
+                <button sc-camel-on-click="{{ b.heldHow }}" style="align-self:flex-start;min-height:40px;background:none;border:none;padding:0;font-family:inherit;font-size:13px;font-weight:700;color:#B42318;cursor:pointer;text-align:left">Ushlansa nima qilish kerak?</button>
+              </sc-if>
+            </div>
+          </sc-if>
           <sc-if value="{{ b.hasTrack }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;align-items:center;gap:8px">
               <div style="flex:1;min-width:0;display:flex;align-items:center;gap:8px;border:1.5px solid #E3E4EE;border-radius:14px;padding:0 12px;height:44px">
@@ -2606,6 +2615,9 @@
                 <a class="xy-tap" href="{{ b.site }}" target="_blank" rel="noopener noreferrer" style="flex:none;height:44px;padding:0 12px;border-radius:14px;background:#F1F1F8;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#1A1FB0;text-decoration:none">Kuryer sayti<svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a>
               </sc-if>
             </div>
+          </sc-if>
+          <sc-if value="{{ b.hasAuto }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:11px;font-weight:600;color:#0F7B3E;line-height:1.5">{{ b.autoHint }}</span>
           </sc-if>
           <sc-if value="{{ b.hasNext }}" hint-placeholder-val="{{ true }}">
             <button sc-camel-on-click="{{ b.next }}" style="min-height:48px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(155deg,#494FE9,#13189D);color:#FFFFFF;font-family:inherit;font-size:15px;font-weight:700">{{ b.nextLabel }}</button>
@@ -3279,6 +3291,15 @@
         <sc-if value="{{ planHasDetail }}" hint-placeholder-val="{{ false }}">
           <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5">{{ planDetail }}</span>
         </sc-if>
+        <sc-if value="{{ planHasRemote }}" hint-placeholder-val="{{ false }}">
+          <div data-remote="1" style="display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:14px;background:{{ planRemoteBg }}">
+            <span style="font-size:13px;font-weight:700;color:{{ planRemoteFg }};line-height:1.5">{{ planRemoteTitle }}</span>
+            <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.5">{{ planRemoteSub }}</span>
+            <sc-if value="{{ planRemoteHeld }}" hint-placeholder-val="{{ false }}">
+              <button sc-camel-on-click="{{ planHeldHow }}" style="align-self:flex-start;min-height:40px;background:none;border:none;padding:0;font-family:inherit;font-size:13px;font-weight:700;color:#B42318;cursor:pointer;text-align:left">Ushlansa nima qilish kerak?</button>
+            </sc-if>
+          </div>
+        </sc-if>
         <sc-if value="{{ planHasTrack }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;align-items:center;gap:8px">
             <div style="flex:1;min-width:0;display:flex;align-items:center;gap:8px;border:1.5px solid #E3E4EE;border-radius:14px;padding:0 12px;height:44px">
@@ -3291,6 +3312,9 @@
               <a class="xy-tap" href="{{ planSite }}" target="_blank" rel="noopener noreferrer" style="flex:none;height:44px;padding:0 12px;border-radius:14px;background:#F1F1F8;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#1A1FB0;text-decoration:none">Kuryer sayti<svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a>
             </sc-if>
           </div>
+        </sc-if>
+        <sc-if value="{{ planHasAuto }}" hint-placeholder-val="{{ false }}">
+          <span style="font-size:11px;font-weight:600;color:#0F7B3E;line-height:1.5">{{ planAutoHint }}</span>
         </sc-if>
         <sc-if value="{{ planHasNext }}" hint-placeholder-val="{{ true }}">
           <button sc-camel-on-click="{{ planNext }}" style="min-height:52px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(155deg,#494FE9,#13189D);color:#FFFFFF;font-family:inherit;font-size:15px;font-weight:700">{{ planNextLabel }}</button>
@@ -4400,6 +4424,12 @@ const RU = {
   'Pochtam AI xato qilishi mumkin. Yakuniy qaror — bojxona organida.':'Pochtam AI может ошибаться. Окончательное решение — за таможенным органом.',
   'Kalkulyatorda ochish':'Открыть в калькуляторе', "Kuryerlarni ko'rish":'Посмотреть курьеров', "Taqiqlar ro'yxati":'Список запретов', "Do'konni ochish":'Открыть магазин',
   
+  // 5-bosqich: hamkor kuryer holati
+  'Omborga keldi':'Прибыло на склад', 'Bojxonada ushlandi':'Задержано на таможне', 'Olib ketishga tayyor':'Готово к выдаче', 'Topshirildi':'Вручено',
+  'Kuryer tizimidan · {0}':'Из системы курьера · {0}', "Holat kuryer tizimidan o'zi yangilanadi":'Статус обновляется из системы курьера автоматически',
+  "Raqamni yozing — holat o'zi yangilanadi":'Впишите номер — статус обновится сам', 'Ushlansa nima qilish kerak?':'Что делать, если задержали?',
+  "Ushlandi — mutaxassisdan so'rash":'Задержано — спросить специалиста',
+  "Holat o'zi yangilanadi":'Статус обновляется сам', "Jo'natma raqamini Xaridlarimga yozsangiz, holat kuryer tizimidan o'zi keladi.":'Впишите номер отправления в «Мои покупки» — статус будет приходить из системы курьера сам.',
   // 4-bosqich: sodda til (qayta nomlangan kalitlar)
   'Xalqaro pochtamt':'Международный почтамт', "Post boshlig'i":'Начальник поста', 'Xodimlar':'Сотрудники', "IMEI bo'limi":'Отдел IMEI', "Punkt boshlig'i":'Начальник пункта',
   "Toshkent sh., Sergeli tumani, Qumariq ko'chasi, 13/1":'г. Ташкент, Сергелийский район, ул. Кумарик, 13/1',
@@ -5596,6 +5626,17 @@ const stageOf = p => p.find ? 0 : p.step >= PLAN_LAST ? 4 : p.step >= 2 ? 3 : p.
 /* Keyingi harakat: tugmada nima bo'lganini foydalanuvchi o'zi aytadi —
    "belgilash" so'zi yo'q, jumla birinchi shaxsda. */
 const BUY_NEXT = ['Buyurtma qildim', 'Omborga yetib keldi', "Yo'lga chiqdi", 'Bojxonaga keldi', "Qo'limga tegdi"];
+/* Hamkor kuryer holatlari (5-bosqich, worker/src/track.js STATUSES) → reja
+   qadami. Kuryer tizimi holatni o'zi yuboradi; qadam hech qachon orqaga
+   qaytmaydi — foydalanuvchi o'zi oldinga surgan bo'lsa, shu qoladi. */
+const PARTNER_ST = {
+  received: { step: 2, t: 'Omborga keldi' },
+  shipped: { step: 3, t: "Yo'lga chiqdi" },
+  customs: { step: 4, t: 'Bojxonada' },
+  held: { step: 4, t: 'Bojxonada ushlandi' },
+  ready: { step: 4, t: 'Olib ketishga tayyor' },
+  delivered: { step: 5, t: 'Topshirildi' }
+};
 const STORE_ROUTE = {
   Xitoy:/xitoy|china|hitoy/i, AQSh:/aqsh|usa|amerika/i, Turkiya:/turkiya|turkey/i,
   BAA:/baa|dubay|amirlik|emirat/i, Koreya:/koreya|korea/i, Rossiya:/rossiya|russia/i,
@@ -5659,6 +5700,9 @@ class Component extends DCLogic {
        holat checkAi() bilan yangilanadi. Noma'lum bo'lsa — o'chiq: o'lik
        tugma ko'rsatishdan ko'ra ko'rsatmaslik yaxshi. */
     aiOn: (() => { try { return localStorage.getItem('xy_ai') === '1'; } catch (e) { return false; } })(),
+    /* Hamkor kuryerlar (holati o'zi yangilanadi) — /ai/status dan; oxirgi
+       ma'lum ro'yxat localStorage'da. */
+    partners: (() => { try { const a = JSON.parse(localStorage.getItem('xy_partners') || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } })(),
     storeCountries: SAVED.storeCountries || [], storeCats: SAVED.storeCats || [],
     storeDirect: !!SAVED.storeDirect, storeGroup: SAVED.storeGroup || 'cat',
     courierCountries: SAVED.courierCountries || [], courierMode: SAVED.courierMode || null,
@@ -5925,6 +5969,9 @@ class Component extends DCLogic {
     }
     /* "Endi saqlandi" tabrigi faqat reja ekranida va faqat bir marta. */
     if (this.state.justSaved && now[now.length - 1] !== 'plan') this.setState({ justSaved: false });
+    /* Xaridlarim yoki xarid ekrani ochilganda hamkor kuryer holati so'raladi. */
+    const top = now[now.length - 1];
+    if ((top === 'mine' || top === 'plan') && !(was && was[was.length - 1] === top)) this.syncTracks();
     if (was && was.length === now.length && was[was.length - 1] === now[now.length - 1]) return;
     const main = this._mainEl();
     if (!main) return;
@@ -6195,9 +6242,56 @@ class Component extends DCLogic {
         if (!j || typeof j.ai !== 'boolean') return;
         if (j.ai !== this.state.aiOn) this.setState({ aiOn: j.ai });
         try { localStorage.setItem('xy_ai', j.ai ? '1' : '0'); } catch (e) {}
+        if (Array.isArray(j.partners)) {
+          const ps = j.partners.filter(x => typeof x === 'string').slice(0, 50);
+          if (ps.join() !== (this.state.partners || []).join()) this.setState({ partners: ps });
+          try { localStorage.setItem('xy_partners', JSON.stringify(ps)); } catch (e) {}
+          setTimeout(() => this.syncTracks(), 0);
+        }
       })
       .catch(() => {})
       .then(() => { if (timer) clearTimeout(timer); });
+  }
+
+  /* Hamkor kuryer holati (5-bosqich): jo'natma raqami yozilgan va kuryeri
+     hamkor bo'lgan xaridlar uchun Worker'dan (POST /track) holat so'raladi;
+     reja qadami shunga qarab o'zi oldinga siljiydi. Faqat o'z Worker'imizga:
+     kuryer id va jo'natma raqami. Har xarid 10 daqiqada ko'pi bilan bir
+     marta; raqam yangi yozilganda (onlyId) darhol. */
+  syncTracks(onlyId) {
+    if (!METRICS_URL || this._syncBusy) return;
+    const partners = this.state.partners || [];
+    if (!partners.length) return;
+    const now = Date.now();
+    const due = (this.state.plans || []).filter(p => !p.find && p.track && p.step >= 1 && p.step < PLAN_LAST && partners.includes(p.courierId)
+      && (onlyId ? p.id === onlyId : now - (p.syncAt || 0) > 10 * 60000)).slice(0, 20);
+    if (!due.length) return;
+    this._syncBusy = true;
+    const ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    const timer = ctrl ? setTimeout(() => ctrl.abort(), 8000) : null;
+    fetch(METRICS_URL + 'track', { method: 'POST', headers: { 'content-type': 'text/plain' }, signal: ctrl ? ctrl.signal : undefined,
+      body: JSON.stringify({ q: due.map(p => ({ c: p.courierId, n: p.track })) }) })
+      .then(r => (r.ok ? r.json() : null))
+      .then(j => {
+        if (!j || !Array.isArray(j.r)) return;
+        const lang = this.state.lang, upd = new Map();
+        let moved = null;
+        due.forEach((p, i) => {
+          const r = j.r[i] || {};
+          const patch = { syncAt: Date.now() };
+          if (r.found && PARTNER_ST[r.st]) {
+            patch.remote = { st: r.st, at: String(r.at || ''), note: String(r.note || '').slice(0, 120) };
+            const to = Math.max(p.step, PARTNER_ST[r.st].step);
+            if (to !== p.step) { patch.step = to; if (!moved) moved = { p, st: r.st }; }
+          }
+          upd.set(p.id, { track: p.track, patch });
+        });
+        /* Javob kelguncha raqam o'zgargan bo'lsa — eski javob yozilmaydi. */
+        this.setState(x => ({ plans: x.plans.map(q => { const u = upd.get(q.id); return u && q.track === u.track ? { ...q, ...u.patch } : q; }) }));
+        if (moved) { metrics.hit('quick', 'track:auto'); this.toast(tx(lang, '{0}: {1}', moved.p.name || tr(lang, moved.p.cat), tr(lang, PARTNER_ST[moved.st].t))); }
+      })
+      .catch(() => {})
+      .then(() => { this._syncBusy = false; if (timer) clearTimeout(timer); });
   }
 
   /* Bojxona me'yorlari data/norms.json da turadi — ularni o'zgartirish uchun
@@ -6531,6 +6625,11 @@ class Component extends DCLogic {
        sanalardi — narxni hisoblab, bir hafta o'tib buyurtma qilgan odamga
        "ushlanib qoldimi?" erta chiqardi). */
     const age = p.ordered ? Math.max(0, Math.floor((Date.now() - new Date(p.ordered + 'T00:00:00').getTime()) / 86400000)) : planAgeDays(p);
+    const isPartner = !!p.courierId && (st.partners || []).includes(p.courierId);
+    const remote = isPartner && p.remote && PARTNER_ST[p.remote.st] ? p.remote : null;
+    const whenTxt = iso => { const d = new Date(iso); if (isNaN(d)) return ''; const z = n => String(n).padStart(2, '0'); return z(d.getDate()) + '.' + z(d.getMonth() + 1) + ', ' + z(d.getHours()) + ':' + z(d.getMinutes()); };
+    /* Kuryer sayti: kuzatuvi bor kuryerning "Sayt" havolasi. */
+    const kSite = k && k.tracking ? ((k.links || []).find(l => l.l === 'Sayt') || {}).u || '' : '';
     const orderQ = tx(lang, "Men {0} ({1}) dan \"{2}\" ({3}) buyurtma qilmoqchiman{4}. Qanday buyurtma qilaman — qadam-baqadam?",
       p.storeName && p.storeName !== '—' ? p.storeName : L("do'kon"), tr(lang, p.country || ''), p.name || tr(lang, p.cat), '$' + num(p.price).toFixed(2),
       p.courierName && p.courierName !== '—' ? ', ' + L('kuryer') + ' ' + p.courierName : '');
@@ -6540,8 +6639,18 @@ class Component extends DCLogic {
       segs: BUY_STAGES.map((t, i) => ({ t: L(t), bg: i < si ? '#1A1FB0' : i === si ? (done ? '#0F7B3E' : '#494FE9') : '#E3E4EE',
         fg: i === si ? (done ? '#0F7B3E' : '#1A1FB0') : '#6B6C85', w: i === si ? '700' : '600' })),
       /* Yo'lda holatining ichi: omborda / yo'lda / bojxonada va necha kun. */
-      detail: si === 3 ? [L(PLAN_STATUS[p.step].label), age > 0 ? tx(lang, '{0} kun', age) : ''].filter(Boolean).join(' · ')
+      detail: remote ? '' : si === 3 ? [L(PLAN_STATUS[p.step].label), age > 0 ? tx(lang, '{0} kun', age) : ''].filter(Boolean).join(' · ')
         : si === 2 && age > 0 ? tx(lang, '{0} kun', age) : '',
+      /* Hamkor kuryer tizimidan kelgan holat: nima, qachon, izoh. */
+      hasRemote: !!remote && !done, remoteHeld: !!remote && remote.st === 'held',
+      remoteTitle: remote ? L(PARTNER_ST[remote.st].t) : '',
+      remoteSub: remote ? [tx(lang, 'Kuryer tizimidan · {0}', whenTxt(remote.at)), age > 0 ? tx(lang, '{0} kun', age) : '', remote.note].filter(Boolean).join(' · ') : '',
+      remoteBg: remote && remote.st === 'held' ? '#FCEAEA' : remote && remote.st === 'ready' ? '#E9F8EF' : '#E9EAFD',
+      remoteFg: remote && remote.st === 'held' ? '#B42318' : remote && remote.st === 'ready' ? '#0F7B3E' : '#1A1FB0',
+      heldHow: () => { metrics.hit('quick', 'track:held'); this.openSec(3); },
+      /* Hamkor kuryer: raqam yozilsa holat o'zi yangilanadi. */
+      hasAuto: isPartner && si >= 2 && !done && !remote,
+      autoHint: p.track ? L("Holat kuryer tizimidan o'zi yangilanadi") : L("Raqamni yozing — holat o'zi yangilanadi"),
       hasNext: si === 0 || !done,
       nextLabel: si === 0 ? L('Skrinshot yuklash') : L(BUY_NEXT[p.step] || ''),
       next: () => {
@@ -6567,12 +6676,17 @@ class Component extends DCLogic {
       },
       /* Jo'natma raqami: buyurtmadan keyin. Kuryer sayti bo'lsa yonida havola. */
       hasTrack: si >= 2 && !done, track: p.track || '', trackSet: !!p.track,
-      onTrack: e => setPlan({ track: String(e.target.value || '').replace(/\s+/g, '').toUpperCase() }),
+      onTrack: e => {
+        const v = String(e.target.value || '').replace(/\s+/g, '').toUpperCase();
+        /* Raqam o'zgarsa eski holat o'chadi; hamkor kuryer bo'lsa darhol so'raladi. */
+        this.setState(x => ({ plans: x.plans.map(q => q.id === p.id ? { ...q, track: v, remote: q.track === v ? q.remote : null, syncAt: q.track === v ? q.syncAt : 0 } : q) }),
+          () => { if (v && isPartner) this.syncTracks(p.id); });
+      },
       copyTrack: () => { if (!p.track) { this.toast("Avval jo'natma raqamini yozing"); return; } this.copyText(p.track, "Jo'natma raqami"); },
-      site: k && k.track ? k.track : '', hasSite: si >= 2 && !done && !!(k && k.track),
+      site: kSite, hasSite: si >= 2 && !done && !!kSite,
       /* 20 kundan ortiq yo'lda — ushlanib qolgan bo'lishi mumkin. */
-      stuck: HAS_CONTACT && si >= 2 && !done && age >= 20,
-      stuckLabel: tx(lang, "{0} kun — ushlanib qoldimi?", age),
+      stuck: HAS_CONTACT && si >= 2 && !done && (age >= 20 || (!!remote && remote.st === 'held')),
+      stuckLabel: remote && remote.st === 'held' ? L("Ushlandi — mutaxassisdan so'rash") : tx(lang, "{0} kun — ushlanib qoldimi?", age),
       stuckAsk: () => this.askSvc('svc-ushlangan', tx(lang, "Jo'natma: {0}, kuryer: {1}, raqam: {2}, {3} kun.", (p.name || p.cat) + ' · ' + p.storeName, p.courierName || '—', p.track || '—', age)),
       remove: () => { this.setState(x => ({ plans: x.plans.filter(q => q.id !== p.id), monthly: (x.monthly || []).filter(m => m.plan !== p.id) })); if (this._findId === p.id) this._findId = null; this.toast(L("Xarid o'chirildi")); }
     };
@@ -7537,6 +7651,8 @@ class Component extends DCLogic {
           planHasDetail: !!b.detail, planDetail: b.detail,
           planHasTrack: b.hasTrack, planTrack: b.track, planTrackSet: b.trackSet, planOnTrack: b.onTrack, planCopyTrack: b.copyTrack,
           planHasSite: b.hasSite, planSite: b.site,
+          planHasRemote: b.hasRemote, planRemoteHeld: b.remoteHeld, planRemoteTitle: b.remoteTitle, planRemoteSub: b.remoteSub,
+          planRemoteBg: b.remoteBg, planRemoteFg: b.remoteFg, planHeldHow: b.heldHow, planHasAuto: b.hasAuto, planAutoHint: b.autoHint,
           planHasNext: b.hasNext, planNextLabel: b.nextLabel, planNext: b.next,
           planHasHelp: b.hasHelp, planHelpLabel: b.helpLabel, planHelp: b.help,
           planStuck: b.stuck, planStuckLabel: b.stuckLabel, planStuckAsk: b.stuckAsk };
@@ -8219,13 +8335,16 @@ class Component extends DCLogic {
         return { ...l, linePic: strokePic(ic.d, '#1A1FB0', 1.9), hasD: !!ic.d,
           pic: ic.pic || 'none', hasPic: !!ic.pic };
       }) },
-      svcList: courier.svc.map(s => ({ ...s, lbl: tr(st.lang, SVC_LABEL[s.k] || s.k), pic: strokePic(FEAT_ICONS[s.k] || 'M5 12h14', '#1A1FB0', 2) })),
+      /* Hamkor kuryer (5-bosqich) — birinchi qatorda: holat o'zi yangilanadi. */
+      svcList: [...((st.partners || []).includes(courier.id) ? [{ k: 'Tracking', lbl: tr(st.lang, "Holat o'zi yangilanadi"),
+        v: tr(st.lang, "Jo'natma raqamini Xaridlarimga yozsangiz, holat kuryer tizimidan o'zi keladi."), pic: strokePic(FEAT_ICONS.Tracking || 'M5 12h14', '#0F7B3E', 2) }] : []),
+        ...courier.svc.map(s => ({ ...s, lbl: tr(st.lang, SVC_LABEL[s.k] || s.k), pic: strokePic(FEAT_ICONS[s.k] || 'M5 12h14', '#1A1FB0', 2) }))],
       courierCount: COURIERS.length,
       storeUnit: nUnit(st.lang, STORES.length, "ta do'kon"),
       courierUnit: nUnit(st.lang, COURIERS.length, 'ta kuryer'),
       guideUnit: nUnit(st.lang, FULL_GUIDES.length, "ta qo'llanma"),
       storeCountAll: STORES.length,
-      hasSvc: courier.svc.length > 0,
+      hasSvc: courier.svc.length > 0 || (st.partners || []).includes(courier.id),
       hasLimits: courier.limits.length > 0,
 
       goCalcSec: () => (this.cur() === 'csec' ? this.focusSec(4) : this.openSec(4)),

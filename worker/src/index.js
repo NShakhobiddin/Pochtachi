@@ -24,11 +24,15 @@
  *   POST /ai           — Pochtam AI (src/ai.js): matn, skrinshot, havola va joriy
  *                        xarid bitta manzilda; Claude API proksisi, kalit sirda,
  *                        kunlik chegara shu Durable Object'da sanaladi
+ *   POST /partner/status — hamkor kuryer jo'natma holatini yozadi (src/track.js)
+ *   POST /track        — ilova hamkor kuryerdagi holatni o'qiydi (src/track.js)
  *   GET  /             — "ok"
  */
 
 import { hisobotHtml } from './hisobot.js';
 import { handleAi } from './ai.js';
+import { handlePartnerStatus, handleTrack, partnerIds } from './track.js';
+export { Tracks } from './track.js';
 
 const NAMES = new Set(['screen', 'store', 'courier', 'guide', 'wizard', 'svcAsk', 'hamkor',
   /* bosh sahifa va yangi funksiyalar */ 'hero', 'quick', 'courier_compare', 'calc_open', 'calc_done', 'add_to_plan', 'consult_click', 'ai_question']);
@@ -180,7 +184,8 @@ export default {
     /* Ilova ochilganda: AI yoqilganmi (kalit bormi). Sir emas, faqat bayroq —
        ilova o'chiq AI uchun tugma ko'rsatmaydi. 5 daqiqa keshlanadi. */
     if (request.method === 'GET' && url.pathname === '/ai/status') {
-      return new Response(JSON.stringify({ ai: !!env.ANTHROPIC_API_KEY }), { status: 200,
+      /* partners — holati o'zi yangilanadigan (hamkor) kuryerlar id'lari. */
+      return new Response(JSON.stringify({ ai: !!env.ANTHROPIC_API_KEY, partners: partnerIds(env) }), { status: 200,
         headers: cors(env, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300' }, origin) });
     }
 
@@ -188,6 +193,16 @@ export default {
       return handleAi({ request, env, ctx, origin, originOk: originOk(env, origin), cors, counter,
         /* Testda soxta Claude: env.AI_FETCH funksiyasi. Ishlab chiqarishda yo'q. */
         fetchImpl: typeof env.AI_FETCH === 'function' ? env.AI_FETCH : undefined });
+    }
+
+    /* Hamkor kuryer holat API: kuryer yozadi, ilova o'qiydi. */
+    const jsonO = (obj, status = 200, extra = {}) =>
+      new Response(JSON.stringify(obj), { status, headers: cors(env, { 'content-type': 'application/json; charset=utf-8', ...extra }, origin) });
+    if (request.method === 'POST' && url.pathname === '/partner/status') {
+      return handlePartnerStatus({ request, env, json: jsonO });
+    }
+    if (request.method === 'POST' && url.pathname === '/track') {
+      return handleTrack({ request, env, json: jsonO, originOk: originOk(env, origin) });
     }
 
     if (request.method === 'GET' && url.pathname === '/stats') {
@@ -229,5 +244,7 @@ export default {
   async scheduled(event, env) {
     const counter = env.COUNTER.get(env.COUNTER.idFromName('main'));
     await counter.fetch('https://counter/purge', { method: 'DELETE' });
+    /* 90 kun yangilanmagan jo'natma holatlari ham o'chadi. */
+    if (env.TRACKS) await env.TRACKS.get(env.TRACKS.idFromName('main')).fetch('https://tracks/purge', { method: 'DELETE' });
   }
 };

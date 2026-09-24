@@ -1025,6 +1025,62 @@ try {
     ochirildi.favs.length === 0 && !ochirildi.favBlok,
     `${ochirildi.favs.length} ta qoldi, blok ${ochirildi.favBlok}`);
 
+  /* 5-bosqich: hamkor kuryer holati. Worker /ai/status "partners" ro'yxatini
+     beradi; jo'natma raqami yozilgan va kuryeri hamkor xarid uchun ilova
+     POST /track so'raydi va kartani o'zi oldinga suradi. Hamkor bo'lmagan
+     kuryerga so'rov ketmaydi. Worker yo'q — soxta javob. */
+  {
+    const pcx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+    await pcx.route(METRICS_URL + 'ai/status', r => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ai: false, partners: ['d2d'] }) }));
+    const soral = [];
+    let javob = { st: 'customs', note: 'Toshkent-AERO' };
+    await pcx.route(METRICS_URL + 'track', r => {
+      const b = JSON.parse(r.request().postData() || '{}'); soral.push(b);
+      r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ r: (b.q || []).map(x => ({ c: x.c, n: x.n, partner: true, found: true, st: javob.st, at: '2026-09-23T10:00:00Z', note: javob.note, h: [] })) }) });
+    });
+    const reja = (id, courierId, courierName, track) => ({ id, step: 1, ordered: '2026-09-20', track, cat: 'Poyabzal', name: 'Nike Air Max 90 ' + id, country: 'Xitoy',
+      storeId: 'taobao', storeName: 'Taobao', logoCss: 'none', courierId, courierName, days: '4–7 kun', rate: '$9.49', price: 97.8, kg: 0.8, total: 120, date: '20.09.2026', num: 1 });
+    await pcx.addInitScript(p => { if (sessionStorage.getItem('seeded')) return; sessionStorage.setItem('seeded', '1');
+      localStorage.setItem('xy_state_v1', JSON.stringify({ v: 1, lang: 'uz', onboarded: true, plans: p })); },
+      [reja('pA', 'd2d', 'D2D', 'RB123456789CN'), reja('pB', 'cpost', 'CPOST', 'CP12345678')]);
+    const pp = await pcx.newPage();
+    await pp.goto(base + '/', { waitUntil: 'load' }); await pp.waitForTimeout(1200);
+    await passOnboarding(pp); await pp.waitForTimeout(1300);
+    await pp.keyboard.press('Escape').catch(() => {}); await pp.waitForTimeout(300);
+    await pp.locator('nav button', { hasText: 'Xaridlarim' }).first().click(); await pp.waitForTimeout(700);
+    const hk = await pp.evaluate(() => {
+      const cards = [...document.querySelectorAll('main [data-buy]')];
+      const f = t => cards.find(c => c.innerText.includes(t));
+      const a = f('Nike Air Max 90 pA'), b = f('Nike Air Max 90 pB');
+      const on = c => { const sp = c && [...c.querySelectorAll('span')].find(x => x.style.fontWeight === '700' && /^(Topish|Narx|Buyurtma|Yo'lda|Keldi)$/.test(x.textContent.trim())); return sp ? sp.textContent.trim() : ''; };
+      const rem = c => { const r = c && c.querySelector('[data-remote]'); return r ? r.innerText.replace(/\s+/g, ' ') : ''; };
+      const plans = JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || [];
+      return { aHolat: on(a), aRem: rem(a), bRem: rem(b), bHolat: on(b), bText: b ? b.innerText.replace(/\s+/g, ' ') : '',
+        aStep: (plans.find(p => p.id === 'pA') || {}).step, bStep: (plans.find(p => p.id === 'pB') || {}).step };
+    });
+    check('hamkor kuryer: holat o\'zi yangilanadi — "Yo\'lda", "Bojxonada", kuryer tizimidan, izoh bilan',
+      hk.aHolat === "Yo'lda" && hk.aStep === 4 && /^Bojxonada Kuryer tizimidan · 23\.09, \d\d:\d\d · \d+ kun · Toshkent-AERO$/.test(hk.aRem), JSON.stringify(hk));
+    check('hamkor bo\'lmagan kuryer: holat qo\'lda, so\'rov ketmaydi', hk.bRem === '' && hk.bStep === 1 && hk.bHolat === 'Buyurtma' && !/o'zi yangilanadi/.test(hk.bText)
+      && soral.length >= 1 && soral.every(b => b.q.length === 1 && b.q[0].c === 'd2d' && b.q[0].n === 'RB123456789CN' && Object.keys(b.q[0]).join() === 'c,n'), JSON.stringify(soral));
+    /* Raqam o'zgarsa darhol qayta so'raladi; "ushlandi" — qizil blok va
+       "Ushlansa nima qilish kerak?" Bojxonaning 3-sahifasini ochadi. */
+    javob = { st: 'held', note: '' };
+    const inpA = pp.locator('main [data-buy]').filter({ hasText: 'Nike Air Max 90 pA' }).locator('input[aria-label="Jo\'natma raqami"]');
+    await inpA.fill('rb 999 999 999 cn'); await inpA.blur(); await pp.waitForTimeout(700);
+    const held = await pp.evaluate(() => { const c = [...document.querySelectorAll('main [data-buy]')].find(x => x.innerText.includes('pA')); const r = c && c.querySelector('[data-remote]'); return { t: r ? r.innerText.replace(/\s+/g, ' ') : '', bg: r ? r.style.background : '' }; });
+    check('raqam o\'zgarsa darhol so\'raladi; "Bojxonada ushlandi" — qizil blok', soral.length >= 2 && soral[soral.length - 1].q[0].n === 'RB999999999CN' && /^Bojxonada ushlandi .*Ushlansa nima qilish kerak\?$/.test(held.t) && /252, 234, 234|#FCEAEA/i.test(held.bg), JSON.stringify(held));
+    await pp.locator('main [data-remote] button').filter({ hasText: 'Ushlansa nima qilish kerak?' }).first().click(); await pp.waitForTimeout(700);
+    const hh = (await pp.locator('header').first().innerText()).replace(/\s+/g, ' ').trim();
+    check('"Ushlansa nima qilish kerak?" — "Bojxonada nima bo\'ladi?" sahifasi', /Bojxonada nima bo'ladi\?/.test(hh), hh);
+    /* Hamkor kuryer sahifasida xizmatlarning birinchisi — "Holat o'zi yangilanadi". */
+    await refGo('Kuryerlar', pp); await pp.waitForTimeout(500);
+    await pp.getByText('Barcha kuryerlar', { exact: false }).first().click(); await pp.waitForTimeout(600);
+    await pp.getByText('D2D', { exact: true }).first().click(); await pp.waitForTimeout(700);
+    const xiz = await pp.evaluate(() => { const h = [...document.querySelectorAll('main span')].find(x => x.textContent.trim() === 'Xizmatlar'); const box = h && h.parentElement; return box ? box.innerText.replace(/\s+/g, ' ').slice(0, 140) : ''; });
+    check('hamkor kuryer sahifasi: "Holat o\'zi yangilanadi" birinchi xizmat', /^Xizmatlar Holat o'zi yangilanadi Jo'natma raqamini Xaridlarimga yozsangiz/.test(xiz), xiz);
+    await pcx.close();
+  }
+
   /* --- Audit tuzatishlari qaytib kelmasin --- */
 
   /* Buzuq yoki eski reja ilovani yiqitmasin: ilgari maydoni yetishmagan

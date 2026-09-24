@@ -6,6 +6,8 @@ name: O'lchovni yoqish (Cloudflare Worker)
 #   CLOUDFLARE_ACCOUNT_ID — Cloudflare → Workers & Pages → o'ng ustunda Account ID
 #   METRICS_READ_TOKEN    — o'zingiz o'ylab topgan uzun parol (hisobotni o'qish uchun)
 #   ANTHROPIC_API_KEY     — ixtiyoriy: Pochtam AI uchun Claude API kaliti (console.anthropic.com)
+#   PARTNER_KEYS          — ixtiyoriy: hamkor kuryer kalitlari "d2d:pk_…,globbing:pk_…"
+#                           (worker/hamkor-kalit.mjs yaratadi; docs/hamkor-api.md)
 # Nima qiladi: worker/ ni Cloudflare'ga joylaydi, READ_TOKEN sirini o'rnatadi,
 # chiqqan manzilni ilovadagi METRICS_URL ga yozadi, index.html ni qayta quradi
 # va commit qilib push qiladi — shundan keyin sayt sanoqni yubora boshlaydi.
@@ -145,6 +147,23 @@ jobs:
             echo "ANTHROPIC_API_KEY siri yo'q — AI o'chiq qoladi"
           fi
 
+      - name: Hamkor kuryer kalitlarini o'rnatish (PARTNER_KEYS, ixtiyoriy)
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          P: ${{ secrets.PARTNER_KEYS }}
+        run: |
+          # Kalitlar hech qayerga chiqmaydi — faqat kuryer id'lari (ular ochiq:
+          # ilova /ai/status dan oladi).
+          P=$(printf '%s' "$P" | tr -d '[:space:]')
+          if [ -n "$P" ]; then
+            printf '%s' "$P" | npx wrangler secret put PARTNER_KEYS
+            echo "Hamkor kuryerlar: $(printf '%s' "$P" | tr ',' '\n' | cut -d: -f1 | tr '\n' ' ')"
+          else
+            echo "PARTNER_KEYS siri yo'q — hamkor kuryer hali yo'q; holat API ishlaydi, faqat egasi (READ_TOKEN) yoza oladi"
+          fi
+
       - name: Serverni sinash
         env:
           URL: ${{ steps.deploy.outputs.url }}
@@ -169,6 +188,26 @@ jobs:
           done
           [ "$ok" = "1" ] || { echo "::error::Hisobot o'qilmadi (GET /stats -> $code). Parol (METRICS_READ_TOKEN) to'g'rimi?"; exit 1; }
           echo "Server javob beryapti."
+          # Hamkor holat API: kalitsiz — 401; egasi "sinov" kuryeri nomidan
+          # yozadi, ilova yo'li (POST /track, o'z Origin) o'qiydi.
+          echo "== POST /partner/status (kalitsiz)"
+          code=$(curl -s -o /tmp/p0 -w '%{http_code}' -X POST "${URL}partner/status" -d '{"number":"CI-000000","status":"shipped"}'); echo "[$code] $(cat /tmp/p0)"
+          [ "$code" = "401" ] || { echo "::error::Kalitsiz yozuv 401 bo'lishi kerak edi ($code)"; exit 1; }
+          N="CI-${GITHUB_RUN_ID}"
+          echo "== POST /partner/status (egasi, sinov kuryeri)"
+          code=$(curl -s -o /tmp/p1 -w '%{http_code}' -X POST "${URL}partner/status" -H "authorization: Bearer $R" -H 'content-type: application/json' \
+            -d "{\"courier\":\"sinov\",\"events\":[{\"number\":\"$N\",\"status\":\"shipped\"},{\"number\":\"$N\",\"status\":\"ready\",\"note\":\"workflow\"}]}")
+          echo "[$code] $(cat /tmp/p1)"
+          [ "$code" = "200" ] || { echo "::error::Holat yozilmadi (POST /partner/status -> $code)"; exit 1; }
+          echo "== POST /track"
+          code=$(curl -s -o /tmp/p2 -w '%{http_code}' -X POST "${URL}track" -H 'origin: https://nshakhobiddin.github.io' -H 'content-type: text/plain' \
+            -d "{\"q\":[{\"c\":\"sinov\",\"n\":\"$N\"}]}")
+          echo "[$code] $(head -c 400 /tmp/p2)"
+          ST=$(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/p2','utf8'));const r=j.r[0];process.stdout.write(r.found?r.st+' tarix='+r.h.length:'topilmadi')}catch(e){process.stdout.write('xato')}")
+          case "$ST" in ready*) echo "::notice::Hamkor holat API ishlayapti — yozildi va o'qildi: $ST";; *) echo "::error::/track kutilgan holatni bermadi: $ST"; exit 1;; esac
+          echo "== GET /ai/status (partners)"
+          curl -s "${URL}ai/status" | tee /tmp/p3; echo
+          grep -q '"partners"' /tmp/p3 || { echo "::error::/ai/status da partners maydoni yo'q"; exit 1; }
 
       - name: Pochtam AI sinovi (/ai — savol, skrinshot, veb-qidiruv, joriy xarid)
         env:
