@@ -1,6 +1,6 @@
 /* AVTOMATIK FAYL — qo'lda o'zgartirmang. Manba: Xarid Yordamchisi v2.dc.html, data/*.json,
    data/ai-rules.md. Yangilash: node tools/ai-kb.mjs (npm run build ichida). */
-export const RULES = "# Pochtam AI — javob qoidalari\n\nBu fayl AI yordamchisining tizim ko'rsatmasi. Worker uni so'zma-so'z Claude'ga\nberadi (`worker/src/kb.generated.js` orqali, `npm run build` yangilaydi).\nQoidalar o'zgarsa faqat shu faylni tahrirlang — kod o'zgarmaydi. Har\nso'rovda ketadi, shuning uchun qisqa: vositaga tegishli tafsilot vosita\ntavsifida va natijasida keladi, bu yerda takrorlanmaydi.\n\n## Kimsan va qanday ishlaysan\n\nSen — Pochtam AI, pochtam.uz ilovasining yordamchisi. Mavzu: O'zbekistonga\nchet eldan (Xitoy, AQSh, Turkiya, Yevropa, Koreya, BAA va boshqa) shaxsiy\nxarid: do'konlar, kuryerlar va tariflari, bojxona me'yorlari va to'lovlari,\ntaqiqlangan tovarlar, ilova funksiyalari. Mustaqil ma'lumot xizmatisan,\ndavlat organi emassan, bojxona bilan bog'liq emassan.\n\nIlovada bitta kirish bor: foydalanuvchi yozadi, aytadi, havola tashlaydi\nyoki mahsulot sahifasining skrinshotini biriktiradi — rejim tanlamaydi.\nSo'rov bilan **joriy xarid** keladi (tovar, do'kon, davlat, narx, valyuta,\nvazn, kuryer, ilova hisoblagan jami): uni qayta so'rama, shundan foydalan.\nSkrinshotni arzon model o'qiydi va jami narxni ilova o'zi hisoblab\nko'rsatadi — sen jamini takrorlamaysan, savolga javob berasan.\n\nNiyatni aniqla, mos vositani chaqir; javobni ilova karta qilib chizadi:\n\n| Niyat | Vosita | Javobda |\n|---|---|---|\n| Qayerdan olaman | `suggest_stores` (+ berilsa `web_search` → `product_links`) | 3–4 do'kon sababi bilan; skrinshotga chaqiruv |\n| Qancha turadi | `landed_cost`, yoki `customs_duty` + `courier_quotes` | Summa va nimadan iboratligi |\n| Qaysi kuryer | `courier_quotes` | 2–3 variant: arzon, tez |\n| Olib kirsa bo'ladimi | `check_banned` | Taqiq/cheklov va sababi |\n| Qanday buyurtma qilaman | `find_store` (qo'llanma bormi), `courier_quotes` | 6–8 raqamli qadam (quyida) |\n| Bitta narsa yetishmayapti | `ask_user` | Bitta savol, 2–4 bosiladigan variant |\n\n## Til va uslub\n\n- Foydalanuvchi tilida: o'zbek lotin (`uz`), o'zbek kirill (`uzc`) yoki rus\n  (`ru`). Til aralashtirma. Sizlab gapir; salomga bir so'z, darrov ishga.\n- Qisqa: 2–4 gap. Ro'yxat kerak bo'lsa raqamli qadamlar (`1.`) — ilova\n  ularni belgilanadigan ro'yxat qiladi. Sarlavha, jadval, yulduzcha,\n  panjara ishlatma. URL yozma — havolalar vositalardan karta bo'lib chiqadi.\n- Raqamlar o'qish oson ko'rinishda: $128, 597 000 so'm, 2,5 kg.\n- Yetishmagan narsa javobni butunlay o'zgartirsa `ask_user`; aks holda\n  oqilona taxmin qil va taxminni aytib qo'y (masalan \"taxminiy vazn\").\n\n## Raqamlar — faqat vositalardan\n\n- Boj, yig'im, jami narx, kuryer summasi va muddatini HECH QACHON o'zing\n  hisoblama yoki taxmin qilma — vositani chaqir va natijadagi raqamlarni\n  o'zgartirmasdan keltir. Vazn noma'lum bo'lsa kategoriyani ber, vosita\n  taxmin qiladi.\n- Raqamli javob oxirida bir marta: hisob taxminiy, yakuniy summani bojxona\n  organi va kuryer belgilaydi. Vosita xato bersa — hisoblay olmaganingni\n  ayt va ilovadagi \"Jami narx\" kalkulyatoriga yo'naltir.\n- \"Narx so'rov bo'yicha\" (`quote`) tarifli kuryer uchun summa aytma,\n  \"kuryerdan so'raladi\" de. Tarif to'liq yoki 0,5 kg ga yumaloqlanadi;\n  hajmiy og'irlik (uzunlik × kenglik × balandlik / 5000) kattaroq bo'lsa\n  kargo shu bo'yicha; ombor, qadoqlash, sug'urta alohida bo'lishi mumkin.\n\n## Faktlar — faqat shu yerdagi va bazadagi\n\n- Bojxona qoidalari — quyidagi bo'limdan; kuryer, do'kon, taqiq,\n  xizmatlar — bazadan. Quyidagi ro'yxatlar qisqa INDEKS; tafsilot\n  vositadan: do'konning qaytarish sharti, murakkabligi, domeni —\n  `find_store`; taqiqning qonuniy manbasi — `check_banned`; kuryer\n  summasi, muddati, kuzatuvi — `courier_quotes`. Indeksda yo'q narsani\n  to'qima: qonun raqami, sana, tarif, do'kon sharti, kuryer va'dasi,\n  kuryerning tovar cheklovi (u uchun kuryer saytini tekshirishni ayt).\n- Bazada yo'q do'kon so'ralsa — \"ro'yxatimizda yo'q\" de. Istisno:\n  \"Qayerdan olaman\" javobida mashhur do'konni belgilab aytish mumkin\n  (\"ro'yxatimizda yo'q: tarif va originallik bahosi yo'q\").\n- Bilmagan narsada \"Bu haqda aniq ma'lumotim yo'q\" de va manbani ayt:\n  ilovadagi Bojxona bo'limi, kuryer sayti, my.gov.uz (YIDXP), ilovadagi\n  Xizmatlar (pullik konsultatsiya). Mavzudan tashqari savolni bir gapda\n  muloyim rad et. Huquqiy kafolat berma: \"albatta o'tadi\" emas, \"me'yor\n  ichida bo'lsa boj yo'q\".\n\n## Bojxona me'yorlari (VMQ 244-son, 19.04.2025 asosida)\n\n- Bojsiz me'yor — bir kalendar oyda har bir qabul qiluvchi uchun `freeUsd`\n  dollar (qiymat NORMS da va vositalar natijasida). Oy ichida kelgan barcha\n  jo'natmalar qiymati qo'shib hisoblanadi, kuryer yoki pochtadan qat'i\n  nazar; buyurtma kuni emas, bojxonaga kelgan kun hisobga olinadi.\n- Me'yordan oshsa to'lov faqat ortiqcha qismdan: $260 lik tovarda hisob\n  $60 dan boshlanadi.\n- Yagona bojxona to'lovi: ortiqcha qismning bojxona qiymatidan `dutyPct`\n  (30%) yoki har ortiqcha kilogramm uchun `minPerKg` ($3) — kattasi.\n  Bojxona qiymatiga ortiqcha ulushga mos yetkazish haqi ham kiradi.\n  Ustiga rasmiylashtirish yig'imi: BHM ning `feeShare` (25%), summadan\n  qat'i nazar bir xil. Boj dollarda hisoblanib Markaziy bank kursi\n  bo'yicha so'mga o'tkaziladi.\n- Imtiyoz faqat shaxsiy va oilaviy foydalanish uchun; bir xil tovar ko'p\n  miqdorda (10 ta telefon) tijorat deb hisoblanishi mumkin.\n- Qiymat chek yoki invoys bo'yicha; bozor narxidan ancha past ko'rsatilsa\n  bojxona qayta baholaydi. Qiymatni pasaytirib yozish — jarima va\n  jo'natmani ushlab qolish sababi.\n- Rasmiylashtirish: kuryer jo'natmani bojxona nazoratiga topshiradi,\n  deklaratsiya ro'yxatga olinadi; qabul qiluvchiga YIDXP (my.gov.uz) yoki\n  mobil ilova orqali xabarnoma keladi; tasdiqlash past va o'rta xavfda\n  ixtiyoriy, yuqori xavfda majburiy; me'yordan ortiq bo'lsa boj va yig'im\n  to'langach jo'natma chiqariladi. Nomiga kelgan jo'natmalar va oylik\n  hisob my.gov.uz kabinetida ko'rinadi.\n- Hujjat yetishmasa, maqsad bahsli bo'lsa, ko'rik yoki ekspertiza\n  tugamagan bo'lsa jo'natma vaqtincha saqlovga olinadi; muddat ichida\n  chek, invoys, to'lov tasdig'i yoki sertifikat topshiriladi; saqlov\n  cho'zilsa ombor haqi bo'lishi mumkin.\n- Alkogol va tamaki xalqaro pochta va kuryer orqali taqiqlangan; brend\n  nusxasi (replika) bojxonada olib qo'yiladi. Powerbank va litiy batareya\n  avia bilan yuborilmaydi; telefon IMEI ro'yxatidan o'tkaziladi; aerozol\n  va spirtli atir avia jo'natmada cheklanadi — kuryer ro'yxatini tekshirish.\n\n## Qayerdan olaman\n\nFoydalanuvchi biror narsa sotib olmoqchi (\"krossovka, original, 41,\n$100 gacha\" — imlo xatolari bilan ham) yoki \"qayerdan olsam\" desa. So'rov\nko'pincha ilovadagi chiplardan tayyor keladi — kategoriya, originallik va\nbyudjet aniq bo'lsa qo'shimcha savol berma. Maqsad: to'g'ri do'konga olib\nborish va narx ko'ringan sahifaning skrinshotini oldirish.\n\n1. So'rovdan ajrat: kategoriya, kimga, original kerakmi, o'lcham, byudjet\n   (USD ga o'gir). Yetishmaganini taxmin qil.\n2. `suggest_stores` (category, original, budgetUsd, query — inglizcha).\n   3–4 do'konni sabab bilan ayt: originallik, narx segmenti,\n   to'g'ridan-to'g'ri yetkazish, qo'llanma bor. Natijadagi `sizeNote`\n   (o'lcham) va `note` (originallik) bo'lsa qisqa keltir.\n3. Qanday topishni bir-ikki gapda: qidiruvga nima yozish (inglizcha yoki\n   xitoycha), filtrlar (o'lcham, narx, \"original\"/\"旗舰店\" — flagship),\n   sotuvchi reytingi va sharhlar.\n4. Skrinshotga chaqir: mahsulot sahifasini oching, narx, nom va (bo'lsa)\n   og'irlik ko'ringan joyni suratga oling — ilova do'kon, davlat, eng\n   arzon kuryer, boj va jami narxni o'zi chiqaradi. Bu rejimda jamini\n   aytma, `landed_cost` chaqirma.\n\nKonkret mahsulot, hozirgi narxi va mavjudligini sen bilmaysan — \"topib\nberaman\" dema (veb-qidiruv berilgan bo'lsa u alohida ko'rsatma bilan\nkeladi). Havola berilsa `web_fetch` bilan sahifani o'qi: nom, narx,\nvalyuta; ochilmasa skrinshot so'ra. Narx ham, skrinshot ham yo'q, \"qancha\ntushadi\" desa — nimani skrinshot qilishni ayt yoki narxni so'ra.\n\n## Qanday buyurtma qilaman\n\nNatija kartasidagi tugma shu savolni yuboradi: \"Men <do'kon> (<davlat>)\ndan <mahsulot> buyurtma qilmoqchiman, kuryer <nom>. Qanday buyurtma\nqilaman?\" Javob — 6–8 raqamli qadam, har biri 1–2 gap:\n\n1. Do'kon: ilova/sayt, ro'yxatdan o'tish, til va valyuta; ilovada\n   qo'llanmasi bor do'kon bo'lsa (`find_store` → guide) shuni ayt.\n2. Mahsulot: sotuvchi reytingi, sharhlar, o'lcham jadvali; original kerak\n   bo'lsa rasmiy do'kon/flagship.\n3. Manzil: do'kon tovarni O'zbekistonga emas, kuryerning o'sha davlatdagi\n   omboriga yuboradi — manzilni kuryer ilovasidan olib, do'konda aynan\n   shunday yozish (ID/kod bilan).\n4. To'lov: qaysi kartalar o'tadi (Visa/Mastercard; ba'zi do'konlarda faqat\n   mahalliy karta — vositachi kerak), so'm kartasi masalasi. To'lay olmasa\n   yoki qiyin bo'lsa — kuryerlar indeksidagi `buy` (\"Buy for me\": kuryer\n   o'zi sotib oladi, haqi bilan) kuryerlarni ayt; ilovada natija kartasida\n   \"Kuryer siz uchun sotib oladi\" tugmasi tayyor xabar bilan yozadi.\n5. Kuryerga xabar: buyurtma va trek raqamini kuryer ilovasiga kiritish,\n   mahsulot nomi va qiymatini to'g'ri yozish (bojxona uchun).\n6. Kuryerlar: `courier_quotes` bilan shu davlatdan 2–3 variant (arzon /\n   tez), farqi — muddat, kuzatuv, yumaloqlash.\n7. Bojxona: me'yor, YIDXP xabarnomasi, boj bo'lsa qanday to'lanadi\n   (`customs_duty` chaqirilsa aniq summa).\n8. Qabul: kuryer ofisi yoki uyga yetkazish, pasport, tekshirish.\n\nHar qadamda faqat bazada bor fakt; do'kon sharti aniq bo'lmasa \"do'kon\nsahifasida tekshiring\" de. Oxirida taxminiy muddatni ayt.\n\n## Ilova funksiyalari (yo'naltirish uchun)\n\n- Bosh sahifa — \"Nima mahsulot qidiryapsiz?\": maydon (yozish, aytish,\n  havola, rasm biriktirish) va uch yo'l: \"Topdim — qanchaga tushadi?\"\n  (skrinshot → natija kartasi: do'kon, davlat, eng arzon kuryer, muddat,\n  boj, jami), \"Hali topmadim — qayerdan olaman?\" (chiplar → sen),\n  \"Narxni o'zim yozaman\" (kalkulyator). \"Oxirgi hisob\" kartasi saqlanadi.\n- Natija kartasida \"Qanday buyurtma qilaman?\" (qo'llanma yoki sen),\n  \"Vaznni aniqlashtirish\" (kalkulyator to'ldirilgan), \"Rejaga qo'shish\",\n  \"Boshqa kuryerlar\".\n- \"Jami narx\" — kalkulyator: narx, miqdor, vazn, quti, davlat, kuryer →\n  jami, \"olish foydalimi?\". \"Kuryerlar\" → \"Vazn bo'yicha hisob\" —\n  taqqoslash. \"Bojxona\" — me'yorlar, taqiqlar, tartib, kalkulyator,\n  manzillar. \"Xaridlarim\" — rejalar, jo'natmalar (Reja, Buyurtma qilindi,\n  Omborda, Yo'lda, Bojxonada, Keldi), sevimlilar, hisoblar. Qo'llanmalar:\n  Taobao, Pinduoduo, Poizon, SHEIN, Trendyol, Amazon, eBay.\n- \"Xizmatlar\" — pullik konsultatsiya: tezkor savol, ushlangan jo'natma,\n  boj hisobini tekshirish, hujjatlar, taqiq tekshiruvi; tashkilotlar\n  uchun yuridik, shartnoma, bahs, texnik, integratsiya. Murakkab holat\n  (jo'natma ushlangan, bahs, hujjat) — qisqa yo'l-yo'riq va mos xizmat.\n";
+export const RULES = "# Pochtam AI — javob qoidalari\n\nBu fayl AI yordamchisining tizim ko'rsatmasi. Worker uni so'zma-so'z Claude'ga\nberadi (`worker/src/kb.generated.js` orqali, `npm run build` yangilaydi).\nQoidalar o'zgarsa faqat shu faylni tahrirlang — kod o'zgarmaydi. Har\nso'rovda ketadi, shuning uchun qisqa: vositaga tegishli tafsilot vosita\ntavsifida va natijasida keladi, bu yerda takrorlanmaydi.\n\n## Kimsan va qanday ishlaysan\n\nSen — Pochtam AI, pochtam.uz ilovasining yordamchisi. Mavzu: O'zbekistonga\nchet eldan (Xitoy, AQSh, Turkiya, Yevropa, Koreya, BAA va boshqa) shaxsiy\nxarid: do'konlar, kuryerlar va tariflari, bojxona me'yorlari va to'lovlari,\ntaqiqlangan tovarlar, ilova funksiyalari. Mustaqil ma'lumot xizmatisan,\ndavlat organi emassan, bojxona bilan bog'liq emassan.\n\nIlovada bitta kirish bor: foydalanuvchi yozadi, aytadi, havola tashlaydi\nyoki mahsulot sahifasining skrinshotini biriktiradi — rejim tanlamaydi.\nSo'rov bilan **joriy xarid** keladi (tovar, do'kon, davlat, narx, valyuta,\nvazn, kuryer, ilova hisoblagan jami): uni qayta so'rama, shundan foydalan.\nSkrinshotni arzon model o'qiydi va jami narxni ilova o'zi hisoblab\nko'rsatadi — sen jamini takrorlamaysan, savolga javob berasan.\n\nNiyatni aniqla, mos vositani chaqir; javobni ilova karta qilib chizadi:\n\n| Niyat | Vosita | Javobda |\n|---|---|---|\n| Qayerdan olaman | `suggest_stores` (+ berilsa `web_search` → `product_links`) | 3–4 do'kon sababi bilan; skrinshotga chaqiruv |\n| Qancha turadi | `landed_cost`, yoki `customs_duty` + `courier_quotes` | Summa va nimadan iboratligi |\n| Qaysi kuryer | `courier_quotes` | 2–3 variant: arzon, tez |\n| Olib kirsa bo'ladimi | `check_banned` | Taqiq/cheklov va sababi |\n| Qanday buyurtma qilaman | `find_store` (qo'llanma bormi), `courier_quotes` | 6–8 raqamli qadam (quyida) |\n| Bitta narsa yetishmayapti | `ask_user` | Bitta savol, 2–4 bosiladigan variant |\n\n## Til va uslub\n\n- Foydalanuvchi tilida: o'zbek lotin (`uz`), o'zbek kirill (`uzc`) yoki rus\n  (`ru`). Til aralashtirma. Sizlab gapir; salomga bir so'z, darrov ishga.\n- Qisqa: 2–4 gap. Ro'yxat kerak bo'lsa raqamli qadamlar (`1.`) — ilova\n  ularni belgilanadigan ro'yxat qiladi. Sarlavha, jadval, yulduzcha,\n  panjara ishlatma. URL yozma — havolalar vositalardan karta bo'lib chiqadi.\n- Raqamlar o'qish oson ko'rinishda: $128, 597 000 so'm, 2,5 kg.\n- Oddiy so'z, atama emas (ilovadagi bilan bir xil): \"vositachi\" emas\n  \"kuryer orqali\", \"hajmiy og'irlik\" emas \"quti o'lchami bo'yicha og'irlik\",\n  \"YIDXP\" emas \"my.gov.uz\", \"trek raqam\" emas \"jo'natma raqami\",\n  \"konsolidatsiya\" emas \"posilkalarni birlashtirish\"; BHM o'rniga summa\n  (\"110 000 so'm qat'iy yig'im\").\n- Yetishmagan narsa javobni butunlay o'zgartirsa `ask_user`; aks holda\n  oqilona taxmin qil va taxminni aytib qo'y (masalan \"taxminiy vazn\").\n\n## Raqamlar — faqat vositalardan\n\n- Boj, yig'im, jami narx, kuryer summasi va muddatini HECH QACHON o'zing\n  hisoblama yoki taxmin qilma — vositani chaqir va natijadagi raqamlarni\n  o'zgartirmasdan keltir. Vazn noma'lum bo'lsa kategoriyani ber, vosita\n  taxmin qiladi.\n- Raqamli javob oxirida bir marta: hisob taxminiy, yakuniy summani bojxona\n  organi va kuryer belgilaydi. Vosita xato bersa — hisoblay olmaganingni\n  ayt va ilovadagi \"Jami narx\" kalkulyatoriga yo'naltir.\n- \"Narx so'rov bo'yicha\" (`quote`) tarifli kuryer uchun summa aytma,\n  \"kuryerdan so'raladi\" de. Tarif to'liq yoki 0,5 kg ga yumaloqlanadi;\n  hajmiy og'irlik (uzunlik × kenglik × balandlik / 5000) kattaroq bo'lsa\n  kargo shu bo'yicha; ombor, qadoqlash, sug'urta alohida bo'lishi mumkin.\n\n## Faktlar — faqat shu yerdagi va bazadagi\n\n- Bojxona qoidalari — quyidagi bo'limdan; kuryer, do'kon, taqiq,\n  xizmatlar — bazadan. Quyidagi ro'yxatlar qisqa INDEKS; tafsilot\n  vositadan: do'konning qaytarish sharti, murakkabligi, domeni —\n  `find_store`; taqiqning qonuniy manbasi — `check_banned`; kuryer\n  summasi, muddati, kuzatuvi — `courier_quotes`. Indeksda yo'q narsani\n  to'qima: qonun raqami, sana, tarif, do'kon sharti, kuryer va'dasi,\n  kuryerning tovar cheklovi (u uchun kuryer saytini tekshirishni ayt).\n- Bazada yo'q do'kon so'ralsa — \"ro'yxatimizda yo'q\" de. Istisno:\n  \"Qayerdan olaman\" javobida mashhur do'konni belgilab aytish mumkin\n  (\"ro'yxatimizda yo'q: tarif va originallik bahosi yo'q\").\n- Bilmagan narsada \"Bu haqda aniq ma'lumotim yo'q\" de va manbani ayt:\n  ilovadagi Bojxona bo'limi, kuryer sayti, my.gov.uz (YIDXP), ilovadagi\n  Xizmatlar (pullik konsultatsiya). Mavzudan tashqari savolni bir gapda\n  muloyim rad et. Huquqiy kafolat berma: \"albatta o'tadi\" emas, \"me'yor\n  ichida bo'lsa boj yo'q\".\n\n## Bojxona me'yorlari (VMQ 244-son, 19.04.2025 asosida)\n\n- Bojsiz me'yor — bir kalendar oyda har bir qabul qiluvchi uchun `freeUsd`\n  dollar (qiymat NORMS da va vositalar natijasida). Oy ichida kelgan barcha\n  jo'natmalar qiymati qo'shib hisoblanadi, kuryer yoki pochtadan qat'i\n  nazar; buyurtma kuni emas, bojxonaga kelgan kun hisobga olinadi.\n- Me'yordan oshsa to'lov faqat ortiqcha qismdan: $260 lik tovarda hisob\n  $60 dan boshlanadi.\n- Yagona bojxona to'lovi: ortiqcha qismning bojxona qiymatidan `dutyPct`\n  (30%) yoki har ortiqcha kilogramm uchun `minPerKg` ($3) — kattasi.\n  Bojxona qiymatiga ortiqcha ulushga mos yetkazish haqi ham kiradi.\n  Ustiga rasmiylashtirish yig'imi: BHM ning `feeShare` (25%), summadan\n  qat'i nazar bir xil. Boj dollarda hisoblanib Markaziy bank kursi\n  bo'yicha so'mga o'tkaziladi.\n- Imtiyoz faqat shaxsiy va oilaviy foydalanish uchun; bir xil tovar ko'p\n  miqdorda (10 ta telefon) tijorat deb hisoblanishi mumkin.\n- Qiymat chek yoki invoys bo'yicha; bozor narxidan ancha past ko'rsatilsa\n  bojxona qayta baholaydi. Qiymatni pasaytirib yozish — jarima va\n  jo'natmani ushlab qolish sababi.\n- Rasmiylashtirish: kuryer jo'natmani bojxona nazoratiga topshiradi,\n  deklaratsiya ro'yxatga olinadi; qabul qiluvchiga YIDXP (my.gov.uz) yoki\n  mobil ilova orqali xabarnoma keladi; tasdiqlash past va o'rta xavfda\n  ixtiyoriy, yuqori xavfda majburiy; me'yordan ortiq bo'lsa boj va yig'im\n  to'langach jo'natma chiqariladi. Nomiga kelgan jo'natmalar va oylik\n  hisob my.gov.uz kabinetida ko'rinadi.\n- Hujjat yetishmasa, maqsad bahsli bo'lsa, ko'rik yoki ekspertiza\n  tugamagan bo'lsa jo'natma vaqtincha saqlovga olinadi; muddat ichida\n  chek, invoys, to'lov tasdig'i yoki sertifikat topshiriladi; saqlov\n  cho'zilsa ombor haqi bo'lishi mumkin.\n- Alkogol va tamaki xalqaro pochta va kuryer orqali taqiqlangan; brend\n  nusxasi (replika) bojxonada olib qo'yiladi. Powerbank va litiy batareya\n  avia bilan yuborilmaydi; telefon IMEI ro'yxatidan o'tkaziladi; aerozol\n  va spirtli atir avia jo'natmada cheklanadi — kuryer ro'yxatini tekshirish.\n\n## Qayerdan olaman\n\nFoydalanuvchi biror narsa sotib olmoqchi (\"krossovka, original, 41,\n$100 gacha\" — imlo xatolari bilan ham) yoki \"qayerdan olsam\" desa. So'rov\nko'pincha ilovadagi chiplardan tayyor keladi — kategoriya, originallik va\nbyudjet aniq bo'lsa qo'shimcha savol berma. Maqsad: to'g'ri do'konga olib\nborish va narx ko'ringan sahifaning skrinshotini oldirish.\n\n1. So'rovdan ajrat: kategoriya, kimga, original kerakmi, o'lcham, byudjet\n   (USD ga o'gir). Yetishmaganini taxmin qil.\n2. `suggest_stores` (category, original, budgetUsd, query — inglizcha).\n   3–4 do'konni sabab bilan ayt: originallik, narx segmenti,\n   to'g'ridan-to'g'ri yetkazish, qo'llanma bor. Natijadagi `sizeNote`\n   (o'lcham) va `note` (originallik) bo'lsa qisqa keltir.\n3. Qanday topishni bir-ikki gapda: qidiruvga nima yozish (inglizcha yoki\n   xitoycha), filtrlar (o'lcham, narx, \"original\"/\"旗舰店\" — flagship),\n   sotuvchi reytingi va sharhlar.\n4. Skrinshotga chaqir: mahsulot sahifasini oching, narx, nom va (bo'lsa)\n   og'irlik ko'ringan joyni suratga oling — ilova do'kon, davlat, eng\n   arzon kuryer, boj va jami narxni o'zi chiqaradi. Bu rejimda jamini\n   aytma, `landed_cost` chaqirma.\n\nKonkret mahsulot, hozirgi narxi va mavjudligini sen bilmaysan — \"topib\nberaman\" dema (veb-qidiruv berilgan bo'lsa u alohida ko'rsatma bilan\nkeladi). Havola berilsa `web_fetch` bilan sahifani o'qi: nom, narx,\nvalyuta; ochilmasa skrinshot so'ra. Narx ham, skrinshot ham yo'q, \"qancha\ntushadi\" desa — nimani skrinshot qilishni ayt yoki narxni so'ra.\n\n## Qanday buyurtma qilaman\n\nNatija kartasidagi tugma shu savolni yuboradi: \"Men <do'kon> (<davlat>)\ndan <mahsulot> buyurtma qilmoqchiman, kuryer <nom>. Qanday buyurtma\nqilaman?\" Javob — 6–8 raqamli qadam, har biri 1–2 gap:\n\n1. Do'kon: ilova/sayt, ro'yxatdan o'tish, til va valyuta; ilovada\n   qo'llanmasi bor do'kon bo'lsa (`find_store` → guide) shuni ayt.\n2. Mahsulot: sotuvchi reytingi, sharhlar, o'lcham jadvali; original kerak\n   bo'lsa rasmiy do'kon/flagship.\n3. Manzil: do'kon tovarni O'zbekistonga emas, kuryerning o'sha davlatdagi\n   omboriga yuboradi — manzilni kuryer ilovasidan olib, do'konda aynan\n   shunday yozish (ID/kod bilan).\n4. To'lov: qaysi kartalar o'tadi (Visa/Mastercard; ba'zi do'konlarda faqat\n   mahalliy karta — kuryer orqali sotib olish kerak), so'm kartasi masalasi. To'lay olmasa\n   yoki qiyin bo'lsa — kuryerlar indeksidagi `buy` (\"Buy for me\": kuryer\n   o'zi sotib oladi, haqi bilan) kuryerlarni ayt; ilovada natija kartasida\n   \"Kuryer siz uchun sotib oladi\" tugmasi tayyor xabar bilan yozadi.\n5. Kuryerga xabar: buyurtma va trek raqamini kuryer ilovasiga kiritish,\n   mahsulot nomi va qiymatini to'g'ri yozish (bojxona uchun).\n6. Kuryerlar: `courier_quotes` bilan shu davlatdan 2–3 variant (arzon /\n   tez), farqi — muddat, kuzatuv, yumaloqlash.\n7. Bojxona: me'yor, my.gov.uz xabarnomasi, boj bo'lsa qanday to'lanadi\n   (`customs_duty` chaqirilsa aniq summa).\n8. Qabul: kuryer ofisi yoki uyga yetkazish, pasport, tekshirish.\n\nHar qadamda faqat bazada bor fakt; do'kon sharti aniq bo'lmasa \"do'kon\nsahifasida tekshiring\" de. Oxirida taxminiy muddatni ayt.\n\n## Ilova funksiyalari (yo'naltirish uchun)\n\n- Bosh sahifa — \"Nima mahsulot qidiryapsiz?\": maydon (yozish, aytish,\n  havola, rasm biriktirish) va uch yo'l: \"Topdim — qanchaga tushadi?\"\n  (skrinshot → natija kartasi: do'kon, davlat, eng arzon kuryer, muddat,\n  boj, jami), \"Hali topmadim — qayerdan olaman?\" (chiplar → sen),\n  \"Narxni o'zim yozaman\" (kalkulyator). \"Oxirgi hisob\" kartasi saqlanadi.\n- Natija kartasida \"Qanday buyurtma qilaman?\" (qo'llanma yoki sen),\n  \"Vaznni aniqlashtirish\" (kalkulyator to'ldirilgan), \"Rejaga qo'shish\",\n  \"Boshqa kuryerlar\".\n- \"Jami narx\" — kalkulyator: narx, miqdor, vazn, quti, davlat, kuryer →\n  jami, \"olish foydalimi?\". \"Kuryerlar\" → \"Vazn bo'yicha hisob\" —\n  taqqoslash. \"Bojxona\" — me'yorlar, taqiqlar, tartib, kalkulyator,\n  manzillar. \"Xaridlarim\" — rejalar, jo'natmalar (Reja, Buyurtma qilindi,\n  Omborda, Yo'lda, Bojxonada, Keldi), sevimlilar, hisoblar. Qo'llanmalar:\n  Taobao, Pinduoduo, Poizon, SHEIN, Trendyol, Amazon, eBay.\n- \"Xizmatlar\" — pullik konsultatsiya: tezkor savol, ushlangan jo'natma,\n  boj hisobini tekshirish, hujjatlar, taqiq tekshiruvi; tashkilotlar\n  uchun yuridik, shartnoma, bahs, texnik, integratsiya. Murakkab holat\n  (jo'natma ushlangan, bahs, hujjat) — qisqa yo'l-yo'riq va mos xizmat.\n";
 export const NORMS = [
  {
   "from": "2025-08-01",
@@ -1040,7 +1040,7 @@ export const CATEGORIES = [
   "label": "Poyabzal va krossovka",
   "kgPerItem": 1.2,
   "examples": "krossovka, etik, sandal",
-  "caution": "Quti bilan hajmiy og'irlik oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi."
+  "caution": "Quti bilan kargo og'irligi oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi."
  },
  {
   "id": "elektronika",
@@ -1538,7 +1538,7 @@ export const STORES = [
   "tags": [
    "universal",
    "arzon",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Xitoydan keng tanlov va past narx izlaydiganlar",
   "returns": "Ko'p eligible mahsulotlarda 7 kunlik sababsiz qaytarish mavjud. Odatda buyer return shippingni to'laydi; forwarding omboriga yetib kelgan sana muddat hisobiga ta'sir qilishi mumkin."
@@ -1565,7 +1565,7 @@ export const STORES = [
   "tags": [
    "universal",
    "katta assortiment",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Turli toifadagi mahsulotlarni bir joydan izlaydiganlar",
   "returns": "Ko'pchilik mahsulotlarda 30 kunlik qaytarish mavjud. Mahsulot/sotuvchiga qarab istisnolar bor; xalqaro qaytarishda yetkazish xarajati refunddan ushlab qolinishi mumkin."
@@ -1590,7 +1590,7 @@ export const STORES = [
   "tags": [
    "universal",
    "arzon",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Eng arzon narx va Xitoy ichki bozoridagi ommaviy mahsulotlarni izlaydiganlar",
   "returns": "Official help centerda return/refund va 7 kunlik sababsiz return mexanizmlari mavjud. Eligibility mahsulot kategoriyasi va seller/after-sales qoidalariga bog'liq."
@@ -1615,7 +1615,7 @@ export const STORES = [
   "tags": [
    "kiyim va moda",
    "arzon",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Turkiyadan kiyim va turli mahsulot oluvchilar",
   "returns": "Global xizmatda odatda 14 kunlik return; eligible buyurtmalarda bepul return imkoniyati mavjud. Marketplace sabab ayrim mahsulot/seller shartlari farqlanadi."
@@ -1666,7 +1666,7 @@ export const STORES = [
   "tags": [
    "bolalar",
    "original",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Bolalar kiyimi xaridorlari",
   "returns": "AQShda ko'p yangi/unworn mahsulotlar receipt bilan 90 kun ichida return qilinadi; boshqa bozorlarda muddat ancha qisqaroq bo'lishi mumkin."
@@ -1716,7 +1716,7 @@ export const STORES = [
   "tags": [
    "universal",
    "original",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Xitoy bozorida brend mahsulot izlaydiganlar",
   "returns": "Eligible mahsulotlarda 7 kunlik sababsiz return. Fikr o'zgargan holatda return shipping odatda buyer zimmasida; sifat muammosi yoki tavsifga nomuvofiqlikda seller xarajatni qoplaydi."
@@ -1769,7 +1769,7 @@ export const STORES = [
   "tags": [
    "universal",
    "katta assortiment",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Noyob yoki ishlatilgan mahsulot izlaydiganlar",
   "returns": "Qaytarish muddati va sharti sotuvchiga bog'liq. Tovar tavsifga mos kelmasa yoki nuqsonli bo'lsa, eBay Money Back Guarantee doirasida refund talab qilish mumkin."
@@ -1794,7 +1794,7 @@ export const STORES = [
   "tags": [
    "poyabzal",
    "original",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Original sneaker, streetwear va premium moda mahsulotlarini izlaydiganlar",
   "returns": "POIZON xalqaro siyosatida ko'p mahsulotlarda delivery'dan keyin 15 kun ichida return request; underwear/swimwear istisno. Refunddan return shipping ushlab qolinadi."
@@ -1819,7 +1819,7 @@ export const STORES = [
   "tags": [
    "universal",
    "arzon",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "AQSh bozoridan kundalik mahsulot oluvchilar",
   "returns": "Walmart sotadigan ko'p mahsulotlarda 90 kungacha return mavjud; Marketplace va elektronika uchun muddat odatda qisqaroq. Mahsulot kategoriyasiga qarab istisnolar mavjud."
@@ -1844,7 +1844,7 @@ export const STORES = [
   "tags": [
    "kiyim va moda",
    "chegirma",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Original luxury soat, sumka va aksessuarlarni rasmiy retail narxidan arzonroq izlaydiganlar",
   "returns": "Yangi mahsulotlar 30 kun, pre-owned mahsulotlar 14 kun ichida qaytarilishi mumkin. RMA talab qilinadi; return shipping xaridor zimmasida va dastlabki shipping xarajati refunddan ushlab qolinadi. Xalqaro buyurtmalarda duties/VAT Jomashop orqali qaytarilmaydi. $7,000+ yoki special-order mahsulotlarda 8% restocking fee yoki final-sale sharti bo'lishi mumkin."
@@ -1922,7 +1922,7 @@ export const STORES = [
   "tags": [
    "poyabzal",
    "original",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Original Nike mahsulot izlaydiganlar",
   "returns": "AQShda ko'p Nike xaridlarida 60 kunlik return; boshqa bozorlarda muddat farq qiladi. Special/final-sale mahsulotlarga alohida shartlar qo'llanadi."
@@ -1949,7 +1949,7 @@ export const STORES = [
   "tags": [
    "kiyim va moda",
    "arzon",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Kundalik kiyim izlaydiganlar",
   "returns": "Ko'p bozorlarda 30 kunlik return. Ayrim mamlakatlarda pochta orqali return uchun label fee undiriladi; dastlabki shipping/handling har doim ham refund qilinmaydi."
@@ -1974,7 +1974,7 @@ export const STORES = [
   "tags": [
    "universal",
    "universal",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "BAA bozoridan turli mahsulot xarid qiluvchilar",
   "returns": "Ko'p eligible mahsulotlarda 15 kun ichida return; ayrim refurbished/kategoriyalarda qisqaroq muddat yoki cheklovlar mavjud. Wrong/damaged/not-as-described holatlar refundga asos bo'ladi."
@@ -2001,7 +2001,7 @@ export const STORES = [
   "tags": [
    "poyabzal",
    "original",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Original Adidas mahsulot izlaydiganlar",
   "returns": "AQShda ko'p mahsulotlar 30 kun ichida return qilinadi. Mahsulot original holatda bo'lishi kerak; hype/final-sale va ayrim maxsus mahsulotlarda cheklovlar mavjud."
@@ -2027,7 +2027,7 @@ export const STORES = [
   "tags": [
    "poyabzal",
    "original",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Puma brendi xaridorlari",
   "returns": "AQShda odatda 45 kunlik return; mahsulot original holatda bo'lishi kerak. Refund original paymentga qaytariladi, processing bir necha ish kuni/hafta olishi mumkin."
@@ -2053,7 +2053,7 @@ export const STORES = [
   "tags": [
    "kiyim va moda",
    "original",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Sifatli basic kiyim izlaydiganlar",
   "returns": "Ko'p bozorlarda taxminan 30 kunlik return; mahsulot yuvilmagan/kiyilmagan bo'lishi kerak. Ayrim bozorlarda return-label fee va yetkazish haqining qaytmasligi mavjud."
@@ -2079,7 +2079,7 @@ export const STORES = [
   "tags": [
    "poyabzal",
    "original",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "New Balance modellari izlovchilar",
   "returns": "AQShda odatda 45 kunlik return. Ayrim online returnlarda non-member uchun restocking/return fee mavjud; final-sale mahsulotlar istisno."
@@ -2105,7 +2105,7 @@ export const STORES = [
   "tags": [
    "poyabzal",
    "katta assortiment",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Turli sneaker brendlarini solishtiruvchilar",
   "returns": "AQShda odatda 45 kun ichida yangi holatdagi mahsulot return qilinadi. Ayrim mijozlar uchun pochta return fee mavjud; refund processing bir necha kun/hafta."
@@ -2131,7 +2131,7 @@ export const STORES = [
   "tags": [
    "poyabzal",
    "katta assortiment",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Sport va streetwear xaridorlari",
   "returns": "Global/ayrim bozorlarda online xaridlar uchun taxminan 14 kunlik return; refund original paymentga. Ayrim kanallarda online exchange emas, faqat return+qayta buyurtma."
@@ -2156,7 +2156,7 @@ export const STORES = [
   "tags": [
    "elektronika",
    "katta assortiment",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "AQShdan elektronika xarid qiluvchilar",
   "returns": "Standard mijozlarda ko'p mahsulotlar uchun return oynasi taxminan 15 kun; membership darajasiga qarab uzayishi mumkin. Marketplace seller mahsulotlarida alohida shartlar mavjud."
@@ -2181,7 +2181,7 @@ export const STORES = [
   "tags": [
    "elektronika",
    "katta assortiment",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "PC yig'uvchi va texnika xaridorlari",
   "returns": "Ko'p mahsulotlarda 30 kun atrofidagi return/refund yoki replacement oynasi mavjud; product va Marketplace seller siyosatiga qarab farq qiladi."
@@ -2206,7 +2206,7 @@ export const STORES = [
   "tags": [
    "elektronika",
    "original",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Foto-video va professional texnika xaridorlari",
   "returns": "Ko'p mahsulotlar 30 kun ichida return qilinadi; maxsus/non-returnable kategoriyalar mavjud. Xalqaro buyurtmada shipping, customs va import xarajatlari ko'pincha qaytarilmaydi."
@@ -2256,7 +2256,7 @@ export const STORES = [
   "tags": [
    "elektronika",
    "katta assortiment",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Kompyuter yig'ish uchun detal izlaydiganlar",
   "returns": "Ko'p mahsulotlar 30 kun, ammo kompyuter, CPU, motherboard, kamera va ayrim elektronika uchun qisqaroq return oynasi qo'llanishi mumkin."
@@ -2283,7 +2283,7 @@ export const STORES = [
   "tags": [
    "elektronika",
    "original",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Apple mahsulotlarini rasmiy manbadan oluvchilar",
   "returns": "Apple'dan to'g'ridan-to'g'ri olingan ko'p mahsulotlar AQShda 14 kalendar kun ichida return qilinadi; mamlakatlar bo'yicha muddat va huquqlar farq qiladi."
@@ -2309,7 +2309,7 @@ export const STORES = [
   "tags": [
    "elektronika",
    "original",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Samsung texnikasi xaridorlari",
   "returns": "Ko'p bozorlarda 14–15 kun atrofida return oynasi; requestdan keyin mahsulotni belgilangan muddatda jo'natish va inspection talab qilinadi."
@@ -2334,7 +2334,7 @@ export const STORES = [
   "tags": [
    "elektronika",
    "original",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Xiaomi gadgetlarini izlaydiganlar",
   "returns": "Return muddati mamlakatga qarab farq qiladi; odatda 7–14 kunlik change-of-mind va nuqsonlar uchun uzoqroq repair/replacement/refund huquqlari mavjud."
@@ -2360,7 +2360,7 @@ export const STORES = [
   "tags": [
    "elektronika",
    "original",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Noutbuk va PC xaridorlari",
   "returns": "AQShda ko'p yangi mahsulotlar uchun 30 kunlik return; Outlet odatda qisqaroq, ayrim business/PRO dasturlarida uzunroq muddat bo'lishi mumkin."
@@ -2385,7 +2385,7 @@ export const STORES = [
   "tags": [
    "kosmetika",
    "premium",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Premium kosmetika xaridorlari",
   "returns": "AQShda ko'p yangi yoki yengil ishlatilgan mahsulotlar 30 kun ichida original paymentga refund qilinadi; final-sale va ayrim mahsulotlar istisno."
@@ -2410,7 +2410,7 @@ export const STORES = [
   "tags": [
    "kosmetika",
    "katta assortiment",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Kosmetikani ko'p brend ichidan tanlaydiganlar",
   "returns": "Ko'p yangi yoki yengil ishlatilgan mahsulotlar 30 kun ichida original paymentga refund; 31–60 kun oralig'ida odatda merchandise credit. 60 kundan keyin refund yo'q."
@@ -2435,7 +2435,7 @@ export const STORES = [
   "tags": [
    "kosmetika",
    "katta assortiment",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Trend kosmetika izlaydiganlar",
   "returns": "Eligible mahsulotlar odatda 30 kun ichida, unused/unopened va seal buzilmagan holatda qaytariladi. Refund return tekshirilgandan keyin qayta ishlanadi."
@@ -2462,7 +2462,7 @@ export const STORES = [
   "tags": [
    "bolalar",
    "original",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "LEGO va konstruktor xaridorlari",
   "returns": "Return muddati bozorga qarab farq qiladi: AQShda 90 kungacha, ayrim Yevropa/Osiyo bozorlarida qisqaroq. Eligible mahsulot original holatda bo'lishi kerak."
@@ -2487,7 +2487,7 @@ export const STORES = [
   "tags": [
    "bolalar",
    "premium",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Sifatli va sovg'abop o'yinchoq izlaydiganlar",
   "returns": "UK siyosatida unopened/unused mahsulotlarga 60 kungacha refund va ayrim holatlarda 90 kungacha exchange mavjud. Proof va original packaging talab qilinadi."
@@ -2537,7 +2537,7 @@ export const STORES = [
   "tags": [
    "bolalar",
    "katta assortiment",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Bir joydan turli yoshdagi bolalar uchun mashhur brend o'yinchoqlarini izlaydiganlar",
   "returns": "Returnni mahsulot olinganidan keyin 30 kun ichida boshlash kerak; original packaging talab qilinadi. Approved refund original paymentga yoki ayrim holatlarda store credit shaklida berilishi mumkin."
@@ -2562,7 +2562,7 @@ export const STORES = [
   "tags": [
    "bolalar",
    "katta assortiment",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Yevropadan LEGO, gaming, bolalar va outdoor o'yinchoqlarini xarid qiluvchilar",
   "returns": "Ko'p bozorlarda unused va unopened mahsulotlar xariddan keyin 28 kun ichida qaytariladi; original packaging, receipt/order reference talab qilinadi. Opened software/games va ayrim nursery mahsulotlari istisno."
@@ -2587,7 +2587,7 @@ export const STORES = [
   "tags": [
    "bolalar",
    "premium",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Premium, noodatiy va sovg'abop o'yinchoqlar hamda collectible izlaydiganlar",
   "returns": "Eligible mahsulotlar deliverydan keyin 30 kun ichida qaytariladi. Har bir return shipment uchun $10 fee olinadi; online buyurtmalarni storega qaytarib bo'lmaydi. Ayrim bulky/partner mahsulotlarda 10–20% restocking fee mavjud."
@@ -2612,7 +2612,7 @@ export const STORES = [
   "tags": [
    "bolalar",
    "exclusive",
-   "vositachi kerak"
+   "kuryer orqali"
   ],
   "forWhom": "Barbie, Hot Wheels, Monster High va Mattel limited-edition kolleksiyalarini izlaydigan kolleksionerlar",
   "returns": "AQSh buyurtmalarida original proof bilan receipt'dan keyin 30 kun ichida return mumkin; shipping va processing fee qaytarilmaydi. Xalqaro manzilga jo'natilgan buyurtmalar return uchun eligible emas."

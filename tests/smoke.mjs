@@ -106,6 +106,8 @@ const refGo = async (t, pg = page) => {
   await pg.locator('main button').filter({ has: pg.locator('span', { hasText: new RegExp('^\\s*' + esc(t) + '\\s*$') }) }).first().click();
   await pg.waitForTimeout(450);
 };
+/* Bojxona uch sahifa (2026-09-24): hubdagi savol-qator. */
+const custRow = t => page.locator('main button').filter({ has: page.locator('span', { hasText: new RegExp('^\\s*' + esc(t) + '\\s*$') }) }).first();
 /* Reja sehrgari menyuda emas: Xaridlarim → "Do'kon va kuryerni o'zim tanlayman". */
 const openWizard = async (pg = page) => {
   await pg.locator('nav button', { hasText: 'Xaridlarim' }).first().click(); await pg.waitForTimeout(350);
@@ -220,27 +222,18 @@ try {
     check(`bo'lim ochiladi: ${tab}`, current.trim() === tab);
   }
 
-  // 3. Bojxona kalkulyatori alohida qatorda va bosilganda ochiladi
+  // 3. Bojxona — uch savol; "Qancha to'layman?" kalkulyator bilan boshlanadi
   await refGo('Bojxona');
   await page.waitForTimeout(600);
-  const calcRow = await page.evaluate(() => {
-    const b = [...document.querySelectorAll('button')].find(x => /Bojxona kalkulyatori/.test(x.innerText));
-    return { bor: !!b, matn: b ? b.innerText.replace(/\n/g, ' · ') : '' };
+  const custHub = await page.evaluate(async () => {
+    const rows = [...document.querySelectorAll('main button')].filter(b => /^(Qancha to'layman\?|Nimani olib kirib bo'lmaydi\?|Bojxonada nima bo'ladi\?)/.test(b.innerText.trim()));
+    const pics = rows.map(b => { const d = b.querySelector('div[style*="icons/boj-"]'); return d ? (d.style.backgroundImage.match(/icons\/boj-[a-z]+\.webp/) || [])[0] : null; }).filter(Boolean);
+    const ok = await Promise.all(pics.map(u => new Promise(r => { const im = new Image(); im.onload = () => r(true); im.onerror = () => r(false); im.src = u; })));
+    return { n: rows.length, pics: pics.length, ok: ok.filter(Boolean).length, eski: /Bojxona kalkulyatori|Bojxona organlari/.test(document.querySelector('main').innerText) };
   });
-  check('kalkulyator alohida qator bo\'lib turadi', calcRow.bor, calcRow.matn.slice(0, 60));
+  check('bojxona hub: uch savol, har birida ikonka, eski olti bo\'lim yo\'q', custHub.n === 3 && custHub.pics === 3 && custHub.ok === 3 && !custHub.eski, JSON.stringify(custHub));
 
-  // Har bir bojxona qatorida o'z ikonkasi bor va u yuklangan
-  const bojIcons = await page.evaluate(() => {
-    const imgs = [...document.querySelectorAll('img[src*="icons/boj-"]')];
-    return { soni: imgs.length,
-             yuklandi: imgs.filter(i => i.complete && i.naturalWidth > 0).length,
-             nomlar: imgs.map(i => i.src.split('/').pop()).join(', ') };
-  });
-  check('bojxona qatorlarida ikonkalar bor',
-    bojIcons.soni === 6 && bojIcons.yuklandi === 6,
-    `${bojIcons.yuklandi}/${bojIcons.soni} yuklandi`);
-
-  await page.getByText('Bojxona kalkulyatori', { exact: false }).first().click();
+  await custRow("Qancha to'layman?").click();
   await page.waitForTimeout(700);
   const calc = await page.evaluate(() => {
     const text = document.body.innerText;
@@ -660,7 +653,7 @@ try {
     await lcFill("O'zbekistondagi narx, so'mda", 6000000); lt = await lcText();
     check('jami narx: "olish foydalimi?" tejashni ko\'rsatadi', /tejash [\d ]+ so'm \(\d+%\)/.test(lt), lt.slice(lt.indexOf('Chetdan'), lt.indexOf('Chetdan') + 60));
     await lcFill('Quti uzunligi, sm', 50); await lcFill('Quti kengligi, sm', 40); await lcFill('Quti balandligi, sm', 40); lt = await lcText();
-    check('jami narx: hajmiy og\'irlik (16 kg) hisobga olinadi', /Hajmiy og'irlik 16,0 kg/.test(lt) && /\(16,0 kg\)/.test(lt));
+    check('jami narx: quti o\'lchami bo\'yicha og\'irlik (16 kg) hisobga olinadi', /Quti o'lchami bo'yicha og'irlik 16,0 kg/.test(lt) && /\(16,0 kg\)/.test(lt));
     await lcFill('Mahsulot nomi', 'Sinov mahsulot');
     await page.locator('main button').filter({ hasText: "Xaridlarimga qo'shish" }).first().click(); await page.waitForTimeout(800);
     const planHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
@@ -1328,7 +1321,7 @@ try {
     await bos(/Taqqoslash|Таққослаш|Сравн/); await skan('taqqoslash');
     for (let i = 0; i < 6; i++) {
       await nav(2); await bos(/^\s*(Bojxona|Божхона|Таможня)/); await p.waitForTimeout(300);
-      const secs = p.locator('main button').filter({ hasText: /Bojsiz|Yagona|Taqiqlangan|Rasmiylashtirish|kalkulyatori|organlari|Божсиз|Ягона|Тақиқланган|Расмийлаштириш|калькулятор|органлари|Беспошлин|Единый|Запрещ|Оформлен|калькулятор|органы/i });
+      const secs = p.locator('main button').filter({ hasText: /Qancha to'layman|Nimani olib|Bojxonada nima|Қанча тўлайман|Нимани олиб|Божхонада нима|Сколько я заплачу|Что нельзя|Что происходит|Божсиз|Ягона|Тақиқланган|Расмийлаштириш|калькулятор|органлари|Беспошлин|Единый|Запрещ|Оформлен|калькулятор|органы/i });
       if (await secs.count() > i) { await secs.nth(i).click(); await p.waitForTimeout(600); await skan('bojxona-' + i); }
     }
     await nav(2); await bos(/Qo'llanmalar|Қўлланмалар|Инструкции/); await skan('qo\'llanmalar');
@@ -1692,7 +1685,7 @@ try {
      chiqadi: avval davlati asosiy bo'lganlar, keyin qo'shimcha yo'nalish
      sifatida yuboradiganlar (izohda "shu davlatdan ham yuboradi"). */
   const wizRo = await page.evaluate(() => {
-    const rows = [...document.querySelectorAll('main button')].map(b => b.innerText.replace(/\s+/g, ' ')).filter(t => /vositachi kerak|to'g'ridan-to'g'ri/.test(t));
+    const rows = [...document.querySelectorAll('main button')].map(b => b.innerText.replace(/\s+/g, ' ')).filter(t => /kuryer orqali|to'g'ridan-to'g'ri/.test(t));
     return { n: rows.length, birinchi: rows[0] || '', global: rows.filter(t => /· Global ·/.test(t)).length,
       davlatlar: [...new Set(rows.map(t => (t.match(/· ([^·]+) ·/) || [])[1] || ''))],
       sub: (document.querySelector('main').innerText.match(/Tanlovingizga mos[^\n]*/) || [''])[0] };
@@ -1708,9 +1701,9 @@ try {
     if (/kun|\$/.test(t) && t.length > 6) { await kk.nth(i).click(); break; }
   }
   await page.waitForTimeout(700);
-  const kor = page.locator('main button', { hasText: "Rejani ko'rish" });
+  const kor = page.locator('main button', { hasText: "Hisobni ko'rish" });
   if (await kor.count()) { await kor.first().click(); await page.waitForTimeout(600); }
-  await page.locator('main button', { hasText: 'Rejani saqlash' }).first().click();
+  await page.locator('main button', { hasText: "Xaridlarimga qo'shish" }).first().click();
   await page.waitForTimeout(900);
 
   /* Saqlangandan keyin reja ekrani ochiladi va tepasida yakun turadi —
@@ -1735,7 +1728,7 @@ try {
     sarlavha: document.querySelector('header').innerText.replace(/\s+/g, ' ').trim(),
     narx: (document.querySelector('main input') || {}).value
   }));
-  check('oy summasi kalkulyatorni ochadi', /Bojxona kalkulyatori/.test(oyKalk.sarlavha) && +oyKalk.narx > 0, JSON.stringify(oyKalk));
+  check('oy summasi kalkulyatorni ochadi', /Qancha to'layman/.test(oyKalk.sarlavha) && +oyKalk.narx > 0, JSON.stringify(oyKalk));
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(400);
 
@@ -1751,11 +1744,11 @@ try {
      bo'shliqsiz saqlanadi (kuryer sayti "RB 1234 CN" ni topmaydi), keyingi
      harakat "Omborga yetib keldi". */
   await page.locator('main [data-buy] button').filter({ hasText: /^\s*Buyurtma qildim\s*$/ }).first().click(); await page.waitForTimeout(500);
-  await page.locator('main [data-buy] input[aria-label="Trek raqam"]').first().fill('rb 1234 cn');
-  await page.locator('main [data-buy] input[aria-label="Trek raqam"]').first().blur();
+  await page.locator('main [data-buy] input[aria-label="Jo\'natma raqami"]').first().fill('rb 1234 cn');
+  await page.locator('main [data-buy] input[aria-label="Jo\'natma raqami"]').first().blur();
   await page.waitForTimeout(350);
   const kuz = await page.evaluate(() => {
-    const c = document.querySelector('main [data-buy]'); const inp = c && c.querySelector('input[aria-label="Trek raqam"]');
+    const c = document.querySelector('main [data-buy]'); const inp = c && c.querySelector('input[aria-label="Jo\'natma raqami"]');
     const on = c ? [...c.querySelectorAll('span')].find(sp => sp.style.fontWeight === '700' && /^(Topish|Narx|Buyurtma|Yo'lda|Keldi)$/.test(sp.textContent.trim())) : null;
     return { trek: inp ? inp.value : '', holat: on ? on.textContent.trim() : '', tugma: c ? c.innerText : '',
       saqlandi: ((JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || [])[0] || {}).ordered || '' };
@@ -1765,7 +1758,7 @@ try {
   /* Batafsil ekranda ham o'sha holat va 6 bosqichli ro'yxat ("Bojxonada" bilan). */
   await page.locator('main [data-buy] button').first().click(); await page.waitForTimeout(500);
   const bat = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
-  check('xarid ekrani: holat chizig\'i, raqam maydoni, "Batafsil holat" (Bojxonada bilan)', /Topish Narx Buyurtma Yo'lda Keldi/.test(bat) && (await page.locator('main input[aria-label="Trek raqam"]').inputValue()) === 'RB1234CN' && /Batafsil holat/.test(bat) && /Bojxonada/.test(bat) && /Omborga yetib keldi/.test(bat), bat.slice(0, 160));
+  check('xarid ekrani: holat chizig\'i, raqam maydoni, "Batafsil holat" (Bojxonada bilan)', /Topish Narx Buyurtma Yo'lda Keldi/.test(bat) && (await page.locator('main input[aria-label="Jo\'natma raqami"]').inputValue()) === 'RB1234CN' && /Batafsil holat/.test(bat) && /Bojxonada/.test(bat) && /Omborga yetib keldi/.test(bat), bat.slice(0, 160));
 
   /* Kuryer kartochkasidagi havola chiplarida belgi bo'lsin. */
   await page.locator('nav button', { hasText: 'Boshlash' }).first().click();
@@ -1819,41 +1812,10 @@ try {
   check('bosiladigan elementlar ajralib turadi',
     tap.yalang.length === 0 && tap.qoida, tap.yalang.join(' | ') || (tap.qoida ? '' : 'bosish effekti yo\'q'));
 
-  /* Bojxona ma'lumotnomasi bir xil oq qatorlar emas: bitta katta kartochka
-     (bojsiz me'yor, raqami yirik) va mavzu ohangi bilan ajratilgan 2x2 plitka. */
-  await refGo('Bojxona');
-  await page.waitForTimeout(700);
-  const ritm = await page.evaluate(() => {
-    const btns = [...document.querySelectorAll('main button')];
-    const hero = btns.find(b => /BOJSIZ OLIB KIRISH/i.test(b.innerText));
-    const grid = [...document.querySelectorAll('main div')]
-      .find(d => /repeat\(2|1fr\) minmax/.test(d.style.gridTemplateColumns || '') &&
-                 d.querySelectorAll(':scope > button').length === 4);
-    const plita = grid ? [...grid.querySelectorAll(':scope > button')] : [];
-    /* Kartochka oq: ohang faqat ikonka ostidagi kvadratda turadi,
-       shuning uchun rang-baranglikni shu kvadratlardan o'lchaymiz. */
-    const fon = plita.map(b => {
-      const plate = [...b.querySelectorAll('div')]
-        .find(d => /^4[0-9]px$/.test(d.style.width) && d.querySelector('img'));
-      return plate ? getComputedStyle(plate).backgroundColor : getComputedStyle(b).backgroundImage;
-    });
-    const katta = hero ? [...hero.querySelectorAll('span')]
-      .some(x => parseFloat(getComputedStyle(x).fontSize) >= 30 && /^\$\d/.test(x.textContent.trim())) : false;
-    return {
-      hero: !!hero, heroH: hero ? Math.round(hero.getBoundingClientRect().height) : 0,
-      katta, plita: plita.length,
-      plitaH: plita.length ? Math.round(plita[0].getBoundingClientRect().height) : 0,
-      xilFon: new Set(fon).size
-    };
-  });
-  check('bojxona ma\'lumotnomasi bir xil emas',
-    ritm.hero && ritm.katta && ritm.plita === 4 && ritm.xilFon === 4 && ritm.heroH > ritm.plitaH * 0.6,
-    `katta ${ritm.heroH}px, 4 plitka ${ritm.plitaH}px, ${ritm.xilFon} xil fon`);
-
   /* Bojxona me'yorlari: kartochkalarda belgilar bo'lsin. */
   await refGo('Bojxona');
   await page.waitForTimeout(600);
-  await page.getByText("Bojsiz olib kirish me'yori", { exact: false }).first().click();
+  await custRow("Qancha to'layman?").click();
   await page.waitForTimeout(800);
   const nrm = await page.evaluate(async () => {
     const u = [...document.querySelectorAll('main div')]
@@ -1872,7 +1834,7 @@ try {
   /* Bog'lanish: to'liq raqam bosiladigan bo'lsin, ichki nomerlar emas. */
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(600);
-  await page.getByText('Bojxona organlari', { exact: false }).first().click();
+  await custRow("Bojxonada nima bo'ladi?").click();
   await page.waitForTimeout(800);
   const aloqa = await page.evaluate(() => ({
     tel: [...document.querySelectorAll('a[href^="tel:"]')].map(a => a.getAttribute('href')),
@@ -1905,7 +1867,7 @@ try {
      bo'lsin — 23 qator, kamida 20 xil ikonka. */
   await refGo('Bojxona');
   await page.waitForTimeout(600);
-  await page.getByText('Taqiqlangan tovarlar', { exact: false }).first().click();
+  await custRow("Nimani olib kirib bo'lmaydi?").click();
   await page.waitForTimeout(800);
   const ban = await page.evaluate(async () => {
     const u = [...document.querySelectorAll('main div')]
@@ -1926,7 +1888,7 @@ try {
      bilan, me'yor ichida bo'lsa yo'q; Telegram xabarida kalkulyator raqamlari. */
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(500);
-  await page.getByText('Bojxona kalkulyatori', { exact: false }).first().click();
+  await custRow("Qancha to'layman?").click();
   await page.waitForTimeout(700);
   await page.evaluate(() => { window.__opened = []; window.open = u => { window.__opened.push(u); return {}; }; });
   /* Oldingi tekshiruvlar kalkulyatorda boshqa qiymat qoldirgan bo'lishi mumkin. */
@@ -1946,7 +1908,7 @@ try {
     `${ctaOverTxt} · ichida: ${ctaWithin} · ${ctaUrl.slice(0, 90)}`);
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(500);
-  await page.getByText('Taqiqlangan tovarlar', { exact: false }).first().click();
+  await custRow("Nimani olib kirib bo'lmaydi?").click();
   await page.waitForTimeout(700);
 
   /* Motion-tushuntirish: taqiq bo'limida yo'q, me'yor bo'limida bor;
@@ -1961,7 +1923,7 @@ try {
   check('taqiqlar: cheklangan tovarda hujjat tugmasi, taqiqlanganda yo\'q', banAmber === 1 && banRed === 0, `${banAmber} / ${banRed}`);
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(500);
-  await page.getByText('Bojsiz olib kirish', { exact: false }).first().click();
+  await custRow("Qancha to'layman?").click();
   await page.waitForTimeout(700);
   const moKarta = page.locator('main button').filter({ hasText: /Qanday ishlaydi/ });
   const moBor = await moKarta.count();
@@ -1982,21 +1944,23 @@ try {
      BHM ning 25% yig'imi izohda ham, sahnada (HTML qatlam) ham bir xil. */
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(500);
-  await page.getByText('Yagona bojxona', { exact: false }).first().click();
+  await custRow("Qancha to'layman?").click();
   await page.waitForTimeout(600);
+  /* To'lov animatsiyasi: "Yagona bojxona to'lovi" yonidagi "Qanday hisoblanadi". */
+  await page.locator('main button').filter({ hasText: /^\s*Qanday hisoblanadi\s*$/ }).first().click();
   await page.locator('main button').filter({ hasText: /Qanday ishlaydi/ }).first().click();
   await page.waitForTimeout(400);
   await page.locator('main button[aria-label="8-qadam"]').first().click().catch(() => {});
   await page.waitForTimeout(400);
   const moYigim = await page.evaluate(() => {
     const t = document.querySelector('main').innerText;
-    const izoh = (t.match(/25% i = ([\d ]+) so'm/) || [])[1];
+    const izoh = (t.match(/qat'iy yig'im bor: ([\d ]+) so'm/) || [])[1];
     const qatlam = [...document.querySelectorAll('main span')].map(x => x.textContent.trim()).filter(x => x === izoh).length;
     return { izoh, qatlam };
   });
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(500);
-  await page.getByText('Bojsiz olib kirish', { exact: false }).first().click();
+  await custRow("Qancha to'layman?").click();
   await page.waitForTimeout(600);
   const moYopiq = await page.locator('main button').filter({ hasText: /Qanday ishlaydi/ }).count();
   check('bojxona motion-tushuntirish: karta, o\'yin, qadam, yopilish',
@@ -2005,7 +1969,7 @@ try {
     JSON.stringify({ moTaqiq, moBor, moSub, moBosh, moTort, moYigim, moYopiq }));
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(500);
-  await page.getByText('Taqiqlangan tovarlar', { exact: false }).first().click();
+  await custRow("Nimani olib kirib bo'lmaydi?").click();
   await page.waitForTimeout(700);
 
   /* Taqiq qidiruvi kirillcha so'rov va sinonimlarni tushunadi: "сигарет"

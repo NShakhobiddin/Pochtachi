@@ -747,6 +747,17 @@
           </span>
           <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 6l6 6-6 6"></path></svg>
         </button>
+        <!-- AI o'chiq bo'lsa "Hali topmadim" yo'q — do'kon tanlashga yo'l shu
+             (Reja sehrgari: tur → davlat → do'kon → kuryer → hisob). -->
+        <sc-if value="{{ aiOff }}" hint-placeholder-val="{{ false }}">
+          <button sc-camel-on-click="{{ goWizard }}" style="display:flex;align-items:center;gap:12px;width:100%;background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+              <span style="font-size:15px;font-weight:700;color:#131429">Do'kon va kuryerni o'zim tanlayman</span>
+              <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">Tur, davlat, do'kon va kuryer — besh qadamda.</span>
+            </span>
+            <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 6l6 6-6 6"></path></svg>
+          </button>
+        </sc-if>
         <input type="file" accept="image/*" data-shot="1" sc-camel-on-change="{{ onShotFile }}" aria-label="Skrinshot tanlash" style="display:none">
         <!-- Oxirgi hisob: natija saqlanadi, chiqib ketsa ham yo'qolmaydi. -->
         <sc-if value="{{ hasLast }}" hint-placeholder-val="{{ false }}">
@@ -1552,7 +1563,7 @@
                 <div style="width:16px;height:16px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ s.pic }}"></div>
               </div>
               <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
-                <span style="font-size:13px;font-weight:700;color:#131429">{{ s.k }}</span>
+                <span style="font-size:13px;font-weight:700;color:#131429">{{ s.lbl }}</span>
                 <span lang="{{ dataLang }}" style="font-size:13px;color:#4E4F6B;line-height:1.5;text-wrap:pretty">{{ s.v }}</span>
               </div>
             </div>
@@ -1629,98 +1640,25 @@
           </sc-if>
           <sc-if value="{{ monthEmpty }}" hint-placeholder-val="{{ false }}">
             <button sc-camel-on-click="{{ goCalcSec }}" style="flex:1;min-height:44px;border-radius:14px;border:none;background:#E9EAFD;color:#13189D;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer" style-hover="background:#E9EAFD">Kalkulyatorda hisoblash</button>
-            <button sc-camel-on-click="{{ goWizard }}" style="flex:1;min-height:44px;border-radius:14px;border:1.5px solid #DCDDFA;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer" style-hover="background:#F1F1F8">Reja tuzish</button>
+            <button sc-camel-on-click="{{ goWizard }}" style="flex:1;min-height:44px;border-radius:14px;border:1.5px solid #DCDDFA;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer" style-hover="background:#F1F1F8">Do'kon tanlash</button>
           </sc-if>
         </div>
       </div>
-      <!-- Bojxona kalkulyatori — alohida, ajratilgan qator. Ilgari butun
-           kalkulyator shu yerda ochiq turardi va ma'lumotnoma bo'limlarini
-           pastga surib yuborardi; endi bosilganda to'liq ekranda ochiladi. -->
-      <button sc-camel-on-click="{{ goCalcSec }}" style="display:flex;align-items:center;gap:14px;background:#FFFFFF;border:none;border-radius:20px;padding:16px;cursor:pointer;text-align:left;width:100%;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:inset 0 0 0 1px rgba(26,31,176,.09),0 4px 14px -6px rgba(26,31,176,.26)">
-        <div style="width:48px;height:48px;border-radius:16px;background:#E9EAFD;display:flex;align-items:center;justify-content:center;flex:none"><img src="icons/boj-kalkulyator.webp" alt="" width="32" height="32" style="width:32px;height:32px;object-fit:contain" decoding="async"></div>
-        <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
-          <h2 style="margin:0;display:block;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Bojxona kalkulyatori</h2>
-          <!-- Maydonlar hali namunaviy qiymatda ($320, 2,5 kg) bo'lsa, summa
-               "misol" deb belgilanadi: birinchi kirgan foydalanuvchi "hozir
-               597 420 so'm" ni o'ziga tegishli qarz deb tushunardi. -->
-          <span style="font-size:13px;color:#6B6C85;font-weight:500;line-height:1.5">boj va yig'imni hisoblang · {{ calcHint }}</span>
-        </div>
-        <div style="width:30px;height:30px;border-radius:14px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;flex:none">
-          <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-        </div>
-      </button>
-
-      <div style="display:flex;flex-direction:column;gap:12px">
-        <div style="display:flex;align-items:center;gap:10px;padding:2px 2px 0">
-          <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85">Ma'lumotnoma</span>
-          <div style="flex:1;height:1px;background:#E3E4EE"></div>
-        </div>
-        <!-- Bojsiz me'yor — bo'limning eng ko'p so'raladigan raqami, shuning
-             uchun u qolgan to'rttasidan katta va raqami yirik yoziladi.
-             Ilgari beshovi ham bir xil qator edi va ekran monoton ko'rinardi. -->
-        <button sc-camel-on-click="{{ sec1 }}" style="display:flex;align-items:center;gap:16px;background:linear-gradient(150deg,#F1F1F8 0%,#E9EAFD 100%);border:none;border-radius:20px;padding:16px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:inset 0 0 0 1px rgba(26,31,176,.09),0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
-          <img src="icons/boj-meyor.webp" alt="" width="64" height="64" style="width:64px;height:64px;object-fit:contain;flex:none" decoding="async">
-          <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
-            <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#4245A4">Bojsiz olib kirish me'yori</span>
-            <span style="font-size:34px;letter-spacing:-.035em;font-weight:800;color:#13189D;line-height:1.1;font-variant-numeric:tabular-nums">${{ freeUsdLabel }}</span>
-            <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">oyiga · notijorat maqsad · miqdoriy normalar</span>
-          </div>
-          <div style="width:30px;height:30px;border-radius:14px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;flex:none">
-            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-          </div>
-        </button>
-        <!-- Qolgan to'rttasi 2x2 plitka: mavzu bo'yicha rangi bor, shu bilan
-             bir xil oq qatorlar ketma-ketligi uziladi. -->
-        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
-        <button sc-camel-on-click="{{ sec2 }}" style="background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:152px;box-shadow:inset 0 0 0 1px rgba(180,83,9,.12),0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%">
-            <div style="width:48px;height:48px;border-radius:16px;background:#FDF3E3;display:flex;align-items:center;justify-content:center;flex:none"><img src="icons/boj-tolov.webp" alt="" width="32" height="32" style="width:32px;height:32px;object-fit:contain" decoding="async"></div>
-            <div style="width:26px;height:26px;border-radius:999px;background:#FDF3E3;display:flex;align-items:center;justify-content:center;flex:none">
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
-            <h2 style="margin:0;font-size:15px;font-weight:700;color:#131429;line-height:1.5;overflow-wrap:anywhere;text-wrap:pretty">Yagona bojxona to'lovi</h2>
-            <div style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">ortiqcha qismga {{ dutyPctLabel }}</div>
-          </div>
-        </button>
-        <button sc-camel-on-click="{{ sec3 }}" style="background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:152px;box-shadow:inset 0 0 0 1px rgba(155,28,28,.12),0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%">
-            <div style="width:48px;height:48px;border-radius:16px;background:#FCEAEA;display:flex;align-items:center;justify-content:center;flex:none"><img src="icons/boj-taqiq.webp" alt="" width="32" height="32" style="width:32px;height:32px;object-fit:contain" decoding="async"></div>
-            <div style="width:26px;height:26px;border-radius:999px;background:#FCEAEA;display:flex;align-items:center;justify-content:center;flex:none">
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#9B1C1C" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
-            <h2 style="margin:0;font-size:15px;font-weight:700;color:#131429;line-height:1.5;overflow-wrap:anywhere;text-wrap:pretty">Taqiqlangan tovarlar</h2>
-            <div style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">{{ banCount }} pozitsiya · manba bilan</div>
-          </div>
-        </button>
-        <button sc-camel-on-click="{{ sec4 }}" style="background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:152px;box-shadow:inset 0 0 0 1px rgba(14,133,149,.12),0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%">
-            <div style="width:48px;height:48px;border-radius:16px;background:#DDF1F4;display:flex;align-items:center;justify-content:center;flex:none"><img src="icons/boj-tartib.webp" alt="" width="32" height="32" style="width:32px;height:32px;object-fit:contain" decoding="async"></div>
-            <div style="width:26px;height:26px;border-radius:999px;background:#DDF1F4;display:flex;align-items:center;justify-content:center;flex:none">
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#0E8595" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
-            <h2 style="margin:0;font-size:15px;font-weight:700;color:#131429;line-height:1.5;overflow-wrap:anywhere;text-wrap:pretty">Rasmiylashtirish tartibi</h2>
-            <div style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">xabarnoma · tasdiqlash · saqlov</div>
-          </div>
-        </button>
-        <button sc-camel-on-click="{{ sec6 }}" style="background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:152px;box-shadow:inset 0 0 0 1px rgba(26,31,176,.09),0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%">
-            <div style="width:48px;height:48px;border-radius:16px;background:#E9EAFD;display:flex;align-items:center;justify-content:center;flex:none"><img src="icons/boj-aloqa.webp" alt="" width="32" height="32" style="width:32px;height:32px;object-fit:contain" decoding="async"></div>
-            <div style="width:26px;height:26px;border-radius:999px;background:#E9EAFD;display:flex;align-items:center;justify-content:center;flex:none">
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:4px;width:100%;min-width:0">
-            <h2 style="margin:0;font-size:15px;font-weight:700;color:#131429;line-height:1.5;overflow-wrap:anywhere;text-wrap:pretty">Bojxona organlari</h2>
-            <div style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">manzil · telefon · xarita</div>
-          </div>
-        </button>
-        </div>
+      <!-- Bojxona — uch savol (2026-09-24). Ilgari kalkulyator qatori va
+           olti bo'lim plitkasi edi (me'yor, to'lov, taqiq, tartib,
+           kalkulyator, organlar): odam qaysi biriga kirishni bilmasdi.
+           Endi uch sahifa — foydalanuvchining uch savoli. -->
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ custPages }}" as="cp" hint-placeholder-count="3">
+          <button class="xy-tap" sc-camel-on-click="{{ cp.go }}" style="display:flex;align-items:center;gap:14px;width:100%;min-height:72px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+            <div aria-hidden="true" style="width:48px;height:48px;flex:none;border-radius:16px;background-color:{{ cp.tint }};background-size:40px 40px;background-repeat:no-repeat;background-position:center;background-image:{{ cp.img }}"></div>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+              <span style="font-size:15px;font-weight:700;color:#131429">{{ cp.t }}</span>
+              <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5;overflow-wrap:anywhere">{{ cp.sub }}</span>
+            </span>
+            <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 6l6 6-6 6"></path></svg>
+          </button>
+        </sc-for>
       </div>
 
       <!-- Ma'lumotnoma yetmasa: mutaxassis bilan ishlash (pullik) -->
@@ -1842,7 +1780,7 @@
                 <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-in"><rect x="100" y="18" width="160" height="140" rx="12" fill="#FFFFFF" stroke="#E3E4EE" stroke-width="2"></rect><rect x="116" y="38" width="80" height="6" rx="3" fill="#E3E4EE"></rect><rect x="116" y="52" width="60" height="6" rx="3" fill="#E3E4EE"></rect><rect x="116" y="66" width="90" height="6" rx="3" fill="#E3E4EE"></rect><line x1="116" y1="92" x2="244" y2="92" stroke="#E3E4EE" stroke-width="2" stroke-dasharray="4 4"></line><text x="116" y="118" font-size="11" font-weight="600" fill="#6B6C85">Jami</text><text x="244" y="118" text-anchor="end" font-size="14" font-weight="800" fill="#131429">$120</text></g><g class="mo-pop" style="animation-delay:1.2s"><circle cx="236" cy="112" r="22" fill="none" stroke="#1A1FB0" stroke-width="3"></circle><path d="M252 128l16 16" stroke="#1A1FB0" stroke-width="4" stroke-linecap="round"></path></g><text class="mo-in" style="animation-delay:2.2s" x="180" y="184" text-anchor="middle" font-size="12" font-weight="600" fill="#6B6C85">chek yoki invoys · saqlab qo'ying</text></svg>
               </sc-if>
               <sc-if value="{{ moScene.m0s9 }}" hint-placeholder-val="{{ false }}">
-                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-in"><rect x="116" y="14" width="128" height="172" rx="18" fill="#131429"></rect><rect x="124" y="28" width="112" height="144" rx="12" fill="#FFFFFF"></rect><rect x="166" y="20" width="28" height="4" rx="2" fill="#4E4F6B"></rect></g><g class="mo-in" style="animation-delay:0.5s"><rect x="132" y="40" width="96" height="22" rx="6" fill="#F1F1F8"></rect><text x="140" y="55" font-size="11" font-weight="700" fill="#131429">$50</text><rect x="186" y="47" width="34" height="8" rx="4" fill="#E3E4EE"></rect></g><g class="mo-in" style="animation-delay:0.9s"><rect x="132" y="70" width="96" height="22" rx="6" fill="#F1F1F8"></rect><text x="140" y="85" font-size="11" font-weight="700" fill="#131429">$70</text><rect x="186" y="77" width="34" height="8" rx="4" fill="#E3E4EE"></rect></g><g class="mo-in" style="animation-delay:1.3s"><rect x="132" y="100" width="96" height="22" rx="6" fill="#F1F1F8"></rect><text x="140" y="115" font-size="11" font-weight="700" fill="#131429">$60</text><rect x="186" y="107" width="34" height="8" rx="4" fill="#E3E4EE"></rect></g><g class="mo-pop" style="animation-delay:2.0s"><rect x="132" y="134" width="96" height="26" rx="8" fill="#E9EAFD"></rect><text x="180" y="151" text-anchor="middle" font-size="11" font-weight="800" fill="#1A1FB0">$180 / $200</text></g><text class="mo-in" style="animation-delay:0.3s" x="56" y="100" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">my.gov.uz</text><text class="mo-in" style="animation-delay:0.3s" x="304" y="100" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">YIDXP</text></svg>
+                <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px"><g class="mo-in"><rect x="116" y="14" width="128" height="172" rx="18" fill="#131429"></rect><rect x="124" y="28" width="112" height="144" rx="12" fill="#FFFFFF"></rect><rect x="166" y="20" width="28" height="4" rx="2" fill="#4E4F6B"></rect></g><g class="mo-in" style="animation-delay:0.5s"><rect x="132" y="40" width="96" height="22" rx="6" fill="#F1F1F8"></rect><text x="140" y="55" font-size="11" font-weight="700" fill="#131429">$50</text><rect x="186" y="47" width="34" height="8" rx="4" fill="#E3E4EE"></rect></g><g class="mo-in" style="animation-delay:0.9s"><rect x="132" y="70" width="96" height="22" rx="6" fill="#F1F1F8"></rect><text x="140" y="85" font-size="11" font-weight="700" fill="#131429">$70</text><rect x="186" y="77" width="34" height="8" rx="4" fill="#E3E4EE"></rect></g><g class="mo-in" style="animation-delay:1.3s"><rect x="132" y="100" width="96" height="22" rx="6" fill="#F1F1F8"></rect><text x="140" y="115" font-size="11" font-weight="700" fill="#131429">$60</text><rect x="186" y="107" width="34" height="8" rx="4" fill="#E3E4EE"></rect></g><g class="mo-pop" style="animation-delay:2.0s"><rect x="132" y="134" width="96" height="26" rx="8" fill="#E9EAFD"></rect><text x="180" y="151" text-anchor="middle" font-size="11" font-weight="800" fill="#1A1FB0">$180 / $200</text></g><text class="mo-in" style="animation-delay:0.3s" x="56" y="100" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">my.gov.uz</text><text class="mo-in" style="animation-delay:0.3s" x="304" y="100" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6C85">my.gov.uz</text></svg>
               </sc-if>
               <sc-if value="{{ moScene.m0s10 }}" hint-placeholder-val="{{ false }}">
                 <svg sc-camel-view-box="0 0 360 200" style="position:absolute;top:0;left:50%;width:360px;height:200px;margin-left:-180px">
@@ -1941,7 +1879,7 @@
                   <g class="mo-in"><rect x="136" y="16" width="88" height="170" rx="18" fill="#131429"></rect><rect x="144" y="30" width="72" height="142" rx="12" fill="#FFFFFF"></rect><rect x="166" y="22" width="28" height="4" rx="2" fill="#4E4F6B"></rect></g>
                   <g class="mo-pop" style="animation-delay:.9s"><rect x="150" y="44" width="60" height="42" rx="10" fill="#E9EAFD"></rect><circle cx="163" cy="58" r="6" fill="#1A1FB0"></circle><rect x="173" y="54" width="30" height="4" rx="2" fill="#1A1FB0"></rect><rect x="173" y="62" width="22" height="4" rx="2" fill="#A6A7BC"></rect><rect x="156" y="74" width="48" height="4" rx="2" fill="#A6A7BC"></rect></g>
                   <circle class="mo-ring" style="animation-delay:.9s" cx="180" cy="65" r="30" fill="none" stroke="#1A1FB0" stroke-width="2"></circle>
-                  <g class="mo-in" style="animation-delay:1.8s"><rect x="40" y="96" width="76" height="34" rx="10" fill="#FFFFFF" stroke="#E3E4EE"></rect><text x="78" y="118" text-anchor="middle" font-size="12" font-weight="700" fill="#1A1FB0">YIDXP</text></g>
+                  <g class="mo-in" style="animation-delay:1.8s"><rect x="40" y="96" width="76" height="34" rx="10" fill="#FFFFFF" stroke="#E3E4EE"></rect><text x="78" y="118" text-anchor="middle" font-size="12" font-weight="700" fill="#1A1FB0">my.gov.uz</text></g>
                   <g class="mo-in" style="animation-delay:2.2s"><rect x="244" y="96" width="76" height="34" rx="10" fill="#FFFFFF" stroke="#E3E4EE"></rect><text x="282" y="118" text-anchor="middle" font-size="12" font-weight="700" fill="#1A1FB0">ilova</text></g>
                 </svg>
               </sc-if>
@@ -2049,182 +1987,8 @@
         </div>
       </sc-if>
 
-      <sc-if value="{{ cs1 }}" hint-placeholder-val="{{ true }}">
-        <div style="background:#FFFFFF;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:8px">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-            <div style="display:flex;align-items:center;gap:12px;min-width:0">
-              <div style="width:40px;height:40px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:url('icons/norm/meyor.webp')"></div>
-              <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Bojsiz me'yor</span>
-            </div>
-            <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;letter-spacing:-.025em;font-weight:800;color:#1A1FB0;font-variant-numeric:tabular-nums;flex:none">${{ freeUsdLabel }}</span>
-          </div>
-          <span style="font-size:13px;color:#6B6C85;line-height:1.5;text-wrap:pretty">Bir kalendar oy uchun. Kalendar oy — oyning 1-sanasidan so'nggi sanasigacha bo'lgan uzluksiz davr, masalan 1-yanvardan 31-yanvargacha.</span>
-        </div>
-        <a class="xy-tap" href="https://my.gov.uz/uz/service/717" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);border-radius:20px;padding:14px 14px;text-decoration:none">
-          <div style="width:34px;height:34px;border-radius:20px;background:linear-gradient(150deg,#E9EAFD,#DCDDFA);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:inset 0 0 0 1px rgba(26,31,176,.09)">
-            <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"></path><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"></path></svg>
-          </div>
-          <div style="flex:1;display:flex;flex-direction:column;gap:4px">
-            <span style="font-size:15px;font-weight:700;color:#131429">Oyda nechta jo'natma keldi?</span>
-            <span style="font-size:13px;color:#6B6C85;line-height:1.5">my.gov.uz orqali nomingizga kelgan jo'natmalarni tekshiring</span>
-          </div>
-        </a>
-        <div style="background:#FFFFFF;border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-          <div style="display:flex;flex-direction:column;gap:4px">
-            <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Miqdoriy me'yorlar</span>
-            <span style="font-size:13px;color:#6B6C85;line-height:1.5">Bojsiz olib kiriladigan ayrim tovarlar uchun alohida chegara</span>
-          </div>
-          <sc-for list="{{ qtyNorms }}" as="q" hint-placeholder-count="2">
-            <div style="display:flex;flex-direction:column;gap:6px;background:#F1F1F8;border-radius:20px;padding:12px 14px">
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-                <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
-                  <div style="width:32px;height:32px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ q.pic }}"></div>
-                  <span style="font-size:15px;font-weight:700;color:#131429">{{ q.k }}</span>
-                </div>
-                <span style="font-size:15px;font-weight:700;color:#1A1FB0;flex:none;font-variant-numeric:tabular-nums">{{ q.v }}</span>
-              </div>
-              <span style="font-size:13px;color:#6B6C85;line-height:1.5">{{ q.note }}</span>
-            </div>
-          </sc-for>
-          <div style="display:flex;gap:10px;background:#FCEAEA;border-radius:20px;padding:12px 14px">
-            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#9B1C1C" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M4.9 4.9l14.2 14.2"></path></svg>
-            <span style="font-size:13px;color:#9B1C1C;line-height:1.5;font-weight:500">Alkogol va tamaki mahsulotlarini xalqaro pochta va kuryerlik jo'natmalari orqali olib kirish taqiqlanadi.</span>
-          </div>
-        </div>
-
-        <div style="background:#FFFFFF;border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-          <div style="display:flex;flex-direction:column;gap:6px">
-            <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Notijorat maqsad deb topilishi</span>
-            <span style="font-size:13px;color:#6B6C85;line-height:1.5;text-wrap:pretty">Imtiyoz faqat shaxsiy va oilaviy ehtiyoj uchun tovarlarga beriladi. Bojxona xodimi quyidagilarga qarab aniqlaydi:</span>
-          </div>
-          <sc-for list="{{ criteria }}" as="c" hint-placeholder-count="7">
-            <div style="display:flex;gap:12px;align-items:baseline">
-              <span style="font-size:11px;font-weight:600;color:#1A1FB0;flex:none;width:15px;font-variant-numeric:tabular-nums">{{ c.n }}</span>
-              <span style="font-size:13px;color:#4E4F6B;line-height:1.5;flex:1;text-wrap:pretty">{{ c.t }}</span>
-            </div>
-          </sc-for>
-        </div>
-      
-      </sc-if>
-
-      <sc-if value="{{ cs2 }}" hint-placeholder-val="{{ false }}">
-
-        <div style="display:flex;flex-direction:column;gap:12px">
-          <sc-for list="{{ payCards }}" as="l" hint-placeholder-count="2">
-            <div style="background:#FFFFFF;border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:8px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-                <div style="display:flex;align-items:center;gap:12px;min-width:0">
-                  <div style="width:40px;height:40px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ l.pic }}"></div>
-                  <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">{{ l.k }}</span>
-                </div>
-                <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#1A1FB0;font-variant-numeric:tabular-nums;flex:none">{{ l.v }}</span>
-              </div>
-              <span style="font-size:13px;color:#6B6C85;line-height:1.5;text-wrap:pretty">{{ l.note }}</span>
-            </div>
-          </sc-for>
-        </div>
-        <div style="background:#FFFFFF;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px">
-          <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Qanday hisoblanadi</span>
-          <sc-for list="{{ calcSteps }}" as="s" hint-placeholder-count="4">
-            <div style="display:flex;gap:12px;align-items:baseline">
-              <div style="width:5px;height:5px;border-radius:50%;background:#9093EE;flex:none"></div>
-              <span style="font-size:13px;color:#4E4F6B;line-height:1.5;flex:1;text-wrap:pretty">{{ s.t }}</span>
-            </div>
-          </sc-for>
-          <span style="font-size:13px;color:#6B6C85;line-height:1.5;text-wrap:pretty">Yagona bojxona to'lovi bojxona to'lovlari undirilmaydigan tovarlarni olib kirishning cheklangan me'yorlaridan ortgan taqdirda, faqat ortiqcha qismga nisbatan undiriladi.</span>
-          <button sc-camel-on-click="{{ goCalcSec }}" style="height:46px;border-radius:20px;border:none;cursor:pointer;font-family:inherit;font-size:15px;font-weight:700;color:#fff;background:linear-gradient(155deg,#494FE9,#13189D);box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">Kalkulyatorda hisoblash</button>
-        </div>
-      </sc-if>
-
-      <sc-if value="{{ cs3 }}" hint-placeholder-val="{{ false }}">
-
-        <label style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:0 14px;height:50px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);cursor:text">
-          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
-          <input value="{{ banQuery }}" sc-camel-on-change="{{ onBanQuery }}" placeholder="Tovar nomini yozing" type="search" enterkeyhint="search" aria-label="Taqiqlangan tovar nomi" style="flex:1;border:none;outline:none;font-size:15px;font-weight:500;color:#131429;background:transparent">
-       </label>
-        <div style="display:flex;gap:8px">
-          <sc-for list="{{ banFilters }}" as="ff" hint-placeholder-count="3">
-            <button sc-camel-on-click="{{ ff.pick }}" style="flex:1;height:34px;border-radius:20px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;background:{{ ff.bg }};color:{{ ff.fg }}">{{ ff.label }}</button>
-          </sc-for>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <sc-for list="{{ banList }}" as="b" hint-placeholder-count="6">
-            <div style="background:#FFFFFF;border-radius:20px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);content-visibility:auto;contain-intrinsic-size:auto 62px">
-              <button sc-camel-on-click="{{ b.toggle }}" style="display:flex;align-items:center;gap:12px;background:transparent;border:none;width:100%;text-align:left;padding:14px 14px;cursor:pointer;font-family:inherit">
-                <div style="width:38px;height:38px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:{{ b.bg }}">
-                  <div style="width:24px;height:24px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ b.pic }}"></div>
-                </div>
-                <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
-                  <span style="font-size:15px;font-weight:700;color:#131429;line-height:1.5">{{ b.name }}</span>
-                  <span style="font-size:11px;font-weight:600;color:{{ b.fg }}">{{ b.label }}</span>
-                </div>
-                <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transform:rotate({{ b.rot }})"><path d="M6 9l6 6 6-6"></path></svg>
-              </button>
-              <sc-if value="{{ b.open }}" hint-placeholder-val="{{ false }}">
-                <div style="display:flex;flex-direction:column;gap:10px;padding:0 14px 14px 65px">
-                  <span style="font-size:13px;color:#4E4F6B;line-height:1.5;text-wrap:pretty">{{ b.note }}</span>
-                  <div style="display:flex;flex-direction:column;gap:4px;background:#F1F1F8;border-radius:20px;padding:10px 12px">
-                    <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85">Huquqiy manba</span>
-                    <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5">{{ b.src }}</span>
-                  </div>
-                  <sc-if value="{{ b.canAsk }}" hint-placeholder-val="{{ false }}">
-                    <button sc-camel-on-click="{{ b.askDoc }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 16px;border:none;border-radius:14px;background:#E9EAFD;color:#13189D;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:left" style-hover="background:#DCDDFA"><span>Qanday hujjat kerak?</span><span style="flex:none;font-variant-numeric:tabular-nums">{{ b.askPrice }}</span></button>
-                  </sc-if>
-                </div>
-              </sc-if>
-            </div>
-          </sc-for>
-        </div>
-        <sc-if value="{{ banEmpty }}" hint-placeholder-val="{{ false }}">
-          <span style="font-size:13px;color:#6B6C85;text-align:center;padding:20px 0">Bunday tovar ro'yxatda topilmadi.</span>
-        </sc-if>
-      
-      </sc-if>
-
-      <sc-if value="{{ cs4 }}" hint-placeholder-val="{{ false }}">
-
-        <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:16px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-          <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Rasmiylashtirish tartibi</span>
-          <sc-for list="{{ procSteps }}" as="p" hint-placeholder-count="4">
-            <div style="display:flex;gap:12px">
-              <div style="width:26px;height:26px;border-radius:12px;background:linear-gradient(155deg,#494FE9,#13189D);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none">{{ p.n }}</div>
-              <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
-                <span style="font-size:15px;font-weight:700;color:#131429;line-height:1.5">{{ p.t }}</span>
-                <span style="font-size:13px;color:#6B6C85;line-height:1.5;text-wrap:pretty">{{ p.d }}</span>
-              </div>
-            </div>
-          </sc-for>
-          <div style="display:flex;gap:12px;background:#FDF3E3;border-radius:20px;padding:12px 14px">
-            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
-            <span style="font-size:13px;color:#B45309;line-height:1.5;font-weight:500">Tasdiqlash yoki rad etish past va o'rta xavfli jo'natmalar uchun ixtiyoriy, yuqori xavflilar uchun majburiy.</span>
-          </div>
-          <a href="https://my.gov.uz/uz/service/1364" target="_blank" rel="noopener noreferrer" style="font-size:13px;font-weight:700;color:#1A1FB0;text-decoration:none">YIDXP orqali xabarnomani tasdiqlash →</a>
-        </div>
-
-        <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-          <div style="display:flex;flex-direction:column;gap:6px">
-            <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Jo'natma qachon ushlab qolinadi</span>
-            <span style="font-size:13px;color:#6B6C85;line-height:1.5">Quyidagi hollarda jo'natma vaqtincha saqlovga olinishi mumkin:</span>
-          </div>
-          <sc-for list="{{ holdReasons }}" as="h" hint-placeholder-count="6">
-            <div style="display:flex;gap:12px;align-items:baseline">
-              <div style="width:5px;height:5px;border-radius:50%;background:#E0A32E;flex:none"></div>
-              <span style="font-size:13px;color:#4E4F6B;line-height:1.5;flex:1;text-wrap:pretty">{{ h.t }}</span>
-            </div>
-          </sc-for>
-        </div>
-        <sc-if value="{{ svcOn }}" hint-placeholder-val="{{ false }}">
-          <div style="background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:inset 0 0 0 1.5px rgba(26,31,176,.16),0 2px 8px -4px rgba(16,18,45,.10)">
-            <div style="display:flex;flex-direction:column;gap:4px">
-              <span style="font-size:15px;font-weight:700;color:#131429">Jo'natmangiz ushlanib qoldimi?</span>
-              <span style="font-size:13px;color:#6B6C85;line-height:1.5;text-wrap:pretty">Sabab aniqlanadi, kerakli hujjatlar ro'yxati va ariza matni tayyorlab beriladi.</span>
-            </div>
-            <button sc-camel-on-click="{{ holdAsk }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 16px;border:none;border-radius:14px;background:#E9EAFD;color:#13189D;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:left" style-hover="background:#DCDDFA"><span>Mutaxassis yordami</span><span style="flex:none;font-variant-numeric:tabular-nums">{{ svcUshlanganPrice }}</span></button>
-          </div>
-        </sc-if>
-      </sc-if>
-
       <sc-if value="{{ cs5 }}" hint-placeholder-val="{{ false }}">
+      <div data-sec="4" style="display:flex;flex-direction:column;gap:12px;scroll-margin-top:12px">
 
         <div style="background:#FFFFFF;border-radius:20px;padding:12px 16px;display:flex;flex-direction:column;gap:6px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
           <span style="font-size:13px;font-weight:700;color:#1A1FB0">Kalendar oydagi umumiy summani yozing</span>
@@ -2298,7 +2062,7 @@
             </div>
           </sc-for>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:2px">
-            <span style="font-size:11px;font-weight:700;color:#6B6C85;font-variant-numeric:tabular-nums">1 USD = {{ calcRate }} so'm · BHM {{ bhmLabel }} so'm</span>
+            <span style="font-size:11px;font-weight:700;color:#6B6C85;font-variant-numeric:tabular-nums">1 USD = {{ calcRate }} so'm</span>
             <span style="font-size:11px;font-weight:700;color:#6B6C85">{{ rateSrcLabel }}</span>
             <button sc-camel-on-click="{{ refreshRate }}" aria-label="Valyuta kursini yangilash" style="background:none;border:none;font-family:inherit;font-size:11px;font-weight:600;color:#1A1FB0;cursor:pointer;padding:6px 0;min-height:44px">{{ rateBtnLabel }}</button>
           </div>
@@ -2331,9 +2095,199 @@
           <span style="font-size:13px;color:#B45309;line-height:1.5;font-weight:500">Bu hisob taxminiy. Yakuniy summa bojxona organi aniqlagan bojxona qiymati va to'lov kunidagi kurs bo'yicha belgilanadi.</span>
         </div>
       
+            </div>
+      </sc-if>
+
+      <sc-if value="{{ cs1 }}" hint-placeholder-val="{{ true }}">
+      <div data-sec="0" style="display:flex;flex-direction:column;gap:12px;scroll-margin-top:12px">
+        <div style="background:#FFFFFF;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <div style="display:flex;align-items:center;gap:12px;min-width:0">
+              <div style="width:40px;height:40px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:url('icons/norm/meyor.webp')"></div>
+              <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Bojsiz me'yor</span>
+            </div>
+            <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;letter-spacing:-.025em;font-weight:800;color:#1A1FB0;font-variant-numeric:tabular-nums;flex:none">${{ freeUsdLabel }}</span>
+          </div>
+          <span style="font-size:13px;color:#6B6C85;line-height:1.5;text-wrap:pretty">Bir kalendar oy uchun. Kalendar oy — oyning 1-sanasidan so'nggi sanasigacha bo'lgan uzluksiz davr, masalan 1-yanvardan 31-yanvargacha.</span>
+        </div>
+        <a class="xy-tap" href="https://my.gov.uz/uz/service/717" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);border-radius:20px;padding:14px 14px;text-decoration:none">
+          <div style="width:34px;height:34px;border-radius:20px;background:linear-gradient(150deg,#E9EAFD,#DCDDFA);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:inset 0 0 0 1px rgba(26,31,176,.09)">
+            <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"></path><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"></path></svg>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+            <span style="font-size:15px;font-weight:700;color:#131429">Oyda nechta jo'natma keldi?</span>
+            <span style="font-size:13px;color:#6B6C85;line-height:1.5">my.gov.uz orqali nomingizga kelgan jo'natmalarni tekshiring</span>
+          </div>
+        </a>
+        <div style="background:#FFFFFF;border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Miqdoriy me'yorlar</span>
+            <span style="font-size:13px;color:#6B6C85;line-height:1.5">Bojsiz olib kiriladigan ayrim tovarlar uchun alohida chegara</span>
+          </div>
+          <sc-for list="{{ qtyNorms }}" as="q" hint-placeholder-count="2">
+            <div style="display:flex;flex-direction:column;gap:6px;background:#F1F1F8;border-radius:20px;padding:12px 14px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+                <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
+                  <div style="width:32px;height:32px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ q.pic }}"></div>
+                  <span style="font-size:15px;font-weight:700;color:#131429">{{ q.k }}</span>
+                </div>
+                <span style="font-size:15px;font-weight:700;color:#1A1FB0;flex:none;font-variant-numeric:tabular-nums">{{ q.v }}</span>
+              </div>
+              <span style="font-size:13px;color:#6B6C85;line-height:1.5">{{ q.note }}</span>
+            </div>
+          </sc-for>
+          <div style="display:flex;gap:10px;background:#FCEAEA;border-radius:20px;padding:12px 14px">
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#9B1C1C" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M4.9 4.9l14.2 14.2"></path></svg>
+            <span style="font-size:13px;color:#9B1C1C;line-height:1.5;font-weight:500">Alkogol va tamaki mahsulotlarini xalqaro pochta va kuryerlik jo'natmalari orqali olib kirish taqiqlanadi.</span>
+          </div>
+        </div>
+
+        <div style="background:#FFFFFF;border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Faqat shaxsiy foydalanish uchun</span>
+            <span style="font-size:13px;color:#6B6C85;line-height:1.5;text-wrap:pretty">Imtiyoz faqat shaxsiy va oilaviy ehtiyoj uchun tovarlarga beriladi. Bojxona xodimi quyidagilarga qarab aniqlaydi:</span>
+          </div>
+          <sc-for list="{{ criteria }}" as="c" hint-placeholder-count="7">
+            <div style="display:flex;gap:12px;align-items:baseline">
+              <span style="font-size:11px;font-weight:600;color:#1A1FB0;flex:none;width:15px;font-variant-numeric:tabular-nums">{{ c.n }}</span>
+              <span style="font-size:13px;color:#4E4F6B;line-height:1.5;flex:1;text-wrap:pretty">{{ c.t }}</span>
+            </div>
+          </sc-for>
+        </div>
+      
+            </div>
+      </sc-if>
+
+      <sc-if value="{{ cs2 }}" hint-placeholder-val="{{ false }}">
+      <div data-sec="1" style="display:flex;flex-direction:column;gap:12px;scroll-margin-top:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 2px 0">
+          <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Yagona bojxona to'lovi</span>
+          <button sc-camel-on-click="{{ payHow }}" style="flex:none;min-height:40px;background:none;border:none;padding:0;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer">Qanday hisoblanadi</button>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <sc-for list="{{ payCards }}" as="l" hint-placeholder-count="2">
+            <div style="background:#FFFFFF;border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:8px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+                <div style="display:flex;align-items:center;gap:12px;min-width:0">
+                  <div style="width:40px;height:40px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ l.pic }}"></div>
+                  <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">{{ l.k }}</span>
+                </div>
+                <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#1A1FB0;font-variant-numeric:tabular-nums;flex:none">{{ l.v }}</span>
+              </div>
+              <span style="font-size:13px;color:#6B6C85;line-height:1.5;text-wrap:pretty">{{ l.note }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="background:#FFFFFF;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px">
+          <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Qanday hisoblanadi</span>
+          <sc-for list="{{ calcSteps }}" as="s" hint-placeholder-count="4">
+            <div style="display:flex;gap:12px;align-items:baseline">
+              <div style="width:5px;height:5px;border-radius:50%;background:#9093EE;flex:none"></div>
+              <span style="font-size:13px;color:#4E4F6B;line-height:1.5;flex:1;text-wrap:pretty">{{ s.t }}</span>
+            </div>
+          </sc-for>
+          <span style="font-size:13px;color:#6B6C85;line-height:1.5;text-wrap:pretty">Yagona bojxona to'lovi bojxona to'lovlari undirilmaydigan tovarlarni olib kirishning cheklangan me'yorlaridan ortgan taqdirda, faqat ortiqcha qismga nisbatan undiriladi.</span>
+          <button sc-camel-on-click="{{ goCalcSec }}" style="height:46px;border-radius:20px;border:none;cursor:pointer;font-family:inherit;font-size:15px;font-weight:700;color:#fff;background:linear-gradient(155deg,#494FE9,#13189D);box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">Kalkulyatorda hisoblash</button>
+        </div>
+            </div>
+      </sc-if>
+
+      <sc-if value="{{ cs3 }}" hint-placeholder-val="{{ false }}">
+      <div data-sec="2" style="display:flex;flex-direction:column;gap:12px;scroll-margin-top:12px">
+
+        <label style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:0 14px;height:50px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);cursor:text">
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+          <input value="{{ banQuery }}" sc-camel-on-change="{{ onBanQuery }}" placeholder="Tovar nomini yozing" type="search" enterkeyhint="search" aria-label="Taqiqlangan tovar nomi" style="flex:1;border:none;outline:none;font-size:15px;font-weight:500;color:#131429;background:transparent">
+       </label>
+        <div style="display:flex;gap:8px">
+          <sc-for list="{{ banFilters }}" as="ff" hint-placeholder-count="3">
+            <button sc-camel-on-click="{{ ff.pick }}" style="flex:1;height:34px;border-radius:20px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;background:{{ ff.bg }};color:{{ ff.fg }}">{{ ff.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ banList }}" as="b" hint-placeholder-count="6">
+            <div style="background:#FFFFFF;border-radius:20px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10);content-visibility:auto;contain-intrinsic-size:auto 62px">
+              <button sc-camel-on-click="{{ b.toggle }}" style="display:flex;align-items:center;gap:12px;background:transparent;border:none;width:100%;text-align:left;padding:14px 14px;cursor:pointer;font-family:inherit">
+                <div style="width:38px;height:38px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:{{ b.bg }}">
+                  <div style="width:24px;height:24px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ b.pic }}"></div>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
+                  <span style="font-size:15px;font-weight:700;color:#131429;line-height:1.5">{{ b.name }}</span>
+                  <span style="font-size:11px;font-weight:600;color:{{ b.fg }}">{{ b.label }}</span>
+                </div>
+                <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transform:rotate({{ b.rot }})"><path d="M6 9l6 6 6-6"></path></svg>
+              </button>
+              <sc-if value="{{ b.open }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:10px;padding:0 14px 14px 65px">
+                  <span style="font-size:13px;color:#4E4F6B;line-height:1.5;text-wrap:pretty">{{ b.note }}</span>
+                  <div style="display:flex;flex-direction:column;gap:4px;background:#F1F1F8;border-radius:20px;padding:10px 12px">
+                    <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85">Huquqiy manba</span>
+                    <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5">{{ b.src }}</span>
+                  </div>
+                  <sc-if value="{{ b.canAsk }}" hint-placeholder-val="{{ false }}">
+                    <button sc-camel-on-click="{{ b.askDoc }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 16px;border:none;border-radius:14px;background:#E9EAFD;color:#13189D;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:left" style-hover="background:#DCDDFA"><span>Qanday hujjat kerak?</span><span style="flex:none;font-variant-numeric:tabular-nums">{{ b.askPrice }}</span></button>
+                  </sc-if>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ banEmpty }}" hint-placeholder-val="{{ false }}">
+          <span style="font-size:13px;color:#6B6C85;text-align:center;padding:20px 0">Bunday tovar ro'yxatda topilmadi.</span>
+        </sc-if>
+      
+            </div>
+      </sc-if>
+
+      <sc-if value="{{ cs4 }}" hint-placeholder-val="{{ false }}">
+      <div data-sec="3" style="display:flex;flex-direction:column;gap:12px;scroll-margin-top:12px">
+
+        <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:16px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+          <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Rasmiylashtirish tartibi</span>
+          <sc-for list="{{ procSteps }}" as="p" hint-placeholder-count="4">
+            <div style="display:flex;gap:12px">
+              <div style="width:26px;height:26px;border-radius:12px;background:linear-gradient(155deg,#494FE9,#13189D);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none">{{ p.n }}</div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0">
+                <span style="font-size:15px;font-weight:700;color:#131429;line-height:1.5">{{ p.t }}</span>
+                <span style="font-size:13px;color:#6B6C85;line-height:1.5;text-wrap:pretty">{{ p.d }}</span>
+              </div>
+            </div>
+          </sc-for>
+          <div style="display:flex;gap:12px;background:#FDF3E3;border-radius:20px;padding:12px 14px">
+            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+            <span style="font-size:13px;color:#B45309;line-height:1.5;font-weight:500">Tasdiqlash yoki rad etish past va o'rta xavfli jo'natmalar uchun ixtiyoriy, yuqori xavflilar uchun majburiy.</span>
+          </div>
+          <a href="https://my.gov.uz/uz/service/1364" target="_blank" rel="noopener noreferrer" style="font-size:13px;font-weight:700;color:#1A1FB0;text-decoration:none">my.gov.uz da xabarnomani tasdiqlash →</a>
+        </div>
+
+        <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Jo'natma qachon ushlab qolinadi</span>
+            <span style="font-size:13px;color:#6B6C85;line-height:1.5">Quyidagi hollarda jo'natma vaqtincha saqlovga olinishi mumkin:</span>
+          </div>
+          <sc-for list="{{ holdReasons }}" as="h" hint-placeholder-count="6">
+            <div style="display:flex;gap:12px;align-items:baseline">
+              <div style="width:5px;height:5px;border-radius:50%;background:#E0A32E;flex:none"></div>
+              <span style="font-size:13px;color:#4E4F6B;line-height:1.5;flex:1;text-wrap:pretty">{{ h.t }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ svcOn }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:inset 0 0 0 1.5px rgba(26,31,176,.16),0 2px 8px -4px rgba(16,18,45,.10)">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:15px;font-weight:700;color:#131429">Jo'natmangiz ushlanib qoldimi?</span>
+              <span style="font-size:13px;color:#6B6C85;line-height:1.5;text-wrap:pretty">Sabab aniqlanadi, kerakli hujjatlar ro'yxati va ariza matni tayyorlab beriladi.</span>
+            </div>
+            <button sc-camel-on-click="{{ holdAsk }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 16px;border:none;border-radius:14px;background:#E9EAFD;color:#13189D;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:left" style-hover="background:#DCDDFA"><span>Mutaxassis yordami</span><span style="flex:none;font-variant-numeric:tabular-nums">{{ svcUshlanganPrice }}</span></button>
+          </div>
+        </sc-if>
+            </div>
       </sc-if>
 
       <sc-if value="{{ cs6 }}" hint-placeholder-val="{{ false }}">
+      <div data-sec="5" style="display:flex;flex-direction:column;gap:12px;scroll-margin-top:12px">
+        <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429;padding:4px 2px 0">Bojxona organlari</span>
         <div style="display:flex;flex-direction:column;gap:12px">
                     <sc-for list="{{ offices }}" as="o" hint-placeholder-count="3">
             <div style="background:#FFFFFF;border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
@@ -2390,6 +2344,7 @@
             </div>
           </sc-for>
         </div>
+            </div>
       </sc-if>
     </div>
   </sc-if>
@@ -2643,7 +2598,7 @@
           <sc-if value="{{ b.hasTrack }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;align-items:center;gap:8px">
               <div style="flex:1;min-width:0;display:flex;align-items:center;gap:8px;border:1.5px solid #E3E4EE;border-radius:14px;padding:0 12px;height:44px">
-                <input size="10" value="{{ b.track }}" sc-camel-on-change="{{ b.onTrack }}" placeholder="Jo'natma raqami" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Trek raqam" style="flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;font-weight:700;color:#131429;letter-spacing:.02em">
+                <input size="10" value="{{ b.track }}" sc-camel-on-change="{{ b.onTrack }}" placeholder="Jo'natma raqami" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Jo'natma raqami" style="flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;font-weight:700;color:#131429;letter-spacing:.02em">
                 <sc-if value="{{ b.trackSet }}" hint-placeholder-val="{{ false }}">
                   <button sc-camel-on-click="{{ b.copyTrack }}" style="flex:none;height:32px;padding:0 10px;border-radius:12px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;background:#E9EAFD">Nusxa</button>
                 </sc-if>
@@ -2763,7 +2718,7 @@
       <div style="background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
         <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#1A1FB0">Boshqa jo'natma raqami</span>
         <div style="display:flex;align-items:center;gap:8px;background:#FFFFFF;border:1.5px solid #DCDDFA;border-radius:20px;padding:10px 12px">
-          <input size="12" value="{{ trackNo }}" sc-camel-on-change="{{ onTrackNo }}" sc-camel-on-blur="{{ onTrackBlur }}" placeholder="Masalan: RB123456789CN" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" enterkeyhint="done" aria-label="Trek raqam" style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;flex:1;min-width:0;border:none;outline:none;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429;background:transparent;font-variant-numeric:tabular-nums;caret-color:#1A1FB0">
+          <input size="12" value="{{ trackNo }}" sc-camel-on-change="{{ onTrackNo }}" sc-camel-on-blur="{{ onTrackBlur }}" placeholder="Masalan: RB123456789CN" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" enterkeyhint="done" aria-label="Jo'natma raqami" style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;flex:1;min-width:0;border:none;outline:none;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429;background:transparent;font-variant-numeric:tabular-nums;caret-color:#1A1FB0">
           <button sc-camel-on-click="{{ copyTrack }}" style="flex:none;height:32px;padding:0 12px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;background:#E9EAFD" style-hover="background:#DCDDFA">Nusxa</button>
         </div>
         <span style="font-size:13px;color:#6B6C85;line-height:1.5">Rejasiz jo'natma raqamini shu yerda saqlab, quyidagi kuryer saytiga qo'ying.</span>
@@ -2806,7 +2761,7 @@
         </div>
         <div style="flex:1;display:flex;flex-direction:column;gap:4px">
           <span style="font-size:15px;font-weight:700;color:#131429">Bojxona xabarnomasi</span>
-          <span style="font-size:13px;color:#6B6C85;line-height:1.5">Jo'natma bojxonada ushlansa, YIDXP orqali tasdiqlanadi</span>
+          <span style="font-size:13px;color:#6B6C85;line-height:1.5">Jo'natma bojxonada ushlansa, my.gov.uz orqali tasdiqlanadi</span>
         </div>
       </a>
     </div>
@@ -2820,7 +2775,7 @@
         <div style="position:relative;display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
             <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
-              <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.78)">Xarid rejasi</span>
+              <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.78)">Yangi xarid</span>
               <span style="font-family:'Onest','XY Flags',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#FFFFFF;line-height:1.3">{{ wizStepName }}</span>
             </div>
             <span style="flex:none;font-size:13px;font-weight:700;color:#FFFFFF;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);padding:6px 12px;border-radius:999px;font-variant-numeric:tabular-nums">{{ wizStepNo }}<span style="opacity:.6"> / 5</span></span>
@@ -2922,7 +2877,7 @@
             </div>
 
             <button sc-camel-on-click="{{ wizGo }}" style="height:54px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(155deg,#494FE9,#13189D);color:#fff;font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)" style-hover="filter:brightness(1.06)">
-              Rejani ko'rish
+              Hisobni ko'rish
               <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
             </button>
           </div>
@@ -2933,11 +2888,11 @@
         <div style="background:#FFFFFF;border-radius:24px;overflow:hidden;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
           <div style="padding:20px;border-bottom:2px dashed #DCDDFA;display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
             <div style="display:flex;flex-direction:column;gap:6px">
-              <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;letter-spacing:-.025em;font-weight:800;color:#131429">Sizning rejangiz</span>
+              <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;letter-spacing:-.025em;font-weight:800;color:#131429">Sizning tanlovingiz</span>
               <span style="font-size:13px;font-weight:700;color:#6B6C85;font-variant-numeric:tabular-nums">{{ planNum }} · {{ planDate }}</span>
             </div>
             <div style="width:54px;height:54px;border:2px solid #1A1FB0;border-radius:50%;display:flex;align-items:center;justify-content:center;transform:rotate(-10deg);flex:none;background:#E9EAFD">
-              <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#1A1FB0;text-align:center;line-height:1.4;max-width:44px">Reja tayyor</span>
+              <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#1A1FB0;text-align:center;line-height:1.4;max-width:44px">Hisob tayyor</span>
             </div>
           </div>
           <sc-for list="{{ planRows }}" as="r" hint-placeholder-count="5">
@@ -2957,7 +2912,7 @@
         </button>
         <div style="display:flex;gap:12px">
           <button sc-camel-on-click="{{ wizRestart }}" style="flex:1;height:52px;border-radius:20px;background:#FFFFFF;border:none;color:#131429;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">Qaytadan</button>
-          <button sc-camel-on-click="{{ wizSave }}" style="flex:1.5;height:52px;border-radius:20px;background:linear-gradient(155deg,#494FE9,#13189D);border:none;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">Rejani saqlash</button>
+          <button sc-camel-on-click="{{ wizSave }}" style="flex:1.5;height:52px;border-radius:20px;background:linear-gradient(155deg,#494FE9,#13189D);border:none;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">Xaridlarimga qo'shish</button>
         </div>
         <div style="display:flex;gap:12px;background:#FDF3E3;border-radius:20px;padding:14px 16px">
           <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
@@ -3328,7 +3283,7 @@
         <sc-if value="{{ planHasTrack }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;align-items:center;gap:8px">
             <div style="flex:1;min-width:0;display:flex;align-items:center;gap:8px;border:1.5px solid #E3E4EE;border-radius:14px;padding:0 12px;height:44px">
-              <input size="10" value="{{ planTrack }}" sc-camel-on-change="{{ planOnTrack }}" placeholder="Jo'natma raqami" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Trek raqam" style="flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;font-weight:700;color:#131429;letter-spacing:.02em">
+              <input size="10" value="{{ planTrack }}" sc-camel-on-change="{{ planOnTrack }}" placeholder="Jo'natma raqami" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Jo'natma raqami" style="flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;font-weight:700;color:#131429;letter-spacing:.02em">
               <sc-if value="{{ planTrackSet }}" hint-placeholder-val="{{ false }}">
                 <button sc-camel-on-click="{{ planCopyTrack }}" style="flex:none;height:32px;padding:0 10px;border-radius:12px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;background:#E9EAFD">Nusxa</button>
               </sc-if>
@@ -3837,6 +3792,43 @@ const toCyr = s => {
 };
 
 const RU = {
+  /* Sehrgar — do'kon va kuryer tanlash (2026-09-24) */
+  "Hisobni ko'rish":"Посмотреть расчёт",
+  "Hisob tayyor":"Расчёт готов",
+  "Sizning tanlovingiz":"Ваш выбор",
+  "Do'kon va kuryer tanlash":"Выбор магазина и курьера",
+  "Do'kon tanlash":"Выбрать магазин",
+  "Tur, davlat, do'kon va kuryer — besh qadamda.":"Тип, страна, магазин и курьер — за пять шагов.",
+  /* Sodda til (2026-09-24) */
+  "kuryer orqali":"через курьера",
+  "O'zbekistonga yubormaydi — kuryer orqali":"В Узбекистан не отправляет — через курьера",
+  "Me'yordan (${0}) oshgan qismdan {1}% boj va {2} so'm qat'iy yig'im.":"С превышения лимита (${0}) — пошлина {1}% и фиксированный сбор {2} сум.",
+  "Bojxona yig'imi (qat'iy)":"Таможенный сбор (фиксированный)",
+  "{0}% va har kg uchun ${1} hisoblanadi, kattasi olinadi; ustiga {2} so'm qat'iy yig'im qo'shiladi.":"Считаются {0}% и ${1} за каждый кг, берётся большее; сверху — фиксированный сбор {2} сум.",
+  "Qat'iy summa — summa katta-kichikligiga bog'liq emas. Qonundagi hisob: bazaviy hisoblash miqdori (BHM, {0} so'm) ning {1}%.":"Фиксированная сумма — не зависит от размера посылки. По закону: {1}% от базовой расчётной величины (БРВ, {0} сум).",
+  "Bojdan tashqari qat'iy yig'im bor: {0} so'm (qonunda — bazaviy hisoblash miqdorining 25% i). Summa katta yoki kichik bo'lishidan qat'i nazar bir xil.":"Кроме пошлины есть фиксированный сбор: {0} сум (по закону — 25% базовой расчётной величины). Он одинаковый при любой сумме.",
+  "my.gov.uz da xabarnomani tasdiqlash →":"Подтвердить уведомление на my.gov.uz →",
+  "Jo'natma bojxonada ushlansa, my.gov.uz orqali tasdiqlanadi":"Если посылку задержали на таможне — подтверждение через my.gov.uz",
+  "Avval jo'natma raqamini yozing":"Сначала введите номер отправления",
+  "Quti o'lchami bo'yicha og'irlik {0} kg — haqiqiysidan ({1} kg) katta, kargo shu bo'yicha.":"Вес по размеру коробки {0} кг — больше фактического ({1} кг), доставка считается по нему.",
+  "Jo'natma ma'lumoti bojxona tizimiga o'zi kiritiladi.":"Данные об отправлении попадают в систему таможни автоматически.",
+  "Kuryer yoki pochta jo'natmani bojxonaga topshiradi. Ma'lumoti tizimga o'zi kiritiladi — sizdan hech narsa talab qilinmaydi.":"Курьер или почта передаёт отправление на таможню. Данные попадают в систему сами — от вас ничего не требуется.",
+  "Faqat shaxsiy foydalanish uchun":"Только для личного пользования",
+  "Boj olinadigan summa":"Сумма, облагаемая пошлиной",
+  "Kuryerlar, posilkani birlashtirish":"Курьеры, объединение посылок",
+  "Bu oyda hali jo'natma yo'q. Xaridlarimga qo'shsangiz shu yerga o'zi qo'shiladi — yoki kalkulyatorda hisoblab qo'ying.":"В этом месяце отправлений пока нет. Добавьте покупку в «Мои покупки» — она появится здесь сама, или посчитайте в калькуляторе.",
+  "Posilkalarni birlashtirish":"Объединение посылок",
+  "Foto va tekshiruv":"Фото и проверка",
+  "Qaytarishga yordam":"Помощь с возвратом",
+  "Siz uchun sotib olish":"Покупка за вас",
+  "Qaysi do'konlardan":"Из каких магазинов",
+  /* Bojxona uch sahifa (2026-09-24) */
+  "Qancha to'layman?":"Сколько я заплачу?",
+  "Nimani olib kirib bo'lmaydi?":"Что нельзя ввозить?",
+  "Bojxonada nima bo'ladi?":"Что происходит на таможне?",
+  "Oyiga ${0} gacha bojsiz, ortig'iga {1}%. Kalkulyator bilan.":"До ${0} в месяц без пошлины, сверх — {1}%. С калькулятором.",
+  "{0} ta taqiq va cheklov — manbasi bilan":"Запретов и ограничений: {0} — с источником",
+  "Xabarnoma, tasdiqlash, ushlansa nima qilish, manzillar":"Уведомление, подтверждение, что делать при задержке, адреса",
   /* Kuryer siz uchun sotib oladi (2026-09-24) */
   "Kuryer siz uchun sotib oladi":"Курьер купит за вас",
   "Do'konda ro'yxatdan o'tish, to'lov va manzil kerak emas — kuryer o'zi sotib olib, olib keladi.":"Не нужно регистрироваться в магазине, платить и указывать адрес — курьер сам купит и привезёт.",
@@ -4363,7 +4355,7 @@ const RU = {
   "Xavfni boshqarish tizimi topshirig'i asosida.":'По поручению системы управления рисками.',
   "Qo'shimcha hujjat yoki ma'lumot talab qilinib, tekshiruv tugamaganda.":'Когда запрошены дополнительные документы или сведения, а проверка не завершена.',
   "Bojxona ko'rigi yoki ekspertizasi yakunlanmaganda.":'Когда таможенный досмотр или экспертиза не завершены.',
-  '"Toshkent-AERO" IBK':'СТК «Ташкент-АЭРО»', 'E-manzil':'E-mail', 'Xaritada':'На карте',
+  '"Toshkent-AERO" IBK':'СТК «Ташкент-АЭРО»', 'E-manzil':'Эл. почта', 'Xaritada':'На карте',
   /* --- Do'konlarning alohida xususiyati (ro'yxatdagi qator) --- */
   /* --- Raqam ichida turadigan satrlar (tx orqali, {0} o'rinbosari) --- */
   "me'yordan {0} ortiq":'на {0} сверх лимита', '{0} qoldi':'осталось {0}',
@@ -4401,7 +4393,7 @@ const RU = {
   'Pochtam AI':'Pochtam AI',
   /* Skrinshot natija ekrani va do'kon tanlash yordamchisi */
   'Qayerdan topaman?':'Где найти?', "Mahsulot sahifasini skrinshot qiling — do'kon, davlat, eng arzon kuryer, boj va jami narxni o'zim chiqaraman.":'Сделайте скриншот страницы товара — магазин, страну, самого дешёвого курьера, пошлину и итоговую цену покажу сам.', "Havola yoki nom yozing — yoki mahsulot sahifasini skrinshot qiling, jami narxni o'zim hisoblayman.":'Введите ссылку или название — или сделайте скриншот страницы товара, итоговую цену посчитаю сам.', "Mahsulot sahifasini skrinshot qiling — do'kon, davlat, eng arzon kuryer, boj va jami narxni o'zim chiqaraman. Yonida — qayerdan topishni so'rash.":'Сделайте скриншот страницы товара — магазин, страну, самого дешёвого курьера, пошлину и итоговую цену покажу сам. Рядом — спросить, где найти.', "Nimani qidirayotganingizni yozing — qaysi do'konda borligini, qanday topish va skrinshot qilishni aytaman. Boj, kuryer, taqiq bo'yicha savol ham mumkin.":'Напишите, что ищете — скажу, в каком магазине есть, как найти и как сделать скриншот. Вопросы о пошлине, курьере, запретах тоже можно.', "Do'kon, davlat, kuryer, boj va jami narx bir necha soniyada.":'Магазин, страна, курьер, пошлина и итоговая цена — через несколько секунд.', 'Eng arzon kuryer':'Самый дешёвый курьер', 'Tezroq:':'Быстрее:', 'Boshqa kuryerlar':'Другие курьеры', 'Qanday buyurtma qilaman?':'Как заказать?', 'Vaznni aniqlashtirish':'Уточнить вес', "Rejaga qo'shish":'В план', "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. AI faqat rasmni o'qidi, hisob ilovaniki.":'Расчёт примерный — итоговую сумму определяют таможня и курьер. ИИ только прочитал картинку, расчёт — приложения.', "Do'konda mahsulot sahifasini oching.":'Откройте страницу товара в магазине.', "Narx, nom va (bo'lsa) og'irlik ko'rinadigan joyni skrinshot qiling.":'Сделайте скриншот там, где видны цена, название и (если есть) вес.', "Qayta yuklang — qolganini o'zim qilaman.":'Загрузите снова — остальное сделаю сам.', 'Qayta yuklash':'Загрузить снова', "Qo'lda hisoblash":'Посчитать вручную', 'Qayta urinish':'Попробовать снова', "Kategoriya bo'yicha eslatma":'Заметка по категории', 'Narxga ishonch past':'Уверенность в цене низкая', "Skrinshotda narx aniq ko'rinmagan — kalkulyatorda tekshiring.":'На скриншоте цена видна нечётко — проверьте в калькуляторе.', "Og'irlik {0} kg (sahifadan)":'Вес {0} кг (со страницы)', "Taxminiy og'irlik {0} kg ({1})":'Примерный вес {0} кг ({1})', "Do'kon aniqlanmadi":'Магазин не определён', 'taxmin':'предположительно', "do'kon":'магазин', 'Men {0} ({1}) dan \"{2}\" ({3}) buyurtma qilmoqchiman{4}. Qanday buyurtma qilaman — qadam-baqadam?':'Хочу заказать \"{2}\" ({3}) из {0} ({1}){4}. Как заказать — по шагам?',
-  "Quti bilan hajmiy og'irlik oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi.":'С коробкой объёмный вес растёт — многие курьеры предлагают отправку без коробки.', "Litiy batareya va powerbank avia bilan yuborilmaydi; telefon O'zbekistonda IMEI ro'yxatidan o'tkaziladi.":'Литиевые батареи и повербанки авиа не отправляются; телефон в Узбекистане регистрируется по IMEI.', "Aerozol va spirtli atirlar avia jo'natmada cheklanadi — kuryerning ro'yxatini tekshiring.":'Аэрозоли и спиртовые духи ограничены в авиаотправке — проверьте список курьера.', "Topgan mahsulotingizni suratga oling — jami narxni o'zim hisoblayman.":'Сфотографируйте найденный товар — итоговую цену посчитаю сам.', "Mahsulot sahifasini suratga oling — qolganini o'zim hisoblayman.":'Сфотографируйте страницу товара — остальное посчитаю сам.', "Hali topmadingizmi?":'Ещё не нашли?', "Nimani qidirayotganingizni tanlang — mos do'konlarni ko'rsataman.":'Выберите, что ищете — покажу подходящие магазины.', "Do'kon yoki mahsulot qidirish":'Поиск магазина или товара', "Havola tashlang yoki nom yozing — do'kon, kuryer va bojni ko'rsataman.":'Вставьте ссылку или введите название — покажу магазин, курьера и пошлину.', "Nima qidiryapsiz?":'Что ищете?', "Qanaqasi?":'Какой именно?', 'Byudjet':'Бюджет', "Masalan: krossovka, 41 razmer":'Например: кроссовки, 41 размер', 'Faqat original':'Только оригинал', "Arzonroq ham bo'ladi":'Можно и дешевле', "Farqi yo'q":'Не важно', 'gacha':'до', "Do'konlarni ko'rsat":'Показать магазины', "Ro'yxatimizdan tashqari do'konlarni ham tavsiya qilishi mumkin — bunday do'konga buyurtma berishdan oldin sharhlarini tekshiring.":'Может посоветовать и магазины не из нашего списка — перед заказом в таком магазине проверьте отзывы.', "Boshqa savol bormi? Pochtam AI ga yozing":'Есть другой вопрос? Напишите Pochtam AI', "Aniqroq yozing":'Уточните запрос', '{0} qidiryapman':'Ищу {0}', 'Byudjet ${0} gacha':'Бюджет до ${0}', 'Byudjet muhim emas':'Бюджет не важен', "Qaysi do'kondan topaman?":'В каком магазине это найти?', "Skrinshot — asosiy yo'l":'Скриншот — главный путь', "Mahsulot sahifasini suratga oling: do'kon, davlat, eng arzon kuryer, boj va jami narxni o'zim chiqaraman.":'Сфотографируйте страницу товара: магазин, страну, самого дешёвого курьера, пошлину и итоговую цену покажу сам.', "Tovarni hali topmagan bo'lsangiz — kategoriya va byudjetni tanlang, mos do'konlarni ko'rsataman.":'Если товар ещё не найден — выберите категорию и бюджет, покажу подходящие магазины.', "Do'kon, kuryer yoki qo'llanma nomini yozing — havola tashlasangiz do'kon sahifasi ochiladi.":'Введите название магазина, курьера или инструкции — если вставите ссылку, откроется страница магазина.', "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi shu davlatdan ham yuboradi.":'Под ваш выбор подходит {0} магазинов, последние {1} отправляют и из этой страны.', "Qaysi davlatdan olib kelamiz":'Из какой страны везём', 'Yevropa omborlari':'Европейские склады', 'Texnika va kosmetika':'Техника и косметика', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', "Nomini yozing yoki ayting — qayerdan olish, qanchaga tushishi va qanday buyurtma qilishni ko'rsataman.":'Напишите или продиктуйте название — покажу, где купить, во сколько обойдётся и как заказать.', 'Mahsulot':'Товар', 'Mahsulot nomi':'Название товара', "Yoki turini tanlang:":'Или выберите тип:', "Topdim — qanchaga tushadi?":'Нашёл — во сколько обойдётся?', "Mahsulot sahifasini suratga oling: kuryer, boj va jami narx.":'Сфотографируйте страницу товара: курьер, пошлина и итоговая цена.', "Hali topmadim — qayerdan olaman?":'Ещё не нашёл — где купить?', "Mos do'konlarni va qanday topishni ko'rsataman.":'Покажу подходящие магазины и как найти.', 'Ovoz bilan aytish':'Сказать голосом', "Tinglashni to'xtatish":'Остановить запись', 'Mikrofonga ruxsat berilmadi':'Доступ к микрофону не разрешён', "Shu yerdan boshlang":'Начните отсюда', "Nima qidirayotganingizni yozing yoki ayting — keyin skrinshot yuklab jami narxni olasiz yoki mos do'konlarni ko'rasiz.":'Напишите или продиктуйте, что ищете — потом загрузите скриншот и получите итоговую цену либо увидите подходящие магазины.', 'Kuryer':'Курьер', "{0} dan olib keladigan kuryer yo'q":'Нет курьера, который везёт из {0}', "Jami narxda faqat tovar narxi va boj hisoblandi. Boshqa davlatdan olib kelish yo'lini ko'ring.":'В итоговую цену вошли только стоимость товара и пошлина. Посмотрите доставку из другой страны.', "Narxini kuryerdan so'rash kerak: {0}":'Цену нужно уточнить у курьера: {0}', "Bu yo'nalishda kuryerlar bor, lekin narxi jadvalda yo'q — kuryerdan so'rab, kargoni qo'shing.":'На этом направлении курьеры есть, но цены в таблице нет — уточните у курьера и добавьте доставку.', "{0} dan olib keladigan kuryer yo'q — kargo qatorisiz hisoblandi.":'Нет курьера из {0} — расчёт без строки доставки.', "Bu yo'nalishda kuryer bor, lekin narxi jadvalda yo'q ({0}) — narxini so'rab, kargoni qo'shing.":'На этом направлении курьер есть, но цены в таблице нет ({0}) — уточните и добавьте доставку.', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', "Skrinshot yuklang: kuryer, boj va jami narx.":'Загрузите скриншот: курьер, пошлина и итоговая цена.', "Do'kon ilovasida mahsulotni oching, narx ko'ringan ekranni suratga oling va shu yerdan yuklang.":'Откройте товар в приложении магазина, сфотографируйте экран с ценой и загрузите здесь.', "Mos do'konlar va aniq havolalar.":'Подходящие магазины и точные ссылки.', "Narxni o'zim yozaman":'Введу цену сам', "Narx, davlat va vazn — kalkulyatorda.":'Цена, страна и вес — в калькуляторе.', "Savol bormi? Pochtam AI ga yozing":'Есть вопрос? Напишите Pochtam AI', 'Oxirgi hisob':'Последний расчёт', "Uch ma'lumotnoma":'Три справочника', "Do'konlar, kuryerlar va taqiqlarni tekshirish — har biri bitta bosishda.":'Магазины, курьеры и проверка запретов — каждый в одно касание.', "Nima qidirayotganingizni yozing yoki ayting, keyin mahsulot sahifasini suratga olib yuklang — jami narxni o'zim chiqaraman.":'Напишите или продиктуйте, что ищете, затем сфотографируйте страницу товара и загрузите — итоговую цену посчитаю сам.', "Narx, davlat va vaznni o'zingiz yozsangiz ham jami narx chiqadi.":'Итоговая цена появится, даже если ввести цену, страну и вес вручную.', 'taxminan {0}-{1}gacha':'примерно до {0} {1}', 'yanvar':'января', 'fevral':'февраля', 'mart':'марта', 'aprel':'апреля', 'iyun':'июня', 'iyul':'июля', 'avgust':'августа', 'sentabr':'сентября', 'oktabr':'октября', 'noyabr':'ноября', 'dekabr':'декабря', "{0} qo'llanmasi — qadam-baqadam":'Инструкция {0} — по шагам', "Pochtam AI qadam-baqadam tushuntiradi":'Pochtam AI объяснит по шагам', "Topilgan sahifalar · bugun":'Найденные страницы · сегодня', 'Ochish':'Открыть', "Narx va mavjudlik sahifada o'zgarishi mumkin — ochib tekshiring, keyin skrinshot qiling.":'Цена и наличие на странице могут измениться — откройте и проверьте, затем сделайте скриншот.', 'may':'мая', 'Rasm biriktirish':'Прикрепить фото', 'Yuborish':'Отправить', "Bu mahsulot menga qanchaga tushadi?":'Во сколько мне обойдётся этот товар?', 'Nima kerak?':'Что нужно?', "Tovarni tasvirlang yoki boj, kuryer, taqiq bo'yicha savol bering.":'Опишите товар или задайте вопрос о пошлине, курьере, запретах.',
+  "Quti bilan kargo og'irligi oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi.":'С коробкой вес для доставки растёт — многие курьеры предлагают отправку без коробки.', "Litiy batareya va powerbank avia bilan yuborilmaydi; telefon O'zbekistonda IMEI ro'yxatidan o'tkaziladi.":'Литиевые батареи и повербанки авиа не отправляются; телефон в Узбекистане регистрируется по IMEI.', "Aerozol va spirtli atirlar avia jo'natmada cheklanadi — kuryerning ro'yxatini tekshiring.":'Аэрозоли и спиртовые духи ограничены в авиаотправке — проверьте список курьера.', "Topgan mahsulotingizni suratga oling — jami narxni o'zim hisoblayman.":'Сфотографируйте найденный товар — итоговую цену посчитаю сам.', "Mahsulot sahifasini suratga oling — qolganini o'zim hisoblayman.":'Сфотографируйте страницу товара — остальное посчитаю сам.', "Hali topmadingizmi?":'Ещё не нашли?', "Nimani qidirayotganingizni tanlang — mos do'konlarni ko'rsataman.":'Выберите, что ищете — покажу подходящие магазины.', "Do'kon yoki mahsulot qidirish":'Поиск магазина или товара', "Havola tashlang yoki nom yozing — do'kon, kuryer va bojni ko'rsataman.":'Вставьте ссылку или введите название — покажу магазин, курьера и пошлину.', "Nima qidiryapsiz?":'Что ищете?', "Qanaqasi?":'Какой именно?', 'Byudjet':'Бюджет', "Masalan: krossovka, 41 razmer":'Например: кроссовки, 41 размер', 'Faqat original':'Только оригинал', "Arzonroq ham bo'ladi":'Можно и дешевле', "Farqi yo'q":'Не важно', 'gacha':'до', "Do'konlarni ko'rsat":'Показать магазины', "Ro'yxatimizdan tashqari do'konlarni ham tavsiya qilishi mumkin — bunday do'konga buyurtma berishdan oldin sharhlarini tekshiring.":'Может посоветовать и магазины не из нашего списка — перед заказом в таком магазине проверьте отзывы.', "Boshqa savol bormi? Pochtam AI ga yozing":'Есть другой вопрос? Напишите Pochtam AI', "Aniqroq yozing":'Уточните запрос', '{0} qidiryapman':'Ищу {0}', 'Byudjet ${0} gacha':'Бюджет до ${0}', 'Byudjet muhim emas':'Бюджет не важен', "Qaysi do'kondan topaman?":'В каком магазине это найти?', "Skrinshot — asosiy yo'l":'Скриншот — главный путь', "Mahsulot sahifasini suratga oling: do'kon, davlat, eng arzon kuryer, boj va jami narxni o'zim chiqaraman.":'Сфотографируйте страницу товара: магазин, страну, самого дешёвого курьера, пошлину и итоговую цену покажу сам.', "Tovarni hali topmagan bo'lsangiz — kategoriya va byudjetni tanlang, mos do'konlarni ko'rsataman.":'Если товар ещё не найден — выберите категорию и бюджет, покажу подходящие магазины.', "Do'kon, kuryer yoki qo'llanma nomini yozing — havola tashlasangiz do'kon sahifasi ochiladi.":'Введите название магазина, курьера или инструкции — если вставите ссылку, откроется страница магазина.', "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi shu davlatdan ham yuboradi.":'Под ваш выбор подходит {0} магазинов, последние {1} отправляют и из этой страны.', "Qaysi davlatdan olib kelamiz":'Из какой страны везём', 'Yevropa omborlari':'Европейские склады', 'Texnika va kosmetika':'Техника и косметика', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', "Nomini yozing yoki ayting — qayerdan olish, qanchaga tushishi va qanday buyurtma qilishni ko'rsataman.":'Напишите или продиктуйте название — покажу, где купить, во сколько обойдётся и как заказать.', 'Mahsulot':'Товар', 'Mahsulot nomi':'Название товара', "Yoki turini tanlang:":'Или выберите тип:', "Topdim — qanchaga tushadi?":'Нашёл — во сколько обойдётся?', "Mahsulot sahifasini suratga oling: kuryer, boj va jami narx.":'Сфотографируйте страницу товара: курьер, пошлина и итоговая цена.', "Hali topmadim — qayerdan olaman?":'Ещё не нашёл — где купить?', "Mos do'konlarni va qanday topishni ko'rsataman.":'Покажу подходящие магазины и как найти.', 'Ovoz bilan aytish':'Сказать голосом', "Tinglashni to'xtatish":'Остановить запись', 'Mikrofonga ruxsat berilmadi':'Доступ к микрофону не разрешён', "Shu yerdan boshlang":'Начните отсюда', "Nima qidirayotganingizni yozing yoki ayting — keyin skrinshot yuklab jami narxni olasiz yoki mos do'konlarni ko'rasiz.":'Напишите или продиктуйте, что ищете — потом загрузите скриншот и получите итоговую цену либо увидите подходящие магазины.', 'Kuryer':'Курьер', "{0} dan olib keladigan kuryer yo'q":'Нет курьера, который везёт из {0}', "Jami narxda faqat tovar narxi va boj hisoblandi. Boshqa davlatdan olib kelish yo'lini ko'ring.":'В итоговую цену вошли только стоимость товара и пошлина. Посмотрите доставку из другой страны.', "Narxini kuryerdan so'rash kerak: {0}":'Цену нужно уточнить у курьера: {0}', "Bu yo'nalishda kuryerlar bor, lekin narxi jadvalda yo'q — kuryerdan so'rab, kargoni qo'shing.":'На этом направлении курьеры есть, но цены в таблице нет — уточните у курьера и добавьте доставку.', "{0} dan olib keladigan kuryer yo'q — kargo qatorisiz hisoblandi.":'Нет курьера из {0} — расчёт без строки доставки.', "Bu yo'nalishda kuryer bor, lekin narxi jadvalda yo'q ({0}) — narxini so'rab, kargoni qo'shing.":'На этом направлении курьер есть, но цены в таблице нет ({0}) — уточните и добавьте доставку.', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', "Skrinshot yuklang: kuryer, boj va jami narx.":'Загрузите скриншот: курьер, пошлина и итоговая цена.', "Do'kon ilovasida mahsulotni oching, narx ko'ringan ekranni suratga oling va shu yerdan yuklang.":'Откройте товар в приложении магазина, сфотографируйте экран с ценой и загрузите здесь.', "Mos do'konlar va aniq havolalar.":'Подходящие магазины и точные ссылки.', "Narxni o'zim yozaman":'Введу цену сам', "Narx, davlat va vazn — kalkulyatorda.":'Цена, страна и вес — в калькуляторе.', "Savol bormi? Pochtam AI ga yozing":'Есть вопрос? Напишите Pochtam AI', 'Oxirgi hisob':'Последний расчёт', "Uch ma'lumotnoma":'Три справочника', "Do'konlar, kuryerlar va taqiqlarni tekshirish — har biri bitta bosishda.":'Магазины, курьеры и проверка запретов — каждый в одно касание.', "Nima qidirayotganingizni yozing yoki ayting, keyin mahsulot sahifasini suratga olib yuklang — jami narxni o'zim chiqaraman.":'Напишите или продиктуйте, что ищете, затем сфотографируйте страницу товара и загрузите — итоговую цену посчитаю сам.', "Narx, davlat va vaznni o'zingiz yozsangiz ham jami narx chiqadi.":'Итоговая цена появится, даже если ввести цену, страну и вес вручную.', 'taxminan {0}-{1}gacha':'примерно до {0} {1}', 'yanvar':'января', 'fevral':'февраля', 'mart':'марта', 'aprel':'апреля', 'iyun':'июня', 'iyul':'июля', 'avgust':'августа', 'sentabr':'сентября', 'oktabr':'октября', 'noyabr':'ноября', 'dekabr':'декабря', "{0} qo'llanmasi — qadam-baqadam":'Инструкция {0} — по шагам', "Pochtam AI qadam-baqadam tushuntiradi":'Pochtam AI объяснит по шагам', "Topilgan sahifalar · bugun":'Найденные страницы · сегодня', 'Ochish':'Открыть', "Narx va mavjudlik sahifada o'zgarishi mumkin — ochib tekshiring, keyin skrinshot qiling.":'Цена и наличие на странице могут измениться — откройте и проверьте, затем сделайте скриншот.', 'may':'мая', 'Rasm biriktirish':'Прикрепить фото', 'Yuborish':'Отправить', "Bu mahsulot menga qanchaga tushadi?":'Во сколько мне обойдётся этот товар?', 'Nima kerak?':'Что нужно?', "Tovarni tasvirlang yoki boj, kuryer, taqiq bo'yicha savol bering.":'Опишите товар или задайте вопрос о пошлине, курьере, запретах.',
   'Tushundim:':'Понял:', 'original':'оригинал', '{0} gacha':'до {0}', 'Qidirish':'Искать', 'Yana savol':'Ещё вопрос', "Savol yoki tovar so'rovi":'Вопрос или запрос товара',
   'Bugungi savollar chegarasi tugadi':'Лимит вопросов на сегодня исчерпан', "Ertaga davom etamiz. Hozircha kalkulyator va do'konlar ro'yxati ishlaydi.":'Продолжим завтра. Пока работают калькулятор и список магазинов.',
   'Hozir javob bera olmadim':'Сейчас не смог ответить', "Kalkulyator va do'konlar ro'yxati ishlayveradi.":'Калькулятор и список магазинов работают.',
@@ -4409,6 +4401,18 @@ const RU = {
   'Pochtam AI xato qilishi mumkin. Yakuniy qaror — bojxona organida.':'Pochtam AI может ошибаться. Окончательное решение — за таможенным органом.',
   'Kalkulyatorda ochish':'Открыть в калькуляторе', "Kuryerlarni ko'rish":'Посмотреть курьеров', "Taqiqlar ro'yxati":'Список запретов', "Do'konni ochish":'Открыть магазин',
   
+  // 4-bosqich: sodda til (qayta nomlangan kalitlar)
+  'Xalqaro pochtamt':'Международный почтамт', "Post boshlig'i":'Начальник поста', 'Xodimlar':'Сотрудники', "IMEI bo'limi":'Отдел IMEI', "Punkt boshlig'i":'Начальник пункта',
+  "Toshkent sh., Sergeli tumani, Qumariq ko'chasi, 13/1":'г. Ташкент, Сергелийский район, ул. Кумарик, 13/1',
+  "Toshkent sh., Sergeli tumani, Qumariq ko'chasi, 102":'г. Ташкент, Сергелийский район, ул. Кумарик, 102',
+  "Toshkent sh., Mirobod tumani, Turkiston ko'chasi, 4":'г. Ташкент, Мирабадский район, ул. Туркестанская, 4',
+  '"Elektron tijorat" TIF · CPT Pochta':'ТТП «Электронная торговля» · CPT Pochta',
+  "Autentifikatsiya yorlig'i, krossovka o'lchami, kuryer tanlash":'Метка аутентификации, размер кроссовок, выбор курьера',
+  "Har bir kuryerlik jo'natmasi bo'yicha xabarnoma qabul qiluvchiga my.gov.uz yoki mobil ilova orqali avtomatik yuboriladi.":"По каждому курьерскому отправлению уведомление автоматически отправляется получателю через my.gov.uz или мобильное приложение.",
+  "Jo'natma: {0}, kuryer: {1}, raqam: {2}, {3} kun.":"Отправление: {0}, курьер: {1}, номер: {2}, {3} дн.",
+  "Nomingizga kelgan jo'natmalar va oylik hisobni my.gov.uz shaxsiy kabinetida ko'rasiz. Ilovadagi «Bu oyda» bloki ham shu hisobni yuritishga yordam beradi.":"Отправления на ваше имя и месячный счёт видны в личном кабинете my.gov.uz. Блок «В этом месяце» в приложении помогает вести тот же учёт.",
+  "Sizga my.gov.uz yoki mobil ilova orqali xabarnoma yuboriladi. Kuryerlar ko'pincha Telegram yoki SMS orqali ham ogohlantiradi.":"Уведомление приходит через my.gov.uz или мобильное приложение. Курьеры часто дублируют его в Telegram или по SMS.",
+  "Qabul qiluvchi my.gov.uz, mobil ilova orqali yoki eng yaqin bojxona organiga murojaat qilib xabarnomani tasdiqlaydi yoki rad etadi.":"Получатель подтверждает или отклоняет уведомление через my.gov.uz, мобильное приложение или обратившись в ближайший таможенный орган.",
 };
 /* Matnlarda ASCII (') va tipografik (' ') apostroflar aralash uchraydi.
    Lug'at kalitlari yagona ko'rinishga keltiriladi, aks holda "Ko'p" kabi
@@ -4702,25 +4706,25 @@ const STORE_USP = {
 
 const STORES = [
   { id:"taobao", name:"Taobao", domain:"taobao.com", url:"https://www.taobao.com", mono:"Ta", color:"#FF4400", flag:"🇨🇳", country:"Xitoy", from:["Xitoy"], cat:"universal", subcats:"Xitoy ichki bozori, moda, uy, aksessuarlar", type:"Marketplace", price:"$", segment:"Arzon", original:"Sotuvchiga bog'liq", direct:false, complexity:"Murakkab / VPN orqali ishlaydi",
-    tags:["universal","arzon","vositachi kerak"],
+    tags:["universal","arzon","kuryer orqali"],
     pros:["Xitoy ichki bozoridagi juda katta assortiment"],
     cons:["Xitoy ichki bozori: interfeys, seller bilan aloqa, manzil va return logistika asosan Xitoyga mos.","Kuryer ishlatilsa refund oynasi O\'zbekistonga yetib kelishdan oldin tugashi mumkin."],
     forWhom:"Xitoydan keng tanlov va past narx izlaydiganlar", returns:"Ko\'p eligible mahsulotlarda 7 kunlik sababsiz qaytarish mavjud. Odatda buyer return shippingni to\'laydi; forwarding omboriga yetib kelgan sana muddat hisobiga ta\'sir qilishi mumkin.", ios:"https://apps.apple.com/us/app/taobao-online-shopping-app/id387682726", android:"https://play.google.com/store/apps/details?id=com.taobao.taobao",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"Murakkab / VPN orqali ishlaydi"}], updated:"15.08.2026" },
   { id:"amazon", name:"Amazon", domain:"amazon.com", url:"https://www.amazon.com", mono:"Am", color:"#232F3E", flag:"🇺🇸", country:"AQSh", from:["AQSh","Germaniya","Angliya"], cat:"universal", subcats:"Elektronika, moda, uy-ro'zg'or va boshqalar", type:"Marketplace", price:"$$", segment:"Katta assortiment", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
-    tags:["universal","katta assortiment","vositachi kerak"],
+    tags:["universal","katta assortiment","kuryer orqali"],
     pros:["Juda katta assortiment va ko'plab sotuvchilar"],
     cons:["Marketplace bo\'lgani uchun sotuvchi sifati va return shartlari bir xil emas.","Xalqaro qaytarish qimmat","forwarding, boj va dastlabki yetkazish xarajatlari to\'liq qaytmasligi mumkin."],
     forWhom:"Turli toifadagi mahsulotlarni bir joydan izlaydiganlar", returns:"Ko\'pchilik mahsulotlarda 30 kunlik qaytarish mavjud. Mahsulot/sotuvchiga qarab istisnolar bor; xalqaro qaytarishda yetkazish xarajati refunddan ushlab qolinishi mumkin.", ios:"https://apps.apple.com/us/app/amazon-shopping/id297606951", android:"https://play.google.com/store/apps/details?id=com.amazon.mShop.android.shopping",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"pinduoduo", name:"Pinduoduo", domain:"pinduoduo.com", url:"https://www.pinduoduo.com", mono:"Pi", color:"#E02E24", flag:"🇨🇳", country:"Xitoy", from:["Xitoy"], cat:"universal", subcats:"Kiyim, elektronika, uy-ro'zg'or, kundalik tovarlar va boshqa kategoriyalar", type:"Marketplace", price:"$", segment:"Arzon", original:"Sotuvchiga bog'liq", direct:false, complexity:"Murakkab / VPN orqali ishlaydi",
-    tags:["universal","arzon","vositachi kerak"],
+    tags:["universal","arzon","kuryer orqali"],
     pros:["Juda agressiv narxlar, guruhli xarid va chegirma modeli","Xitoy ichki bozorida juda katta tanlov"],
     cons:["Xitoy ichki bozori","Chinese UI, local address/payment va qaytarish logistikasiga bog\'liq.","Juda past narx segmentida seller/quality farqi katta, xalqaro return amaliy jihatdan murakkab."],
     forWhom:"Eng arzon narx va Xitoy ichki bozoridagi ommaviy mahsulotlarni izlaydiganlar", returns:"Official help centerda return/refund va 7 kunlik sababsiz return mexanizmlari mavjud. Eligibility mahsulot kategoriyasi va seller/after-sales qoidalariga bog\'liq.", ios:"https://apps.apple.com/us/app/pinduoduo/id1044283059", android:"",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"Murakkab / VPN orqali ishlaydi"}], updated:"15.08.2026" },
   { id:"trendyol", name:"Trendyol", domain:"trendyol.com", url:"https://www.trendyol.com", mono:"Tr", color:"#F27A1A", flag:"🇹🇷", country:"Turkiya", from:["Turkiya"], cat:"kiyim va moda", subcats:"Moda, kosmetika, uy va boshqa tovarlar", type:"Marketplace", price:"$", segment:"Arzon", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
-    tags:["kiyim va moda","arzon","vositachi kerak"],
+    tags:["kiyim va moda","arzon","kuryer orqali"],
     pros:["Turkiya bozorida katta assortiment"],
     cons:["Turkiya va ayrim xalqaro bozorlarga kuchli bog\'langan.","Sellerlar sifati bir xil emas","o\'lcham va mahsulot tavsifi farqi, cross-border return muddati muammo bo\'lishi mumkin."],
     forWhom:"Turkiyadan kiyim va turli mahsulot oluvchilar", returns:"Global xizmatda odatda 14 kunlik return; eligible buyurtmalarda bepul return imkoniyati mavjud. Marketplace sabab ayrim mahsulot/seller shartlari farqlanadi.", ios:"https://apps.apple.com/us/app/trendyol-online-shopping/id524362642", android:"https://play.google.com/store/apps/details?id=trendyol.com",
@@ -4732,7 +4736,7 @@ const STORES = [
     forWhom:"Byudjet moda xaridorlari", returns:"Ko\'p bozorlarda eligible mahsulotlar uchun 30 kun atrofida return. Birinchi return ayrim regionlarda bepul, keyingi returnlar uchun fee bo\'lishi mumkin; kategoriya istisnolari mavjud.", ios:"https://apps.apple.com/us/app/shein-shopping-online/id878577184", android:"https://play.google.com/store/apps/details?id=com.zzkko",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"ha"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$"},{"k":"Original mahsulot","v":"O'rtacha"},{"k":"Buyurtma","v":"Oson"}], updated:"15.08.2026" },
   { id:"carters", name:"Carter\'s", domain:"carters.com", url:"https://www.carters.com", mono:"Ca", color:"#0033A0", flag:"🌍", country:"AQSh", from:["AQSh"], cat:"bolalar", subcats:"Bolalar va chaqaloqlar kiyimi", type:"Rasmiy brend do'koni", price:"$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["bolalar","original","vositachi kerak"],
+    tags:["bolalar","original","kuryer orqali"],
     pros:["Bolalar kiyimiga ixtisoslashgan brend"],
     cons:["Return policy mamlakatga keskin bog\'liq.","Final-sale, shipping fee va xalqaro kuryer orqali qaytarish shartlari alohida."],
     forWhom:"Bolalar kiyimi xaridorlari", returns:"AQShda ko\'p yangi/unworn mahsulotlar receipt bilan 90 kun ichida return qilinadi; boshqa bozorlarda muddat ancha qisqaroq bo\'lishi mumkin.", ios:"https://apps.apple.com/us/app/carters/id1275723118", android:"https://play.google.com/store/apps/details?id=com.carters.android",
@@ -4744,7 +4748,7 @@ const STORES = [
     forWhom:"Premium moda xaridorlari", returns:"Ko\'p bozorlarda 30 kunlik bepul return; mahsulot original holatda, tag va packaging bilan bo\'lishi shart. Refund qaytgan mahsulot tekshirilgach amalga oshiriladi.", ios:"https://apps.apple.com/us/app/mytheresa-shop-luxury-brands/id484615570", android:"https://play.google.com/store/apps/details?id=com.mytheresa.app.mytheresa",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"ha"},{"k":"Do'kon turi","v":"Premium / Luxury"},{"k":"Narx darajasi","v":"$$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"Oson"}], updated:"15.08.2026" },
   { id:"tmall", name:"Tmall", domain:"tmall.com", url:"https://www.tmall.com", mono:"Tm", color:"#FF0036", flag:"🇨🇳", country:"Xitoy", from:["Xitoy"], cat:"universal", subcats:"Brendlar va rasmiy sotuvchilar", type:"Marketplace", price:"$$", segment:"Original", original:"Yuqori", direct:false, complexity:"Murakkab",
-    tags:["universal","original","vositachi kerak"],
+    tags:["universal","original","kuryer orqali"],
     pros:["Brend va rasmiy do'konlar ulushi yuqori"],
     cons:["Xitoy ichki servislariga kuchli bog\'langan.","Barcha tovarlar 7 kunlik return\'ga kirmaydi","forwarding va chet eldan qaytarish amaliy jihatdan qimmat va vaqt talab qiladi."],
     forWhom:"Xitoy bozorida brend mahsulot izlaydiganlar", returns:"Eligible mahsulotlarda 7 kunlik sababsiz return. Fikr o\'zgargan holatda return shipping odatda buyer zimmasida; sifat muammosi yoki tavsifga nomuvofiqlikda seller xarajatni qoplaydi.", ios:"https://apps.apple.com/gb/app/%E5%A4%A9%E7%8C%AB-%E5%A5%BD%E5%93%81%E7%89%8C-%E5%A5%BD%E4%BB%B7%E6%A0%BC-%E4%B8%8A%E5%A4%A9%E7%8C%AB/id518966501", android:"",
@@ -4756,25 +4760,25 @@ const STORES = [
     forWhom:"Premium va designer moda xaridorlari", returns:"Odatda 30 kun ichida return; mahsulot kiyilmagan, teg va original packaging bilan bo\'lishi kerak. Ko\'p bozorlarda return collection tashkil qilinadi.", ios:"https://apps.apple.com/us/app/farfetch-shop-luxury-fashion/id906698760", android:"https://play.google.com/store/apps/details?id=com.farfetch.farfetchshop",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"ha"},{"k":"Do'kon turi","v":"Premium / Luxury"},{"k":"Narx darajasi","v":"$$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"Oson"}], updated:"15.08.2026" },
   { id:"ebay", name:"eBay", domain:"ebay.com", url:"https://www.ebay.com", mono:"eB", color:"#0064D2", flag:"🇺🇸", country:"AQSh", from:["AQSh","Angliya","Germaniya"], cat:"universal", subcats:"Yangi, ishlatilgan va kolleksiya tovarlari", type:"Marketplace", price:"$$", segment:"Katta assortiment", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
-    tags:["universal","katta assortiment","vositachi kerak"],
+    tags:["universal","katta assortiment","kuryer orqali"],
     pros:["Yangi va ishlatilgan mahsulotlarni topish imkoniyati"],
     cons:["Har bir sellerning return siyosati boshqacha.","Used/collectible tovarlarda holat bo\'yicha nizolar ko\'p","xalqaro qaytarishda tracking va pochta xarajati muhim."],
     forWhom:"Noyob yoki ishlatilgan mahsulot izlaydiganlar", returns:"Qaytarish muddati va sharti sotuvchiga bog\'liq. Tovar tavsifga mos kelmasa yoki nuqsonli bo\'lsa, eBay Money Back Guarantee doirasida refund talab qilish mumkin.", ios:"https://apps.apple.com/us/app/ebay-online-shopping-selling/id282614216", android:"https://play.google.com/store/apps/details?id=com.ebay.mobile",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"poizon", name:"POIZON / DEWU", domain:"poizon.com", url:"https://www.poizon.com", mono:"PD", color:"#1A1A1A", flag:"🇨🇳", country:"Xitoy", from:["Xitoy"], cat:"poyabzal", subcats:"Sneaker, streetwear, premium moda, aksessuarlar va kolleksiya mahsulotlari", type:"Marketplace", price:"$$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha / VPN orqali ishlaydi",
-    tags:["poyabzal","original","vositachi kerak"],
+    tags:["poyabzal","original","kuryer orqali"],
     pros:["Sneaker va premium moda mahsulotlarini autentifikatsiya qilishga yo'naltirilgan marketplace"],
     cons:["Inspection juda qat\'iy: shoe box, tags, packaging va try-on belgisi refundni rad etishga sabab bo\'lishi mumkin.","Return shipping buyerga","DEWU China va global POIZON siyosati farq qiladi."],
     forWhom:"Original sneaker, streetwear va premium moda mahsulotlarini izlaydiganlar", returns:"POIZON xalqaro siyosatida ko\'p mahsulotlarda delivery\'dan keyin 15 kun ichida return request; underwear/swimwear istisno. Refunddan return shipping ushlab qolinadi.", ios:"https://apps.apple.com/us/app/poizon-sneakers-apparel/id1509915974", android:"https://play.google.com/store/apps/details?id=com.shizhuang.poizon.hk",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha / VPN orqali ishlaydi"}], updated:"15.08.2026" },
   { id:"walmart", name:"Walmart", domain:"walmart.com", url:"https://www.walmart.com", mono:"Wa", color:"#0071DC", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"universal", subcats:"Kundalik tovarlar, elektronika, uy-ro'zg'or", type:"Marketplace", price:"$", segment:"Arzon", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
-    tags:["universal","arzon","vositachi kerak"],
+    tags:["universal","arzon","kuryer orqali"],
     pros:["Keng assortiment va ommaviy narx segmenti"],
     cons:["Asosan AQSh bozori uchun.","Marketplace sellerlari alohida shart qo\'llashi mumkin","elektronika va maxsus kategoriyalarda qisqa muddatlar, kuryer orqali return esa murakkab."],
     forWhom:"AQSh bozoridan kundalik mahsulot oluvchilar", returns:"Walmart sotadigan ko\'p mahsulotlarda 90 kungacha return mavjud; Marketplace va elektronika uchun muddat odatda qisqaroq. Mahsulot kategoriyasiga qarab istisnolar mavjud.", ios:"https://apps.apple.com/us/app/walmart-shopping-savings/id338137227", android:"https://play.google.com/store/apps/details?id=com.walmart.android",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"jomashop", name:"Jomashop", domain:"jomashop.com", url:"https://www.jomashop.com", mono:"Jo", color:"#1A1A1A", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"kiyim va moda", subcats:"Luxury soatlar, sumkalar, atirlar, ko'zoynak, zargarlik va aksessuarlar", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Chegirma", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["kiyim va moda","chegirma","vositachi kerak"],
+    tags:["kiyim va moda","chegirma","kuryer orqali"],
     pros:["Luxury mahsulotlarni MSRPdan past narxlarda topish imkoniyati","soat, sumka, fragrance va aksessuarlar assortimenti katta.","Jomashop barcha mahsulotlarini 100% authentic deb kafolatlaydi va ko'plab xalqaro buyurtmalarni qabul qiladi."],
     cons:["Soatlarda ko'pincha ishlab chiqaruvchining rasmiy warranty-si o'rniga Jomashop'ning 1–5 yillik warranty-si qo'llanadi.","Xalqaro return qimmat: return shipping, dastlabki shipping hamda duties/VAT qaytmasligi mumkin.","Used/damaged returnlarda 25% gacha restocking fee xavfi bor"],
     forWhom:"Original luxury soat, sumka va aksessuarlarni rasmiy retail narxidan arzonroq izlaydiganlar", returns:"Yangi mahsulotlar 30 kun, pre-owned mahsulotlar 14 kun ichida qaytarilishi mumkin. RMA talab qilinadi; return shipping xaridor zimmasida va dastlabki shipping xarajati refunddan ushlab qolinadi. Xalqaro buyurtmalarda duties/VAT Jomashop orqali qaytarilmaydi. $7,000+ yoki special-order mahsulotlarda 8% restocking fee yoki final-sale sharti bo'lishi mumkin.", ios:"https://apps.apple.com/us/app/jomashop-designer-shopping/id6444218472", android:"https://play.google.com/store/apps/details?id=com.jomashop.app",
@@ -4792,73 +4796,73 @@ const STORES = [
     forWhom:"Zara kolleksiyalarini original xarid qiluvchilar", returns:"Ko\'p bozorlarda jo\'natilgan sanadan boshlab 30 kun atrofida return; mahsulot yangi holatda, teglar bilan va xarid qilingan bozor/region doirasida qaytariladi.", ios:"https://apps.apple.com/us/app/zara/id547951480", android:"https://play.google.com/store/apps/details?id=com.inditex.zara",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"ha"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"nike", name:"Nike", domain:"nike.com", url:"https://www.nike.com", mono:"Ni", color:"#111111", flag:"🌍", country:"AQSh", from:["AQSh","Angliya","Turkiya"], cat:"poyabzal", subcats:"Sport poyabzali, kiyim va aksessuarlar", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"Murakkab",
-    tags:["poyabzal","original","vositachi kerak"],
+    tags:["poyabzal","original","kuryer orqali"],
     pros:["Rasmiy Nike kolleksiyalari"],
     cons:["Nike AQSh sayti xalqaro shipping va re-shipper manzillarini cheklaydi.","Shu sabab O\'zbekistondan forwarding bilan xarid/return riskli","limited releases tez tugaydi."],
     forWhom:"Original Nike mahsulot izlaydiganlar", returns:"AQShda ko\'p Nike xaridlarida 60 kunlik return; boshqa bozorlarda muddat farq qiladi. Special/final-sale mahsulotlarga alohida shartlar qo\'llanadi.", ios:"https://apps.apple.com/us/app/nike-engineered-for-athletes/id1095459556", android:"https://play.google.com/store/apps/details?id=com.nike.omega",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"Murakkab"}], updated:"15.08.2026" },
   { id:"hm", name:"H&M", domain:"hm.com", url:"https://www.hm.com", mono:"HM", color:"#E50010", flag:"🌍", country:"Turkiya", from:["Turkiya","Germaniya","AQSh"], cat:"kiyim va moda", subcats:"Kiyim va aksessuarlar", type:"Rasmiy brend do'koni", price:"$", segment:"Arzon", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["kiyim va moda","arzon","vositachi kerak"],
+    tags:["kiyim va moda","arzon","kuryer orqali"],
     pros:["Ommabop va nisbatan qulay narxli moda"],
     cons:["Siyosat davlatga qarab farq qiladi.","Return fee va yetkazish xarajati qolishi mumkin","online buyurtmani boshqa mamlakatdagi do\'konda qaytarish odatda mumkin emas."],
     forWhom:"Kundalik kiyim izlaydiganlar", returns:"Ko\'p bozorlarda 30 kunlik return. Ayrim mamlakatlarda pochta orqali return uchun label fee undiriladi; dastlabki shipping/handling har doim ham refund qilinmaydi.", ios:"https://apps.apple.com/gb/app/h-m/id834465911", android:"https://play.google.com/store/apps/details?id=com.hm.goe",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"noon", name:"Noon", domain:"noon.com", url:"https://www.noon.com", mono:"No", color:"#3A3A3A", flag:"🇦🇪", country:"BAA", from:["BAA"], cat:"universal", subcats:"Elektronika, moda, uy-ro'zg'or", type:"Marketplace", price:"$$", segment:"Universal", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
-    tags:["universal","universal","vositachi kerak"],
+    tags:["universal","universal","kuryer orqali"],
     pros:["BAA va GCC bozoridagi ommabop marketplace"],
     cons:["GCC bozori uchun optimallashtirilgan.","Hygiene, beauty, grocery va ayrim seller mahsulotlarida cheklovlar bor","O\'zbekistondan bevosita return modeli qulay emas."],
     forWhom:"BAA bozoridan turli mahsulot xarid qiluvchilar", returns:"Ko\'p eligible mahsulotlarda 15 kun ichida return; ayrim refurbished/kategoriyalarda qisqaroq muddat yoki cheklovlar mavjud. Wrong/damaged/not-as-described holatlar refundga asos bo\'ladi.", ios:"https://apps.apple.com/us/app/noon-shopping-food-grocery/id1269038866", android:"https://play.google.com/store/apps/details?id=com.noon.buyerapp",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"adidas", name:"Adidas", domain:"adidas.com", url:"https://www.adidas.com", mono:"Ad", color:"#1A1A1A", flag:"🌍", country:"Germaniya", from:["Germaniya","AQSh","Turkiya"], cat:"poyabzal", subcats:"Sport poyabzali va kiyim", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["poyabzal","original","vositachi kerak"],
+    tags:["poyabzal","original","kuryer orqali"],
     pros:["Rasmiy Adidas kolleksiyalari"],
     cons:["Mamlakat saytlari va return qoidalari farq qiladi.","Limited/hype mahsulotlarda qaytarish cheklanishi mumkin","xalqaro kuryer bilan return xarajati oshadi."],
     forWhom:"Original Adidas mahsulot izlaydiganlar", returns:"AQShda ko\'p mahsulotlar 30 kun ichida return qilinadi. Mahsulot original holatda bo\'lishi kerak; hype/final-sale va ayrim maxsus mahsulotlarda cheklovlar mavjud.", ios:"https://apps.apple.com/us/app/adidas-shop-shoes-clothing/id1266591536", android:"https://play.google.com/store/apps/details?id=com.adidas.app",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"puma", name:"Puma", domain:"puma.com", url:"https://www.puma.com", mono:"Pu", color:"#1A1A1A", flag:"🌍", country:"Germaniya", from:["Germaniya","AQSh"], cat:"poyabzal", subcats:"Sport va lifestyle poyabzal", type:"Rasmiy brend do'koni", price:"$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["poyabzal","original","vositachi kerak"],
+    tags:["poyabzal","original","kuryer orqali"],
     pros:["Sport va lifestyle assortiment"],
     cons:["Return oynasi davlatga qarab farq qiladi.","Shipping fee va cross-border logistika qolishi mumkin","ayrim final-sale/custom mahsulotlar qaytarilmaydi."],
     forWhom:"Puma brendi xaridorlari", returns:"AQShda odatda 45 kunlik return; mahsulot original holatda bo\'lishi kerak. Refund original paymentga qaytariladi, processing bir necha ish kuni/hafta olishi mumkin.", ios:"https://apps.apple.com/us/app/puma-clothes-sneakers-app/id1563024677", android:"https://play.google.com/store/apps/details?id=com.puma.newstore.app",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"uniqlo", name:"Uniqlo", domain:"uniqlo.com", url:"https://www.uniqlo.com", mono:"Un", color:"#FF0000", flag:"🌍", country:"AQSh", from:["AQSh","Angliya"], cat:"kiyim va moda", subcats:"Basic kiyim va funksional kolleksiyalar", type:"Rasmiy brend do'koni", price:"$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["kiyim va moda","original","vositachi kerak"],
+    tags:["kiyim va moda","original","kuryer orqali"],
     pros:["Sodda va funksional basic kiyimlar"],
     cons:["Online va store return qoidalari hamda mamlakatlar bo\'yicha siyosat turlicha.","Altered/modified mahsulotlar qaytarilmasligi mumkin","kuryer bilan xalqaro return noqulay."],
     forWhom:"Sifatli basic kiyim izlaydiganlar", returns:"Ko\'p bozorlarda taxminan 30 kunlik return; mahsulot yuvilmagan/kiyilmagan bo\'lishi kerak. Ayrim bozorlarda return-label fee va yetkazish haqining qaytmasligi mavjud.", ios:"https://apps.apple.com/us/app/uniqlo-clothes-shopping/id1284609872", android:"https://play.google.com/store/apps/details?id=com.uniqlo.usa.catalogue",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"newbalance", name:"New Balance", domain:"newbalance.com", url:"https://www.newbalance.com", mono:"NB", color:"#CF0A2C", flag:"🌍", country:"AQSh", from:["AQSh","Angliya"], cat:"poyabzal", subcats:"Krossovka va sport kiyimi", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["poyabzal","original","vositachi kerak"],
+    tags:["poyabzal","original","kuryer orqali"],
     pros:["Krossovka va sportga ixtisoslashgan"],
     cons:["Fee va region qoidalari xarajatni oshiradi.","Limited/final-sale mahsulotlar, mamlakatlararo return va kuryer orqali qaytarish qulay emas."],
     forWhom:"New Balance modellari izlovchilar", returns:"AQShda odatda 45 kunlik return. Ayrim online returnlarda non-member uchun restocking/return fee mavjud; final-sale mahsulotlar istisno.", ios:"https://apps.apple.com/jp/app/new-balance-%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%88%E3%82%A2%E3%82%A2%E3%83%97%E3%83%AA-nb-shop/id1163952575", android:"https://play.google.com/store/apps/details?id=li.yapp.app18EB4D42",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"footlocker", name:"Foot Locker", domain:"footlocker.com", url:"https://www.footlocker.com", mono:"FL", color:"#1A1A1A", flag:"🇺🇸", country:"AQSh", from:["AQSh","Angliya"], cat:"poyabzal", subcats:"Sneaker va sport brendlari", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["poyabzal","katta assortiment","vositachi kerak"],
+    tags:["poyabzal","katta assortiment","kuryer orqali"],
     pros:["Ko'p brendli sneaker assortimenti"],
     cons:["Country-site siyosati farq qiladi","non-member return fee bo\'lishi mumkin.","Sneaker launch/limited mahsulotlar va kuryer orqali return murakkab."],
     forWhom:"Turli sneaker brendlarini solishtiruvchilar", returns:"AQShda odatda 45 kun ichida yangi holatdagi mahsulot return qilinadi. Ayrim mijozlar uchun pochta return fee mavjud; refund processing bir necha kun/hafta.", ios:"https://apps.apple.com/us/app/foot-locker-shop-releases/id934030757", android:"https://play.google.com/store/apps/details?id=com.footlocker.approved",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"jdsports", name:"JD Sports", domain:"jdsports.com", url:"https://www.jdsports.com", mono:"JS", color:"#1A1A1A", flag:"🌍", country:"Angliya", from:["Angliya","AQSh"], cat:"poyabzal", subcats:"Sneaker, streetwear va sport", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"Oson",
-    tags:["poyabzal","katta assortiment","vositachi kerak"],
+    tags:["poyabzal","katta assortiment","kuryer orqali"],
     pros:["Sneaker va streetwear brendlari"],
     cons:["Return oynasi nisbatan qisqa.","Mamlakatlararo siyosat farq qiladi","o\'lcham almashtirish uchun qayta buyurtma qilish talab qilinishi mumkin."],
     forWhom:"Sport va streetwear xaridorlari", returns:"Global/ayrim bozorlarda online xaridlar uchun taxminan 14 kunlik return; refund original paymentga. Ayrim kanallarda online exchange emas, faqat return+qayta buyurtma.", ios:"https://apps.apple.com/gb/app/jd-sports/id690602681", android:"https://play.google.com/store/apps/details?id=com.jd.jdsports",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"Oson"}], updated:"15.08.2026" },
   { id:"bestbuy", name:"Best Buy", domain:"bestbuy.com", url:"https://www.bestbuy.com", mono:"BB", color:"#0046BE", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"elektronika", subcats:"Consumer electronics va maishiy texnika", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
-    tags:["elektronika","katta assortiment","vositachi kerak"],
+    tags:["elektronika","katta assortiment","kuryer orqali"],
     pros:["Elektronika bo'yicha keng assortiment"],
     cons:["Elektronika uchun return oynasi qisqa.","AQSh bozori va warranty tizimiga bog\'liq","Marketplace sellerlari hamda kuryer orqali return qo\'shimcha risk tug\'diradi."],
     forWhom:"AQShdan elektronika xarid qiluvchilar", returns:"Standard mijozlarda ko\'p mahsulotlar uchun return oynasi taxminan 15 kun; membership darajasiga qarab uzayishi mumkin. Marketplace seller mahsulotlarida alohida shartlar mavjud.", ios:"https://apps.apple.com/us/app/best-buy-tech-deals-savings/id314855255", android:"https://play.google.com/store/apps/details?id=com.bestbuy.android",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"newegg", name:"Newegg", domain:"newegg.com", url:"https://www.newegg.com", mono:"Ne", color:"#FF6B00", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"elektronika", subcats:"PC, komponentlar va elektronika", type:"Marketplace", price:"$$", segment:"Katta assortiment", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
-    tags:["elektronika","katta assortiment","vositachi kerak"],
+    tags:["elektronika","katta assortiment","kuryer orqali"],
     pros:["Kompyuter va komponentlarga kuchli yo'nalish"],
     cons:["PC komponentlarida opened/used, bundle va restocking shartlari murakkab bo\'lishi mumkin.","Marketplace sellerlari, warranty va xalqaro return alohida tekshiruv talab qiladi."],
     forWhom:"PC yig'uvchi va texnika xaridorlari", returns:"Ko\'p mahsulotlarda 30 kun atrofidagi return/refund yoki replacement oynasi mavjud; product va Marketplace seller siyosatiga qarab farq qiladi.", ios:"https://apps.apple.com/gb/app/newegg-tech-shopping-online/id345188269", android:"https://play.google.com/store/apps/details?id=com.newegg.app",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"bhphoto", name:"B&H Photo", domain:"bhphotovideo.com", url:"https://www.bhphotovideo.com", mono:"BP", color:"#1A1A1A", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"elektronika", subcats:"Kamera, audio, kompyuter, professional texnika", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"Oson",
-    tags:["elektronika","original","vositachi kerak"],
+    tags:["elektronika","original","kuryer orqali"],
     pros:["Professional elektronika va foto-video assortimenti"],
     cons:["Professional texnika qimmat va ayrim mahsulotlarda return istisnolari ko\'p.","Xalqaro qaytarish, sug\'urta va boj xarajati sezilarli bo\'lishi mumkin."],
     forWhom:"Foto-video va professional texnika xaridorlari", returns:"Ko\'p mahsulotlar 30 kun ichida return qilinadi; maxsus/non-returnable kategoriyalar mavjud. Xalqaro buyurtmada shipping, customs va import xarajatlari ko\'pincha qaytarilmaydi.", ios:"https://apps.apple.com/us/app/b-h-photo-video-pro-audio/id390928219", android:"https://play.google.com/store/apps/details?id=com.bhphoto",
@@ -4870,61 +4874,61 @@ const STORES = [
     forWhom:"Moda va turli brendlarni bir joyda izlaydiganlar", returns:"Odatda 28 kun ichida return. Mahsulot original holatda bo\'lishi kerak; refund tekshiruvdan keyin amalga oshiriladi. Fair-use qoidalari va ayrim return fee holatlari mavjud.", ios:"https://apps.apple.com/us/app/asos-discover-fashion-online/id457876088", android:"https://play.google.com/store/apps/details?id=com.asos.app",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"ha"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"Oson"}], updated:"15.08.2026" },
   { id:"microcenter", name:"Micro Center", domain:"microcenter.com", url:"https://www.microcenter.com", mono:"MC", color:"#0057B8", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"elektronika", subcats:"PC komponentlari va kompyuter texnikasi", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["elektronika","katta assortiment","vositachi kerak"],
+    tags:["elektronika","katta assortiment","kuryer orqali"],
     pros:["PC va komponentlarga ixtisoslashgan"],
     cons:["Asosan AQShdagi physical-store modeliga tayangan.","Qimmat elektronika uchun qisqa muddat","xalqaro shipping/return imkoniyatlari cheklangan."],
     forWhom:"Kompyuter yig'ish uchun detal izlaydiganlar", returns:"Ko\'p mahsulotlar 30 kun, ammo kompyuter, CPU, motherboard, kamera va ayrim elektronika uchun qisqaroq return oynasi qo\'llanishi mumkin.", ios:"", android:"",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"apple", name:"Apple Store", domain:"apple.com", url:"https://www.apple.com", mono:"Ap", color:"#1A1A1A", flag:"🌍", country:"AQSh", from:["AQSh","Angliya","Germaniya"], cat:"elektronika", subcats:"iPhone, Mac, iPad va aksessuarlar", type:"Rasmiy brend do'koni", price:"$$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["elektronika","original","vositachi kerak"],
+    tags:["elektronika","original","kuryer orqali"],
     pros:["Rasmiy Apple mahsulotlari"],
     cons:["Return oynasi juda qisqa.","Xarid qilingan mamlakat/Apple Store bilan bog\'liq","activated/configured mahsulotlar va xalqaro warranty/region masalalari qo\'shimcha e\'tibor talab qiladi."],
     forWhom:"Apple mahsulotlarini rasmiy manbadan oluvchilar", returns:"Apple\'dan to\'g\'ridan-to\'g\'ri olingan ko\'p mahsulotlar AQShda 14 kalendar kun ichida return qilinadi; mamlakatlar bo\'yicha muddat va huquqlar farq qiladi.", ios:"https://apps.apple.com/us/app/apple-store/id375380948", android:"",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"samsung", name:"Samsung Store", domain:"samsung.com", url:"https://www.samsung.com", mono:"SS", color:"#1428A0", flag:"🌍", country:"AQSh", from:["AQSh","Koreya"], cat:"elektronika", subcats:"Smartfon, TV, maishiy elektronika", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["elektronika","original","vositachi kerak"],
+    tags:["elektronika","original","kuryer orqali"],
     pros:["Rasmiy Samsung mahsulotlari"],
     cons:["Muddat qisqa va country-site bo\'yicha farqlanadi.","Telefon, appliance va o\'rnatilgan mahsulotlarda alohida shartlar","kuryer/warranty regioni muhim."],
     forWhom:"Samsung texnikasi xaridorlari", returns:"Ko\'p bozorlarda 14–15 kun atrofida return oynasi; requestdan keyin mahsulotni belgilangan muddatda jo\'natish va inspection talab qilinadi.", ios:"https://apps.apple.com/us/app/shop-samsung/id1274679179", android:"https://play.google.com/store/apps/details?id=com.samsung.ecomm",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"xiaomi", name:"Xiaomi", domain:"mi.com", url:"https://www.mi.com", mono:"Xi", color:"#FF6900", flag:"🌍", country:"Xitoy", from:["Xitoy"], cat:"elektronika", subcats:"Smartfon, gadget va smart-home", type:"Rasmiy brend do'koni", price:"$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["elektronika","original","vositachi kerak"],
+    tags:["elektronika","original","kuryer orqali"],
     pros:["Xiaomi ekotizimi mahsulotlari"],
     cons:["Yagona global return standarti yo\'q.","Region ROM, warranty va country-store cheklovlari bor","boshqa davlatdan olingan qurilmani mahalliy servis qabul qilmasligi mumkin."],
     forWhom:"Xiaomi gadgetlarini izlaydiganlar", returns:"Return muddati mamlakatga qarab farq qiladi; odatda 7–14 kunlik change-of-mind va nuqsonlar uchun uzoqroq repair/replacement/refund huquqlari mavjud.", ios:"https://apps.apple.com/gb/app/mi-store/id1268565993", android:"https://play.google.com/store/apps/details?id=com.mi.global.shop",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"lenovo", name:"Lenovo", domain:"lenovo.com", url:"https://www.lenovo.com", mono:"Le", color:"#E2231A", flag:"🌍", country:"Xitoy", from:["Xitoy","AQSh"], cat:"elektronika", subcats:"Noutbuk, PC va aksessuarlar", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["elektronika","original","vositachi kerak"],
+    tags:["elektronika","original","kuryer orqali"],
     pros:["Rasmiy Lenovo kompyuter mahsulotlari"],
     cons:["CTO/custom konfiguratsiya va country policy farq qiladi.","Ba\'zi bozorlarda restocking yoki return cheklovi mavjud","xalqaro warranty ham modelga bog\'liq."],
     forWhom:"Noutbuk va PC xaridorlari", returns:"AQShda ko\'p yangi mahsulotlar uchun 30 kunlik return; Outlet odatda qisqaroq, ayrim business/PRO dasturlarida uzunroq muddat bo\'lishi mumkin.", ios:"https://apps.apple.com/gb/app/lenovo/id1398650553", android:"https://play.google.com/store/apps/details?id=com.lenovo.serviceit",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"sephora", name:"Sephora", domain:"sephora.com", url:"https://www.sephora.com", mono:"Se", color:"#1A1A1A", flag:"🌍", country:"AQSh", from:["AQSh"], cat:"kosmetika", subcats:"Kosmetika, parfyumeriya va skincare", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Premium", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["kosmetika","premium","vositachi kerak"],
+    tags:["kosmetika","premium","kuryer orqali"],
     pros:["Ko'plab beauty brendlar bir joyda"],
     cons:["Forwarding kompaniyasiga yetkazilgandan keyingi yo\'qolish/damage claimlari cheklanishi mumkin.","Country policy, beauty hygiene istisnolari va high-return monitoring mavjud."],
     forWhom:"Premium kosmetika xaridorlari", returns:"AQShda ko\'p yangi yoki yengil ishlatilgan mahsulotlar 30 kun ichida original paymentga refund qilinadi; final-sale va ayrim mahsulotlar istisno.", ios:"https://apps.apple.com/us/app/sephora-us-makeup-skincare/id393328150", android:"https://play.google.com/store/apps/details?id=com.sephora",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"ulta", name:"Ulta Beauty", domain:"ulta.com", url:"https://www.ulta.com", mono:"UB", color:"#E4007C", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"kosmetika", subcats:"Mass-market va premium beauty", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["kosmetika","katta assortiment","vositachi kerak"],
+    tags:["kosmetika","katta assortiment","kuryer orqali"],
     pros:["Turli narx segmentidagi beauty assortiment"],
     cons:["AQShga kuchli bog\'langan","ayrim marketplace va third-party delivery xaridlari alohida tartibda.","ID/proof talab qilinadi, excessive return holatlarida cheklov qo\'yilishi mumkin."],
     forWhom:"Kosmetikani ko'p brend ichidan tanlaydiganlar", returns:"Ko\'p yangi yoki yengil ishlatilgan mahsulotlar 30 kun ichida original paymentga refund; 31–60 kun oralig\'ida odatda merchandise credit. 60 kundan keyin refund yo\'q.", ios:"https://apps.apple.com/us/app/ulta-beauty-makeup-skincare/id561930308", android:"https://play.google.com/store/apps/details?id=com.ulta",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"beautybay", name:"Beauty Bay", domain:"beautybay.com", url:"https://www.beautybay.com", mono:"BY", color:"#1A1A1A", flag:"🌍", country:"Angliya", from:["Angliya"], cat:"kosmetika", subcats:"Kosmetika va skincare", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"Oson",
-    tags:["kosmetika","katta assortiment","vositachi kerak"],
+    tags:["kosmetika","katta assortiment","kuryer orqali"],
     pros:["Trend beauty brendlar assortimenti"],
     cons:["Opened cosmetics va hygiene mahsulotlarining qaytarilishi cheklangan.","Xalqaro shipping/customs qaytmasligi mumkin","refund warehouse inspectionga bog\'liq."],
     forWhom:"Trend kosmetika izlaydiganlar", returns:"Eligible mahsulotlar odatda 30 kun ichida, unused/unopened va seal buzilmagan holatda qaytariladi. Refund return tekshirilgandan keyin qayta ishlanadi.", ios:"https://apps.apple.com/us/app/beauty-bay/id1319809419", android:"https://play.google.com/store/apps/details?id=com.beautybay",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"Oson"}], updated:"15.08.2026" },
   { id:"lego", name:"LEGO", domain:"lego.com", url:"https://www.lego.com", mono:"LE", color:"#D01012", flag:"🌍", country:"Angliya", from:["Angliya","AQSh","Germaniya"], cat:"bolalar", subcats:"Konstruktor va kolleksiya setlari", type:"Rasmiy brend do'koni", price:"$$$", segment:"Original", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["bolalar","original","vositachi kerak"],
+    tags:["bolalar","original","kuryer orqali"],
     pros:["Rasmiy LEGO mahsulotlari"],
     cons:["Country policy turlicha","collector setlarda packaging holati muhim.","Ochilgan set, promotional/gift va xalqaro kuryer buyurtmalarida shartlar alohida bo\'lishi mumkin."],
     forWhom:"LEGO va konstruktor xaridorlari", returns:"Return muddati bozorga qarab farq qiladi: AQShda 90 kungacha, ayrim Yevropa/Osiyo bozorlarida qisqaroq. Eligible mahsulot original holatda bo\'lishi kerak.", ios:"https://apps.apple.com/gb/app/lego-insiders-shop-rewards/id6740403375", android:"https://play.google.com/store/apps/details?id=com.lego.membership",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"hamleys", name:"Hamleys", domain:"hamleys.com", url:"https://www.hamleys.com", mono:"Ha", color:"#E30613", flag:"🇬🇧", country:"Angliya", from:["Angliya"], cat:"bolalar", subcats:"O'yinchoqlar va sovg'alar", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Premium", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["bolalar","premium","vositachi kerak"],
+    tags:["bolalar","premium","kuryer orqali"],
     pros:["Premium o'yinchoq assortimenti"],
     cons:["Asosan UK retail modeli.","Ochilgan o\'yinchoqlar return qilinmasligi mumkin","xalqaro shipping va refund processing uzoqroq/qo\'shimcha xarajatli."],
     forWhom:"Sifatli va sovg'abop o'yinchoq izlaydiganlar", returns:"UK siyosatida unopened/unused mahsulotlarga 60 kungacha refund va ayrim holatlarda 90 kungacha exchange mavjud. Proof va original packaging talab qilinadi.", ios:"https://apps.apple.com/in/app/hamleys/id6755169519", android:"https://play.google.com/store/apps/details?id=com.hamleys_webapp",
@@ -4936,25 +4940,25 @@ const STORES = [
     forWhom:"Original Victoria's Secret lingerie, sleepwear, PINK va fragrance mahsulotlarini xarid qiluvchilar", returns:"Xalqaro buyurtmalar Global-e orqali 60 kun ichida qaytarilishi mumkin. Return shipping haqi manzilga qarab farq qiladi; xalqaro online returnlar odatda mahalliy Victoria's Secret do'konlarida qabul qilinmaydi.", ios:"https://apps.apple.com/us/app/victorias-secret-bras-more/id336860594", android:"https://play.google.com/store/apps/details?id=com.victoriassecret.vsaa",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"ha"},{"k":"Do'kon turi","v":"Rasmiy brend do'koni"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"Oson"}], updated:"15.08.2026" },
   { id:"toysrus", name:"Toys\"R\"Us", domain:"toysrus.com", url:"https://www.toysrus.com", mono:"To", color:"#0067B1", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"bolalar", subcats:"O'yinchoqlar, LEGO, qo'g'irchoqlar, action figures, learning toys, outdoor toys va baby mahsulotlar", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["bolalar","katta assortiment","vositachi kerak"],
+    tags:["bolalar","katta assortiment","kuryer orqali"],
     pros:["Eng mashhur universal o'yinchoq retailerlaridan biri","yosh va kategoriya bo'yicha juda katta assortiment."],
     cons:["ToysRUs.com hozir xalqaro shipping qilmaydi","O'zbekiston uchun kuryer kerak.","Alaska/Hawaii va katta buyumlarda surcharge bo'lishi mumkin"],
     forWhom:"Bir joydan turli yoshdagi bolalar uchun mashhur brend o'yinchoqlarini izlaydiganlar", returns:"Returnni mahsulot olinganidan keyin 30 kun ichida boshlash kerak; original packaging talab qilinadi. Approved refund original paymentga yoki ayrim holatlarda store credit shaklida berilishi mumkin.", ios:"", android:"",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"smythstoys", name:"Smyths Toys", domain:"smythstoys.com", url:"https://www.smythstoys.com", mono:"ST", color:"#E2001A", flag:"🇬🇧", country:"Angliya", from:["Angliya"], cat:"bolalar", subcats:"O'yinchoqlar, LEGO, gaming, outdoor, baby, nursery, bikes va electronic toys", type:"Ixtisoslashgan do'kon", price:"$$", segment:"Katta assortiment", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["bolalar","katta assortiment","vositachi kerak"],
+    tags:["bolalar","katta assortiment","kuryer orqali"],
     pros:["Yevropadagi eng yirik toy retailerlaridan biri","300+ do'kon va bir nechta Yevropa mamlakatida kuchli online savdo."],
     cons:["O'zbekistonga bevosita jo'natmaydi.","Online store va return jarayoni davlatga bog'langan","katta outdoor/baby mahsulotlarda logistika va kuryer xarajati yuqori."],
     forWhom:"Yevropadan LEGO, gaming, bolalar va outdoor o'yinchoqlarini xarid qiluvchilar", returns:"Ko'p bozorlarda unused va unopened mahsulotlar xariddan keyin 28 kun ichida qaytariladi; original packaging, receipt/order reference talab qilinadi. Opened software/games va ayrim nursery mahsulotlari istisno.", ios:"", android:"",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"faoschwarz", name:"FAO Schwarz", domain:"faoschwarz.com", url:"https://faoschwarz.com", mono:"FS", color:"#A6192E", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"bolalar", subcats:"Premium o'yinchoqlar, plush, dolls, ride-ons, collectibles, gifts va eksklyuziv mahsulotlar", type:"Ixtisoslashgan do'kon", price:"$$$", segment:"Premium", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["bolalar","premium","vositachi kerak"],
+    tags:["bolalar","premium","kuryer orqali"],
     pros:["Ikonik premium toy store","noodatiy, sovg'abop va eksklyuziv o'yinchoqlar hamda kolleksiya mahsulotlari kuchli."],
     cons:["Xalqaro shipping mavjud emas","faqat continental AQShga yo'naltirilgan.","Return uchun $10 fee bor"],
     forWhom:"Premium, noodatiy va sovg'abop o'yinchoqlar hamda collectible izlaydiganlar", returns:"Eligible mahsulotlar deliverydan keyin 30 kun ichida qaytariladi. Har bir return shipment uchun $10 fee olinadi; online buyurtmalarni storega qaytarib bo'lmaydi. Ayrim bulky/partner mahsulotlarda 10–20% restocking fee mavjud.", ios:"", android:"",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Ixtisoslashgan do'kon"},{"k":"Narx darajasi","v":"$$$"},{"k":"Original mahsulot","v":"Yuqori"},{"k":"Buyurtma","v":"O'rtacha"}], updated:"15.08.2026" },
   { id:"mattel", name:"Mattel Creations", domain:"creations.mattel.com", url:"https://creations.mattel.com", mono:"MT", color:"#E4002B", flag:"🇺🇸", country:"AQSh", from:["AQSh"], cat:"bolalar", subcats:"Barbie Signature, Hot Wheels Collectors, Matchbox, Monster High, Masters of the Universe, action figures va limited-edition collectibles", type:"Rasmiy brend do'koni", price:"$$$", segment:"Exclusive", original:"Yuqori", direct:false, complexity:"O'rtacha",
-    tags:["bolalar","exclusive","vositachi kerak"],
+    tags:["bolalar","exclusive","kuryer orqali"],
     pros:["Mattel'ning rasmiy collector platformasi","limited-edition Barbie, Hot Wheels, Monster High va boshqa eksklyuziv drop'lar."],
     cons:["O'zbekistonga shipping yo'q.","International orders qaytarilmaydi","limited drops tez sotiladi, purchase limits va product-specific shipping restrictions mavjud."],
     forWhom:"Barbie, Hot Wheels, Monster High va Mattel limited-edition kolleksiyalarini izlaydigan kolleksionerlar", returns:"AQSh buyurtmalarida original proof bilan receipt'dan keyin 30 kun ichida return mumkin; shipping va processing fee qaytarilmaydi. Xalqaro manzilga jo'natilgan buyurtmalar return uchun eligible emas.", ios:"", android:"",
@@ -5042,7 +5046,7 @@ const LINK_ICON = {
    (undan oldingi ustun) qoladi, chunki u yerlarda bayroq o'nlab marta
    takrorlanadi va har biri alohida rasm so'rovi bo'lib ketardi. */
 const COURIER_ORIGINS = [
-  ['Xitoy',      'Xitoy',      'Kuryer va konsolidatsiya',      '🇨🇳', 'osiyo',  'xitoy'],
+  ['Xitoy',      'Xitoy',      'Kuryerlar, posilkani birlashtirish',      '🇨🇳', 'osiyo',  'xitoy'],
   ['AQSH',       'AQSh',       'AQSh omborlari orqali',        '🇺🇸', 'garb',   'aqsh'],
   ['Turkiya',    'Turkiya',    'Yaqin ombor, tez yetkazish',   '🇹🇷', 'yaqin',  'turkiya'],
   ['Yevropa',    'Yevropa',    'Yevropa omborlari',            '🇪🇺', 'garb',   'yevropa'],
@@ -5125,6 +5129,13 @@ COURIERS.forEach(c => {
   c.plate = url ? 'transparent' : c.color;
 });
 
+/* Kuryer xizmatlarining nomi ma'lumotda inglizcha/atama bo'lib keladi —
+   foydalanuvchiga oddiy so'z bilan ko'rsatiladi (kalit o'zgarmaydi). */
+const SVC_LABEL = {
+  'Konsolidatsiya': 'Posilkalarni birlashtirish', 'Foto/tekshiruv': 'Foto va tekshiruv',
+  'Return/Refundga yordam': 'Qaytarishga yordam', 'Buy for me': 'Siz uchun sotib olish',
+  'Door delivery UZ': 'Uyga yetkazish', 'Tracking': 'Kuzatuv', 'Marketplace mosligi': "Qaysi do'konlardan"
+};
 const FEAT_ICONS = {
   'Konsolidatsiya':'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v9',
   'Qayta qadoqlash':'M3 7h18v13H3zM3 7l2-4h14l2 4M12 7v13',
@@ -5155,8 +5166,8 @@ const moExample = () => {
     dutySum: money(c.dutyUzs), total: money(c.totalUzs) };
 };
 const MO_CTA = {
-  calc: { label: 'Kalkulyatorda hisoblash', go: app => app.setState({ customsSec: 4 }) },
-  offices: { label: 'Bojxona organlari', go: app => app.setState({ customsSec: 5 }) }
+  calc: { label: 'Kalkulyatorda hisoblash', go: app => app.focusSec(4) },
+  offices: { label: 'Bojxona organlari', go: app => app.focusSec(5) }
 };
 const MOTION = {
   0: { cta: 'calc', steps: [
@@ -5169,7 +5180,7 @@ const MOTION = {
     { t: "Bo'lib yuborish yordam bermaydi", c: "Katta xaridni ikkiga bo'lib yuborsangiz ham, ikkalasi bir oyda kelsa hisob baribir qo'shiladi. Me'yor jo'natma soniga emas, oyga bog'liq." },
     { t: "Shaxsiy ehtiyoj sharti", c: "Imtiyoz faqat shaxsiy va oilaviy foydalanish uchun. Bir xil tovar ko'p miqdorda bo'lsa (masalan, 10 ta bir xil telefon), bojxona uni tijorat deb hisoblashi mumkin." },
     { t: "Narx qanday aniqlanadi", c: "Qiymat chek yoki invoys bo'yicha olinadi. Narx bozor narxidan ancha past ko'rinsa, bojxona uni qayta baholashi mumkin — chekni saqlab qo'ying." },
-    { t: "Hisobni qayerda ko'rish mumkin", c: "Nomingizga kelgan jo'natmalar va oylik hisobni my.gov.uz (YIDXP) shaxsiy kabinetida ko'rasiz. Ilovadagi «Bu oyda» bloki ham shu hisobni yuritishga yordam beradi." },
+    { t: "Hisobni qayerda ko'rish mumkin", c: "Nomingizga kelgan jo'natmalar va oylik hisobni my.gov.uz shaxsiy kabinetida ko'rasiz. Ilovadagi «Bu oyda» bloki ham shu hisobni yuritishga yordam beradi." },
     { t: "Yangi oy — yangi hisob", c: "Keyingi oyning 1-sanasida hisob noldan boshlanadi: yana $200 bojsiz. Katta xaridni oy boshiga rejalashtirish foyda beradi." }
   ] },
   1: { cta: 'calc', steps: [
@@ -5180,15 +5191,15 @@ const MOTION = {
     { t: "3-qadam: bojxona qiymati", c: "Ortiqcha $120 ga shu qismning yetkazish haqi qo'shiladi: 0,9 kg × $9 ≈ $8. Bojxona qiymati ≈ $128. Ha, yetkazish ham hisobga kiradi." },
     { t: "4-qadam: ikki usul", c: "Boj ikki usulda hisoblanadi: qiymatning 30% i ({0}) yoki har ortiqcha kilogramm uchun $3 (≈ $3). Qaysi biri katta bo'lsa, o'sha olinadi — {0}.", v: ex => [ex.duty] },
     { t: "Og'ir, arzon tovarda", c: "Tovar og'ir va arzon bo'lsa, $3/kg usuli kattaroq chiqadi. Masalan, 20 kg ortiqcha vazn — kamida $60 boj, narxi past bo'lsa ham." },
-    { t: "5-qadam: bojxona yig'imi", c: "Bojdan tashqari rasmiylashtirish yig'imi bor: BHM ning 25% i = {0} so'm. U qat'iy — summa katta yoki kichik bo'lishidan qat'i nazar bir xil.", v: ex => [ex.fee] },
+    { t: "5-qadam: bojxona yig'imi", c: "Bojdan tashqari qat'iy yig'im bor: {0} so'm (qonunda — bazaviy hisoblash miqdorining 25% i). Summa katta yoki kichik bo'lishidan qat'i nazar bir xil.", v: ex => [ex.fee] },
     { t: "6-qadam: so'mga o'tkazish", c: "Boj dollarda hisoblanib, Markaziy bank kursi bo'yicha so'mga o'tkaziladi: {0} × {1} ≈ {2} so'm.", v: ex => [ex.duty, ex.rate, ex.dutySum] },
     { t: "Jami to'lov", c: "Boj {0} + yig'im {1} ≈ {2} so'm. Bu $320 lik jo'natma uchun taxminiy to'lov; kurs o'zgarsa summa ham biroz o'zgaradi.", v: ex => [ex.dutySum, ex.fee, ex.total] },
     { t: "O'zingiznikini hisoblang", c: "Kalkulyatorga oylik summa, vazn va yetkazish narxini kiriting — ilova shu qadamlarni siz uchun bajaradi va hisob bosqichlarini ko'rsatadi." }
   ] },
   3: { cta: 'offices', steps: [
-    { t: "Jo'natma chegaraga keldi", c: "Kuryer yoki pochta jo'natmani bojxona nazoratiga topshiradi. Deklaratsiya tizimda ro'yxatga olinadi — bu avtomatik, sizdan hech narsa talab qilinmaydi." },
+    { t: "Jo'natma chegaraga keldi", c: "Kuryer yoki pochta jo'natmani bojxonaga topshiradi. Ma'lumoti tizimga o'zi kiritiladi — sizdan hech narsa talab qilinmaydi." },
     { t: "Xavf darajasi", c: "Tizim har jo'natmaga xavf darajasini belgilaydi: past, o'rta yoki yuqori. Bunga tovar turi, qiymati va jo'natmalar takrorlanishi ta'sir qiladi." },
-    { t: "Xabarnoma keladi", c: "Sizga YIDXP (my.gov.uz) yoki mobil ilova orqali xabarnoma yuboriladi. Kuryerlar ko'pincha Telegram yoki SMS orqali ham ogohlantiradi." },
+    { t: "Xabarnoma keladi", c: "Sizga my.gov.uz yoki mobil ilova orqali xabarnoma yuboriladi. Kuryerlar ko'pincha Telegram yoki SMS orqali ham ogohlantiradi." },
     { t: "Xabarnomada nima bor", c: "Tovar tavsifi, qiymati, vazni, hisoblangan boj (agar bo'lsa) va javob berish muddati. Hammasini diqqat bilan tekshiring." },
     { t: "Tasdiqlash yoki rad etish", c: "Ma'lumot to'g'ri bo'lsa tasdiqlaysiz. Past va o'rta xavfda bu ixtiyoriy, yuqori xavfda majburiy. Rad etsangiz, jo'natma rasmiylashtirilmaydi." },
     { t: "Xato ko'rsangiz", c: "Qiymat yoki tovar noto'g'ri yozilgan bo'lsa, darhol tasdiqlamang: kuryerga xabar bering yoki eng yaqin bojxona organiga chek bilan murojaat qiling." },
@@ -5200,6 +5211,11 @@ const MOTION = {
   ] }
 };
 const CUSTOMS_SECTIONS = ["Bojsiz me'yor", "Yagona bojxona to'lovi", 'Taqiqlangan tovarlar', 'Rasmiylashtirish tartibi', 'Bojxona kalkulyatori', 'Bojxona organlari'];
+/* Bojxona — uch sahifa (2026-09-24): olti bo'lim (indeksi saqlanadi —
+   qidiruv, AI tugmalari va animatsiyalar shunga bog'langan) foydalanuvchining
+   uch savoliga yig'iladi. SEC_PAGE[bo'lim] → sahifa. */
+const CUSTOMS_PAGES = ["Qancha to'layman?", "Nimani olib kirib bo'lmaydi?", 'Bojxonada nima bo\'ladi?'];
+const SEC_PAGE = [0, 0, 1, 2, 0, 2];
 
 let USD_RATE = 12650;
 const NORMS = [
@@ -5230,7 +5246,7 @@ const DOMAIN_ALIAS = { 'tb.cn': 'taobao', 'tmall.com': 'tmall', 'yangkeduo.com':
    o'lchov ishlagach haqiqiy bosishlar bilan almashtiriladi. */
 /* Kategoriyalar — build vaqtida data/categories.json dan yoziladi
    (id, label, kgPerItem, caution). */
-const CATEGORIES = [{"id":"kiyim va moda","label":"Kiyim va moda","kgPerItem":0.6,"examples":"ko'ylak, kurtka, sumka, aksessuar","caution":""},{"id":"poyabzal","label":"Poyabzal va krossovka","kgPerItem":1.2,"examples":"krossovka, etik, sandal","caution":"Quti bilan hajmiy og'irlik oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi."},{"id":"elektronika","label":"Elektronika va texnika","kgPerItem":0.8,"examples":"telefon, quloqchin, gadjet, komponent","caution":"Litiy batareya va powerbank avia bilan yuborilmaydi; telefon O'zbekistonda IMEI ro'yxatidan o'tkaziladi."},{"id":"kosmetika","label":"Kosmetika va parfyumeriya","kgPerItem":0.4,"examples":"parvarish, atir, bo'yoq","caution":"Aerozol va spirtli atirlar avia jo'natmada cheklanadi — kuryerning ro'yxatini tekshiring."},{"id":"bolalar","label":"Bolalar va o'yinchoq","kgPerItem":0.9,"examples":"kiyim, o'yinchoq, aravacha","caution":""},{"id":"universal","label":"Universal","kgPerItem":1,"examples":"uy-ro'zg'or, sport, boshqa","caution":""}];
+const CATEGORIES = [{"id":"kiyim va moda","label":"Kiyim va moda","kgPerItem":0.6,"examples":"ko'ylak, kurtka, sumka, aksessuar","caution":""},{"id":"poyabzal","label":"Poyabzal va krossovka","kgPerItem":1.2,"examples":"krossovka, etik, sandal","caution":"Quti bilan kargo og'irligi oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi."},{"id":"elektronika","label":"Elektronika va texnika","kgPerItem":0.8,"examples":"telefon, quloqchin, gadjet, komponent","caution":"Litiy batareya va powerbank avia bilan yuborilmaydi; telefon O'zbekistonda IMEI ro'yxatidan o'tkaziladi."},{"id":"kosmetika","label":"Kosmetika va parfyumeriya","kgPerItem":0.4,"examples":"parvarish, atir, bo'yoq","caution":"Aerozol va spirtli atirlar avia jo'natmada cheklanadi — kuryerning ro'yxatini tekshiring."},{"id":"bolalar","label":"Bolalar va o'yinchoq","kgPerItem":0.9,"examples":"kiyim, o'yinchoq, aravacha","caution":""},{"id":"universal","label":"Universal","kgPerItem":1,"examples":"uy-ro'zg'or, sport, boshqa","caution":""}];
 /* Universal kalkulyatorning boshlang'ich kirishlari. */
 const LC_DEFAULT = { name: '', price: '', cur: 'USD', qty: '1', cat: 'universal', country: 'Xitoy', storeId: null, kg: '', l: '', w: '', h: '', domestic: '', courierKey: '', local: '' };
 /* Kuryer papkasi (yo'nalish) → hisob uchun davlat. */
@@ -5439,12 +5455,12 @@ const BANNED = [
 
 /* Kartochkalardagi raqamlar amaldagi me'yordan hisoblanadi: BHM o'zgarganda
    (masalan 2026-09-01 dan 440 000 so'm) matn o'zi yangilanadi. */
-const normCards = () => {
+const normCards = (lang = 'uz') => {
   const N = normsAt();
   return [
     { k:'Bojsiz me\'yor', v:'$' + N.freeUsd, note:'Bir kalendar oy uchun. Kalendar oy — oyning 1-sanasidan so\'nggi sanasigacha bo\'lgan uzluksiz davr, masalan 1-yanvardan 31-yanvargacha.' },
     { k:'Yagona bojxona to\'lovi', icon:'tolov', v:Math.round(N.dutyPct * 100) + '%', note:'Me\'yordan ortiq qismning bojxona qiymatidan ' + Math.round(N.dutyPct * 100) + ' foiz, lekin har bir kilogrami uchun $' + N.minPerKg + ' dan kam emas. Qaysi hisob ko\'p chiqsa, o\'sha olinadi.' },
-    { k:'Bojxona yig\'imi', icon:'yigim', v:money(Math.round(N.bhm * N.feeShare)), note:'BHM ning ' + Math.round(N.feeShare * 100) + ' foizi, BHM = ' + money(N.bhm) + ' so\'m. To\'lov kunidagi kurs bo\'yicha so\'mda hisoblanadi.' }
+    { k:'Bojxona yig\'imi', icon:'yigim', v:money(Math.round(N.bhm * N.feeShare)), note:tx(lang, "Qat'iy summa — summa katta-kichikligiga bog'liq emas. Qonundagi hisob: bazaviy hisoblash miqdori (BHM, {0} so'm) ning {1}%.", money(N.bhm), Math.round(N.feeShare * 100)) }
   ];
 };
 
@@ -5464,9 +5480,9 @@ const CRITERIA = [
 ];
 
 const PROC_STEPS = [
-  { n:'1', t:'Jo\'natma bojxona nazoratidan o\'tadi', d:'Jo\'natmalar deklaratsiyasi tizimda ro\'yxatga olinadi.' },
-  { n:'2', t:'Xabarnoma keladi', d:'Har bir kuryerlik jo\'natmasi bo\'yicha xabarnoma qabul qiluvchiga YIDXP yoki mobil ilova orqali avtomatik yuboriladi.' },
-  { n:'3', t:'Tasdiqlaysiz yoki rad etasiz', d:'Qabul qiluvchi YIDXP, mobil ilova orqali yoki eng yaqin bojxona organiga murojaat qilib xabarnomani tasdiqlaydi yoki rad etadi.' },
+  { n:'1', t:'Jo\'natma bojxona nazoratidan o\'tadi', d:'Jo\'natma ma\'lumoti bojxona tizimiga o\'zi kiritiladi.' },
+  { n:'2', t:'Xabarnoma keladi', d:'Har bir kuryerlik jo\'natmasi bo\'yicha xabarnoma qabul qiluvchiga my.gov.uz yoki mobil ilova orqali avtomatik yuboriladi.' },
+  { n:'3', t:'Tasdiqlaysiz yoki rad etasiz', d:'Qabul qiluvchi my.gov.uz, mobil ilova orqali yoki eng yaqin bojxona organiga murojaat qilib xabarnomani tasdiqlaydi yoki rad etadi.' },
   { n:'4', t:'To\'lov va chiqarish', d:'Me\'yordan ortiq bo\'lsa yagona bojxona to\'lovi va yig\'im to\'lanadi, so\'ng jo\'natma chiqariladi.' }
 ];
 
@@ -5497,7 +5513,7 @@ const FULL_GUIDES = [
   { id:'pinduoduo', tag:"GURUH XARIDI", title:'Pinduoduo', flag:'🇨🇳', mono:'拼', color:'#E02E24', sections:9, file:((typeof window !== 'undefined' && window.__resources && window.__resources['guide_pinduoduo']) || 'guides/inline/pinduoduo.html'),
     desc:'Guruh xaridi mexanikasi, xitoycha lug\'at, eng arzon yo\'nalish' },
   { id:'poizon', tag:"ORIGINALLIK", title:'Poizon (Dewu)', flag:'🇨🇳', mono:'得', color:'#131317', sections:10, file:((typeof window !== 'undefined' && window.__resources && window.__resources['guide_poizon']) || 'guides/inline/poizon.html'),
-    desc:'Autentifikatsiya yorlig\'i, krossovka o\'lchami, vositachi tanlash' },
+    desc:'Autentifikatsiya yorlig\'i, krossovka o\'lchami, kuryer tanlash' },
   { id:'shein', tag:"O'LCHAMLAR", title:'SHEIN', flag:'🇨🇳', mono:'SH', color:'#000000', sections:9, file:((typeof window !== 'undefined' && window.__resources && window.__resources['guide_shein']) || 'guides/inline/shein.html'),
     desc:'Qaysi mamlakat manzili arzon, o\'lcham xatolari, qaytarish' },
   { id:'trendyol', tag:"KDV QAYTISHI", title:'Trendyol', flag:'🇹🇷', mono:'TY', color:'#F27A1A', sections:9, file:((typeof window !== 'undefined' && window.__resources && window.__resources['guide_trendyol']) || 'guides/inline/trendyol.html'),
@@ -6353,12 +6369,22 @@ class Component extends DCLogic {
     return false;
   }
 
-  openSec(i) { this.setState({ customsSec: i }); this.push('csec'); }
+  openSec(i) { this.setState({ customsSec: i }); this.push('csec'); this.focusSec(i); }
+  /* Sahifa ichida bo'limga borish: sahifaning birinchi bo'limi bo'lsa tepada
+     qoladi, bo'lmasa o'sha bo'lim ko'rinadigan joyga aylanadi. */
+  focusSec(i) {
+    const first = [4, 2, 3][SEC_PAGE[i] || 0];
+    this.setState({ customsSec: i }, () => {
+      if (i === first) return;
+      setTimeout(() => { const r = this._rootRef.current, el = r && r.querySelector('[data-sec="' + i + '"]'); if (el) { try { el.scrollIntoView({ block: 'start', behavior: 'auto' }); } catch (e) {} } }, 60);
+    });
+  }
 
   /* --- Motion-tushuntirish: 11 qadam, har biri moMs(qadam). Ekran yoki bo'lim
      almashganda to'xtaydi va yopiladi. --- */
   moClear() { clearTimeout(this._moT); }
-  moDef() { return this.cur() === 'csec' ? (MOTION[this.state.customsSec] || null) : null; }
+  moKey() { const c = this.state.customsSec; return c === 4 ? 1 : c === 5 ? 3 : c; }
+  moDef() { return this.cur() === 'csec' ? (MOTION[this.moKey()] || null) : null; }
   moStart() { haptic('light'); this.moClear(); this.setState({ moOpen: true, moStep: 0, moPlaying: true }); this.moTick(); }
   moTick() {
     this.moClear();
@@ -6543,12 +6569,12 @@ class Component extends DCLogic {
       /* Jo'natma raqami: buyurtmadan keyin. Kuryer sayti bo'lsa yonida havola. */
       hasTrack: si >= 2 && !done, track: p.track || '', trackSet: !!p.track,
       onTrack: e => setPlan({ track: String(e.target.value || '').replace(/\s+/g, '').toUpperCase() }),
-      copyTrack: () => { if (!p.track) { this.toast('Avval trek raqamini yozing'); return; } this.copyText(p.track, 'Trek raqam'); },
+      copyTrack: () => { if (!p.track) { this.toast("Avval jo'natma raqamini yozing"); return; } this.copyText(p.track, "Jo'natma raqami"); },
       site: k && k.track ? k.track : '', hasSite: si >= 2 && !done && !!(k && k.track),
       /* 20 kundan ortiq yo'lda — ushlanib qolgan bo'lishi mumkin. */
       stuck: HAS_CONTACT && si >= 2 && !done && age >= 20,
       stuckLabel: tx(lang, "{0} kun — ushlanib qoldimi?", age),
-      stuckAsk: () => this.askSvc('svc-ushlangan', tx(lang, "Jo'natma: {0}, kuryer: {1}, trek: {2}, {3} kun.", (p.name || p.cat) + ' · ' + p.storeName, p.courierName || '—', p.track || '—', age)),
+      stuckAsk: () => this.askSvc('svc-ushlangan', tx(lang, "Jo'natma: {0}, kuryer: {1}, raqam: {2}, {3} kun.", (p.name || p.cat) + ' · ' + p.storeName, p.courierName || '—', p.track || '—', age)),
       remove: () => { this.setState(x => ({ plans: x.plans.filter(q => q.id !== p.id), monthly: (x.monthly || []).filter(m => m.plan !== p.id) })); if (this._findId === p.id) this._findId = null; this.toast(L("Xarid o'chirildi")); }
     };
   }
@@ -6954,7 +6980,7 @@ class Component extends DCLogic {
           lastSub: [r.storeName, tr(lang, r.lc.country), d ? String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') : ''].filter(Boolean).join(' · '),
           openLast: () => { metrics.hit('quick', 'last'); this.setState({ shotRes: r }); this.push('result'); } };
       })(),
-      whGoOn: !!(w.cat || String(w.text || '').trim())
+      whGoOn: !!(w.cat || String(w.text || '').trim()), aiOff: !st.aiOn
     };
   }
   /* Natija ekranining VM qismi. */
@@ -6986,7 +7012,7 @@ class Component extends DCLogic {
     ];
     const dutyNote = L.basis === 'none' ? tx(lang, "Tovar qiymati ${0} me'yor ichida — boj va yig'im yo'q.", Math.round(freeLeft))
       : L.basis === 'weight' ? tx(lang, "Me'yordan oshgan qism uchun vazn bo'yicha hisob (har kg ${0}) ustun keldi.", NL.minPerKg)
-      : tx(lang, "Me'yordan ($" + Math.round(freeLeft) + ") oshgan qismdan {0}% boj va BHM ning {1}% yig'imi.", Math.round(NL.dutyPct * 100), Math.round(NL.feeShare * 100));
+      : tx(lang, "Me'yordan (${0}) oshgan qismdan {1}% boj va {2} so'm qat'iy yig'im.", Math.round(freeLeft), Math.round(NL.dutyPct * 100), money(Math.round(NL.bhm * NL.feeShare)));
     const orderQ = tx(lang, "Men {0} ({1}) dan \"{2}\" ({3}) buyurtma qilmoqchiman{4}. Qanday buyurtma qilaman — qadam-baqadam?",
       r.storeName || L_("do'kon"), tr(lang, r.lc.country), r.lc.name || L_('mahsulot'), r.priceTxt, sel ? ', ' + L_('kuryer') + ' ' + sel.name : '');
     return { ...base,
@@ -7269,7 +7295,7 @@ class Component extends DCLogic {
       return f.indexOf('from:') === 0
         ? (COURIER_ORIGINS.find(d => d[0] === f.slice(5)) || null) : null;
     })();
-    const titles = { ref:"Ma'lumotnoma", landed:'Jami narx', result:'Jami narx', mine:'Xaridlarim', ai:'Pochtam AI', plan:'Xarid', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? tx(st.lang, '{0} yo\'nalishi', tr(st.lang, courierFolderDef[1])) : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Jo\'natmani kuzatish', search:'Qidiruv', wizard:'Reja tuzish', settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
+    const titles = { ref:"Ma'lumotnoma", landed:'Jami narx', result:'Jami narx', mine:'Xaridlarim', ai:'Pochtam AI', plan:'Xarid', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? tx(st.lang, '{0} yo\'nalishi', tr(st.lang, courierFolderDef[1])) : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_PAGES[SEC_PAGE[st.customsSec] || 0], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Jo\'natmani kuzatish', search:'Qidiruv', wizard:"Do'kon va kuryer tanlash", settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
     /* Saralash tugmasi faqat ro'yxat ko'rinib turganda kerak: papkalar
        ekranida saralanadigan narsa yo'q. */
     const showSortBtn = cur === 'courierfolder' ||
@@ -7325,7 +7351,7 @@ class Component extends DCLogic {
       if (st.wizStep === 2) return (wizStores.length ? wizStores
         : (wizInCountry.length ? wizInCountry : STORES)).map(s => ({
         /* Izoh qismlarga bo'lib tarjima qilinadi: yaxlit satr lug'atda yo'q. */
-        label:s.name, note:tr(st.lang, s.type) + ' · ' + tr(st.lang, cKey === 'Global' ? s.country : cKey) + ' · ' + tr(st.lang, s.direct ? 'to\'g\'ridan-to\'g\'ri' : 'vositachi kerak'),
+        label:s.name, note:tr(st.lang, s.type) + ' · ' + tr(st.lang, cKey === 'Global' ? s.country : cKey) + ' · ' + tr(st.lang, s.direct ? 'to\'g\'ridan-to\'g\'ri' : 'kuryer orqali'),
         pick:() => this.setState({ wizStore:s.name, wizStep:3 }),
         hasMono:true, hasPrice:true, plain:false, color:s.color, ink:s.ink, mono:s.mono,
         logoCss:s.logoCss, logoFit:'contain', logoBg:'transparent', boxW:'48px', logoInset:'0',
@@ -7612,7 +7638,7 @@ class Component extends DCLogic {
         const note = (priceUsd <= 0 ? tr(st.lang, 'Narxni yozing — jami tannarx shu yerda chiqadi.')
           : L.basis === 'none' ? tx(st.lang, "Tovar qiymati ${0} me'yor ichida — boj va yig'im yo'q.", Math.round(freeLeft))
           : L.basis === 'weight' ? tx(st.lang, "Me'yordan oshgan qism uchun vazn bo'yicha hisob (har kg ${0}) ustun keldi.", N.minPerKg)
-          : tx(st.lang, "Me'yordan ($" + Math.round(freeLeft) + ") oshgan qismdan {0}% boj va BHM ning {1}% yig'imi.", Math.round(N.dutyPct * 100), Math.round(N.feeShare * 100))) + monthNote;
+          : tx(st.lang, "Me'yordan (${0}) oshgan qismdan {1}% boj va {2} so'm qat'iy yig'im.", Math.round(freeLeft), Math.round(N.dutyPct * 100), money(Math.round(N.bhm * N.feeShare)))) + monthNote;
         const badgeOf = q => q === quotes[0] ? ['Eng arzon', '#E9F8EF', '#0F7B3E'] : q === fast ? ['Eng tez', '#E9EAFD', '#1A1FB0'] : q === optq ? ['Optimal', '#FDF3E3', '#B45309'] : null;
         /* Skrinshot banneri matnlari — holatga qarab. */
         const sh = st.lcShot;
@@ -7637,7 +7663,7 @@ class Component extends DCLogic {
           lcCountries: LC_COUNTRIES.map(c => ({ t: tr(st.lang, c), ...chip(lc.country === c), pick: () => setLc({ country: c, courierKey: '' }) })),
           lcKgHint: '≈ ' + String(catDef.kgPerItem).replace('.', ','),
           lcKgNote: kgIn > 0
-            ? (volKg > kg * qty ? tx(st.lang, 'Hajmiy og\'irlik {0} kg haqiqiy {1} kg dan katta — kargo shu bo\'yicha.', volKg.toFixed(1).replace('.', ','), (kg * qty).toFixed(1).replace('.', ',')) : tx(st.lang, 'Hisob og\'irligi: {0} kg.', billKg.toFixed(1).replace('.', ',')))
+            ? (volKg > kg * qty ? tx(st.lang, 'Quti o\'lchami bo\'yicha og\'irlik {0} kg — haqiqiysidan ({1} kg) katta, kargo shu bo\'yicha.', volKg.toFixed(1).replace('.', ','), (kg * qty).toFixed(1).replace('.', ',')) : tx(st.lang, 'Hisob og\'irligi: {0} kg.', billKg.toFixed(1).replace('.', ',')))
             : tx(st.lang, "Og'irlik yozilmadi — kategoriya bo'yicha taxmin: {0} kg/dona. Aniq vazn kiritsangiz hisob aniqroq bo'ladi.", String(catDef.kgPerItem).replace('.', ',')),
           lcQuoteHas: top.length > 0, lcQuoteNone: !!TARIFFS && top.length === 0,
           lcQuoteNoneT: C.noCourier
@@ -7985,7 +8011,7 @@ class Component extends DCLogic {
         openFullGuide: () => { if (storeFull) { metrics.hit('guide', storeFull.id); this.setState({ fullId: storeFull.id }); this.push('fullguide'); } },
         routeBg: store.direct ? '#E9F8EF' : '#FDF3E3',
         routeFg: store.direct ? '#0F7B3E' : '#B45309',
-        routeTitle: store.direct ? 'O\'zbekistonga to\'g\'ridan-to\'g\'ri yuboradi' : 'Vositachi (kuryer) kerak',
+        routeTitle: store.direct ? 'O\'zbekistonga to\'g\'ridan-to\'g\'ri yuboradi' : 'O\'zbekistonga yubormaydi — kuryer orqali',
         routeNote: store.direct
           ? 'Do\'konning o\'zi yetkazadi. Kuryer kerak bo\'lmasa ham, quyidagilar orqali arzonroq va tezroq variant chiqishi mumkin.'
           : 'Do\'kon O\'zbekistonga yubormaydi. Chetdagi ombor manzilini beruvchi kuryer tanlanadi, tovar o\'sha manzilga keladi va u yerdan sizga jo\'natiladi.',
@@ -8194,7 +8220,7 @@ class Component extends DCLogic {
         return { ...l, linePic: strokePic(ic.d, '#1A1FB0', 1.9), hasD: !!ic.d,
           pic: ic.pic || 'none', hasPic: !!ic.pic };
       }) },
-      svcList: courier.svc.map(s => ({ ...s, pic: strokePic(FEAT_ICONS[s.k] || 'M5 12h14', '#1A1FB0', 2) })),
+      svcList: courier.svc.map(s => ({ ...s, lbl: tr(st.lang, SVC_LABEL[s.k] || s.k), pic: strokePic(FEAT_ICONS[s.k] || 'M5 12h14', '#1A1FB0', 2) })),
       courierCount: COURIERS.length,
       storeUnit: nUnit(st.lang, STORES.length, "ta do'kon"),
       courierUnit: nUnit(st.lang, COURIERS.length, 'ta kuryer'),
@@ -8203,15 +8229,13 @@ class Component extends DCLogic {
       hasSvc: courier.svc.length > 0,
       hasLimits: courier.limits.length > 0,
 
-      sec1: () => this.openSec(0), sec2: () => this.openSec(1), sec3: () => this.openSec(2),
-      sec4: () => this.openSec(3), sec5: () => this.openSec(4), sec6: () => this.openSec(5),
-      goCalcSec: () => (this.cur() === 'csec' ? this.setState({ customsSec: 4 }) : this.openSec(4)),
+      goCalcSec: () => (this.cur() === 'csec' ? this.focusSec(4) : this.openSec(4)),
       ...(() => {
         const def = this.moDef();
         if (!def) return { moHas: false, moClosed: true, moOn: false, moScene: {}, moDots: [], moEx: {} };
         const ex = moExample();
         const n = def.steps.length, step = Math.min(st.moStep, n - 1), sd = def.steps[step], ended = !st.moPlaying && step === n - 1;
-        const scene = {}; scene['m' + st.customsSec + 's' + step] = true;
+        const scene = {}; scene['m' + this.moKey() + 's' + step] = true;
         const total = def.steps.reduce((a, x) => a + moMs(x), 0);
         const cta = MO_CTA[def.cta];
         return {
@@ -8231,8 +8255,20 @@ class Component extends DCLogic {
           moOpenIt: () => this.moStart(), moToggle: () => this.moToggle(), moClose: () => this.moStop()
         };
       })(),
-      cs1: st.customsSec === 0, cs2: st.customsSec === 1, cs3: st.customsSec === 2,
-      cs4: st.customsSec === 3, cs5: st.customsSec === 4, cs6: st.customsSec === 5,
+      /* Bo'limlar sahifa bo'yicha: 0 — kalkulyator, me'yor, to'lov;
+         1 — taqiqlar; 2 — tartib va bojxona organlari. */
+      ...(() => { const pg = SEC_PAGE[st.customsSec] || 0;
+        return { cs1: pg === 0, cs2: pg === 0, cs3: pg === 1, cs4: pg === 2, cs5: pg === 0, cs6: pg === 2 }; })(),
+      custPages: cur !== 'customs' ? [] : [
+        { t: CUSTOMS_PAGES[0], sub: tx(st.lang, "Oyiga ${0} gacha bojsiz, ortig'iga {1}%. Kalkulyator bilan.", normsAt().freeUsd, Math.round(normsAt().dutyPct * 100)), img: "url('icons/boj-kalkulyator.webp')", tint: '#E9EAFD', i: 0 },
+        { t: CUSTOMS_PAGES[1], sub: tx(st.lang, '{0} ta taqiq va cheklov — manbasi bilan', BANNED.length), img: "url('icons/boj-taqiq.webp')", tint: '#FCEAEA', i: 2 },
+        { t: CUSTOMS_PAGES[2], sub: tr(st.lang, 'Xabarnoma, tasdiqlash, ushlansa nima qilish, manzillar'), img: "url('icons/boj-tartib.webp')", tint: '#E6F4F6', i: 3 }
+      /* Sahifa boshidan ochiladi (bo'limga aylantirilmaydi); "Qanday ishlaydi"
+         — sahifaning asosiy savoli: me'yor, taqiq, tartib. */
+      ].map(x => ({ ...x, t: tr(st.lang, x.t), go: () => { metrics.hit('quick', 'customs:' + x.i); this.setState({ customsSec: x.i }); this.push('csec'); } })),
+      /* To'lov bo'limidagi "Qanday hisoblanadi": animatsiya to'lov haqida
+         bo'ladi, sahifa tepaga qaytadi. */
+      payHow: () => { metrics.hit('quick', 'customs:payhow'); this.moStop(); this.setState({ customsSec: 1, moOpen: false, moStep: 0 }, () => { const m = this._mainEl(); if (m) m.scrollTop = 0; }); },
       calcPrice: st.calcPrice, calcWeight: st.calcWeight, calcShip: st.calcShip,
       onCalcPrice: e => this.setState({ calcPrice: e.target.value }),
       onCalcWeight: e => this.setState({ calcWeight: e.target.value }),
@@ -8277,7 +8313,7 @@ class Component extends DCLogic {
       monthMeta: monthList.length
         ? tx(st.lang, '{0} ta jo\'natma · {1} kg · {2}', monthList.length, mTot.kg.toFixed(1),
             mTot.usd <= NC.freeUsd ? tx(st.lang, '${0} qoldi', Math.round(NC.freeUsd - mTot.usd)) : tx(st.lang, 'me\'yordan ${0} ortiq', Math.round(mTot.usd - NC.freeUsd)))
-        : 'Bu oyda hali jo\'natma yo\'q. Reja saqlasangiz shu yerga o\'zi qo\'shiladi — yoki kalkulyatorda hisoblab qo\'ying.',
+        : 'Bu oyda hali jo\'natma yo\'q. Xaridlarimga qo\'shsangiz shu yerga o\'zi qo\'shiladi — yoki kalkulyatorda hisoblab qo\'ying.',
       hasMonth: monthList.length > 0,
       monthEmpty: monthList.length === 0,
       monthLimit: '$' + NC.freeUsd,
@@ -8309,9 +8345,9 @@ class Component extends DCLogic {
         { key:'ru', flag:'🇷🇺', label:'Русский', sub:'Русский язык' }
       ].map(o => ({ ...o, bd: st.lang === o.key ? '#1A1FB0' : '#FFFFFF', pick: () => { this.pickLang(o.key); this.setState({ onboarded: true }); this.go('home'); } })),
       calcRows: [
-        { k:'Bojxona qiymati (ortiqcha)', v:usd(c.cv) },
+        { k:'Boj olinadigan summa', v:usd(c.cv) },
         { k: c.basis === 'weight' ? ('Yagona boj ($' + c.norms.minPerKg + ' × kg)') : ('Yagona boj (' + Math.round(c.norms.dutyPct * 100) + '%)'), v: money(c.duty) + ' so\'m' },
-        { k:'Bojxona yig\'imi (BHM ' + Math.round(c.norms.feeShare * 100) + '%)', v: money(c.fee) + ' so\'m' }
+        { k:'Bojxona yig\'imi (qat\'iy)', v: money(c.fee) + ' so\'m' }
       ],
       calcNote: c.basis === 'none'
         ? tx(st.lang, 'Summa ${0} me\'yordan oshmadi — yagona bojxona to\'lovi undirilmaydi.', c.norms.freeUsd)
@@ -8322,7 +8358,7 @@ class Component extends DCLogic {
         { t: tx(st.lang, 'Kalendar oyda kelgan barcha jo\'natmalar summasi qo\'shiladi, undan ${0} imtiyoz ayriladi.', c.norms.freeUsd) },
         { t: tx(st.lang, 'Ortiqcha qismga to\'g\'ri keladigan vazn nisbat bo\'yicha ajratiladi: {0} kg.', c.excessWeight.toFixed(1)) },
         { t: tx(st.lang, 'Shu vaznning yetkazish xarajati tovar qiymatiga qo\'shiladi — bu bojxona qiymati.') },
-        { t: tx(st.lang, '{0}% va har kg uchun ${1} hisoblanadi, kattasi olinadi; ustiga BHM ning {2}% yig\'imi qo\'shiladi.', Math.round(normsAt().dutyPct * 100), normsAt().minPerKg, Math.round(normsAt().feeShare * 100)) }
+        { t: tx(st.lang, '{0}% va har kg uchun ${1} hisoblanadi, kattasi olinadi; ustiga {2} so\'m qat\'iy yig\'im qo\'shiladi.', Math.round(normsAt().dutyPct * 100), normsAt().minPerKg, money(Math.round(normsAt().bhm * normsAt().feeShare))) }
       ],
       dutyPctLabel: Math.round(normsAt().dutyPct * 100) + '%', minPerKgLabel: String(normsAt().minPerKg),
       banCount: String(BANNED.length),
@@ -8357,7 +8393,7 @@ class Component extends DCLogic {
       ...(() => {
         /* Belgilar bo'lim ochilgandagina yuklanadi. */
         const pic = x => ({ ...x, pic: "url('icons/norm/" + x.icon + ".webp')" });
-        const nc = normCards();
+        const nc = normCards(st.lang);
         return { normCards: [nc[0]], payCards: [pic(nc[1]), pic(nc[2])] };
       })(), qtyNorms: QTY_NORMS.map(x => ({ ...x, pic: "url('icons/norm/" + x.icon + ".webp')" })), criteria: CRITERIA,
       procSteps: PROC_STEPS, holdReasons: HOLD_REASONS,
@@ -8425,8 +8461,8 @@ class Component extends DCLogic {
       onTrackBlur: e => this.setState({ trackNo: e.target.value.replace(/\s+/g, '').toUpperCase() }),
       copyTrack: () => {
         const v = (st.trackNo || '').replace(/\s+/g, '');
-        if (!v) { this.toast('Avval trek raqamini yozing'); return; }
-        this.copyText(v, 'Trek raqam');
+        if (!v) { this.toast("Avval jo'natma raqamini yozing"); return; }
+        this.copyText(v, "Jo'natma raqami");
       },
       trackCouriers: COURIERS.filter(c => c.tracking).map(c => {
         const site = (c.links || []).find(l => l.l === 'Sayt');

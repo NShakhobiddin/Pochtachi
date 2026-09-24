@@ -183,6 +183,12 @@ degan uya yo'q (2026-09-18).
 Saqlangan rejalar bosh sahifada, kuzatuvda va Reja tabining birinchi
 qadamida (sehrgar ustida, "Saqlangan rejalar") ko'rinadi.
 
+**2026-09-24 (soddalashtirishning 4-bosqichi):** sehrgar olib tashlanmadi —
+u AI'siz yo'l: "Do'kon va kuryer tanlash". Kirish joylari: Xaridlarimdagi
+"Do'kon va kuryerni o'zim tanlayman", Bojxonadagi "Do'kon tanlash" va AI
+o'chiq bo'lsa bosh sahifadagi tugma (`aiOff`). Nomlar: "Yangi xarid",
+"Hisobni ko'rish", "Sizning tanlovingiz", "Xaridlarimga qo'shish".
+
 ## Do'konlar va kuryerlar
 
 Ikkala bo'lim papka bilan ochiladi (do'konlar: tovar turi yoki davlat;
@@ -657,6 +663,21 @@ summalari `usd()` bilan chiziladi: minglik ajratkich, $1 dan kichik
 ortiqcha esa tiyin bilan ("$0.01" — 200.01 dollarda ham yig'im
 undirilishi ko'rinib tursin). Bojxona tabidagi "Oy summasini qo'yish"
 summani qo'yib, kalkulyatorning o'zini ochadi.
+
+**Bojxona — 3 sahifa (2026-09-24, 4-bosqich).** Olti bo'limli hub o'rniga
+foydalanuvchi savoli bilan uchta qator (`CUSTOMS_PAGES`): "Qancha
+to'layman?" (kalkulyator, me'yor, yagona to'lov), "Nimani olib kirib
+bo'lmaydi?" (taqiqlar), "Bojxonada nima bo'ladi?" (tartib, organlar).
+Eski bo'lim raqamlari (`customsSec` 0..5) saqlangan — `SEC_PAGE` ularni
+sahifaga bog'laydi, `focusSec(i)` sahifani ochib, kerakli bo'limga
+(`data-sec`) aylantiradi; qidiruv, motion va AI havolalari o'zgarmadi.
+
+**Sodda til (4-bosqich).** Jargon oddiy so'zga: "vositachi kerak" →
+"kuryer orqali", "hajmiy og'irlik" → "quti o'lchami bo'yicha og'irlik",
+YIDXP → my.gov.uz, "trek raqam" → "jo'natma raqami", BHM o'rniga
+so'mdagi summa ("qat'iy yig'im"), kuryer xizmatlari `SVC_LABEL` bilan
+o'zbekcha (Konsolidatsiya → "Posilkalarni birlashtirish" va h.k.).
+Pochtam AI ham shu so'zlarda yozadi (`data/ai-rules.md`, uslub qoidasi).
 
 ## Motion-tushuntirishlar (bojxona)
 

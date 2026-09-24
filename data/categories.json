@@ -3,7 +3,7 @@
   "note": "Yagona kategoriyalar ro'yxati. `id` — ilovadagi WIZ_CATS.key va STORE_CATS[0] bilan bir xil, do'konlarning `cat` maydoni shunga mos. `kgPerItem` — bitta mahsulotning odatiy og'irligi (kg), universal kalkulyator va AI uchun taxmin; foydalanuvchi kiritsa u ustun. `caution` — buyurtmadan oldin tekshiriladigan cheklov (matn, huquqiy manba ilovadagi taqiqlar ro'yxatida).",
   "categories": [
     { "id": "kiyim va moda", "label": "Kiyim va moda", "kgPerItem": 0.6, "examples": "ko'ylak, kurtka, sumka, aksessuar", "caution": "" },
-    { "id": "poyabzal", "label": "Poyabzal va krossovka", "kgPerItem": 1.2, "examples": "krossovka, etik, sandal", "caution": "Quti bilan hajmiy og'irlik oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi." },
+    { "id": "poyabzal", "label": "Poyabzal va krossovka", "kgPerItem": 1.2, "examples": "krossovka, etik, sandal", "caution": "Quti bilan kargo og'irligi oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi." },
     { "id": "elektronika", "label": "Elektronika va texnika", "kgPerItem": 0.8, "examples": "telefon, quloqchin, gadjet, komponent", "caution": "Litiy batareya va powerbank avia bilan yuborilmaydi; telefon O'zbekistonda IMEI ro'yxatidan o'tkaziladi." },
     { "id": "kosmetika", "label": "Kosmetika va parfyumeriya", "kgPerItem": 0.4, "examples": "parvarish, atir, bo'yoq", "caution": "Aerozol va spirtli atirlar avia jo'natmada cheklanadi — kuryerning ro'yxatini tekshiring." },
     { "id": "bolalar", "label": "Bolalar va o'yinchoq", "kgPerItem": 0.9, "examples": "kiyim, o'yinchoq, aravacha", "caution": "" },
