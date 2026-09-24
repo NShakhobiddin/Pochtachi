@@ -213,6 +213,31 @@ yopadi, keyingina ekranni.
 
 ## Bosh sahifa (3-bosqich, 2026-09-16 da soddalashtirildi)
 
+**Uch bo'lim (2026-09-24, soddalashtirishning 1-bosqichi).** Foydalanuvchi
+to'rtta savol bilan keladi: qayerdan topaman, qanchaga tushadi, qanday olib
+kelaman, hozir qayerda. Ilova esa butun sohani tushuntirmoqchi edi: 23 ekran,
+bosh sahifada 12 kirish nuqtasi, menyuda 5 tab va o'rtada "Reja" tugmasi,
+kompyuterda yana 2 band. Endi:
+
+- **Menyu uchta:** Boshlash · Xaridlarim · Ma'lumotnoma (`TABS = ['home',
+  'mine', 'ref']`), telefonda ham, kompyuterda ham bir xil.
+- **Boshlash** — faqat savol: maydon (yozish, aytish, havola, rasm),
+  "Topdim — qanchaga tushadi?" (skrinshot), "Hali topmadim — qayerdan
+  olaman?", "Narxni o'zim yozaman" va "Oxirgi hisob". Turlar chiplari, uch
+  plitka, Xaridlarim kartasi, mashhur do'konlar, mutaxassis, kurs va kunlik
+  maslahat olib tashlandi (balandlik 1 358 → 684 px, so'zlar 137 → 46,
+  tugmalar 28 → 5). Turini AI nomdan o'zi aniqlaydi; nom yozilmasa "Do'konlarni
+  ko'rsat" maydonga qaytaradi; AI o'chiq bo'lsa nom qidiruvga boradi.
+- **Ma'lumotnoma** (`ref`, `refRows`) — Do'konlar, Kuryerlar, Bojxona,
+  Qo'llanmalar, Pochtam AI (yoqiq bo'lsa), Mutaxassis yordami (aloqa bo'lsa),
+  Sozlamalar (til va joriy kurs). Ichidagi ekranlar `push` bilan ochiladi —
+  "orqaga" ro'yxatga qaytaradi, menyuda Ma'lumotnoma belgilangan turadi.
+- **Reja sehrgari** menyuda emas: Xaridlarim → "Reja tuzish" / "Yangi reja"
+  (ro'yxat ostida doim bor) va Bojxona; chala reja to'xtagan joyidan davom
+  etadi.
+- **Tanishtiruv** 2 qadam: asosiy tugma va uch bo'lim; kompyuterda karta
+  butun balandlikdagi menyu yonida turadi.
+
 Bosh sahifaning o'zi savol (2026-09-18, ikkinchi audit): sarlavha
 **"Nima mahsulot qidiryapsiz?"**, ostida mahsulot nomi maydoni va mikrofon,
 kategoriya chiplari, so'ng uchta yo'l (`whereVm`, `cur === 'home'`):

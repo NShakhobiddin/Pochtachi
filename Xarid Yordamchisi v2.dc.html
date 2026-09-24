@@ -506,8 +506,6 @@
       content: ''; display: block; width: 159px; height: 36px; margin: 4px 8px 24px;
       background: url(icons/brand.webp) left center / contain no-repeat;
     }
-    /* Kompyuter ustunida qo'shimcha bo'limlar (Xaridlarim, Pochtam AI). */
-    .app-shell > nav > .xy-desk { display: flex !important; }
     .app-shell .xy-tabs4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }   /* asosiy qoida pastroqda turadi — aniqlik yuqoriroq bo'lishi shart */
     .app-shell > header > h1:has(> img) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
     /* Reja sehrgarining pastki tugmalar qatori: menyu ustuniga emas,
@@ -589,7 +587,7 @@
   }
   nav button:active { transform:scale(.92); filter:none }
   /* Faqat kompyuter menyusida ko'rinadigan tugmalar (mobil pastki menyu 5 ta qoladi). */
-  .xy-desk { display:none !important; }
+
   /* iOS Safari: fokuslangan maydonning shrifti 16 px dan kichik bo'lsa
      sahifani avtomatik kattalashtiradi ("yozish uchun kirganda kattalashib
      ketadi"). Telefonda 15 px li kirish maydonlari 16 px bo'ladi; 17/22/26 px
@@ -682,7 +680,8 @@
     <div style="display:flex;flex-direction:column;gap:20px">
 
       <!-- Bosh sahifaning o'zi savol (2026-09-18): "Nima mahsulot
-           qidiryapsiz?" — nom yoziladi, aytiladi yoki turi tanlanadi. Keyin
+           qidiryapsiz?" — nom yoziladi yoki aytiladi (turlar chiplari
+           2026-09-24 da olib tashlandi: AI turini nomdan o'zi aniqlaydi). Keyin
            uchta yo'l: skrinshot (qanchaga tushadi), do'kon tavsiyasi
            (qayerdan olaman), qo'lda narx (AI o'chiq bo'lsa ham ishlaydi).
            Alohida savol ekrani va sarlavha osti matni olib tashlandi — ikki
@@ -704,9 +703,6 @@
             <button type="submit" aria-label="Yuborish" style="flex:none;width:52px;height:52px;border-radius:20px;border:none;background:linear-gradient(155deg,#494FE9,#13189D);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="M12 6l6 6-6 6"></path></svg></button>
           </sc-if>
         </form>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <sc-for list="{{ whCats }}" as="wc" hint-placeholder-count="4"><button sc-camel-on-click="{{ wc.pick }}" aria-pressed="{{ wc.on }}" style="flex:none;height:40px;padding:0 14px;border-radius:999px;border:1.5px solid {{ wc.bd }};background:{{ wc.bg }};color:{{ wc.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ wc.t }}</button></sc-for>
-        </div>
         <sc-if value="{{ aiOn }}" hint-placeholder-val="{{ true }}">
           <!-- 1-javob: qanchaga tushadi (skrinshot). Ostida qanday olish
                ko'rsatmasi — ilgari faqat xatodan keyin aytilardi. -->
@@ -750,9 +746,6 @@
           </span>
           <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 6l6 6-6 6"></path></svg>
         </button>
-        <sc-if value="{{ aiOn }}" hint-placeholder-val="{{ true }}">
-          <button sc-camel-on-click="{{ whAsk }}" style="align-self:flex-start;background:none;border:none;padding:0;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer">Savol bormi? Pochtam AI ga yozing</button>
-        </sc-if>
         <input type="file" accept="image/*" data-shot="1" sc-camel-on-change="{{ onShotFile }}" aria-label="Skrinshot tanlash" style="display:none">
         <!-- Oxirgi hisob: natija saqlanadi, chiqib ketsa ham yo'qolmaydi. -->
         <sc-if value="{{ hasLast }}" hint-placeholder-val="{{ false }}">
@@ -765,112 +758,42 @@
             <span style="flex:none;font-size:17px;font-weight:700;color:#1A1FB0;font-variant-numeric:tabular-nums">{{ lastTotal }}</span>
           </button>
         </sc-if>
-        <!-- Tez o'tish: uchta ma'lumotnoma. "Jami narx" endi savol ostidagi
-             "Narxni o'zim yozaman" — parallel yo'l chalkashtirmasin. -->
-        <div data-tour="quick" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
-          <sc-for list="{{ quickActs }}" as="qa" hint-placeholder-count="3">
-            <button sc-camel-on-click="{{ qa.go }}" style="display:flex;flex-direction:column;align-items:center;gap:8px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 6px;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="background:#F6F7FB">
-              <div aria-hidden="true" style="width:36px;height:36px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ qa.iconCss }}"></div>
-              <span style="font-size:11px;font-weight:600;color:#131429;line-height:1.3;text-align:center">{{ qa.t }}</span>
-            </button>
-          </sc-for>
-        </div>
       </div>
-
-
-
-      <!-- Xaridlarim: reja, jo'natma, sevimli va hisoblar bitta joyda. -->
-      <button data-tour="mine" sc-camel-on-click="{{ goMine }}" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-        <div style="width:34px;height:34px;border-radius:12px;flex:none;background:#E9EAFD;display:flex;align-items:center;justify-content:center">
-          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12l1.5 4H4.5L6 4z"></path><path d="M4.5 8v11a1 1 0 001 1h13a1 1 0 001-1V8"></path><path d="M9 12h6"></path></svg>
-        </div>
-        <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
-          <span style="font-size:15px;font-weight:700;color:#131429">Xaridlarim</span>
-          <span style="font-size:11px;font-weight:600;color:#6B6C85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mineSummary }}</span>
-        </div>
-        <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
-      </button>
-
-
-      <!-- Mashhur do'konlar: logotip tasmasi, "Barchasi" — do'konlar bo'limi. -->
-      <div style="display:flex;flex-direction:column;gap:12px">
-        <div style="display:flex;align-items:center;gap:10px;padding:0 2px">
-          <h2 style="margin:0;font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429">Mashhur do'konlar</h2>
-          <div style="flex:1"></div>
-          <button sc-camel-on-click="{{ goStores }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer;padding:8px 2px">Barchasi</button>
-        </div>
-        <div style="display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;margin:0 -18px;padding:2px 18px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch">
-          <sc-for list="{{ popRow }}" as="ps" hint-placeholder-count="5">
-            <button sc-camel-on-click="{{ ps.open }}" style="flex:none;width:104px;display:flex;flex-direction:column;align-items:center;gap:8px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="background:#F6F7FB">
-              <div style="width:44px;height:44px;border-radius:12px;position:relative;display:flex;align-items:center;justify-content:center;background:{{ ps.tint }}">
-                <sc-if value="{{ ps.showMono }}" hint-placeholder-val="{{ false }}">
-                  <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:15px;font-weight:700;color:{{ ps.color }}">{{ ps.mono }}</span>
-                </sc-if>
-                <div style="position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ ps.logoCss }}"></div>
-              </div>
-              <span style="font-size:13px;font-weight:700;color:#131429;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ps.name }}</span>
-              <span style="font-size:11px;font-weight:600;color:#6B6C85;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ps.sub }}</span>
-            </button>
-          </sc-for>
-        </div>
-      </div>
-
-      <!-- Pullik xizmatlar: ilovadagi ma'lumot yetmagan holatlar uchun -->
-      <sc-if value="{{ hasContact }}" hint-placeholder-val="{{ true }}">
-        <button sc-camel-on-click="{{ goServices }}" style="display:flex;align-items:center;gap:14px;background:linear-gradient(155deg,#494FE9,#13189D);border:none;border-radius:20px;padding:16px;cursor:pointer;text-align:left;width:100%;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)" style-hover="box-shadow:0 12px 26px -10px rgba(17,21,132,.44)">
-          <!-- Ikonka oq plita ustida: gradient fonda to'q ko'k glif
-               ko'rinmay qolardi. -->
-          <div style="width:64px;height:64px;flex:none;border-radius:20px;background-color:#FFFFFF;background-size:48px 48px;background-repeat:no-repeat;background-position:center;background-image:url('icons/mutaxassis-3d.webp')"></div>
-          <div style="flex:1;display:flex;flex-direction:column;gap:6px;min-width:0">
-            <span style="font-size:17px;letter-spacing:-.02em;font-weight:700;color:#FFFFFF;line-height:1.3">Mutaxassis yordami</span>
-            <span style="font-size:13px;color:rgba(255,255,255,.78);font-weight:500;line-height:1.5">Pullik konsultatsiya · bojxona, hujjat va yuridik yordam</span>
-          </div>
-          <div style="width:30px;height:30px;border-radius:14px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex:none">
-            <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-          </div>
-        </button>
-      </sc-if>
-
-      <!-- Kurs — har kuni o'zgaradigan yagona raqam, lekin foydalanuvchi
-           ilovani kurs uchun ochmaydi. Shuning uchun u bo'limlardan keyin
-           turadi: tepada asosiy harakat bo'lsin. -->
-      <button sc-camel-on-click="{{ goSettings }}" style="display:flex;align-items:center;gap:12px;background:linear-gradient(150deg,#FFFFFF 0%,#F1F1F8 100%);border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;width:100%;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
-        <div style="width:34px;height:34px;border-radius:12px;flex:none;background:#E9EAFD;display:flex;align-items:center;justify-content:center">
-          <span style="font-size:15px;font-weight:700;color:#1A1FB0;line-height:1.5">$</span>
-        </div>
-        <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
-          <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
-            <span style="font-family:'Onest','XY Flags',system-ui,sans-serif;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#131429;font-variant-numeric:tabular-nums">{{ rateValue }}</span>
-            <span style="font-size:11px;font-weight:600;color:#6B6C85">so'm / 1 USD</span>
-            <sc-if value="{{ rateHasDiff }}" hint-placeholder-val="{{ false }}">
-              <span style="font-size:11px;font-weight:600;padding:2px 6px;border-radius:999px;font-variant-numeric:tabular-nums;color:{{ rateDiffFg }};background:{{ rateDiffBg }}">{{ rateDiffLabel }}</span>
-            </sc-if>
-          </div>
-          <span style="font-size:11px;font-weight:600;color:#6B6C85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ rateSrcLabel }}</span>
-        </div>
-        <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg>
-      </button>
-
-
-      <!-- Kunning maslahati: bitta ixcham karta (sarlavhasiz), kurs ostida.
-           Kategoriya chipi va "keyingi" tugmasi qoladi. -->
-      <div style="background:#FFFFFF;border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-            <div style="display:flex;align-items:center;gap:8px;min-width:0">
-              <span style="font-size:11px;font-weight:600;color:#B45309;background:#FDF3E3;padding:6px 10px;border-radius:999px;white-space:nowrap">{{ tipCat }}</span>
-              <sc-if value="{{ tipToday }}" hint-placeholder-val="{{ true }}">
-                <span style="font-size:11px;font-weight:700;color:#6B6C85;white-space:nowrap">Bugungi</span>
-              </sc-if>
-              <sc-if value="{{ tipBrowsing }}" hint-placeholder-val="{{ false }}">
-                <span style="font-size:11px;font-weight:700;color:#6B6C85;white-space:nowrap;font-variant-numeric:tabular-nums">{{ tipNo }} / {{ tipTotal }}</span>
-              </sc-if>
+      <!-- Bosh sahifada shu turibdi, xolos (2026-09-24): savol, skrinshot,
+           "qayerdan olaman", qo'lda narx va oxirgi hisob. Ilgari ostida yana
+           8 blok bor edi (turlar, uch plitka, Xaridlarim, mashhur do'konlar,
+           mutaxassis, kurs, kunlik maslahat) — sahifa ikki ekran uzun
+           bo'lib, asosiy yo'lni ko'mib yuborardi. Ular endi
+           Ma'lumotnoma va Xaridlarim bo'limlarida. -->
+    </div>
+  </sc-if>
+  <!-- Ma'lumotnoma (2026-09-24): do'konlar, kuryerlar, bojxona,
+       qo'llanmalar, AI, mutaxassis va sozlamalar — bitta ro'yxat. Ular
+       xarid yo'lida kerak bo'lganda o'zi ochiladi; bu yerdan esa qo'lda. -->
+  <sc-if value="{{ sRef }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ refRows }}" as="rr" hint-placeholder-count="6">
+        <button class="xy-tap" sc-camel-on-click="{{ rr.go }}" style="display:flex;align-items:center;gap:14px;width:100%;min-height:72px;background:#FFFFFF;border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+          <sc-if value="{{ rr.hasImg }}" hint-placeholder-val="{{ true }}">
+            <div aria-hidden="true" style="width:48px;height:48px;flex:none;border-radius:16px;background-color:#F1F1F8;background-size:40px 40px;background-repeat:no-repeat;background-position:center;background-image:{{ rr.img }}"></div>
+          </sc-if>
+          <sc-if value="{{ rr.isAi }}" hint-placeholder-val="{{ false }}">
+            <div aria-hidden="true" style="width:48px;height:48px;flex:none;border-radius:16px;background:#E9EAFD;display:flex;align-items:center;justify-content:center">
+              <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.6l1.9 4.6 4.6 1.9-4.6 1.9L11 16.6l-1.9-4.6L4.5 10.1l4.6-1.9z"></path><path d="M18.5 15.5l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8z"></path></svg>
             </div>
-            <button sc-camel-on-click="{{ nextTip }}" aria-label="Keyingi maslahat" style-after="content:'';position:absolute;inset:-6px" style="position:relative;width:40px;height:40px;border:none;background:#F1F1F8;border-radius:20px;box-shadow:inset 0 0 0 1px #E3E4EE;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#E9EAFD">
-              <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#6B6C85" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"></path><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"></path></svg>
-            </button>
-          </div>
-        <div style="font-size:13px;font-weight:500;color:#282944;line-height:1.5;text-wrap:pretty">{{ tipText }}</div>
-      </div>
+          </sc-if>
+          <sc-if value="{{ rr.isSet }}" hint-placeholder-val="{{ false }}">
+            <div aria-hidden="true" style="width:48px;height:48px;flex:none;border-radius:16px;background:#F1F1F8;display:flex;align-items:center;justify-content:center">
+              <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#4E4F6B" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2.8v2.4M12 18.8v2.4M4.2 7.5l2.1 1.2M17.7 15.3l2.1 1.2M4.2 16.5l2.1-1.2M17.7 8.7l2.1-1.2"></path><circle cx="12" cy="12" r="7"></circle></svg>
+            </div>
+          </sc-if>
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+            <span style="font-size:15px;font-weight:700;color:#131429">{{ rr.t }}</span>
+            <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5;overflow-wrap:anywhere">{{ rr.sub }}</span>
+          </span>
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 6l6 6-6 6"></path></svg>
+        </button>
+      </sc-for>
     </div>
   </sc-if>
   <sc-if value="{{ sSearch }}" hint-placeholder-val="{{ false }}">
@@ -2703,6 +2626,11 @@
                 </div>
               </button>
             </sc-for>
+            <!-- Menyuda "Reja" tugmasi yo'q (2026-09-24): yangi reja shu yerdan. -->
+            <button sc-camel-on-click="{{ goWizard }}" style="display:flex;align-items:center;justify-content:center;gap:8px;height:48px;border-radius:16px;border:1.5px dashed #C4C6FA;background:transparent;color:#1A1FB0;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer">
+              <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+              Yangi reja
+            </button>
           </div>
         </sc-if>
         <sc-if value="{{ noPlans }}" hint-placeholder-val="{{ false }}">
@@ -3602,58 +3530,29 @@
 
   <sc-if value="{{ showTabs }}" hint-placeholder-val="{{ true }}">
     <nav data-tour="nav" aria-label="Asosiy menyu" style="flex:none;display:flex;align-items:flex-start;justify-content:space-around;padding:9px 6px calc(16px + var(--xy-safe-bottom));background:#FFFFFF;border-top:1px solid #F1F1F8;box-shadow:none;position:relative;z-index:5">
+      <!-- Uch bo'lim (2026-09-24): Boshlash — savol va hisob; Xaridlarim —
+           hisoblar, rejalar, jo'natmalar; Ma'lumotnoma — do'konlar,
+           kuryerlar, bojxona, qo'llanmalar va sozlamalar bitta joyda.
+           Ilgari 5 ta tab + o'rtadagi "Reja" tugmasi + kompyuterda yana 2 ta
+           edi: foydalanuvchi qayerga bosishni bilmay qolardi. -->
       <button sc-camel-on-click="{{ tHome }}" aria-current="{{ tb.home.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
         <div style="width:52px;height:32px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:{{ tb.home.chip }};transition:background .16s ease">
           <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="{{ tb.home.lbl }}" stroke-width="{{ tb.home.sw }}" stroke-linecap="round" stroke-linejoin="round"><path d="M3.2 10.6 12 3.4l8.8 7.2"></path><path d="M5.5 9.4V19a1.6 1.6 0 0 0 1.6 1.6h9.8A1.6 1.6 0 0 0 18.5 19V9.4"></path><path d="M9.7 20.6V15a1 1 0 0 1 1-1h2.6a1 1 0 0 1 1 1v5.6"></path></svg>
         </div>
-        <span style="font-size:11px;font-weight:{{ tb.home.w }};color:{{ tb.home.lbl }}">Bosh sahifa</span>
+        <span style="font-size:11px;font-weight:{{ tb.home.w }};color:{{ tb.home.lbl }}">Boshlash</span>
       </button>
-      <button sc-camel-on-click="{{ tGuides }}" aria-current="{{ tb.guides.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
-        <div style="width:52px;height:32px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:{{ tb.guides.chip }};transition:background .16s ease">
-          <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="{{ tb.guides.lbl }}" stroke-width="{{ tb.guides.sw }}" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.8C10.4 5.2 8.3 4.5 5.6 4.5H3.4v13h2.2c2.7 0 4.8.7 6.4 2.3"></path><path d="M12 6.8c1.6-1.6 3.7-2.3 6.4-2.3h2.2v13h-2.2c-2.7 0-4.8.7-6.4 2.3"></path><path d="M12 6.8v13"></path></svg>
-        </div>
-        <span style="font-size:11px;font-weight:{{ tb.guides.w }};color:{{ tb.guides.lbl }}">Qo'llanmalar</span>
-      </button>
-      <button sc-camel-on-click="{{ tWizard }}" aria-current="{{ tb.wizard.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:14px;padding:0;font-family:inherit">
-        <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(155deg,#494FE9,#13189D);display:flex;align-items:center;justify-content:center;margin-top:-28px;transition:box-shadow .24s ease,transform .3s cubic-bezier(.34,1.5,.5,1);box-shadow:{{ tb.wizard.fabSh }};transform:{{ tb.wizard.fabTf }}">
-          <!-- Reja: belgilangan ro'yxat. Bojxonaning qalqonidan ham,
-               Qo'llanmalarning kitobidan ham aniq farq qiladi. -->
-          <svg width="28" height="28" sc-camel-view-box="0 0 24 24" fill="none" style="flex:none">
-            <path d="M4.4 7h8.4M4.4 12h8.4M4.4 17h5.2" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"></path>
-            <circle cx="17.3" cy="15.6" r="5.4" fill="#FFFFFF" opacity=".26"></circle>
-            <path d="M14.9 15.6l1.8 1.8 3.4-3.7" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
-          </svg>
-        </div>
-        <span style="font-size:11px;font-weight:{{ tb.wizard.w }};color:{{ tb.wizard.lbl }}">Reja</span>
-      </button>
-      <button sc-camel-on-click="{{ tCustoms }}" aria-current="{{ tb.customs.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
-        <div style="width:52px;height:32px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:{{ tb.customs.chip }};transition:background .16s ease">
-          <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="{{ tb.customs.lbl }}" stroke-width="{{ tb.customs.sw }}" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.3l7.4 2.8v5.4c0 4.4-3 7.9-7.4 9.3-4.4-1.4-7.4-4.9-7.4-9.3V6.1z"></path><path d="M8.9 12.2l2.2 2.2 4.2-4.3"></path></svg>
-        </div>
-        <span style="font-size:11px;font-weight:{{ tb.customs.w }};color:{{ tb.customs.lbl }}">Bojxona</span>
-      </button>
-      <button sc-camel-on-click="{{ tSettings }}" aria-current="{{ tb.settings.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
-        <div style="width:52px;height:32px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:{{ tb.settings.chip }};transition:background .16s ease">
-          <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="{{ tb.settings.lbl }}" stroke-width="{{ tb.settings.sw }}" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.6" r="3.7"></circle><path d="M4.7 20.4c0-3.9 3.3-5.9 7.3-5.9s7.3 2 7.3 5.9"></path></svg>
-        </div>
-        <span style="font-size:11px;font-weight:{{ tb.settings.w }};color:{{ tb.settings.lbl }}">Sozlamalar</span>
-      </button>
-      <!-- Faqat kompyuter ustunida (TZ 27): Xaridlarim va Pochtam AI.
-           Mobil pastki menyu o'zgarmaydi (.xy-desk CSS bilan yashirin). -->
-      <button class="xy-desk" sc-camel-on-click="{{ goMine }}" aria-current="{{ tb.mine.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
+      <button sc-camel-on-click="{{ tMine }}" aria-current="{{ tb.mine.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
         <div style="width:52px;height:32px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:{{ tb.mine.chip }};transition:background .16s ease">
           <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="{{ tb.mine.lbl }}" stroke-width="{{ tb.mine.sw }}" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12l1.5 4H4.5L6 4z"></path><path d="M4.5 8v11a1 1 0 001 1h13a1 1 0 001-1V8"></path><path d="M9 12h6"></path></svg>
         </div>
         <span style="font-size:11px;font-weight:{{ tb.mine.w }};color:{{ tb.mine.lbl }}">Xaridlarim</span>
       </button>
-      <sc-if value="{{ aiOn }}" hint-placeholder-val="{{ true }}">
-      <button class="xy-desk" sc-camel-on-click="{{ goAi }}" aria-current="{{ tb.ai.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
-        <div style="width:52px;height:32px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:{{ tb.ai.chip }};transition:background .16s ease">
-          <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="{{ tb.ai.lbl }}" stroke-width="{{ tb.ai.sw }}" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.6l1.9 4.6 4.6 1.9-4.6 1.9L11 16.6l-1.9-4.6L4.5 10.1l4.6-1.9z"></path><path d="M18.6 15.2l.7 1.7 1.7.7-1.7.7-.7 1.7-.7-1.7-1.7-.7 1.7-.7z"></path></svg>
+      <button sc-camel-on-click="{{ tRef }}" aria-current="{{ tb.ref.cur }}" style="flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:2px 0;font-family:inherit">
+        <div style="width:52px;height:32px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:{{ tb.ref.chip }};transition:background .16s ease">
+          <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="{{ tb.ref.lbl }}" stroke-width="{{ tb.ref.sw }}" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6.5" height="6.5" rx="1.6"></rect><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.6"></rect><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.6"></rect><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.6"></rect></svg>
         </div>
-        <span style="font-size:11px;font-weight:{{ tb.ai.w }};color:{{ tb.ai.lbl }}">Pochtam AI</span>
+        <span style="font-size:11px;font-weight:{{ tb.ref.w }};color:{{ tb.ref.lbl }}">Ma'lumotnoma</span>
       </button>
-      </sc-if>
     </nav>
   </sc-if>
 
@@ -3694,7 +3593,7 @@
         <rect x="0" y="0" width="100%" height="100%" fill="#131429" fill-opacity=".62" mask="url(#xy-tour-mask)"></rect>
       </svg>
       <div aria-hidden="true" style="position:absolute;{{ tourBox }};box-sizing:border-box;border-radius:20px;border:2px solid #FFFFFF"></div>
-      <div style="position:absolute;left:16px;right:16px;top:{{ tourCardTop }};bottom:{{ tourCardBottom }};margin:0 auto;max-width:420px;background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:8px">
+      <div style="position:absolute;left:{{ tourCardLeft }};right:16px;top:{{ tourCardTop }};bottom:{{ tourCardBottom }};margin:0 auto;max-width:420px;background:#FFFFFF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:8px">
         <span style="font-size:11px;font-weight:700;color:#6B6C85;font-variant-numeric:tabular-nums">{{ tourN }}</span>
         <span id="xy-tour-title" style="font-size:17px;font-weight:700;letter-spacing:-.02em;color:#131429">{{ tourTitle }}</span>
         <span style="font-size:15px;font-weight:500;color:#4E4F6B;line-height:1.5;text-wrap:pretty">{{ tourText }}</span>
@@ -3784,7 +3683,7 @@ const monthKey = (d = new Date()) => { const p2 = n => (n < 10 ? '0' : '') + n; 
 const todayIso = () => { const d = new Date(); const p2 = n => (n < 10 ? '0' : '') + n; return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); };
 
 const LS_KEY = 'xy_state_v1';
-const TABS = ['home', 'guides', 'customs', 'settings', 'wizard'];
+const TABS = ['home', 'mine', 'ref'];
 const PERSIST = ['lang', 'onboarded', 'plans', 'monthly', 'trackNo',
   /* filtrlar va oxirgi ochilgan bo'lim ham eslab qolinadi */
   'storeCountries', 'storeCats', 'storeDirect', 'storeGroup', 'storeFolderBy',
@@ -3886,6 +3785,17 @@ const toCyr = s => {
 };
 
 const RU = {
+  /* Ma'lumotnoma (2026-09-24) */
+  "Avval nima qidirayotganingizni yozing":"Сначала напишите, что ищете",
+  "Uch bo'lim":"Три раздела",
+  "Boshlash — shu savol. Xaridlarim — hisob va jo'natmalaringiz. Ma'lumotnoma — do'konlar, kuryerlar, bojxona va qo'llanmalar.":"Начать — этот вопрос. Мои покупки — расчёты и посылки. Справочник — магазины, курьеры, таможня и инструкции.",
+  "{0} ta do'kon — davlat va tur bo'yicha":"магазинов: {0} — по стране и типу",
+  "{0} ta kuryer — narx va muddat":"курьеров: {0} — цены и сроки",
+  "Bojsiz me'yor, to'lov va taqiqlangan tovarlar":"Беспошлинный лимит, платежи и запрещённые товары",
+  "{0} ta do'kondan buyurtma — qadam-baqadam":"Заказ из {0} магазинов — по шагам",
+  "Savol bering: boj, kuryer, do'kon":"Спросите: пошлина, курьер, магазин",
+  "Pullik konsultatsiya: bojxona, hujjat, yuridik":"Платная консультация: таможня, документы, юристы",
+  "Til · kurs {0} so'm":"Язык · курс {0} сум",
   /* Bosh sahifa: universal maydon, tez o'tish, mashhur do'konlar, kuryer solishtirish */
   'Nima olib':'Что хотите', 'Nima mahsulot':'Какой товар', 'qidiryapsiz?':'вы ищете?', 'kelmoqchisiz?':'привезти?',
   "Mahsulot havolasini yoki nomini yozing — do'kon, kuryer va bojni ko'rsatib beraman.":'Вставьте ссылку на товар или напишите его название — покажу магазин, курьера и пошлину.',
@@ -4169,42 +4079,7 @@ const RU = {
   "Yo'nalishlar":'Направления', 'Avia':'Авиа', 'Quruqlik':'Наземная', 'Avto':'Авто',
   /* Kunlik maslahatlar: sarlavha yorlig'i va matni. Har kuni boshqasi
      chiqadi, shuning uchun hammasi lug'atda bo'lishi shart. */
-  'KURYER':'КУРЬЕР', 'BOJXONA':'ТАМОЖНЯ', "DO'KON":'МАГАЗИН', 'KUZATUV':'ОТСЛЕЖИВАНИЕ',
-  "TO'LOV":'ОПЛАТА', 'XAVFSIZLIK':'БЕЗОПАСНОСТЬ', 'QAYTARISH':'ВОЗВРАТ', 'MANZIL':'АДРЕС',
-  'PLANLASH':'ПЛАНИРОВАНИЕ',
-  "Aviakuryer bilan 2 kg dan ortiq yuborishda quruqlik yo'li ko'pincha ikki barobar arzonroq bo'ladi — muddat 12-20 kun.":'При отправке авиакурьером более 2 кг наземный путь часто вдвое дешевле — срок 12-20 дней.',
-  "Bojsiz me'yor — bir kalendar oyda $200. Oyning boshida va oxirida kelgan posilkalar bitta oyga qo'shilib hisoblanadi.":'Беспошлинный лимит — $200 за календарный месяц. Посылки, пришедшие в начале и в конце месяца, считаются вместе.',
-  "Powerbank va litiy batareyani avia bilan yuborib bo'lmaydi. Buyurtmadan oldin kuryerning cheklovlar ro'yxatini oching.":'Повербанк и литиевые батареи нельзя отправлять авиа. Перед заказом откройте список ограничений курьера.',
-  "Deklaratsiyada tovar qiymatini pasaytirib ko'rsatish — jarima va posilkani ushlab qolish sababi. Haqiqiy summani yozing.":'Занижение стоимости товара в декларации — повод для штрафа и задержания посылки. Указывайте реальную сумму.',
-  "Xitoy do'konlarida sotuvchi reytingi 95% dan past bo'lsa, o'sha tovarni boshqa sotuvchidan qidirgan ma'qul.":'Если рейтинг продавца в китайских магазинах ниже 95%, лучше поискать тот же товар у другого продавца.',
-  "Trek raqamini shu yerga qo'shsangiz, holat o'zgarganda bot xabar beradi — saytlarni qayta-qayta ochish shart emas.":'Добавьте трек-номер сюда, и при смене статуса бот сообщит — не нужно снова и снова открывать сайты.',
-  "$200 me'yordan oshsa, boj faqat ortiqcha qiymatdan olinadi — butun summadan emas. Ya'ni $260 lik tovarda hisob $60 dan boshlanadi.":'При превышении лимита $200 пошлина берётся только с превышения, а не со всей суммы. То есть у товара за $260 расчёт начинается с $60.',
-  "Bir oyda ikki posilka kutayotgan bo'lsangiz, ikkinchisini keyingi oyga surish me'yorni ikki barobar oshiradi.":'Если в одном месяце вы ждёте две посылки, перенос второй на следующий месяц удваивает лимит.',
-  "Invoys (to'lov cheki) skrinshotini saqlab qo'ying. Bojxona qiymatni so'rasa, chek eng tez ishlaydigan dalil.":'Сохраните скриншот инвойса (чека об оплате). Если таможня спросит стоимость, чек — самое быстрое доказательство.',
-  "Ko'p kuryerda hisob hajmiy og'irlik bo'yicha ketadi: uzunlik×kenglik×balandlik (sm) ÷ 5000. Yengil, lekin katta qutida narx oshadi.":'У многих курьеров расчёт идёт по объёмному весу: длина×ширина×высота (см) ÷ 5000. У лёгкой, но большой коробки цена растёт.',
-  "Tarif ko'pincha to'liq kilogrammga yumaloqlanadi. 1.1 kg uchun ham 2 kg to'lash mumkin — og'irlikni chegaraga yaqin ushlang.":'Тариф часто округляется до полного килограмма. За 1.1 кг можно заплатить как за 2 кг — держите вес ближе к границе.',
-  "Bir nechta mayda buyurtmani bitta konsolidatsiya qutisiga yig'ish — yetkazishda eng ko'p tejaydigan usul.":'Собрать несколько мелких заказов в одну коробку консолидации — самый выгодный способ сэкономить на доставке.',
-  "Kuryerni tanlashda faqat $/kg ga qaramang: ombor xizmati, qayta qadoqlash va sug'urta alohida to'lanadi.":'При выборе курьера смотрите не только на $/кг: услуги склада, переупаковка и страховка оплачиваются отдельно.',
-  "Dam olish kunlari va bayramlarda ombor ishlamaydi. Juma kuni kelgan tovar ko'pincha dushanbada uchadi.":'В выходные и праздники склад не работает. Товар, пришедший в пятницу, чаще всего улетает в понедельник.',
-  "To'lovdan oldin sotuvchi sahifasida 'ships to' ro'yxatini tekshiring. Ba'zi tovarlar faqat ichki bozorga sotiladi.":"Перед оплатой проверьте список 'ships to' на странице продавца. Некоторые товары продаются только для внутреннего рынка.",
-  "Kiyim o'lchamini brend jadvali bo'yicha sm da tekshiring — Osiyo o'lchami Yevropa o'lchamidan bir-ikki daraja kichik.":'Размер одежды проверяйте по таблице бренда в сантиметрах — азиатский размер на одну-две ступени меньше европейского.',
-  "Rasmga emas, real xaridorlar suratiga qarang. Sharhlardagi foto tovar sifatini reklamadan yaxshiroq ko'rsatadi.":'Смотрите не на карточку, а на фото реальных покупателей. Снимки в отзывах показывают качество товара лучше рекламы.',
-  "Elektronikada model raqamini to'liq yozib qidiring — bir xil ko'rinishdagi arzon versiyalar boshqa xarakteristikaga ega.":'В электронике ищите по полному номеру модели — внешне такие же дешёвые версии имеют другие характеристики.',
-  "Katta chegirmalar (11.11, Black Friday) oldidan narx ko'tarilishi mumkin. Narxni bir hafta oldin skrinshot qilib solishtiring.":'Перед крупными распродажами (11.11, Black Friday) цена может подняться. Сделайте скриншот цены за неделю и сравните.',
-  "Xalqaro to'lovda konvertatsiya kursini bank belgilaydi — dollar kartasi bilan to'lash odatda 1-3% tejaydi.":'При международной оплате курс конвертации определяет банк — оплата долларовой картой обычно экономит 1-3%.',
-  "Buyurtmani faqat do'kon sahifasidan to'lang. Sotuvchi shaxsiy havola yoki chatda to'lov so'rasa — bu firibgarlik.":'Оплачивайте заказ только на странице магазина. Если продавец просит оплату по личной ссылке или в чате — это мошенничество.',
-  "Kartada 3D-Secure yoqilganini tekshiring: xalqaro do'konlarning ko'pchiligi tasdiqlanmagan to'lovni rad etadi.":'Проверьте, включён ли на карте 3D-Secure: большинство зарубежных магазинов отклоняет неподтверждённый платёж.',
-  "Ikki bosqichli tasdiqni yoqing. Do'kon akkaunti buzilsa, saqlangan karta va manzil ham xatarga tushadi.":'Включите двухфакторное подтверждение. Если аккаунт магазина взломают, под угрозой окажутся и сохранённая карта, и адрес.',
-  "'Posilkangiz uchun to'lov kerak' degan SMS havolalariga bosmang. Holatni har doim kuryerning o'z saytida tekshiring.":"Не переходите по ссылкам из SMS вида 'нужна оплата за вашу посылку'. Статус всегда проверяйте на собственном сайте курьера.",
-  "Qaytarish muddati tovar yetib kelgan kundan boshlanadi. Kuryer ombori kunlarini ham hisobga oling — oyna qisqaradi.":'Срок возврата отсчитывается со дня прибытия товара. Учитывайте и дни на складе курьера — окно сокращается.',
-  "Qutini ochayotganda video oling. Singan yoki noto'g'ri tovar bo'lsa, bu eng ishonchli dalil.":'Снимайте видео при вскрытии коробки. Если товар разбит или пришёл не тот, это самое надёжное доказательство.',
-  "Yorliq va original qadoqni saqlang: ko'p brend faqat to'liq komplekt bilan qaytarishni qabul qiladi.":'Сохраняйте бирки и оригинальную упаковку: многие бренды принимают возврат только в полной комплектации.',
-  "Manzilni lotin harflarida, aniq indeks va telefon bilan yozing. Bitta xato raqam posilkani haftalarga to'xtatadi.":'Пишите адрес латиницей, с точным индексом и телефоном. Одна ошибочная цифра задержит посылку на недели.',
-  "Dori-darmon, oziq-ovqat qo'shimchalari va o'simlik urug'lari alohida ruxsat talab qiladi — buyurtmadan oldin tekshiring.":'Лекарства, пищевые добавки и семена растений требуют отдельного разрешения — проверьте до заказа.',
-  "Brend nusxasi (replika) bojxonada olib qo'yiladi. Narx bozordan keskin past bo'lsa, bu birinchi ogohlantirish.":'Копию бренда (реплику) изымают на таможне. Если цена резко ниже рыночной — это первый тревожный знак.',
-  "Trek 5-7 kun yangilanmasa vahima qilmang: xalqaro tranzitda skaner nuqtalari orasida uzoq bo'shliq bo'ladi.":'Не паникуйте, если трек не обновляется 5-7 дней: в международном транзите между точками сканирования бывают длинные паузы.',
-  "Bayram sovg'asini kamida 5-6 hafta oldin buyurtma qiling — dekabr oxirida barcha yo'nalish sekinlashadi.":'Заказывайте праздничный подарок минимум за 5-6 недель — в конце декабря все направления замедляются.',
-  /* --- Chuqur ekranlar: qidiruv, kuzatuv, do'kon va kuryer papkalari ---
+  'KURYER':'КУРЬЕР', /* --- Chuqur ekranlar: qidiruv, kuzatuv, do'kon va kuryer papkalari ---
      Audit shuni ko'rsatdi: bu ekranlar ruscha rejimda o'zbekcha qolib
      ketgan edi, chunki smoke test faqat beshta bo'limni tekshirardi. */
   'Qidiruv':'Поиск', 'Nusxa':'Копия', 'universal':'универсальный', 'bo\'lim':'разд.',
@@ -5274,7 +5149,6 @@ const lcFxOf = c => {
 };
 /* Jonli kurs bormi (natija kartasida "taxminiy kurs" yozuvi shunga qarab). */
 const lcFxLive = c => c === 'USD' || c === 'UZS' || (num(FX_UZS[c]) > 0 && num(FX_UZS.USD) > 0);
-const POPULAR_STORES = ['taobao', 'pinduoduo', 'amazon', 'trendyol', 'poizon', 'shein', 'aliexpress', 'ebay'];
 const RATE_META = { date:'', diff:0, live:false, loading:false, at:0 };
 /* Markaziy bank kursi: valyuta kodi → 1 birlik uchun so'm (Nominal
    hisobga olingan). Bo'sh bo'lsa zaxira sifatida TARIFFS.fx ishlatiladi. */
@@ -5530,40 +5404,6 @@ const FULL_GUIDES = [
 
 
 
-const TIPS = [
-  { c:'KURYER', t:'Aviakuryer bilan 2 kg dan ortiq yuborishda quruqlik yo\'li ko\'pincha ikki barobar arzonroq bo\'ladi — muddat 12-20 kun.' },
-  { c:'BOJXONA', t:'Bojsiz me\'yor — bir kalendar oyda $200. Oyning boshida va oxirida kelgan posilkalar bitta oyga qo\'shilib hisoblanadi.' },
-  { c:'TAQIQ', t:'Powerbank va litiy batareyani avia bilan yuborib bo\'lmaydi. Buyurtmadan oldin kuryerning cheklovlar ro\'yxatini oching.' },
-  { c:'BOJXONA', t:'Deklaratsiyada tovar qiymatini pasaytirib ko\'rsatish — jarima va posilkani ushlab qolish sababi. Haqiqiy summani yozing.' },
-  { c:'DO\'KON', t:'Xitoy do\'konlarida sotuvchi reytingi 95% dan past bo\'lsa, o\'sha tovarni boshqa sotuvchidan qidirgan ma\'qul.' },
-  { c:'KUZATUV', t:'Trek raqamini shu yerga qo\'shsangiz, holat o\'zgarganda bot xabar beradi — saytlarni qayta-qayta ochish shart emas.' },
-  { c:'BOJXONA', t:'$200 me\'yordan oshsa, boj faqat ortiqcha qiymatdan olinadi — butun summadan emas. Ya\'ni $260 lik tovarda hisob $60 dan boshlanadi.' },
-  { c:'BOJXONA', t:'Bir oyda ikki posilka kutayotgan bo\'lsangiz, ikkinchisini keyingi oyga surish me\'yorni ikki barobar oshiradi.' },
-  { c:'BOJXONA', t:'Invoys (to\'lov cheki) skrinshotini saqlab qo\'ying. Bojxona qiymatni so\'rasa, chek eng tez ishlaydigan dalil.' },
-  { c:'KURYER', t:'Ko\'p kuryerda hisob hajmiy og\'irlik bo\'yicha ketadi: uzunlik×kenglik×balandlik (sm) ÷ 5000. Yengil, lekin katta qutida narx oshadi.' },
-  { c:'KURYER', t:'Tarif ko\'pincha to\'liq kilogrammga yumaloqlanadi. 1.1 kg uchun ham 2 kg to\'lash mumkin — og\'irlikni chegaraga yaqin ushlang.' },
-  { c:'KURYER', t:'Bir nechta mayda buyurtmani bitta konsolidatsiya qutisiga yig\'ish — yetkazishda eng ko\'p tejaydigan usul.' },
-  { c:'KURYER', t:'Kuryerni tanlashda faqat $/kg ga qaramang: ombor xizmati, qayta qadoqlash va sug\'urta alohida to\'lanadi.' },
-  { c:'KURYER', t:'Dam olish kunlari va bayramlarda ombor ishlamaydi. Juma kuni kelgan tovar ko\'pincha dushanbada uchadi.' },
-  { c:'DO\'KON', t:'To\'lovdan oldin sotuvchi sahifasida \'ships to\' ro\'yxatini tekshiring. Ba\'zi tovarlar faqat ichki bozorga sotiladi.' },
-  { c:'DO\'KON', t:'Kiyim o\'lchamini brend jadvali bo\'yicha sm da tekshiring — Osiyo o\'lchami Yevropa o\'lchamidan bir-ikki daraja kichik.' },
-  { c:'DO\'KON', t:'Rasmga emas, real xaridorlar suratiga qarang. Sharhlardagi foto tovar sifatini reklamadan yaxshiroq ko\'rsatadi.' },
-  { c:'DO\'KON', t:'Elektronikada model raqamini to\'liq yozib qidiring — bir xil ko\'rinishdagi arzon versiyalar boshqa xarakteristikaga ega.' },
-  { c:'DO\'KON', t:'Katta chegirmalar (11.11, Black Friday) oldidan narx ko\'tarilishi mumkin. Narxni bir hafta oldin skrinshot qilib solishtiring.' },
-  { c:'TO\'LOV', t:'Xalqaro to\'lovda konvertatsiya kursini bank belgilaydi — dollar kartasi bilan to\'lash odatda 1-3% tejaydi.' },
-  { c:'TO\'LOV', t:'Buyurtmani faqat do\'kon sahifasidan to\'lang. Sotuvchi shaxsiy havola yoki chatda to\'lov so\'rasa — bu firibgarlik.' },
-  { c:'TO\'LOV', t:'Kartada 3D-Secure yoqilganini tekshiring: xalqaro do\'konlarning ko\'pchiligi tasdiqlanmagan to\'lovni rad etadi.' },
-  { c:'XAVFSIZLIK', t:'Ikki bosqichli tasdiqni yoqing. Do\'kon akkaunti buzilsa, saqlangan karta va manzil ham xatarga tushadi.' },
-  { c:'XAVFSIZLIK', t:'\'Posilkangiz uchun to\'lov kerak\' degan SMS havolalariga bosmang. Holatni har doim kuryerning o\'z saytida tekshiring.' },
-  { c:'QAYTARISH', t:'Qaytarish muddati tovar yetib kelgan kundan boshlanadi. Kuryer ombori kunlarini ham hisobga oling — oyna qisqaradi.' },
-  { c:'QAYTARISH', t:'Qutini ochayotganda video oling. Singan yoki noto\'g\'ri tovar bo\'lsa, bu eng ishonchli dalil.' },
-  { c:'QAYTARISH', t:'Yorliq va original qadoqni saqlang: ko\'p brend faqat to\'liq komplekt bilan qaytarishni qabul qiladi.' },
-  { c:'MANZIL', t:'Manzilni lotin harflarida, aniq indeks va telefon bilan yozing. Bitta xato raqam posilkani haftalarga to\'xtatadi.' },
-  { c:'TAQIQ', t:'Dori-darmon, oziq-ovqat qo\'shimchalari va o\'simlik urug\'lari alohida ruxsat talab qiladi — buyurtmadan oldin tekshiring.' },
-  { c:'TAQIQ', t:'Brend nusxasi (replika) bojxonada olib qo\'yiladi. Narx bozordan keskin past bo\'lsa, bu birinchi ogohlantirish.' },
-  { c:'KUZATUV', t:'Trek 5-7 kun yangilanmasa vahima qilmang: xalqaro tranzitda skaner nuqtalari orasida uzoq bo\'shliq bo\'ladi.' },
-  { c:'PLANLASH', t:'Bayram sovg\'asini kamida 5-6 hafta oldin buyurtma qiling — dekabr oxirida barcha yo\'nalish sekinlashadi.' }
-];
 
 FULL_GUIDES.forEach(g => CYR_PHRASES.push(g.title));
 const LV = {
@@ -5644,7 +5484,6 @@ class Component extends DCLogic {
     lang: SAVED.lang || autoLang(),
     onboarded: !!SAVED.onboarded,
     monthly: SAVED.monthly || [],
-    tip: 0,
     storeQuery: '',
     /* Papka ko'rinishi: qaysi kesimda ('cat' yoki 'country') va ochilgan papka
        ('cat:elektronika' kabi, ochilmagan bo'lsa null). */
@@ -6135,8 +5974,8 @@ class Component extends DCLogic {
   }
 
   /* --- Tanishtiruv (birinchi kirish) ---
-     Tanishuv ekranidan keyin bosh sahifada bir marta: 5 qadam (AI o'chiq
-     bo'lsa kamera qadami tushib qoladi). Har qadam data-tour nishonli
+     Tanishuv ekranidan keyin bosh sahifada bir marta: 2 qadam — asosiy
+     tugma (AI o'chiq bo'lsa "Narxni o'zim yozaman") va uch bo'lim. Har qadam data-tour nishonli
      elementni shell'ga nisbatan o'lchaydi; element yo'q bo'lsa qadam
      o'tkazib yuboriladi. Escape — yopish. */
   maybeTour() {
@@ -6152,9 +5991,7 @@ class Component extends DCLogic {
     const all = [
       { k: 'camera', t: 'Shu yerdan boshlang', x: "Nima qidirayotganingizni yozing yoki ayting, keyin mahsulot sahifasini suratga olib yuklang — jami narxni o'zim chiqaraman.", need: () => !!this.state.aiOn },
       { k: 'find', t: 'Narxni o\'zim yozaman', x: "Narx, davlat va vaznni o'zingiz yozsangiz ham jami narx chiqadi.", need: () => !this.state.aiOn },
-      { k: 'quick', t: "Uch ma'lumotnoma", x: "Do'konlar, kuryerlar va taqiqlarni tekshirish — har biri bitta bosishda." },
-      { k: 'mine', t: 'Xaridlarim', x: "Rejalar, jo'natmalar, sevimlilar va hisoblar shu yerda saqlanadi." },
-      { k: 'nav', t: "Bo'limlar", x: "Qo'llanmalar, Bojxona va Sozlamalar. O'rtadagi tugma — xarid rejasini tuzish." }
+      { k: 'nav', t: "Uch bo'lim", x: "Boshlash — shu savol. Xaridlarim — hisob va jo'natmalaringiz. Ma'lumotnoma — do'konlar, kuryerlar, bojxona va qo'llanmalar." }
     ];
     return all.filter(x => !x.need || x.need()).map(x => ({ k: x.k, t: L(x.t), x: L(x.x) }));
   }
@@ -6198,10 +6035,14 @@ class Component extends DCLogic {
     if (!t || !t.rect) return { tourOn: false };
     const steps = this.tourSteps(), step = steps[t.i] || steps[0], r = t.rect;
     const below = r.y + r.h + 12, fits = below + 200 <= r.sh;
+    /* Na ostiga, na ustiga sig'maydi (kompyuterdagi butun balandlikdagi
+       chap menyu): karta element yonida, tepada turadi. */
+    const side = !fits && r.y < 212;
     return {
       tourOn: true,
       tourBox: 'left:' + r.x + 'px;top:' + r.y + 'px;width:' + r.w + 'px;height:' + r.h + 'px',
-      tourCardTop: fits ? below + 'px' : 'auto', tourCardBottom: fits ? 'auto' : (r.sh - r.y + 12) + 'px',
+      tourCardLeft: side ? (r.x + r.w + 16) + 'px' : '16px',
+      tourCardTop: side ? Math.max(16, r.y + 60) + 'px' : fits ? below + 'px' : 'auto', tourCardBottom: side || fits ? 'auto' : (r.sh - r.y + 12) + 'px',
       tourN: (t.i + 1) + ' / ' + steps.length, tourTitle: step.t, tourText: step.x,
       tourNextLabel: tr(st.lang, t.i + 1 >= steps.length ? 'Tushunarli' : 'Keyingi'),
       tourNext: () => this.tourGo(t.i + 1), tourSkip: () => this.tourEnd(false)
@@ -6770,7 +6611,6 @@ class Component extends DCLogic {
     const ORIG = [['original', 'Faqat original'], ['any', "Arzonroq ham bo'ladi"]];
     const BUD = [['50', '$50'], ['100', '$100'], ['300', '$300'], ['any', 'Farqi yo\'q']];
     return {
-      whCats: CATEGORIES.map(c => ({ t: tr(lang, c.label), ...chip(w.cat === c.id), pick: () => set({ cat: c.id }) })),
       whText: w.text, whPh: L('Masalan: krossovka, 41 razmer'),
       onWhText: e => set({ text: String(e.target.value || '').slice(0, 60) }),
       /* Ovoz: qo'llab-quvvatlanmasa tugma yo'q — o'lik tugma ko'rsatilmaydi. */
@@ -6786,7 +6626,8 @@ class Component extends DCLogic {
       whFind: () => set({ find: true }), whFindOn: !w.find,
       whStep2: !!w.find,
       whOrigs: ORIG.map(([k, t]) => ({ t: L(t), ...chip(w.orig === k), pick: () => set({ orig: k }) })),
-      whBudgets: BUD.map(([k, t]) => ({ t: k === 'any' ? L(t) : t + ' ' + L('gacha'), ...chip(w.budget === k), pick: () => set({ budget: k }) })),
+      /* "{0} gacha" shabloni: ruschada "до $50" (so'z tartibi tilga qarab). */
+      whBudgets: BUD.map(([k, t]) => ({ t: k === 'any' ? L(t) : tx(lang, '{0} gacha', t), ...chip(w.budget === k), pick: () => set({ budget: k }) })),
       /* Maydondagi matn: havola bo'lsa do'kon yoki AI (sahifani o'qiydi),
          savol bo'lsa AI, oddiy nom bo'lsa — nomni eslab qolamiz va
          foydalanuvchi keyingi qadamni tanlaydi. */
@@ -6820,13 +6661,21 @@ class Component extends DCLogic {
           this.aiAsk(t);
           return;
         }
-        /* Tovar nomi: keyingi qadam kartalari allaqachon ekranda turibdi. */
+        /* Tovar nomi: AI yoqiq bo'lsa keyingi qadam kartalari ochiladi;
+           o'chiq bo'lsa — do'kon va kuryer qidiruvi (boshqa yo'l yo'q). */
         metrics.hit('hero', 'name');
+        if (!st.aiOn) { this.setState({ homeQuery: t }); this.push('search'); return; }
         set({ find: true });
       },
       whGo: () => {
         const what = catDef ? tr(lang, catDef.label) : String(w.text || '').trim();
-        if (!what) return;
+        /* Nom yozilmagan: jim turmaymiz — maydonga qaytaramiz. */
+        if (!what) {
+          this.toast(L('Avval nima qidirayotganingizni yozing'));
+          const inp = this._rootRef.current && this._rootRef.current.querySelector('main input[aria-label="Mahsulot nomi"]');
+          if (inp) inp.focus();
+          return;
+        }
         const parts = [tx(lang, '{0} qidiryapman', what) + (catDef && w.text ? ' (' + w.text + ')' : '')];
         if (w.orig) parts.push(L(w.orig === 'original' ? 'Faqat original' : "Arzonroq ham bo'ladi"));
         if (w.budget) parts.push(w.budget === 'any' ? L('Byudjet muhim emas') : tx(lang, 'Byudjet ${0} gacha', w.budget));
@@ -6837,7 +6686,6 @@ class Component extends DCLogic {
         /* find: worker veb-qidiruv bilan aniq mahsulot havolalarini ham topadi. */
         this.aiAsk(parts.join('. '), { find: true });
       },
-      whAsk: () => { metrics.hit('quick', 'where:ask'); this.setState({ aiMsgs: [] }); this.push('ai'); },
       ...(() => {
         const r = st.lastRes;
         if (!r || !r.lc) return { hasLast: false };
@@ -7060,8 +6908,7 @@ class Component extends DCLogic {
       aiOn: !!st.aiOn,
 
       shotPick: () => { metrics.hit('quick', 'ai:shot'); this.shotPick(); },
-      onShotFile: e => { const f = e.target.files && e.target.files[0]; if (f) this.aiShot(f); },
-      goAi: () => { metrics.hit('quick', 'ai'); this.push('ai'); }
+      onShotFile: e => { const f = e.target.files && e.target.files[0]; if (f) this.aiShot(f); }
     };
   }
 
@@ -7167,7 +7014,7 @@ class Component extends DCLogic {
       return f.indexOf('from:') === 0
         ? (COURIER_ORIGINS.find(d => d[0] === f.slice(5)) || null) : null;
     })();
-    const titles = { landed:'Jami narx', result:'Jami narx', mine:'Xaridlarim', ai:'Pochtam AI', plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? tx(st.lang, '{0} yo\'nalishi', tr(st.lang, courierFolderDef[1])) : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', search:'Qidiruv', wizard:'Reja tuzish', settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
+    const titles = { ref:"Ma'lumotnoma", landed:'Jami narx', result:'Jami narx', mine:'Xaridlarim', ai:'Pochtam AI', plan:'Xarid rejasi', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? tx(st.lang, '{0} yo\'nalishi', tr(st.lang, courierFolderDef[1])) : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_SECTIONS[st.customsSec], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Kuzatuv', search:'Qidiruv', wizard:'Reja tuzish', settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
     /* Saralash tugmasi faqat ro'yxat ko'rinib turganda kerak: papkalar
        ekranida saralanadigan narsa yo'q. */
     const showSortBtn = cur === 'courierfolder' ||
@@ -7269,8 +7116,6 @@ class Component extends DCLogic {
       courier: (() => { const tg = (courier.links.find(l => l.l === 'Telegram') || courier.links.find(l => l.l === 'Sayt') || {}).u; return { label: tg && /t\.me/.test(tg) ? 'Telegram\'da yozish' : 'Saytga o\'tish', action: () => { metrics.hit('courier', courier.id); return tg ? openTg(tg) : this.toast('Havola e\'lon qilinmagan'); }, altLabel:'Taqqoslash', altAction: () => this.go('compare') }; })(),
     };
     const mb = mainMap[cur];
-    const dayOfs = Math.floor(Date.now() / 86400000);
-    const tipIdx = (dayOfs + st.tip) % TIPS.length;
 
     const wz = (() => {
       const k = COURIERS.find(x => x.name === st.wizCourier) || wizCouriers[0] || COURIERS[0];
@@ -7306,15 +7151,25 @@ class Component extends DCLogic {
       altLabel: mb && mb.altLabel ? mb.altLabel : '',
       altAction: mb && mb.altAction ? mb.altAction : () => {},
 
-      tHome: () => this.go('home'), tStores: () => this.go('stores'),
-      tCustoms: () => this.go('customs'),
-      tGuides: () => this.go('guides'),
-      /* Bo'limga qaytganda tanlovlar saqlanadi: ilgari har safar
-         birinchi qadamdan boshlanardi va boshqa bo'limga bir qarab
-         kelish butun ishni bekor qilardi. */
-      tWizard: () => this.go('wizard'),
+      tHome: () => this.go('home'),
+      tMine: () => { this.setState({ mineTab: 'plans' }); this.go('mine'); },
+      tRef: () => this.go('ref'),
+      /* Ma'lumotnoma: kerak bo'lganda ochiladigan hamma narsa bitta
+         ro'yxatda. Har qatorda bitta gap — nima bor va nechta. */
+      refRows: cur !== 'ref' ? [] : [
+        { t: "Do'konlar", sub: tx(st.lang, "{0} ta do'kon — davlat va tur bo'yicha", STORES.length), img: "url('icons/stores-3d.webp')", k: 'stores' },
+        { t: 'Kuryerlar', sub: tx(st.lang, '{0} ta kuryer — narx va muddat', COURIERS.length), img: "url('icons/courier-3d.webp')", k: 'couriers' },
+        { t: 'Bojxona', sub: tr(st.lang, "Bojsiz me'yor, to'lov va taqiqlangan tovarlar"), img: "url('icons/customs-3d.webp')", k: 'customs' },
+        { t: "Qo'llanmalar", sub: tx(st.lang, "{0} ta do'kondan buyurtma — qadam-baqadam", FULL_GUIDES.length), img: "url('icons/guides-3d.webp')", k: 'guides' },
+        ...(st.aiOn ? [{ t: 'Pochtam AI', sub: tr(st.lang, "Savol bering: boj, kuryer, do'kon"), glyph: 'ai', k: 'ai' }] : []),
+        ...(HAS_CONTACT ? [{ t: 'Mutaxassis yordami', sub: tr(st.lang, 'Pullik konsultatsiya: bojxona, hujjat, yuridik'), img: "url('icons/mutaxassis-3d.webp')", k: 'services' }] : []),
+        { t: 'Sozlamalar', sub: tx(st.lang, "Til · kurs {0} so'm", money(Math.round(USD_RATE))), glyph: 'set', k: 'settings' }
+      ].map(r => ({ t: tr(st.lang, r.t), sub: r.sub, hasImg: !!r.img, img: r.img || 'none', isAi: r.glyph === 'ai', isSet: r.glyph === 'set',
+        go: () => { metrics.hit('quick', 'ref:' + r.k); this.push(r.k); } })),
+      /* Reja sehrgari endi menyuda emas: Xaridlarim va Bojxonadan ochiladi,
+         "orqaga" bilan qaytadi. Tanlovlar saqlanadi. */
+      tWizard: () => this.push('wizard'),
       tShip: () => this.go('shipments'),
-      tSettings: () => this.go('settings'),
       cHome: tabColor('home'), cStores: tabColor('stores'), cWizard: tabColor('wizard'), cShip: tabColor('shipments'), cSet: tabColor('settings'),
       fHome: cur === 'home' ? '#DCDDFA' : 'none',
       tb: (() => {
@@ -7339,12 +7194,10 @@ class Component extends DCLogic {
         });
         const mk = (k, screens) => (screens.includes(cur) ? on(k) : off(k));
         return {
-          home: mk('home', ['home']),
-          customs: mk('customs', ['customs', 'csec']),
-          wizard: mk('wizard', ['wizard']),
-          guides: mk('guides', ['guides', 'fullguide']),
-          mine: mk('mine', ['mine', 'plan', 'shipments']), ai: mk('ai', ['ai']),
-          settings: mk('settings', ['settings'])
+          home: mk('home', ['home', 'result', 'landed', 'ai', 'search']),
+          mine: mk('mine', ['mine', 'plan', 'shipments', 'wizard']),
+          ref: mk('ref', ['ref', 'stores', 'storefolder', 'store', 'couriers', 'courierfolder', 'courier', 'compare',
+            'customs', 'csec', 'guides', 'guide', 'fullguide', 'services', 'settings'])
         };
       })(),
 
@@ -7356,7 +7209,7 @@ class Component extends DCLogic {
       sCouriers: cur === 'couriers', sCourier: cur === 'courier', sCompare: cur === 'compare',
       sCouriersArea: cur === 'couriers' || cur === 'courierfolder',
       sCustoms: cur === 'customs', sCsec: cur === 'csec', sGuides: cur === 'guides',
-      sShip: cur === 'shipments' || (cur === 'mine' && st.mineTab === 'ship'), sWizard: cur === 'wizard', sSettings: cur === 'settings',
+      sShip: cur === 'shipments' || (cur === 'mine' && st.mineTab === 'ship'), sWizard: cur === 'wizard', sSettings: cur === 'settings', sRef: cur === 'ref',
       sPlan: cur === 'plan' && !!pl,
       sLanded: cur === 'landed',
       sResult: cur === 'result',
@@ -7479,12 +7332,7 @@ class Component extends DCLogic {
             : (yolda > 0 ? yolda + ' ta yo\'lda · ' : '') + mine.length + ' ta kuzatuvda'
         };
       })(),
-      tipNo: tipIdx + 1, tipTotal: TIPS.length,
-      tipText: TIPS[tipIdx].t, tipCat: TIPS[tipIdx].c,
-      tipToday: st.tip === 0, tipBrowsing: st.tip !== 0,
-      nextTip: () => this.setState(x => ({ tip: (x.tip + 1) % TIPS.length })),
-
-      goStores: () => this.push('stores'), goCouriers: () => this.push('couriers'),
+      goCouriers: () => this.push('couriers'),
       goCustoms: () => this.push('customs'), goGuides: () => this.push('guides'),
       /* Sarlavhadagi kuzatuv tugmasi Xaridlarim → Jo'natmalar tabini ochadi:
          jo'natmalar bitta joyda. */
@@ -7492,8 +7340,9 @@ class Component extends DCLogic {
       /* Qidiruv o'z ekranida: bosh sahifada maydon bo'lganda har bosishda
          natijalar paneli chiqib, sahifa qimirlab ketardi. */
       goSearch: () => { this.setState({ homeQuery: '' }); this.push('search'); },
-      goSettings: () => this.push('settings'),
-      goWizard: () => { this.setState({ wizStep: 0 }); this.push('wizard'); },
+      /* Chala reja to'xtagan joyidan davom etadi (saqlanganda qadam o'zi 0
+         ga qaytadi); ilgari menyudagi "Reja" tugmasi ham shunday edi. */
+      goWizard: () => this.push('wizard'),
 
       storeQuery: st.storeQuery,
       onStoreQuery: e => this.setState({ storeQuery: e.target.value }),
@@ -7501,21 +7350,6 @@ class Component extends DCLogic {
       hq: st.homeQuery,
       onHq: e => this.setState({ homeQuery: e.target.value }),
       ...this.aiVm(st),
-      quickActs: [
-        /* To'rt asosiy harakat. Qo'llanmalar va Bojxona pastki menyuda,
-           shuning uchun bu yerda takrorlanmaydi; Do'konlar va Kuryerlar
-           bo'limlariga faqat shu yerdan kiriladi. */
-        { t: "Do'konlar", iconCss: "url('icons/stores-3d.webp')", go: () => { metrics.hit('quick', 'stores'); this.push('stores'); } },
-        { t: 'Kuryerlar', iconCss: "url('icons/courier-3d.webp')", go: () => { metrics.hit('quick', 'couriers'); this.push('couriers'); } },
-        { t: 'Taqiqni tekshirish', iconCss: "url('icons/boj-taqiq.webp')", go: () => { metrics.hit('quick', 'banned'); this.openSec(2); } }
-      ],
-      /* Mashhur do'konlar tasmasi. */
-      popRow: POPULAR_STORES.map(id => STORES.find(x => x.id === id)).filter(Boolean).map(x => {
-        const bor = !!(x.logoCss && x.logoCss !== 'none');
-        return { name: x.name, sub: tr(st.lang, x.country), mono: x.mono, color: x.color, logoCss: x.logoCss,
-          showMono: !bor, tint: bor ? 'transparent' : '#F1F1F8',
-          open: () => { this.warmGuide(x.id); this.setState({ storeId: x.id }); this.push('store'); } };
-      }),
       /* Xaridlarim: rejalar, jo'natmalar, sevimlilar, hisoblar — bitta ekran. */
       ...(() => {
         const tab = st.mineTab || 'plans';
@@ -7527,8 +7361,6 @@ class Component extends DCLogic {
           mnPlans: tab === 'plans', mnFavs: tab === 'favs', mnCalcs: tab === 'calcs',
           noPlans: nPlan === 0, noFavs: nFav === 0, hasCalcs: nCalc > 0, noCalcs: nCalc === 0,
           mnCalc: () => this.openLanded(),
-          mineSummary: [nPlan ? tx(st.lang, '{0} reja', nPlan) : '', nShip ? tx(st.lang, '{0} jo\'natma', nShip) : '', nFav ? tx(st.lang, '{0} sevimli', nFav) : ''].filter(Boolean).join(' · ') || tr(st.lang, 'Reja, jo\'natma, sevimlilar va hisoblar'),
-          goMine: () => { this.setState({ mineTab: 'plans' }); this.push('mine'); },
           mineCalcRows: (st.calcs || []).map(c => ({
             title: c.name || tr(st.lang, c.cat || 'Hisob'),
             sub: [tr(st.lang, c.country || ''), (c.qty > 1 ? c.qty + ' × ' : '') + usd(c.priceUsd || 0), (c.kg || 0).toFixed(1).replace('.', ',') + ' kg', c.courier].filter(Boolean).join(' · '),
