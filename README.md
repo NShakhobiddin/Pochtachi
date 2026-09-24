@@ -357,6 +357,34 @@ reyting chiqmaydi (TZ 7).
 
 ## Xaridlarim va jo'natma holatlari (6-bosqich)
 
+**Xarid kartasi (2026-09-24, soddalashtirishning 2-bosqichi).** Xaridlarimda
+tablar yo'q — bitta ro'yxat. Har xarid bitta karta: nom, do'kon · kuryer,
+jami, besh holatli chiziq **Topish → Narx → Buyurtma → Yo'lda → Keldi** va
+bitta keyingi harakat tugmasi. Saqlangan reja qadamlari (`PLAN_STEPS`,
+0..5) o'zgarmagan, faqat beshtaga yig'iladi (`stageOf`): 0 → Narx,
+1 → Buyurtma, 2–4 (omborda, yo'lda, bojxonada) → Yo'lda, 5 → Keldi.
+Tugmalar birinchi shaxsda (`BUY_NEXT`): "Buyurtma qildim", "Omborga yetib
+keldi", "Yo'lga chiqdi", "Bojxonaga keldi", "Qo'limga tegdi".
+
+- **Topish** (`p.find`) — narxi yo'q, faqat nomi bor xarid. Boshlashdagi
+  "Hali topmadim → Do'konlarni ko'rsat" uni yaratadi (`addFind`, bir xil nom
+  takrorlanmaydi). Kartada "Skrinshot yuklash" va "Do'konlarni ko'rsat";
+  skrinshot natijasi "Xaridlarimga qo'shish" bilan saqlanganda yangi karta
+  emas, o'sha karta "Narx" holatiga o'tadi (`_findId`).
+- **Narx** — kartada "Qanday buyurtma qilaman?" (do'kon qo'llanmasi yoki AI,
+  `orderHelp` — natija ekrani bilan bitta funksiya).
+- **Buyurtma va Yo'lda** — kartaning o'zida jo'natma raqami (bo'shliqsiz,
+  katta harf), kuryer sayti havolasi, 20 kundan ortiq bo'lsa "ushlanib
+  qoldimi?". Kunlar buyurtma sanasidan (`p.ordered`) sanaladi.
+- Ostida: **Kelganlar** (yopiq, sanog'i bilan), **Oxirgi hisoblar** (3 ta,
+  "Hammasi"), **Saqlanganlar** (sevimli do'kon, kuryer, qo'llanma) va
+  "Boshqa jo'natmani kuzatish" (`shipments` — rejasiz raqam va kuryer
+  saytlari). "Yangi xarid" Boshlashdagi savolga olib boradi; "Do'kon va
+  kuryerni o'zim tanlayman" — Reja sehrgari.
+- Xarid ekrani (`plan`) kartaning kengaytmasi: o'sha chiziq, harakat,
+  raqam va yordam (`buyVm` — ikkalasi uchun bitta manba), ostida jami,
+  "Batafsil holat" (6 bosqich) va hisob-kitob.
+
 `mine` ekrani (bosh sahifadagi "Xaridlarim" kartasi): tablar **Rejalar**
 (`myPlans`), **Jo'natmalar** (mavjud kuzatuv bloki shu tab ostida
 chiziladi: `sShip`), **Sevimlilar** (`favRow`, ro'yxat ko'rinishida),

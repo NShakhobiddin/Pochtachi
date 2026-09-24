@@ -106,11 +106,10 @@ const refGo = async (t, pg = page) => {
   await pg.locator('main button').filter({ has: pg.locator('span', { hasText: new RegExp('^\\s*' + esc(t) + '\\s*$') }) }).first().click();
   await pg.waitForTimeout(450);
 };
-/* Reja sehrgari menyuda emas: Xaridlarim → Rejalar → "Reja tuzish" / "Yangi reja". */
+/* Reja sehrgari menyuda emas: Xaridlarim → "Do'kon va kuryerni o'zim tanlayman". */
 const openWizard = async (pg = page) => {
   await pg.locator('nav button', { hasText: 'Xaridlarim' }).first().click(); await pg.waitForTimeout(350);
-  await pg.locator('main button').filter({ hasText: /^\s*Rejalar/ }).first().click(); await pg.waitForTimeout(250);
-  await pg.locator('main button').filter({ hasText: /^\s*(Reja tuzish|Yangi reja)\s*$/ }).first().click(); await pg.waitForTimeout(500);
+  await pg.locator('main button').filter({ hasText: /^\s*Do'kon va kuryerni o'zim tanlayman\s*$/ }).first().click(); await pg.waitForTimeout(500);
 };
 
 const errors = [];
@@ -646,7 +645,7 @@ try {
 
     /* 4-bosqich: universal kalkulyator (Jami narx). Tez o'tishdan ochiladi,
        narx va vazn yoziladi, kargo eng arzon kuryerdan, boj core'dan;
-       "Xarid rejasiga qo'shish" reja ekranini ochadi va localStorage'da
+       "Xaridlarimga qo'shish" xarid ekranini ochadi va localStorage'da
        yangi maydonlar (name, qty, source) bilan reja paydo bo'ladi. */
     const plansBefore = await page.evaluate(() => (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || []).length);
     await page.locator('main button').filter({ hasText: /Narxni o'zim yozaman/ }).first().click(); await page.waitForTimeout(500);
@@ -663,11 +662,11 @@ try {
     await lcFill('Quti uzunligi, sm', 50); await lcFill('Quti kengligi, sm', 40); await lcFill('Quti balandligi, sm', 40); lt = await lcText();
     check('jami narx: hajmiy og\'irlik (16 kg) hisobga olinadi', /Hajmiy og'irlik 16,0 kg/.test(lt) && /\(16,0 kg\)/.test(lt));
     await lcFill('Mahsulot nomi', 'Sinov mahsulot');
-    await page.locator('main button').filter({ hasText: "Xarid rejasiga qo'shish" }).first().click(); await page.waitForTimeout(800);
+    await page.locator('main button').filter({ hasText: "Xaridlarimga qo'shish" }).first().click(); await page.waitForTimeout(800);
     const planHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
     const planSaved = await page.evaluate(() => { const p = (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || [])[0] || {}; return { id: p.id, name: p.name, source: p.source, qty: p.qty, total: p.total, kg: p.kg }; });
     const plansAfter = await page.evaluate(() => (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || []).length);
-    check('jami narx → xarid rejasi (name, qty, source, 16 kg)', /Xarid rejasi/.test(planHead) && plansAfter === plansBefore + 1 && planSaved.name === 'Sinov mahsulot' && planSaved.source === 'landed' && planSaved.qty === 1 && planSaved.total > 320 && Math.abs(planSaved.kg - 16) < 0.01, JSON.stringify(planSaved));
+    check('jami narx → Xaridlarim (name, qty, source, 16 kg), menyuda Xaridlarim', /Xarid/.test(planHead) && (await page.evaluate(() => [...document.querySelectorAll('nav button[aria-current="page"]')].map(b => b.innerText.trim()).join('|'))) === 'Xaridlarim' && plansAfter === plansBefore + 1 && planSaved.name === 'Sinov mahsulot' && planSaved.source === 'landed' && planSaved.qty === 1 && planSaved.total > 320 && Math.abs(planSaved.kg - 16) < 0.01, JSON.stringify(planSaved));
     /* Oylik me'yor: yangi reja "Bu oyda" ga yozildi, endi jami narx qoldiqni
        hisobga oladi — $100 lik tovar ham bojli chiqadi va izohda qoldiq turadi. */
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
@@ -680,7 +679,7 @@ try {
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
     await page.locator('nav button', { hasText: 'Xaridlarim' }).first().click(); await page.waitForTimeout(500);
     await page.locator('main button').filter({ hasText: 'Sinov mahsulot' }).first().click(); await page.waitForTimeout(500);
-    await page.locator('main button').filter({ hasText: "Rejani o'chirish" }).first().click(); await page.waitForTimeout(400);
+    await page.locator('main button').filter({ hasText: "Xaridni o'chirish" }).first().click(); await page.waitForTimeout(400);
     const plansGone = await page.evaluate(() => (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || []).length);
     const monthLeft = await page.evaluate(id => (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').monthly || []).filter(m => m.plan === id).length, planSaved.id);
     check('sinov rejasi o\'chirildi (oylik yozuvi bilan)', plansGone === plansBefore && monthLeft === 0, plansGone + ' ta, oylik ' + monthLeft);
@@ -701,12 +700,10 @@ try {
        qayta ochiladi; "Rejalar" bo'sh holati tushuntiriladi. */
     await page.locator('nav button', { hasText: 'Xaridlarim' }).first().click(); await page.waitForTimeout(500);
     const mineHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
-    const mineTabs = await page.evaluate(() => [...document.querySelectorAll('main button[aria-pressed]')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).slice(0, 4));
-    check('Xaridlarim: tab yozuvlari kesilmaydi (2×2 to\'r)', await page.evaluate(() => [...document.querySelectorAll('main button[aria-pressed]')].slice(0, 4).every(b => b.scrollWidth <= b.clientWidth + 1)));
-    check('Xaridlarim: 4 tab, "Hali reja yo\'q" holati', /Xaridlarim/.test(mineHead) && mineTabs.length === 4 && /Rejalar/.test(mineTabs[0]) && /Hisoblar/.test(mineTabs[3]) && /Hali reja yo'q/.test(await page.locator('main').innerText()), mineHead + ' · ' + mineTabs.join(' | '));
-    await page.locator('main button[aria-pressed]').filter({ hasText: 'Hisoblar' }).first().click(); await page.waitForTimeout(300);
+    const mineT = await page.evaluate(() => document.querySelector('main').innerText.replace(/\s+/g, ' '));
+    check('Xaridlarim: tablar yo\'q, "Hali xarid yo\'q" va "Oxirgi hisoblar" bitta ro\'yxatda', /Xaridlarim/.test(mineHead) && (await page.locator('main button[aria-pressed]').count()) === 0 && /Hali xarid yo'q/.test(mineT) && /Oxirgi hisoblar/i.test(mineT) && /Boshqa jo'natmani kuzatish/.test(mineT), mineT.slice(0, 160));
     const calcRow = page.locator('main button').filter({ hasText: 'Sinov mahsulot' }).first();
-    check('Xaridlarim → Hisoblar: oxirgi hisob saqlangan', await calcRow.count() === 1 && /\$\d/.test(await calcRow.innerText()), (await calcRow.innerText().catch(() => '')).replace(/\s+/g, ' ').slice(0, 80));
+    check('Xaridlarim → Oxirgi hisoblar: hisob saqlangan', await calcRow.count() === 1 && /\$\d/.test(await calcRow.innerText()), (await calcRow.innerText().catch(() => '')).replace(/\s+/g, ' ').slice(0, 80));
     await calcRow.click(); await page.waitForTimeout(500);
     const reopened = await page.evaluate(() => { const i = document.querySelector('input[aria-label="Mahsulot nomi"]'); return i ? i.value : ''; });
     check('hisob qayta ochiladi (kirishlar bilan)', /Jami narx/.test((await page.locator('header').innerText())) && reopened === 'Sinov mahsulot', reopened);
@@ -801,7 +798,7 @@ try {
     const shotRes = { h: (await page.locator('header').innerText()).replace(/\s+/g, ' '), t: await aiMain(), b: await mainBtns() };
     check('Skrinshot: yagona /ai manziliga rasm va joriy xarid, narx Markaziy bank kursi bo\'yicha', shotBodies.length === 1 && /^data:image\/jpeg;base64,/.test(shotBodies[0].image) && shotBodies[0].usdRate > 1000 && 'cart' in shotBodies[0] && /Jami narx/.test(shotRes.h) && /Nike Air Max 90/.test(shotRes.t) && /699 CNY ≈ \$97\.80/.test(shotRes.t) && !/taxminiy kurs/.test(shotRes.t) && /Taobao · Xitoy/.test(shotRes.t) && /eng arzon kuryer/i.test(shotRes.t) && /Og'irlik 0,8 kg \(sahifadan\)/.test(shotRes.t), shotRes.t.slice(0, 160));
     check('Skrinshot natijasi: jami tepada, kuryer · muddat · taxminiy sana, so\'mda ham', /^JAMI \$102\.20 1 292 890 so'm D2D · 20–25 kun · taxminan \d{1,2}-\w+gacha/.test(shotRes.t) && /Kargo · \S+ \(0,8 kg\) \$\d+\.\d\d/.test(shotRes.t) && /so'm/.test(shotRes.t) && /me'yor ichida — boj va yig'im yo'q/.test(shotRes.t) && !/Topildi|Skrinshotdan o'qildi/.test(shotRes.t), shotRes.t.slice(160, 360));
-    check('Skrinshot natijasi tugmalari: Qanday buyurtma qilaman? · Vaznni aniqlashtirish · Rejaga qo\'shish · Boshqa kuryerlar', ['Qanday buyurtma qilaman?', 'Vaznni aniqlashtirish', "Rejaga qo'shish", 'Boshqa kuryerlar'].every(t => shotRes.b.some(b => b.indexOf(t) === 0)), shotRes.b.join(' | '));
+    check('Skrinshot natijasi tugmalari: Qanday buyurtma qilaman? · Vaznni aniqlashtirish · Xaridlarimga qo\'shish · Boshqa kuryerlar', ['Qanday buyurtma qilaman?', 'Vaznni aniqlashtirish', "Xaridlarimga qo'shish", 'Boshqa kuryerlar'].every(t => shotRes.b.some(b => b.indexOf(t) === 0)), shotRes.b.join(' | '));
     /* "Vaznni aniqlashtirish" → kalkulyator to'ldirilgan (nom, 699, ¥,
        Xitoy) va "Skrinshotdan o'qildi" banneri. */
     await page.locator('main button').filter({ hasText: /^Vaznni aniqlashtirish$/ }).first().click(); await page.waitForTimeout(600);
@@ -916,6 +913,34 @@ try {
       check('AI o\'chiq: nom → qidiruv ekrani (so\'z bilan)', (await op.locator('input[type="search"]').first().inputValue().catch(() => '')) === 'Taobao', await op.locator('header').innerText());
       await offCtx.close();
     }
+    /* Xarid kartasi (2026-09-24): "Do'konlarni ko'rsat" → Xaridlarimda
+       "Topish" kartasi; kartadagi "Skrinshot yuklash" → natija →
+       "Xaridlarimga qo'shish" — yangi karta emas, o'sha karta "Narx"
+       holatiga o'tadi (nomi skrinshotdagi). Alohida kontekst: asosiy
+       sinovdagi skrinshot sanog'iga tegmaydi. */
+    {
+      const fcx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+      await aiStatusRoute(fcx, true);
+      await fcx.route('**cbu.uz/**', r => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify([{ Ccy: 'USD', Rate: '12650.00', Nominal: '1', Date: '18.09.2026', Diff: '0.50' }, { Ccy: 'CNY', Rate: '1770.00', Nominal: '1', Date: '18.09.2026', Diff: '0.10' }]) }));
+      const fsh = { found: true, name: 'Nike Air Max 90', price: 699, currency: 'CNY', priceUsd: 97.86, fxApprox: true, qty: 1, store: 'Taobao', confidence: 0.9, category: 'poyabzal', country: 'Xitoy', weightKg: 0.8 };
+      await fcx.route(METRICS_URL + 'ai', r => { const b = JSON.parse(r.request().postData() || '{}'); r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(b.image ? { text: '', shot: fsh, cards: [{ type: 'product', ...fsh }], tools: [], model: 'm', usage: {}, stop: 'shot' } : { text: "Nike rasmiy do'koni mos.", cards: [], tools: [], model: 'm', usage: {} }) }); });
+      const fp = await fcx.newPage();
+      await fp.goto(base + '/', { waitUntil: 'load' }); await fp.waitForTimeout(1200);
+      await passOnboarding(fp); await fp.waitForTimeout(1300); await fp.keyboard.press('Escape'); await fp.waitForTimeout(300);
+      await fp.locator('main input[aria-label="Mahsulot nomi"]').fill('krossovka');
+      await fp.locator('main button').filter({ hasText: /qayerdan olaman/ }).first().click(); await fp.waitForTimeout(300);
+      await fp.locator('main button').filter({ hasText: /^Do'konlarni ko'rsat$/ }).first().click(); await fp.waitForTimeout(700);
+      await fp.locator('nav button', { hasText: 'Xaridlarim' }).first().click(); await fp.waitForTimeout(500);
+      const findT = (await fp.locator('main [data-buy]').first().innerText().catch(() => '')).replace(/\s+/g, ' ');
+      check('Topish kartasi: nom, "Do\'kon hali tanlanmagan", "Skrinshot yuklash"', (await fp.locator('main [data-buy]').count()) === 1 && /^krossovka Do'kon hali tanlanmagan Topish/.test(findT) && /Skrinshot yuklash/.test(findT) && /Do'konlarni ko'rsat/.test(findT), findT);
+      await fp.locator('main [data-buy] button').filter({ hasText: /^\s*Skrinshot yuklash\s*$/ }).first().click().catch(() => {});
+      await fp.locator('input[type="file"][data-shot]').first().setInputFiles({ name: 'k.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFklEQVR42mP8z8BQz0AEYBxVSF+FAAhKDveksOjmAAAAAElFTkSuQmCC', 'base64') });
+      await fp.waitForTimeout(1300);
+      await fp.locator('main button').filter({ hasText: /Xaridlarimga qo'shish/ }).first().click(); await fp.waitForTimeout(800);
+      const conv = await fp.evaluate(() => (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || []).map(p => ({ find: !!p.find, name: p.name, step: p.step, total: Math.round(p.total || 0) })));
+      check('Topish → Narx: o\'sha karta, nom skrinshotdan, jami hisoblangan', conv.length === 1 && !conv[0].find && conv[0].name === 'Nike Air Max 90' && conv[0].step === 0 && conv[0].total > 90 && /Xarid/.test(await fp.locator('header').innerText()), JSON.stringify(conv));
+      await fcx.close();
+    }
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
 
     /* 5-bosqich: kuryerlar ro'yxatida vazn bo'yicha hisob. Bosh sahifa →
@@ -958,17 +983,16 @@ try {
   const yulduz = page.locator('button[aria-label*="Sevimlilarga"]').first();
   const yulduzBor = await yulduz.count();
   if (yulduzBor) { await yulduz.click(); await page.waitForTimeout(500); }
-  /* Sevimlilar bosh sahifada emas, Xaridlarim → Sevimlilar tabida. */
+  /* Saqlanganlar Xaridlarim ro'yxatining ostida (tab emas). */
   await page.locator('nav button', { hasText: 'Boshlash' }).first().click();
   await page.waitForTimeout(800);
   await page.locator('nav button', { hasText: 'Xaridlarim' }).first().click(); await page.waitForTimeout(500);
-  await page.locator('main button[aria-pressed]').filter({ hasText: 'Sevimlilar' }).first().click(); await page.waitForTimeout(400);
   const iz = await page.evaluate(() => {
     const saqlangan = JSON.parse(localStorage.getItem('xy_state_v1') || '{}');
     const t = document.body.innerText;
     return {
       favs: saqlangan.favs || [], searches: saqlangan.searches || [], recent: saqlangan.recent || [],
-      favBlok: !/Sevimlilar bo'sh/.test(document.querySelector('main').innerText),
+      favBlok: /Saqlanganlar/i.test(document.querySelector('main').innerText),
       /* Do'kon "Taobao" va qo'llanma "Taobao" bir xil nomlanadi, shuning
          uchun nomga emas, nom + tur satriga qaraymiz. */
       favNom: [...document.querySelectorAll('main button')].filter(b => /Taobao/.test(b.innerText) && /Do'kon/.test(b.innerText))
@@ -990,10 +1014,9 @@ try {
   await page.waitForTimeout(500);
   await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(600);
   await page.locator('nav button', { hasText: 'Xaridlarim' }).first().click(); await page.waitForTimeout(500);
-  await page.locator('main button[aria-pressed]').filter({ hasText: 'Sevimlilar' }).first().click(); await page.waitForTimeout(400);
   const ochirildi = await page.evaluate(() => ({
     favs: (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').favs) || [],
-    favBlok: !/Sevimlilar bo'sh/.test(document.querySelector('main').innerText)
+    favBlok: /Saqlanganlar/i.test(document.querySelector('main').innerText)
   }));
   await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(500);
   check('sevimlidan olib tashlanadi',
@@ -1015,13 +1038,13 @@ try {
   page.on('pageerror', e => xato.push(e.message));
   await page.reload({ waitUntil: 'load' });
   await page.waitForTimeout(1600);
-  /* Xaridlarim bo'limida "Rejalar" tabi soni bilan chiqadi (buzuq yozuvlar
-     tozalangan, ilova yiqilmagan). */
+  /* Xaridlarim: buzuq yozuvlar tozalanib karta bo'lib chiqadi (99-qadam →
+     Keldi, bo'sh reja → Narx), ilova yiqilmaydi. */
   await page.keyboard.press('Escape').catch(() => {});
   await page.locator('nav button', { hasText: 'Xaridlarim' }).first().click().catch(() => {}); await page.waitForTimeout(500);
   const tikladi = await page.evaluate(() => ({
     bor: !!document.querySelector('main'),
-    reja: /Rejalar\s*\d+/.test(document.querySelector('main').innerText)
+    reja: /Kelganlar · 1/i.test(document.querySelector('main').innerText) && document.querySelectorAll('main [data-buy]').length === 1
   }));
   check('buzuq reja ilovani yiqitmaydi',
     tikladi.bor && tikladi.reja && xato.length === 0,
@@ -1286,7 +1309,7 @@ try {
     await p.locator('input').first().fill('nike'); await skan('qidiruv');
     await p.locator('input').first().fill('zzqq'); await skan('qidiruv-bo\'sh');
     await nav(2); await skan('malumotnoma');
-    await nav(1); await bos(/Jo'natmalar|Жўнатмалар|Отправления/); await skan('kuzatuv');
+    await nav(1); await bos(/Boshqa jo'natmani kuzatish|Бошқа жўнатмани кузатиш|Отследить другую/); await skan('kuzatuv');
     await nav(2); await bos(/Do'konlar|Дўконлар|Магазины/); await skan('do\'kon-papkalar');
     await bos(/Universal|Универсал/); await skan('do\'kon-papka');
     await bos(/Taobao/); await skan('do\'kon');
@@ -1300,12 +1323,11 @@ try {
       if (await secs.count() > i) { await secs.nth(i).click(); await p.waitForTimeout(600); await skan('bojxona-' + i); }
     }
     await nav(2); await bos(/Qo'llanmalar|Қўлланмалар|Инструкции/); await skan('qo\'llanmalar');
-    await nav(1); await bos(/^\s*(Reja tuzish|Режа тузиш|Составить план|Yangi reja|Янги режа|Новый план)\s*$/); await skan('reja');
+    await nav(1); await bos(/^\s*(Do'kon va kuryerni o'zim tanlayman|Дўкон ва курьерни ўзим танлайман|Выберу магазин и курьера сам)\s*$/); await skan('reja');
     await nav(2); await bos(/Sozlamalar|Созламалар|Настройки/); await skan('sozlamalar');
     /* TZ bosqichlaridagi yangi ekranlar: Jami narx, Xaridlarim (4 tab), Pochtam AI. */
     await nav(0); await bos(/Narxni o'zim yozaman|Нархни ўзим ёзаман|Введу цену сам/); await skan('jami-narx');
     await nav(1); await skan('xaridlarim');
-    for (const re of [/Jo'natmalar|Жўнатмалар|Отправления/, /Sevimlilar|Севимлилар|Избранное/, /Hisoblar|Ҳисоблар|Расчёты/]) { if (await bos(re)) await skan('xaridlarim-tab'); }
     await nav(0); await bos(/^(Hali topmadim|Ҳали топмадим|Ещё не наш)/); await skan('qayerdan-topaman');
     await p.locator('main form input').first().fill('krossovka'); await p.waitForTimeout(200); await skan('qayerdan-topaman-2');
     await bos(/^(Do'konlarni ko'rsat|Дўконларни кўрсат|Показать магазины)/); await skan('ai');
@@ -1615,15 +1637,15 @@ try {
     check('xizmatlar: tashkilot yo\'nalishi', svcTash === 6, `${svcTash} ta karta`);
   }
 
-  /* Kuzatuv: saqlangan reja jo'natmaga aylanadi — trek raqami yoziladi
-     va bosqichi qo'lda suriladi. Jo'natmalar Xaridlarim ichida (tab). */
+  /* Kuzatuv: o'z xaridlari Xaridlarim kartalarida; rejasiz jo'natma
+     raqami va kuryer saytlari — "Boshqa jo'natmani kuzatish" ekrani. */
   await page.locator('nav button', { hasText: 'Boshlash' }).first().click();
   await page.waitForTimeout(450);
   await page.locator('nav button', { hasText: 'Xaridlarim' }).first().click(); await page.waitForTimeout(500);
-  await page.locator('main button[aria-pressed]').filter({ hasText: "Jo'natmalar" }).first().click();
+  await page.locator('main button').filter({ hasText: /^\s*Boshqa jo'natmani kuzatish\s*$/ }).first().click();
   await page.waitForTimeout(700);
-  const kuzBosh = (await page.evaluate(() => document.body.innerText)).includes('Hali kuzatiladigan');
-  check('kuzatuv: bo\'sh holat tushuntiriladi', kuzBosh);
+  const kuzEkran = { h: (await page.locator('header').innerText()).replace(/\s+/g, ' '), t: (await page.locator('main').innerText()).replace(/\s+/g, ' ') };
+  check('kuzatuv ekrani: rejasiz raqam va kuryer saytlari', /Jo'natmani kuzatish/.test(kuzEkran.h) && /Boshqa jo'natma raqami/i.test(kuzEkran.t) && /Kuryer saytida kuzatish/i.test(kuzEkran.t) && !/Mening jo'natmalarim/.test(kuzEkran.t), kuzEkran.h);
 
   await openWizard();
   await page.waitForTimeout(600);
@@ -1687,9 +1709,9 @@ try {
      ko'rmasdi. */
   const yakun = await page.evaluate(() => {
     const t = document.body.innerText;
-    return { tayyor: /Rejangiz tayyor/.test(t), meyor: /me'yoriga ham qo'shildi/.test(t),
+    return { tayyor: /Xaridlarimga qo'shildi/.test(t), meyor: /me'yoriga ham qo'shildi/.test(t),
       jami: /TAXMINIY JAMI/.test(t),
-      yol: (t.match(/Rejangiz tayyor\n([^\n]+)/) || [])[1] || '' };
+      yol: (t.match(/Xaridlarimga qo'shildi\n([^\n]+)/) || [])[1] || '' };
   });
   check('reja saqlangach yakun ko\'rinadi',
     yakun.tayyor && yakun.meyor && yakun.jami && yakun.yol.split('·').length >= 3,
@@ -1708,40 +1730,33 @@ try {
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(400);
 
-  /* Reja tabiga qaytganda saqlangan reja ko'rinib turadi — ilgari bo'sh
-     sehrgar chiqar va foydalanuvchi rejasini bosh sahifadan qidirardi. */
-  await openWizard();
-  await page.waitForTimeout(600);
-  const rejaTab = await page.evaluate(() => {
-    const t = document.querySelector('main').innerText.replace(/\s+/g, ' ');
-    return { saq: /Saqlangan rejalar/i.test(t), yangi: /Yangi reja/i.test(t), qadam: /1 \/ 5/.test(t),
-      oldin: t.indexOf('Saqlangan rejalar') < t.indexOf('Nimani olmoqchisiz') };
-  });
-  check('reja tabida saqlangan reja va yangi sehrgar birga',
-    rejaTab.saq && rejaTab.yangi && rejaTab.qadam && rejaTab.oldin, JSON.stringify(rejaTab));
+  /* Saqlangan reja Xaridlarimda karta bo'lib turadi: "Narx" holati va
+     bitta keyingi harakat ("Buyurtma qildim"). */
+  await page.locator('nav button', { hasText: 'Xaridlarim' }).first().click(); await page.waitForTimeout(500);
+  const karta = await page.evaluate(() => { const c = document.querySelector('main [data-buy]'); if (!c) return null;
+    const on = [...c.querySelectorAll('span')].find(sp => sp.style.fontWeight === '700' && /^(Topish|Narx|Buyurtma|Yo'lda|Keldi)$/.test(sp.textContent.trim()));
+    return { t: c.innerText.replace(/\s+/g, ' '), holat: on ? on.textContent.trim() : '' }; });
+  check('saqlangan reja — Xaridlarimda karta: "Narx" holati, "Buyurtma qildim"', !!karta && karta.holat === 'Narx' && /Buyurtma qildim/.test(karta.t) && /Topish Narx Buyurtma Yo'lda Keldi/.test(karta.t), JSON.stringify(karta));
 
-  /* Kuzatuv tugmasi bosh sahifa sarlavhasida — avval o'sha yerga qaytamiz. */
-  await page.locator('nav button', { hasText: 'Boshlash' }).first().click();
-  await page.waitForTimeout(500);
-  await page.locator('nav button', { hasText: 'Xaridlarim' }).first().click(); await page.waitForTimeout(500); await page.locator('main button[aria-pressed]').filter({ hasText: "Jo'natmalar" }).first().click();
-  await page.waitForTimeout(700);
-  await page.locator('main input[placeholder="Trek raqamini yozing"]').first().fill('rb 1234 cn');
-  await page.locator('main input[placeholder="Trek raqamini yozing"]').first().blur();
+  /* Kartada: "Buyurtma qildim" → jo'natma raqami maydoni chiqadi, raqam
+     bo'shliqsiz saqlanadi (kuryer sayti "RB 1234 CN" ni topmaydi), keyingi
+     harakat "Omborga yetib keldi". */
+  await page.locator('main [data-buy] button').filter({ hasText: /^\s*Buyurtma qildim\s*$/ }).first().click(); await page.waitForTimeout(500);
+  await page.locator('main [data-buy] input[aria-label="Trek raqam"]').first().fill('rb 1234 cn');
+  await page.locator('main [data-buy] input[aria-label="Trek raqam"]').first().blur();
   await page.waitForTimeout(350);
-  const nx = page.locator('main button').filter({ hasText: /Buyurtma qilindi/ }).first();
-  if (await nx.count()) { await nx.click(); await page.waitForTimeout(600); }
   const kuz = await page.evaluate(() => {
-    const inp = document.querySelector('main input[placeholder="Trek raqamini yozing"]');
-    const btn = [...document.querySelectorAll('main button')].find(b => /belgilash/.test(b.innerText));
-    return { trek: inp ? inp.value : '', holat: /Buyurtma qilindi/.test(document.body.innerText),
-      tugma: btn ? btn.innerText.trim() : '' };
+    const c = document.querySelector('main [data-buy]'); const inp = c && c.querySelector('input[aria-label="Trek raqam"]');
+    const on = c ? [...c.querySelectorAll('span')].find(sp => sp.style.fontWeight === '700' && /^(Topish|Narx|Buyurtma|Yo'lda|Keldi)$/.test(sp.textContent.trim())) : null;
+    return { trek: inp ? inp.value : '', holat: on ? on.textContent.trim() : '', tugma: c ? c.innerText : '',
+      saqlandi: ((JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || [])[0] || {}).ordered || '' };
   });
-  /* Trek raqam bo'shliqsiz saqlanadi (kuryer sayti "RB 1234 CN" ni
-     topmaydi); holat tugmasi reja sahifasidagi kabi "… — belgilash". */
-  /* v2 holatlar: reja bosqichlari ro'yxatida "Bojxonada" bor (6 bosqich). */
-  check('kuzatuv: 6 bosqich, "Bojxonada" 5-o\'rinda', kuz.holat && /Bojxonada/.test(await page.evaluate(() => document.body.innerText)) || true);
-  check('kuzatuv: reja jo\'natmaga aylandi',
-    kuz.trek === 'RB1234CN' && kuz.holat && /Kuryer omborida — belgilash/.test(kuz.tugma), JSON.stringify(kuz));
+  check('kartada buyurtma: holat "Buyurtma", raqam bo\'shliqsiz, keyingi harakat "Omborga yetib keldi", sana yozildi',
+    kuz.trek === 'RB1234CN' && kuz.holat === 'Buyurtma' && /Omborga yetib keldi/.test(kuz.tugma) && /^\d{4}-\d\d-\d\d$/.test(kuz.saqlandi), JSON.stringify({ ...kuz, tugma: kuz.tugma.replace(/\s+/g, ' ').slice(0, 120) }));
+  /* Batafsil ekranda ham o'sha holat va 6 bosqichli ro'yxat ("Bojxonada" bilan). */
+  await page.locator('main [data-buy] button').first().click(); await page.waitForTimeout(500);
+  const bat = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
+  check('xarid ekrani: holat chizig\'i, raqam maydoni, "Batafsil holat" (Bojxonada bilan)', /Topish Narx Buyurtma Yo'lda Keldi/.test(bat) && (await page.locator('main input[aria-label="Trek raqam"]').inputValue()) === 'RB1234CN' && /Batafsil holat/.test(bat) && /Bojxonada/.test(bat) && /Omborga yetib keldi/.test(bat), bat.slice(0, 160));
 
   /* Kuryer kartochkasidagi havola chiplarida belgi bo'lsin. */
   await page.locator('nav button', { hasText: 'Boshlash' }).first().click();
