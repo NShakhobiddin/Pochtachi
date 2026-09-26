@@ -219,6 +219,21 @@ yopadi, keyingina ekranni.
 
 ## Bosh sahifa (3-bosqich, 2026-09-16 da soddalashtirildi)
 
+**Hammasi AI orqali (2026-09-26).** Maydon — "Havola yoki tovar nomini
+yozing", mikrofon maydon ichida, ostida uch qatorli "Qanday ishlaydi"
+qo'llanmasi (`whGuide`; AI o'chiq bo'lsa — AI'siz yo'l). AI yoqiq bo'lsa
+maydondagi har narsa Pochtam AI ga ketadi (`run` — `whereVm` ichida):
+havola — `url` bilan (sahifa o'qiladi, narx va jami), savol — oddiy savol,
+tovar nomi — `find: true` (mos do'konlar va veb-qidiruvdan aniq mahsulot
+havolalari) va Xaridlarimda "Topish" kartasi. Oraliq "Hali topmadim →
+Qanaqasi? / Byudjet" bosqichi olib tashlandi. Ovoz: brauzer nutqni tanisa
+(`micToggle(onText, onFinal)`) aytib bo'lingach o'zi qidiradi; xato
+bo'lsa sababi aytiladi; Telegram ichidagi brauzer kabi tanimaydigan joyda
+tugma baribir turadi — maydonni ochib, klaviaturadagi mikrofon bilan
+aytishni aytadi. Rasm biriktirish tugmasi qatordan olindi (pastdagi
+"Topdim — qanchaga tushadi?" shu ish); tor ekranda (<375 px) maydon
+yozuvi 13 px.
+
 **Uch bo'lim (2026-09-24, soddalashtirishning 1-bosqichi).** Foydalanuvchi
 to'rtta savol bilan keladi: qayerdan topaman, qanchaga tushadi, qanday olib
 kelaman, hozir qayerda. Ilova esa butun sohani tushuntirmoqchi edi: 23 ekran,

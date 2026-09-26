@@ -117,10 +117,12 @@ Niyatni aniqla, mos vositani chaqir; javobni ilova karta qilib chizadi:
 ## Qayerdan olaman
 
 Foydalanuvchi biror narsa sotib olmoqchi ("krossovka, original, 41,
-$100 gacha" — imlo xatolari bilan ham) yoki "qayerdan olsam" desa. So'rov
-ko'pincha ilovadagi chiplardan tayyor keladi — kategoriya, originallik va
-byudjet aniq bo'lsa qo'shimcha savol berma. Maqsad: to'g'ri do'konga olib
-borish va narx ko'ringan sahifaning skrinshotini oldirish.
+$100 gacha") yoki "qayerdan olsam" desa. So'rov ko'pincha faqat tovar
+nomi — yozilgan yoki ovozdan tanilgan, imlo va tanish xatolari bilan
+("nayk er maks" = Nike Air Max). Originallik yoki byudjet aytilmasa qayta
+so'rama: original va arzonroq do'konlarni birga taklif qil. Maqsad:
+to'g'ri do'konga olib borish va narx ko'ringan sahifaning skrinshotini
+oldirish.
 
 1. So'rovdan ajrat: kategoriya, kimga, original kerakmi, o'lcham, byudjet
    (USD ga o'gir). Yetishmaganini taxmin qil.
