@@ -645,7 +645,9 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
   if (webOn) tools.push({ ...WEB_SEARCH_TOOL, max_uses: Math.max(1, Math.min(3, +env.AI_WEB_SEARCH_USES || 2)) });
   /* Havola berilgan bo'lsa sahifani o'qish: qo'shimcha to'lovsiz, faqat
      o'qilgan matn tokeni. */
-  if (parsed.url) tools.push({ type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 2, max_content_tokens: 6000, allowed_domains: [hostOf(parsed.url)] });
+  /* Host ajratilmasa (g'alati manzil) — vosita qo'shilmaydi: bo'sh domen API'da 400 berardi. */
+  const urlHost = parsed.url ? hostOf(parsed.url) : '';
+  if (urlHost) tools.push({ type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 2, max_content_tokens: 6000, allowed_domains: [urlHost] });
   const body = { model: env.AI_MODEL || DEFAULT_MODEL, max_tokens: +env.AI_MAX_TOKENS || 2048, system, tools, messages };
   /* Veb-qidiruv ko'rsatmasi faqat shu yerda (qoidalar faylida yo'q):
      vosita bo'lmaganda model uni o'qimasin. */

@@ -31,7 +31,7 @@
 
 import { hisobotHtml } from './hisobot.js';
 import { handleAi } from './ai.js';
-import { handlePartnerStatus, handleTrack, partnerIds } from './track.js';
+import { handlePartnerStatus, handleTrack, partnerIds, same } from './track.js';
 export { Tracks } from './track.js';
 
 const NAMES = new Set(['screen', 'store', 'courier', 'guide', 'wizard', 'svcAsk', 'hamkor',
@@ -156,7 +156,7 @@ function authorized(request, url, env) {
   if (!env.READ_TOKEN) return false;
   const h = request.headers.get('authorization') || '';
   const t = h.startsWith('Bearer ') ? h.slice(7) : (url.searchParams.get('token') || '');
-  return t.length > 0 && t === env.READ_TOKEN;
+  return t.length > 0 && same(t, env.READ_TOKEN);
 }
 
 export default {
@@ -236,7 +236,8 @@ export default {
          token bilan oladi. */
       return new Response(hisobotHtml(), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
     }
-    if (request.method === 'GET' && url.pathname === '/') return new Response('ok', { headers: cors(env) });
+    /* HEAD ham: havola tekshiruvchilari va monitoringlar HEAD yuboradi. */
+    if ((request.method === 'GET' || request.method === 'HEAD') && url.pathname === '/') return new Response(request.method === 'HEAD' ? null : 'ok', { headers: cors(env) });
     return new Response('not found', { status: 404, headers: cors(env) });
   },
 

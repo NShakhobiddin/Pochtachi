@@ -54,6 +54,7 @@ const env = { ALLOW_ORIGIN: 'https://x', READ_TOKEN: 'sir', PUBLIC_STATS: '0', C
 const ctx = { waitUntil: p => p };
 const hit = (path, init) => worker.fetch(new Request('https://w' + path, init), env, ctx);
 check('GET / — ok', (await (await hit('/')).text()) === 'ok');
+check('HEAD / — 200 (havola tekshiruvchisi uchun)', (await hit('/', { method: 'HEAD' })).status === 200);
 check('POST / begona Origin — 403', (await hit('/', { method: 'POST', headers: { origin: 'https://boshqa' }, body })).status === 403);
 check('POST / o\'z Origin — 204', (await hit('/', { method: 'POST', headers: { origin: 'https://x' }, body })).status === 204);
 check('/stats tokensiz — 401', (await hit('/stats')).status === 401);
@@ -326,9 +327,10 @@ function fakeKv() {
   const m = new Map();
   return {
     m,
-    async get(keys) { return new Map(keys.filter(k => m.has(k)).map(k => [k, structuredClone(m.get(k))])); },
-    async put(obj) { for (const [k, v] of Object.entries(obj)) m.set(k, structuredClone(v)); },
-    async delete(keys) { for (const k of keys) m.delete(k); },
+    /* Haqiqiy ombordagi kabi: bitta chaqiruvda 128 kalitdan ko'p — xato. */
+    async get(keys) { if (keys.length > 128) throw new Error('get: 128 dan ko\'p'); return new Map(keys.filter(k => m.has(k)).map(k => [k, structuredClone(m.get(k))])); },
+    async put(obj) { if (Object.keys(obj).length > 128) throw new Error('put: 128 dan ko\'p'); for (const [k, v] of Object.entries(obj)) m.set(k, structuredClone(v)); },
+    async delete(keys) { if (keys.length > 128) throw new Error('delete: 128 dan ko\'p'); for (const k of keys) m.delete(k); },
     async list({ prefix, limit, startAfter }) { return new Map([...m].filter(([k]) => k.startsWith(prefix) && (!startAfter || k > startAfter)).sort().slice(0, limit)); }
   };
 }
@@ -370,11 +372,16 @@ check('/partner/status: egasi "sinov" nomidan yozadi, /track o\'qiydi', own.stat
 check('/partner/status: egasi courier\'siz — 400', (await post('sir', { number: 'CI-12345', status: 'ready' })).status === 400);
 check('/ai/status: partners ro\'yxati', JSON.stringify((await (await tHit('/ai/status')).json()).partners) === '["d2d","globbing"]');
 check('/track: Origin javobda qaytadi (bir nechta manzil)', (await tHit('/track', { method: 'POST', headers: { origin: 'https://x' }, body: '{"q":[]}' })).headers.get('access-control-allow-origin') === 'https://x');
+/* 200 ta turli raqam bitta so'rovda (ombor chegarasi 128 — bo'laklab yoziladi). */
+const big = await post(D2D, { events: Array.from({ length: 200 }, (_, i) => ({ number: 'BIG' + String(i).padStart(6, '0'), status: 'shipped' })) });
+const bigj = await big.json();
+check('/partner/status: 200 ta turli raqam — hammasi yoziladi (128 chegarasi bo\'laklab)', big.status === 200 && bigj.saved === 200, JSON.stringify(bigj).slice(0, 120));
+check('/partner/status: sarlavhasiz katta tana — 413', (await tHit('/partner/status', { method: 'POST', headers: { authorization: 'Bearer ' + D2D }, body: JSON.stringify({ events: [], pad: 'x'.repeat(70000) }) })).status === 413);
 for (const v of kv.m.values()) v.u = Date.now() - 91 * 86400000;
 const firstKey = [...kv.m.keys()][0];
 kv.m.get(firstKey).u = Date.now();
 const pr = await (await tracks.fetch(new Request('https://tracks/purge', { method: 'DELETE' }))).json();
-check('purge: 90 kun yangilanmagan holat o\'chadi, yangisi qoladi', kv.m.size === 1 && kv.m.has(firstKey) && pr.removed >= 2, JSON.stringify(pr));
+check('purge: 90 kun yangilanmagan holat o\'chadi (200 dan ortiq ham), yangisi qoladi', kv.m.size === 1 && kv.m.has(firstKey) && pr.removed >= 202, JSON.stringify(pr));
 check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit('/partner/status', { method: 'POST', headers: { authorization: 'Bearer sir' }, body: '{}' })).status === 503
   && JSON.stringify(await (await hit('/track', { method: 'POST', headers: { origin: 'https://x' }, body: '{"q":[{"c":"d2d","n":"RB123456789CN"}]}' })).json()) === '{"r":[]}');
 

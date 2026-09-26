@@ -21,7 +21,11 @@
  */
 
 export const STATUSES = ['received', 'shipped', 'customs', 'held', 'ready', 'delivered'];
-const MAX_EVENTS = 200, MAX_QUERY = 20, MAX_HISTORY = 12, MAX_NOTE = 120, KEEP_DAYS = 90;
+const MAX_EVENTS = 200, MAX_QUERY = 20, MAX_HISTORY = 12, MAX_NOTE = 120, KEEP_DAYS = 90, MAX_BODY = 65536;
+/* Durable Object ombori bitta get/put/delete da ko'pi bilan 128 kalit
+   qabul qiladi — ko'prog'i xato beradi, shuning uchun bo'laklab. */
+const DO_BATCH = 128;
+const chunks = (a, n = DO_BATCH) => { const out = []; for (let i = 0; i < a.length; i += n) out.push(a.slice(i, n + i)); return out; };
 export const TEST_COURIER = 'sinov';
 
 /* PARTNER_KEYS: "id:kalit" juftlari vergul bilan. 24 belgidan qisqa kalit
@@ -38,8 +42,10 @@ export function partnerKeys(env) {
 }
 export const partnerIds = env => [...new Set(partnerKeys(env).values())].filter(id => id !== TEST_COURIER).sort();
 
-/* Uzunligi teng satrlar uchun vaqtga bog'liq bo'lmagan taqqoslash. */
-function same(a, b) {
+/* Uzunligi teng satrlar uchun vaqtga bog'liq bo'lmagan taqqoslash
+   (index.js dagi READ_TOKEN tekshiruvi ham shuni ishlatadi). */
+export function same(a, b) {
+  a = String(a); b = String(b);
   if (a.length !== b.length) return false;
   let d = 0;
   for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i);
@@ -87,7 +93,8 @@ export class Tracks {
       const { items } = await request.json();
       const now = Date.now();
       const keys = [...new Set(items.map(x => x.k))];
-      const cur = keys.length ? await this.storage.get(keys) : new Map();
+      const cur = new Map();
+      for (const part of chunks(keys)) for (const [k, v] of await this.storage.get(part)) cur.set(k, v);
       const next = new Map();
       for (const it of items) {
         const rec = next.get(it.k) || cur.get(it.k) || { st: '', at: 0, note: '', h: [] };
@@ -100,12 +107,13 @@ export class Tracks {
         rec.st = top.st; rec.at = top.at; rec.note = top.note; rec.u = now;
         next.set(it.k, rec);
       }
-      if (next.size) await this.storage.put(Object.fromEntries(next));
+      for (const part of chunks([...next])) await this.storage.put(Object.fromEntries(part));
       return new Response(JSON.stringify({ saved: next.size }), { headers: { 'content-type': 'application/json' } });
     }
     if (request.method === 'POST' && url.pathname === '/get') {
       const { keys } = await request.json();
-      const got = keys.length ? await this.storage.get(keys) : new Map();
+      const got = new Map();
+      for (const part of chunks(keys)) for (const [k, v] of await this.storage.get(part)) got.set(k, v);
       return new Response(JSON.stringify(keys.map(k => got.get(k) || null)), { headers: { 'content-type': 'application/json' } });
     }
     if (request.method === 'DELETE' && url.pathname === '/purge') {
@@ -116,7 +124,7 @@ export class Tracks {
         if (!page.size) break;
         const dead = [];
         for (const [k, v] of page) { startAfter = k; if (!v || (v.u || 0) < old) dead.push(k); }
-        if (dead.length) { await this.storage.delete(dead); removed += dead.length; }
+        for (const part of chunks(dead)) { await this.storage.delete(part); removed += part.length; }
         if (page.size < 500) break;
       }
       return new Response(JSON.stringify({ removed }), { headers: { 'content-type': 'application/json' } });
@@ -133,10 +141,13 @@ export async function handlePartnerStatus({ request, env, json }) {
   if (!env.TRACKS) return json({ error: 'holat ombori ulanmagan' }, 503);
   const who = whoIs(env, request.headers.get('authorization'));
   if (!who) return json({ error: 'kalit noto\'g\'ri yoki yo\'q' }, 401);
+  /* Hajm: sarlavhaga ishonib emas, o'qilgan matn bo'yicha ham (chunked so'rovda sarlavha yo'q). */
   const len = +(request.headers.get('content-length') || 0);
-  if (len > 65536) return json({ error: 'juda katta (64 KB gacha)' }, 413);
+  if (len > MAX_BODY) return json({ error: 'juda katta (64 KB gacha)' }, 413);
+  const text = await request.text();
+  if (text.length > MAX_BODY) return json({ error: 'juda katta (64 KB gacha)' }, 413);
   let body;
-  try { body = JSON.parse(await request.text()); } catch (e) { return json({ error: 'JSON emas' }, 400); }
+  try { body = JSON.parse(text); } catch (e) { return json({ error: 'JSON emas' }, 400); }
   const events = Array.isArray(body && body.events) ? body.events : [body];
   if (events.length > MAX_EVENTS) return json({ error: `bir so'rovda ${MAX_EVENTS} tagacha hodisa` }, 413);
   let courier = who.id;
@@ -164,6 +175,7 @@ export async function handlePartnerStatus({ request, env, json }) {
 export async function handleTrack({ request, env, json, originOk }) {
   if (!originOk) return json({ error: 'origin' }, 403);
   if (!env.TRACKS) return json({ r: [] });
+  if (+(request.headers.get('content-length') || 0) > 8192) return json({ error: 'juda katta' }, 413);
   let body;
   try { body = JSON.parse((await request.text()).slice(0, 8192)); } catch (e) { return json({ error: 'JSON emas' }, 400); }
   const q = Array.isArray(body && body.q) ? body.q.slice(0, MAX_QUERY) : [];

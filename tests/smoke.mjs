@@ -762,7 +762,7 @@ try {
     check('tanlovlardan savol tuziladi, find bayrog\'i bilan Pochtam AI ga yuboriladi', /Pochtam AI/.test(aiHead) && qBodies().length === 1 && qBodies()[0].find === true && qBodies()[0].q === "krossovka, 41 razmer qidiryapman. Faqat original. Byudjet $100 gacha. Qaysi do'kondan topaman?", JSON.stringify(aiBodies[0] && aiBodies[0].q));
     const links = await page.evaluate(() => [...document.querySelectorAll('main a[target="_blank"]')].map(a => a.innerText.replace(/\s+/g, ' ').trim() + '→' + a.href));
     const gotTxt = await aiMain();
-    check('Pochtam AI: aniq havola kartalari (nom, do\'kon, narx) do\'kon kartalaridan oldin', links.length === 4 && /^Nike Air Max 90 Men/.test(links[0]) && /amazon\.com\/dp\/B0EXAMPLE/.test(links[0]) && /Amazon · 119\.99 USD/.test(links[0]) && /Ochish/.test(links[0]) && /Topilgan sahifalar/i.test(gotTxt), links.join(' | '));
+    check('Pochtam AI: aniq havola kartalari (nom, do\'kon, narx) do\'kon kartalaridan oldin', links.length === 4 && /^Nike Air Max 90 Men/.test(links[0]) && /amazon\.com\/dp\/B0EXAMPLE/.test(links[0]) && /Amazon · \$119\.99$/.test(links[0].split(' Ochish')[0]) && /Ochish/.test(links[0]) && /Topilgan sahifalar/i.test(gotTxt), links.join(' | '));
     check('Pochtam AI: tovar so\'rovi — do\'kon kartalari (yangi oynada), "Tushundim" chiplari va "Skrinshot yuklash"', /^Nike/.test(links[2]) && /Qidirish/.test(links[2]) && /nike\.com\/w\?q=men\+sneakers/.test(links[2]) && /noopener/.test((await page.locator('main a[target="_blank"]').first().getAttribute('rel')) || '') && /Tushundim: Poyabzal va krossovka original \$100 gacha/.test(gotTxt) && (await page.locator('main button').filter({ hasText: /^Skrinshot yuklash$/ }).count()) === 1 && !/Qanday ishlaydi/.test(gotTxt), links.join(' | ') + ' · ' + gotTxt.slice(0, 80));
     /* Yagona kirish: maydonga havola yozilsa do'kon ochiladi, savol yozilsa
        AI ga boradi — rejim tanlash yo'q. */
@@ -1307,7 +1307,7 @@ try {
     ...[...src.matchAll(/name\s*:\s*['"]([^'"\\]+)['"]/g)].map(m => m[1]).filter(x => /^[A-Z]/.test(x) && x.length < 24),
     ...[...src.matchAll(/title:'([^']+)', flag:/g)].map(m => m[1])
   ])].map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')');
-  const ATAYLAB = /^(O'zbekcha|Ўзбекча|Русский|VMQ|BHM|SALES TAX|Telegram|Instagram|App Store|Google Play|v\d|USD|EUR|GBP|iOS|Android|Nike|Adidas|Puma|Apple|Samsung|Xiaomi|Lenovo|Tmall|Walmart|Noon|AliExpress|Buy for me|Door delivery|Marketplace|Tracking|Powerbank|Black Friday|Pochtam|[\w.+-]+@[\w.-]+|[\w-]+\.(uz|com|ru|org)(\/|$))/i;
+  const ATAYLAB = /^(Carter's|Toys"R"Us|O'zbekcha|Ўзбекча|Русский|VMQ|BHM|SALES TAX|Telegram|Instagram|App Store|Google Play|v\d|USD|EUR|GBP|iOS|Android|Nike|Adidas|Puma|Apple|Samsung|Xiaomi|Lenovo|Tmall|Walmart|Noon|AliExpress|Buy for me|Door delivery|Marketplace|Tracking|Powerbank|Black Friday|Pochtam|[\w.+-]+@[\w.-]+|[\w-]+\.(uz|com|ru|org)(\/|$))/i;
   const tarjimaSkan = async (lang) => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
     await aiStatusRoute(ctx, true);
@@ -1369,6 +1369,7 @@ try {
     await nav(2); await skan('malumotnoma');
     await nav(1); await bos(/Boshqa jo'natmani kuzatish|Бошқа жўнатмани кузатиш|Отследить другую/); await skan('kuzatuv');
     await nav(2); await bos(/Do'konlar|Дўконлар|Магазины/); await skan('do\'kon-papkalar');
+    if (await bos(/Barcha do'konlar|Барча дўконлар|Все магазины/)) { await skan('do\'kon-hammasi'); await nav(2); await bos(/Do'konlar|Дўконлар|Магазины/); }
     await bos(/Universal|Универсал/); await skan('do\'kon-papka');
     await bos(/Taobao/); await skan('do\'kon');
     await nav(2); await bos(/Kuryerlar|Курьерлар|Курьеры/); await skan('kuryer-papkalar');
@@ -1382,6 +1383,16 @@ try {
     }
     await nav(2); await bos(/Qo'llanmalar|Қўлланмалар|Инструкции/); await skan('qo\'llanmalar');
     await nav(1); await bos(/^\s*(Do'kon va kuryerni o'zim tanlayman|Дўкон ва курьерни ўзим танлайман|Выберу магазин и курьера сам)\s*$/); await skan('reja');
+    /* Sehrgarning har qadami va yakuniy hisob (2026-09-26 auditida ruscha
+       tarjimasiz chiqqan edi). */
+    for (let i = 1; i <= 4; i++) {
+      const o = p.locator('main [data-wiz-opt]').first();
+      if (!(await o.count())) break;
+      await o.click(); await p.waitForTimeout(400); await skan('reja-' + i);
+    }
+    { const ins = p.locator('main input[inputmode="decimal"]');
+      if (await ins.count() >= 2) { await ins.nth(0).fill('250'); await ins.nth(1).fill('1.5'); await p.waitForTimeout(300); await skan('reja-hisob'); }
+      const go = p.locator('main [data-wiz-go]'); if (await go.count()) { await go.first().click(); await p.waitForTimeout(500); await skan('reja-yakun'); } }
     await nav(2); await bos(/Sozlamalar|Созламалар|Настройки/); await skan('sozlamalar');
     /* TZ bosqichlaridagi yangi ekranlar: Jami narx, Xaridlarim (4 tab), Pochtam AI. */
     await nav(0); await bos(/Narxni o'zim yozaman|Нархни ўзим ёзаман|Введу цену сам/); await skan('jami-narx');

@@ -21,7 +21,11 @@ const TIMEOUT = arg('--timeout', 15000);
 const CONCURRENCY = 6;
 
 // Tekshirilmaydiganlar: bot so'rovini bloklaydigan yoki mintaqaga bog'liq xizmatlar.
-const SKIP = [/^https?:\/\/(www\.)?instagram\.com/, /^https?:\/\/t\.me/, /^https?:\/\/fonts\.(googleapis|gstatic)\.com/];
+const SKIP = [/^https?:\/\/(www\.)?instagram\.com/, /^https?:\/\/t\.me/, /^https?:\/\/fonts\.(googleapis|gstatic)\.com/,
+  /* O'z Worker'imiz — uni "O'lchovni yoqish" workflow'i yo'llari bilan tekshiradi. */
+  /\.workers\.dev\//,
+  /* Koddagi shablonlar, haqiqiy manzil emas: "…domain=" + domen, "…?campid=…". */
+  /[…{]|=$/];
 
 function collectUrls() {
   const files = ['Xarid Yordamchisi v2.dc.html',
@@ -68,6 +72,9 @@ console.log(`${targets.length} ta havola tekshirilmoqda (jami topilgan: ${urls.l
    ogohlantirish sifatida chiqadi va ishni yiqitmaydi. Faqat 404/410 va
    ulanmaydigan manzillar xato hisoblanadi. */
 const SOFT = new Set([401, 403, 429]);
+/* Katta do'konlar (Best Buy, noon) bot so'roviga javob bermay turib qoladi —
+   bu ham "o'lik havola" emas. DNS yoki ulanish xatosi esa haqiqiy xato. */
+const softErr = r => !r.status && /abort/i.test(r.error || '');
 const dead = [];
 const warn = [];
 let done = 0;
@@ -78,7 +85,7 @@ await Promise.all(Array.from({ length: CONCURRENCY }, async () => {
     const r = await head(url);
     done++;
     if (r.status && r.status < 400) continue;
-    if (SOFT.has(r.status)) { warn.push(r); continue; }
+    if (SOFT.has(r.status) || softErr(r)) { warn.push(r); continue; }
     dead.push(r);
     console.log(` XATO  ${r.status || r.error}  ${r.url}`);
   }
@@ -87,7 +94,7 @@ await Promise.all(Array.from({ length: CONCURRENCY }, async () => {
 console.log(`\nTekshirildi: ${done} · ishlamaydigan: ${dead.length} · tekshirib bo'lmadi: ${warn.length}`);
 if (warn.length) {
   console.log('\nTekshirib bo\'lmadi (bot himoyasi yoki avtorizatsiya):');
-  for (const w of warn) console.log(`  ${w.status}  ${w.url}`);
+  for (const w of warn) console.log(`  ${w.status || w.error}  ${w.url}`);
 }
 if (dead.length) {
   console.error('\nIshlamaydigan havolalar:');

@@ -2258,7 +2258,7 @@
             <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
             <span style="font-size:13px;color:#B45309;line-height:1.5;font-weight:500">Tasdiqlash yoki rad etish past va o'rta xavfli jo'natmalar uchun ixtiyoriy, yuqori xavflilar uchun majburiy.</span>
           </div>
-          <a href="https://my.gov.uz/uz/service/1364" target="_blank" rel="noopener noreferrer" style="font-size:13px;font-weight:700;color:#1A1FB0;text-decoration:none">my.gov.uz da xabarnomani tasdiqlash →</a>
+          <a href="https://my.gov.uz/uz/service/1364" target="_blank" rel="noopener noreferrer" style="align-self:flex-start;min-height:40px;display:inline-flex;align-items:center;font-size:13px;font-weight:700;color:#1A1FB0;text-decoration:none">my.gov.uz da xabarnomani tasdiqlash →</a>
         </div>
 
         <div style="background:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
@@ -2819,7 +2819,7 @@
         <sc-if value="{{ wizHasOpts }}" hint-placeholder-val="{{ true }}">
         <div style="display:flex;flex-direction:column;gap:12px">
           <sc-for list="{{ wizOptions }}" as="o" hint-placeholder-count="4">
-            <button sc-camel-on-click="{{ o.pick }}" style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:20px;cursor:pointer;text-align:left;width:100%;background:#FFFFFF;border:none;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
+            <button data-wiz-opt="1" sc-camel-on-click="{{ o.pick }}" style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:20px;cursor:pointer;text-align:left;width:100%;background:#FFFFFF;border:none;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="box-shadow:0 4px 14px -6px rgba(26,31,176,.26)">
               <sc-if value="{{ o.hasPic }}" hint-placeholder-val="{{ false }}">
                 <div style="width:40px;height:40px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ o.pic }}"></div>
               </sc-if>
@@ -2888,7 +2888,7 @@
               <div style="font-size:13px;color:#6B6C85;font-weight:500;line-height:1.5;text-wrap:pretty">{{ wizDutyNote }}</div>
             </div>
 
-            <button sc-camel-on-click="{{ wizGo }}" style="height:54px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(155deg,#494FE9,#13189D);color:#fff;font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)" style-hover="filter:brightness(1.06)">
+            <button data-wiz-go="1" sc-camel-on-click="{{ wizGo }}" style="height:54px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(155deg,#494FE9,#13189D);color:#fff;font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)" style-hover="filter:brightness(1.06)">
               Hisobni ko'rish
               <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
             </button>
@@ -2918,7 +2918,7 @@
             <span style="font-family:'Onest','XY Flags','Noto Color Emoji',system-ui,sans-serif;font-size:22px;letter-spacing:-.025em;font-weight:800;color:#1A1FB0;font-variant-numeric:tabular-nums">{{ planTotal }}</span>
           </div>
         </div>
-        <button sc-camel-on-click="{{ wizEdit }}" style="align-self:flex-start;display:flex;align-items:center;gap:6px;background:none;border:none;padding:2px 0;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer" style-hover="opacity:.75">
+        <button sc-camel-on-click="{{ wizEdit }}" style="align-self:flex-start;display:flex;align-items:center;gap:6px;background:none;border:none;padding:0;min-height:40px;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer" style-hover="opacity:.75">
           <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
           Narx yoki og'irlikni o'zgartirish
         </button>
@@ -3390,7 +3390,7 @@
 
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
         <span style="font-size:11px;font-weight:600;color:#6B6C85;background:#FFFFFF;padding:6px 12px;border-radius:999px;font-variant-numeric:tabular-nums;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">{{ planNum }}</span>
-        <button sc-camel-on-click="{{ planDelete }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#C0392B;cursor:pointer;padding:0">Xaridni o'chirish</button>
+        <button sc-camel-on-click="{{ planDelete }}" style="min-height:40px;background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#C0392B;cursor:pointer;padding:0">Xaridni o'chirish</button>
       </div>
     </div>
   </sc-if>
@@ -3980,7 +3980,7 @@ const RU = {
   'Tozalash':'Очистить', "Natijani ko'rish":'Показать результат', 'Filtr':'Фильтр', "O'zgartirish":'Изменить',
   "O'tkazib yuborish":'Пропустить', 'Keyingi':'Далее', 'Tushunarli':'Понятно', 'Ilova bilan tanishish':'Знакомство с приложением',
   /* Tanishtiruv qadamlari */
-  'Shu yerdan boshlang':'Начните здесь', "Havola, mahsulot nomi yoki savol yozing — do'kon, kuryer va jami narxni ko'rsataman.":'Введите ссылку, название товара или вопрос — покажу магазин, курьера и итоговую цену.',
+  "Havola, mahsulot nomi yoki savol yozing — do'kon, kuryer va jami narxni ko'rsataman.":'Введите ссылку, название товара или вопрос — покажу магазин, курьера и итоговую цену.',
   'Skrinshot':'Скриншот', "Do'kon sahifasi skrinshotini yuklang — narx o'zi o'qiladi va kalkulyatorga tushadi.":'Загрузите скриншот страницы магазина — цена прочитается сама и попадёт в калькулятор.',
   "To'rt asosiy vosita":'Четыре основных инструмента', "Jami narx, do'konlar, kuryerlar va taqiqlarni tekshirish — har biri bitta bosishda.":'Итоговая цена, магазины, курьеры и проверка запретов — каждый в одно касание.',
   "Rejalar, jo'natmalar, sevimlilar va hisoblar shu yerda saqlanadi.":'Планы, отправления, избранное и расчёты хранятся здесь.',
@@ -4235,7 +4235,7 @@ const RU = {
   "To'liq qo'llanma":'Полная инструкция', "bo'lim · kalkulyator · lug'at · FAQ":'разд. · калькулятор · словарь · FAQ',
   "Ma'lumot noto'g'rimi?":'Информация неверна?',
   "Yo'nalishni tanlang":'Выберите направление', 'Kuryer va konsolidatsiya':'Курьеры и консолидация',
-  'AQSh omborlari orqali':'Через склады в США', 'Yevropa omborlari':'Склады в Европе', "Koreya yo'nalishi":'Корейское направление',
+  'AQSh omborlari orqali':'Через склады в США', "Koreya yo'nalishi":'Корейское направление',
   'Rossiya orqali':'Через Россию', 'Dubay omborlari':'Склады в Дубае', "Qo'shni davlatlar":'Соседние страны',
   'Janubi-sharqiy Osiyo':'Юго-Восточная Азия', 'Barcha kuryerlar':'Все курьеры', "Ro'yxatdagi hamma kuryer":'Все курьеры из списка',
   "yo'nalishi":'направление', 'eng arzon tarif':'самый дешёвый тариф', 'davlat':'стран.',
@@ -4425,6 +4425,69 @@ const RU = {
   'Pochtam AI xato qilishi mumkin. Yakuniy qaror — bojxona organida.':'Pochtam AI может ошибаться. Окончательное решение — за таможенным органом.',
   'Kalkulyatorda ochish':'Открыть в калькуляторе', "Kuryerlarni ko'rish":'Посмотреть курьеров', "Taqiqlar ro'yxati":'Список запретов', "Do'konni ochish":'Открыть магазин',
   
+  // Audit (2026-09-26): Reja sehrgari, do'kon papkalari, davlatlar — ruscha tarjimasi yo'q edi
+  "Shu yo'nalishda ishlaydigan {0} ta kuryer, arzonidan boshlab.":"Курьеров на этом направлении: {0}, от самого дешёвого.",
+  "Yetkazish · {0} ({1} kg × {2})":"Доставка · {0} ({1} кг × {2})",
+  "Narx ${0} me'yordan oshgani uchun ortiqcha qiymatdan boj hisoblandi. Yakuniy summani bojxona organi belgilaydi.":"Цена выше лимита ${0}, поэтому пошлина начислена на превышение. Итоговую сумму определяет таможня.",
+  "${0} gacha bo'lgan jo'natmada boj ham, yig'im ham undirilmaydi.":"С посылки до ${0} не берут ни пошлину, ни сбор.",
+  "{0} kg":"{0} кг",
+  "Yo'nalish narx va muddatni belgilaydi.":"Направление определяет цену и срок.",
+  "Eng arzon, muddat uzunroq":"Дешевле всего, но дольше",
+  "Kiyimda kuchli, 10-18 kun":"Сильны в одежде, 10–18 дней",
+  "Brend va elektronika":"Бренды и электроника",
+  "Brend do'konlari, avia":"Фирменные магазины, авиа",
+  "Dubay orqali, tez":"Через Дубай, быстро",
+  "Barcha yo'nalishlarni ko'rsataman":"Покажу все направления",
+  "Mahsulotni o'zgartirish":"Изменить товар",
+  "Davlatni o'zgartirish":"Изменить страну",
+  "Do'konni o'zgartirish":"Изменить магазин",
+  "Kuryerni o'zgartirish":"Изменить курьера",
+  "Hisobni o'zgartirish":"Изменить расчёт",
+  "Bu kategoriyada mos do'kon yo'q — shu yo'nalishdagi qolganlari.":"В этой категории подходящих магазинов нет — показаны остальные на этом направлении.",
+  "Bu yo'nalishda do'kon topilmadi — barchasi ko'rsatilmoqda.":"На этом направлении магазинов не нашлось — показаны все.",
+  "Bu yo'nalishda kuryer topilmadi — barchasi ko'rsatilmoqda.":"На этом направлении курьеров не нашлось — показаны все.",
+  "Ikkalasini yozing — yetkazish, boj va yig'imni hisoblab beraman.":"Впишите оба значения — посчитаю доставку, пошлину и сбор.",
+  "To'liq xarajat":"Полные расходы",
+  "Boj va yig'im":"Пошлина и сбор",
+  "to'lanmaydi":"не платится",
+  "Narx yoki og'irlikni o'zgartirish":"Изменить цену или вес",
+  "Qaytadan":"Заново",
+  "Boj hisobi taxminiy. Yakuniy qaror bojxona organi tomonidan qabul qilinadi.":"Расчёт пошлины примерный. Окончательное решение принимает таможня.",
+  "YANGILANDI":"ОБНОВЛЕНО",
+  "Do'konning o'zi yetkazadi. Kuryer kerak bo'lmasa ham, quyidagilar orqali arzonroq va tezroq variant chiqishi mumkin.":"Магазин доставляет сам. Курьер не обязателен, но через них может выйти дешевле и быстрее.",
+  "Narxlar kuryerlarning ochiq tariflaridan olingan. Yakuniy summa vazn va o'lchamga qarab o'zgaradi.":"Цены взяты из открытых тарифов курьеров. Итоговая сумма зависит от веса и размеров.",
+  "Original tovar":"Оригинальный товар",
+  "Parvarish va bo'yoq mahsulotlari":"Уход и декоративная косметика",
+  "Ro'yxatdagi hamma do'kon":"Все магазины из списка",
+  "Aralash toifadagi do'konlar":"Магазины смешанного профиля",
+  "Byudjet narxlar, ommaviy tovar":"Бюджетные цены, массовый товар",
+  "Narx va sifat balansi":"Баланс цены и качества",
+  "Brend va original mahsulot":"Бренды и оригинальный товар",
+  "Designer va luxury brendlar":"Дизайнерские и люксовые бренды",
+  "kiyim va moda":"одежда и мода",
+  "poyabzal":"обувь",
+  "elektronika":"электроника",
+  "kosmetika":"косметика",
+  "bolalar":"детские товары",
+  "to'g'ridan-to'g'ri":"напрямую",
+  "AQSH":"США",
+  "Gretsiya":"Греция",
+  "Ispaniya":"Испания",
+  "Italiya":"Италия",
+  "Kanada":"Канада",
+  "Polsha":"Польша",
+  "Portugaliya":"Португалия",
+  "Ukraina":"Украина",
+  "Fransiya":"Франция",
+  "Chexiya":"Чехия",
+  "Qirg'iziston":"Киргизия",
+  "Tojikiston":"Таджикистан",
+  "Express":"Экспресс",
+  "Economy":"Эконом",
+  "Avia/Express":"Авиа/экспресс",
+  "Avia/pochta":"Авиа/почта",
+  "Avia UZ":"Авиа UZ",
+  "Avia/yer usti xizmatlari mavjud":"Есть авиа- и наземная доставка",
   // 5-bosqich: hamkor kuryer holati
   'Omborga keldi':'Прибыло на склад', 'Bojxonada ushlandi':'Задержано на таможне', 'Olib ketishga tayyor':'Готово к выдаче', 'Topshirildi':'Вручено',
   'Kuryer tizimidan · {0}':'Из системы курьера · {0}', "Holat kuryer tizimidan o'zi yangilanadi":'Статус обновляется из системы курьера автоматически',
@@ -4739,7 +4802,7 @@ const STORES = [
     tags:["universal","arzon","kuryer orqali"],
     pros:["Xitoy ichki bozoridagi juda katta assortiment"],
     cons:["Xitoy ichki bozori: interfeys, seller bilan aloqa, manzil va return logistika asosan Xitoyga mos.","Kuryer ishlatilsa refund oynasi O\'zbekistonga yetib kelishdan oldin tugashi mumkin."],
-    forWhom:"Xitoydan keng tanlov va past narx izlaydiganlar", returns:"Ko\'p eligible mahsulotlarda 7 kunlik sababsiz qaytarish mavjud. Odatda buyer return shippingni to\'laydi; forwarding omboriga yetib kelgan sana muddat hisobiga ta\'sir qilishi mumkin.", ios:"https://apps.apple.com/us/app/taobao-online-shopping-app/id387682726", android:"https://play.google.com/store/apps/details?id=com.taobao.taobao",
+    forWhom:"Xitoydan keng tanlov va past narx izlaydiganlar", returns:"Ko\'p eligible mahsulotlarda 7 kunlik sababsiz qaytarish mavjud. Odatda buyer return shippingni to\'laydi; forwarding omboriga yetib kelgan sana muddat hisobiga ta\'sir qilishi mumkin.", ios:"https://apps.apple.com/cn/app/id387682726", android:"https://play.google.com/store/apps/details?id=com.taobao.taobao",
     facts:[{"k":"O'zbekistonga yuboradimi","v":"yo'q"},{"k":"Do'kon turi","v":"Marketplace"},{"k":"Narx darajasi","v":"$"},{"k":"Original mahsulot","v":"Sotuvchiga bog'liq"},{"k":"Buyurtma","v":"Murakkab / VPN orqali ishlaydi"}], updated:"15.08.2026" },
   { id:"amazon", name:"Amazon", domain:"amazon.com", url:"https://www.amazon.com", mono:"Am", color:"#232F3E", flag:"🇺🇸", country:"AQSh", from:["AQSh","Germaniya","Angliya"], cat:"universal", subcats:"Elektronika, moda, uy-ro'zg'or va boshqalar", type:"Marketplace", price:"$$", segment:"Katta assortiment", original:"Sotuvchiga bog'liq", direct:false, complexity:"O'rtacha",
     tags:["universal","katta assortiment","kuryer orqali"],
@@ -6260,7 +6323,10 @@ class Component extends DCLogic {
      kuryer id va jo'natma raqami. Har xarid 10 daqiqada ko'pi bilan bir
      marta; raqam yangi yozilganda (onlyId) darhol. */
   syncTracks(onlyId) {
-    if (!METRICS_URL || this._syncBusy) return;
+    if (!METRICS_URL) return;
+    /* So'rov ketayotganda yangi raqam yozilsa — tashlab yuborilmaydi,
+       javob kelgach navbatdagisi ketadi. */
+    if (this._syncBusy) { this._syncAgain = onlyId || this._syncAgain || true; return; }
     const partners = this.state.partners || [];
     if (!partners.length) return;
     const now = Date.now();
@@ -6292,7 +6358,11 @@ class Component extends DCLogic {
         if (moved) { metrics.hit('quick', 'track:auto'); this.toast(tx(lang, '{0}: {1}', moved.p.name || tr(lang, moved.p.cat), tr(lang, PARTNER_ST[moved.st].t))); }
       })
       .catch(() => {})
-      .then(() => { this._syncBusy = false; if (timer) clearTimeout(timer); });
+      .then(() => {
+        this._syncBusy = false; if (timer) clearTimeout(timer);
+        const again = this._syncAgain; this._syncAgain = null;
+        if (again) this.syncTracks(again === true ? undefined : again);
+      });
   }
 
   /* Bojxona me'yorlari data/norms.json da turadi — ularni o'zgartirish uchun
@@ -7219,13 +7289,16 @@ class Component extends DCLogic {
     /* Veb-qidiruvdan topilgan aniq mahsulot sahifalari (links). */
     const linksOf = m => {
       const c = card(m, 'links'); if (!c || !Array.isArray(c.links)) return [];
-      return c.links.slice(0, 5).map(l => {
+      /* Faqat https: havola worker'da tekshiriladi, lekin ilova ham ishonmaydi
+         (javascript: yoki http: manzil kartaga tushmasin). */
+      return c.links.slice(0, 5).filter(l => l && /^https:\/\/[^\s"'<>]+$/i.test(String(l.url || ''))).map(l => {
         const loc = STORES.find(x => x.domain && (l.host === x.domain || String(l.host || '').endsWith('.' + x.domain)));
         const bor = !!(loc && loc.logoCss && loc.logoCss !== 'none');
         const cur = String(l.currency || '');
         const fx = cur && cur !== 'USD' ? lcFxOf(cur) : (cur === 'USD' ? 1 : 0);
-        const usd = num(l.price) > 0 && fx > 0 ? ' ≈ $' + (num(l.price) * fx).toFixed(0) : '';
-        const price = num(l.price) > 0 ? num(l.price) + ' ' + cur + usd : '';
+        const usd = num(l.price) > 0 && fx > 0 && cur !== 'USD' ? ' ≈ $' + (num(l.price) * fx).toFixed(0) : '';
+        /* Dollar narx "130 USD ≈ $130" emas, "$130" bo'lib chiqadi. */
+        const price = num(l.price) > 0 ? (cur === 'USD' || !cur ? '$' + num(l.price) : num(l.price) + ' ' + cur + usd) : '';
         return { title: l.title, href: l.url, name: loc ? loc.name : (l.store || l.host), logoCss: bor ? loc.logoCss : 'none', plate: bor ? 'transparent' : '#F1F1F8',
           sub: [loc ? loc.name : (l.store || l.host), price].filter(Boolean).join(' · '),
           hit: () => metrics.hit('quick', 'ai:plink') };
@@ -7493,7 +7566,7 @@ class Component extends DCLogic {
           ? 'Bu kategoriyada mos do\'kon yo\'q — shu yo\'nalishdagi qolganlari.'
           : 'Bu yo\'nalishda do\'kon topilmadi — barchasi ko\'rsatilmoqda.'),
       wizCouriers.length
-        ? 'Shu yo\'nalishda ishlaydigan ' + wizCouriers.length + ' ta kuryer, arzonidan boshlab.'
+        ? tx(st.lang, "Shu yo'nalishda ishlaydigan {0} ta kuryer, arzonidan boshlab.", wizCouriers.length)
         : 'Bu yo\'nalishda kuryer topilmadi — barchasi ko\'rsatilmoqda.',
       'Ikkalasini yozing — yetkazish, boj va yig\'imni hisoblab beraman.'
     ];
@@ -7618,7 +7691,7 @@ class Component extends DCLogic {
       planJustSaved: !!st.justSaved,
       planDoneLine: pl ? [pl.country, pl.storeName, pl.courierName, pl.days].filter(Boolean).join(' · ') : '',
       planTitleBig: pl ? (pl.name || pl.cat) : '',
-      planSub: pl ? pl.storeName + (pl.country ? ' · ' + pl.country : '') + ' · ' + pl.kg.toFixed(1) + ' kg' : '',
+      planSub: pl ? pl.storeName + (pl.country ? ' · ' + tr(st.lang, pl.country) : '') + ' · ' + tx(st.lang, '{0} kg', pl.kg.toFixed(1)) : '',
       planNum: pl ? pl.num + ' · ' + pl.date : '',
       planTotalBig: pl ? '$' + pl.total.toFixed(2) : '',
       planTotalUzs: pl ? money(Math.round(pl.total * USD_RATE)) + ' so\'m' : '',
@@ -7635,7 +7708,7 @@ class Component extends DCLogic {
       }),
       planCostRows: pl ? [
         { k:'Mahsulot narxi', v:'$' + pl.price.toFixed(2), c:'#131429' },
-        { k:'Yetkazish · ' + pl.courierName + ' (' + pl.kg.toFixed(1) + ' kg × ' + pl.rate + ')', v:'$' + pl.ship.toFixed(2), c:'#131429' },
+        { k: tx(st.lang, 'Yetkazish · {0} ({1} kg × {2})', pl.courierName, pl.kg.toFixed(1), pl.rate), v:'$' + pl.ship.toFixed(2), c:'#131429' },
         { k:'Bojxona to\'lovi', v: pl.dutyUsd > 0 ? '$' + pl.dutyUsd.toFixed(2) : '$0', c: pl.dutyUsd > 0 ? '#B45309' : '#0F7B3E' },
         { k:'Yagona yig\'im', v: pl.feeUsd > 0 ? '$' + pl.feeUsd.toFixed(2) : '$0', c: pl.feeUsd > 0 ? '#B45309' : '#0F7B3E' },
         { k:'Kutilgan muddat', v: pl.days, c:'#131429' }
@@ -7723,7 +7796,7 @@ class Component extends DCLogic {
           mnCalc: () => this.openLanded(),
           mineCalcRows: (allCalc ? calcs : calcs.slice(0, 3)).map(c => ({
             title: c.name || tr(st.lang, c.cat || 'Hisob'),
-            sub: [tr(st.lang, c.country || ''), (c.qty > 1 ? c.qty + ' × ' : '') + usd(c.priceUsd || 0), (c.kg || 0).toFixed(1).replace('.', ',') + ' kg', c.courier].filter(Boolean).join(' · '),
+            sub: [tr(st.lang, c.country || ''), (c.qty > 1 ? c.qty + ' × ' : '') + usd(c.priceUsd || 0), tx(st.lang, '{0} kg', (c.kg || 0).toFixed(1).replace('.', ',')), c.courier].filter(Boolean).join(' · '),
             total: '$' + (c.totalUsd || 0).toFixed(2), date: String(c.date || '').slice(5).split('-').reverse().join('.'),
             open: () => { this.setState({ lc: { ...LC_DEFAULT, ...(c.lc || {}) } }); this.push('landed'); }
           }))
@@ -8438,7 +8511,7 @@ class Component extends DCLogic {
       monthLimit: '$' + NC.freeUsd,
       monthRows: monthList.slice().reverse().map(x => ({
         usd: '$' + Math.round(num(x.usd)),
-        meta: fmtDate(x.date).slice(0, 5) + ' · ' + num(x.kg).toFixed(1) + ' kg'
+        meta: fmtDate(x.date).slice(0, 5) + ' · ' + tx(st.lang, '{0} kg', num(x.kg).toFixed(1))
               + (x.plan ? ' · rejadan' : ''),
         del: () => this.setState(s => ({ monthly: (s.monthly || []).filter(y => y.id !== x.id) }))
       })),
@@ -8602,15 +8675,15 @@ class Component extends DCLogic {
       onWizWeight: e => this.setState({ wizWeight: e.target.value.replace(/[^\d.]/g, '') }),
       wizCostRows: [
         { k:'Mahsulot narxi', v:'$' + wz.price.toFixed(0), c:'#131429' },
-        { k:'Yetkazish · ' + wz.courierName + ' (' + wz.kg.toFixed(1) + ' kg × ' + wz.perKgLabel + ')', v:'$' + wz.ship.toFixed(2), c:'#131429' },
+        { k: tx(st.lang, 'Yetkazish · {0} ({1} kg × {2})', wz.courierName, wz.kg.toFixed(1), wz.perKgLabel), v:'$' + wz.ship.toFixed(2), c:'#131429' },
         { k:'Bojxona to\'lovi', v: wz.dutyUsd > 0 ? '$' + wz.dutyUsd.toFixed(2) : '$0', c: wz.dutyUsd > 0 ? '#B45309' : '#0F7B3E' },
         { k:'Yagona yig\'im', v: wz.feeUsd > 0 ? '$' + wz.feeUsd.toFixed(2) : '$0', c: wz.feeUsd > 0 ? '#B45309' : '#0F7B3E' }
       ],
       wizTotal: '$' + wz.total.toFixed(2),
       wizTotalUzs: money(Math.round(wz.total * USD_RATE)) + ' so\'m',
       wizDutyNote: wz.dutyUsd > 0
-        ? 'Narx $' + FREE_USD + ' me\'yordan oshgani uchun ortiqcha qiymatdan boj hisoblandi. Yakuniy summani bojxona organi belgilaydi.'
-        : '$' + FREE_USD + ' gacha bo\'lgan jo\'natmada boj ham, yig\'im ham undirilmaydi.',
+        ? tx(st.lang, "Narx ${0} me'yordan oshgani uchun ortiqcha qiymatdan boj hisoblandi. Yakuniy summani bojxona organi belgilaydi.", FREE_USD)
+        : tx(st.lang, "${0} gacha bo'lgan jo'natmada boj ham, yig'im ham undirilmaydi.", FREE_USD),
       wizGo: () => { metrics.hit('wizard', 'yakun'); this.setState({ wizStep: 5 }); },
       wizTitle: wizTitles[Math.min(st.wizStep, 4)], wizSub: wizSubs[Math.min(st.wizStep, 4)],
       wizOptions: wizOpts(),
@@ -8646,14 +8719,13 @@ class Component extends DCLogic {
         { k:'Do\'kon', v: st.wizStore || '—' },
         { k:'Kuryer', v: wz.courierName },
         { k:'Muddat', v: wz.days },
-        { k:'Mahsulot', v: '$' + wz.price.toFixed(0) + ' · ' + wz.kg.toFixed(1) + ' kg' },
+        { k:'Mahsulot', v: '$' + wz.price.toFixed(0) + ' · ' + tx(st.lang, '{0} kg', wz.kg.toFixed(1)) },
         { k:'Yetkazish', v: '$' + wz.ship.toFixed(2) },
         { k:'Boj va yig\'im', v: (wz.dutyUsd + wz.feeUsd) > 0 ? '$' + (wz.dutyUsd + wz.feeUsd).toFixed(2) : 'to\'lanmaydi' }
       ],
       planTotal: '$' + wz.total.toFixed(2),
       wizRestart: () => this.setState({ wizStep:0, wizCat:null, wizCountry:null, wizStore:null, wizCourier:null }),
       wizEdit: () => this.setState({ wizStep: 4 }),
-      sharePlan: () => this.toast('Reja Telegram\'dagi saqlangan xabarlarga yuborildi'),
 
       sheetOpen: st.sheetOpen,
       ...this.tourVm(st),

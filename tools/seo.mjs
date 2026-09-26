@@ -12,6 +12,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { SITE, BASE } from './site.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -174,15 +175,26 @@ ${cards}
 writeFileSync(join(ROOT, 'guides', 'index.html'), hub);
 
 // ---- sitemap.xml / robots.txt ---------------------------------------------
+/* lastmod — sahifa manbasining oxirgi commit sanasi, qurish kuni emas:
+   aks holda har `npm run build` sitemap'ni o'zgartirib, qidiruv
+   tizimlariga "hamma sahifa bugun yangilandi" deb yolg'on aytardi.
+   Git yo'q yoki fayl commit qilinmagan bo'lsa — bugun. */
 const today = new Date().toISOString().slice(0, 10);
+const lastmod = paths => {
+  try {
+    const out = execFileSync('git', ['log', '-1', '--format=%cs', '--', ...paths], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    return /^\d{4}-\d{2}-\d{2}$/.test(out) ? out : today;
+  } catch (e) { return today; }
+};
+const guideSrc = g => [`guides/inline/${g.id}.html`];
 const urls = [
-  { loc: SITE, priority: '1.0' },
-  { loc: SITE + 'guides/', priority: '0.9' },
-  ...GUIDES.map(g => ({ loc: `${SITE}guides/inline/${g.id}.html`, priority: '0.8' }))
+  { loc: SITE, priority: '1.0', mod: lastmod(['Xarid Yordamchisi v2.dc.html', 'data']) },
+  { loc: SITE + 'guides/', priority: '0.9', mod: lastmod(['tools/seo.mjs', ...GUIDES.flatMap(guideSrc)]) },
+  ...GUIDES.map(g => ({ loc: `${SITE}guides/inline/${g.id}.html`, priority: '0.8', mod: lastmod(guideSrc(g)) }))
 ];
 writeFileSync(join(ROOT, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-  urls.map(u => `  <url>\n    <loc>${u.loc}</loc>\n    <lastmod>${today}</lastmod>\n    <priority>${u.priority}</priority>\n  </url>`).join('\n') +
+  urls.map(u => `  <url>\n    <loc>${u.loc}</loc>\n    <lastmod>${u.mod}</lastmod>\n    <priority>${u.priority}</priority>\n  </url>`).join('\n') +
   `\n</urlset>\n`);
 
 writeFileSync(join(ROOT, 'robots.txt'),
