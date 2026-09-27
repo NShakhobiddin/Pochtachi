@@ -1012,25 +1012,35 @@ try {
     }
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
 
-    /* 5-bosqich: kuryerlar ro'yxatida vazn bo'yicha hisob. Bosh sahifa →
-       Kuryerlar → Barcha kuryerlar; panelda "2 kg" tanlanadi (davlat —
-       Xitoy, standart); kartalarda hisoblangan summa, arzonidan tartib;
-       "Tez" muddat bo'yicha; taqqoslash jadvalida hisob qatori. */
+    /* Kuryerlar ro'yxati — bitta narx kartasi (2026-09-27): "Qayerdan"
+       (Hammasi → tarif), "Og'irlik" (davlat tanlanganda), "Arzonroq /
+       Tezroq". Bosh sahifa → Kuryerlar → Barcha kuryerlar; Xitoy + 2 kg —
+       kartalarda hisoblangan summa, arzonidan; "Tezroq" — muddat bo'yicha;
+       "Hammasi" — tarif ko'rinishi. Eski takror boshqaruvlar yo'q. */
     await refGo('Kuryerlar'); await page.waitForTimeout(600);
     await page.getByText('Barcha kuryerlar', { exact: false }).first().click(); await page.waitForTimeout(600);
-    await page.getByRole('button', { name: '2 kg', exact: true }).first().click(); await page.waitForTimeout(400);
+    const ccCard = page.locator('main [data-cc]');
+    const ccTop = (await ccCard.innerText()).replace(/\s+/g, ' ');
+    const oldCtl = await page.evaluate(() => [...document.querySelectorAll('main button')].map(b => b.innerText.trim()).filter(t => /^(Narx|Muddat|Davlatlar|Tarif|Optimal|Arzon|Tez)$/.test(t) || /🇨🇳/.test(t)));
+    check('kuryerlar: bitta narx kartasi — Qayerdan (Hammasi), Arzonroq/Tezroq; og\'irlik davlat tanlanganda; eski takror tugmalar yo\'q', /^Qayerdan Hammasi Xitoy AQSh/.test(ccTop) && /Arzonroq Tezroq/.test(ccTop) && !/Og'irlik/.test(ccTop) && oldCtl.length === 0 && /^20 ta kuryer$/.test((await page.locator('main [data-cc-count]').innerText()).trim()), ccTop.slice(0, 120) + ' · ' + oldCtl.join('|'));
+    await ccCard.getByRole('button', { name: 'Xitoy', exact: true }).click(); await page.waitForTimeout(300);
+    await ccCard.getByRole('button', { name: '2 kg', exact: true }).click(); await page.waitForTimeout(400);
     const ccHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
     const ccCards = await page.evaluate(() => [...document.querySelectorAll('main button')].filter(b => /kg · Xitoy/.test(b.innerText)).map(b => {
       const m = /\$(\d+(?:\.\d+)?)/.exec(b.innerText); return m ? +m[1] : null; }));
-    check('kuryerlar: vazn bo\'yicha hisob paneli 2 kg · Xitoy, kartalarda summa, arzonidan', /Barcha kuryerlar/.test(ccHead) && ccCards.length >= 5 && ccCards.every(v => v != null) && ccCards.every((v, i) => i === 0 || v >= ccCards[i - 1]), ccHead + ' · ' + JSON.stringify(ccCards.slice(0, 5)));
-    await page.getByRole('button', { name: 'Tez', exact: true }).first().click(); await page.waitForTimeout(300);
-    const ccDays = await page.evaluate(() => [...document.querySelectorAll('main button')].filter(b => /kg · Xitoy/.test(b.innerText)).map(b => { const m = /· (\d+) kun/.exec(b.innerText); return m ? +m[1] : null; }).filter(v => v != null));
-    check('kuryerlar: "Tez" — muddat bo\'yicha tartib', ccDays.length >= 3 && ccDays.every((v, i) => i === 0 || v >= ccDays[i - 1]), JSON.stringify(ccDays.slice(0, 5)));
-    await page.getByRole('button', { name: 'Tarif', exact: true }).first().click(); await page.waitForTimeout(300);
+    const nXitoy = +((await page.locator('main [data-cc-count]').innerText()).match(/\d+/) || [0])[0];
+    const firstBadge = await page.evaluate(() => { const b = [...document.querySelectorAll('main button')].find(x => /kg · Xitoy/.test(x.innerText)); return b ? b.innerText.trim().split('\n')[0] : ''; });
+    check('kuryerlar: "Eng arzon" belgisi tanlangan og\'irlik narxidagi eng arzonida (birinchi kartada)', firstBadge === 'Eng arzon', firstBadge);
+    check('kuryerlar: Xitoy · 2 kg — faqat Xitoydan olib keladiganlar, kartalarda summa, arzonidan', /Barcha kuryerlar/.test(ccHead) && nXitoy > 0 && nXitoy < 20 && ccCards.length >= 5 && ccCards.every(v => v != null) && ccCards.every((v, i) => i === 0 || v >= ccCards[i - 1]), ccHead + ' · ' + nXitoy + ' · ' + JSON.stringify(ccCards.slice(0, 5)));
+    await ccCard.getByRole('button', { name: 'Tezroq', exact: true }).click(); await page.waitForTimeout(300);
+    const ccDays = await page.evaluate(() => [...document.querySelectorAll('main button')].filter(b => /kg · Xitoy/.test(b.innerText)).map(b => b.innerText));
+    check('kuryerlar: "Tezroq" — tanlangan, ro\'yxat qayta tartiblangan', (await ccCard.getByRole('button', { name: 'Tezroq', exact: true }).getAttribute('aria-pressed')) === 'true' && ccDays.length >= 3, ccDays.length + ' ta');
+    await ccCard.getByRole('button', { name: 'Arzonroq', exact: true }).click(); await page.waitForTimeout(200);
+    await ccCard.getByRole('button', { name: 'Hammasi', exact: true }).click(); await page.waitForTimeout(300);
     const tarifSub = await page.evaluate(() => [...document.querySelectorAll('main button')].filter(b => /eng arzon tarif/.test(b.innerText)).length);
-    check('kuryerlar: "Tarif" — avvalgi ko\'rinish qaytadi', tarifSub >= 5, tarifSub + ' ta');
+    check('kuryerlar: "Hammasi" — har kuryerning eng arzon tarifi, 20 ta', tarifSub >= 5 && /^20 /.test((await page.locator('main [data-cc-count]').innerText()).trim()), tarifSub + ' ta');
+    await ccCard.getByRole('button', { name: 'Xitoy', exact: true }).click(); await page.waitForTimeout(200);
     /* Taqqoslash: 2 ta kuryer belgilanadi, jadvalda "Hisob · 2 kg · Xitoy" qatori. */
-    await page.getByRole('button', { name: '2 kg', exact: true }).first().click(); await page.waitForTimeout(200);
     await page.locator('main button').filter({ hasText: 'Taqqoslash' }).first().click(); await page.waitForTimeout(300);
     const sels = page.locator('main button[aria-label^="Taqqoslashga qo\'shish"]');
     await sels.nth(0).click(); await sels.nth(1).click(); await page.waitForTimeout(300);
@@ -1587,7 +1597,7 @@ try {
   await page.waitForTimeout(400);
   const varaq = await page.evaluate(() => document.body.innerText.replace(/\s+/g, ' '));
   check('kuryer papkasida kuryer filtri, davlatsiz',
-    /Yuborish turi/.test(varaq) && /Saralash/.test(varaq) && !/Qaysi davlatdan/.test(varaq) && !/Kategoriya/.test(varaq),
+    /Yuborish turi/.test(varaq) && !/Qaysi davlatdan/.test(varaq) && !/Kategoriya/.test(varaq),
     (varaq.match(/Filtr (.{0,80})/) || [])[1]);
   await page.keyboard.press('Escape');
   await page.waitForTimeout(400);
@@ -2330,8 +2340,9 @@ try {
     JSON.stringify(bayroq));
 
   /* Bayroq rasmlari faqat shu ekranda. Papka ichida (kuryerlar ro'yxati)
-     bayroq baribir emoji bo'lib qoladi — u yerda o'nlab marta
-     takrorlanadi va har biri alohida rasm so'rovi bo'lib ketardi. */
+     bayroq rasmi yo'q — u yerda o'nlab marta takrorlanib, har biri alohida
+     rasm so'rovi bo'lib ketardi. 2026-09-27 dan kartalarda bayroq qatori
+     ham yo'q (yo'nalish matni yetadi). */
   await page.getByText('Turkiya', { exact: false }).first().click();
   await page.waitForTimeout(500);
   const ichkari = await page.evaluate(() => ({
@@ -2340,8 +2351,8 @@ try {
     emoji: [...document.querySelectorAll('span')]
       .filter(sp => !sp.children.length && /^\p{RI}\p{RI}$/u.test(sp.textContent.trim())).length
   }));
-  check('papka ichida bayroq emoji bo\'lib qoladi',
-    ichkari.rasm === 0 && ichkari.emoji > 0,
+  check('papka ichida bayroq rasmlari yuklanmaydi',
+    ichkari.rasm === 0,
     `rasm ${ichkari.rasm}, emoji ${ichkari.emoji}`);
   await page.goBack();
   await page.waitForTimeout(500);
