@@ -258,3 +258,5 @@ npx wrangler dev               # http://localhost:8787 da haqiqiy Worker
 
 Ilova tomonidagi qoida o'zgarmaydi: `METRICS_URL` bo'sh bo'lsa hech qanday
 so'rov ketmaydi (smoke test tekshiradi), to'ldirilsa faqat shu manzilga.
+
+**Havoladan jami narx (`link`).** `POST /ai` ga `{ link, lang, usdRate }` yuborilsa worker sahifani o'zi ochadi (`src/link.js`): avval JSON-LD / meta'dagi narx (AI'siz), bo'lmasa sahifa matni `AI_SHOT_MODEL` ga, sayt to'ssa asosiy model `web_fetch` bilan (faqat shu domen). Javob skrinshot bilan bir xil: `{ shot, cards, stop: 'link', via }`, `via` — `jsonld | meta | text | fetch | none | bad`. Faqat ochiq internet manzillari (IP, localhost, nostandart port yo'q), 8 s va 1,5 MB chegarasi.

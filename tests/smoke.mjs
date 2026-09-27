@@ -718,6 +718,13 @@ try {
     await context.route(METRICS_URL + 'ai', async r => {
       const body = JSON.parse(r.request().postData() || '{}');
       aiBodies.push(body);
+      /* Havola (link): sahifa o'qiladi, javob skrinshot shaklida (shot). */
+      if (body.link) {
+        const sh = /nonprice/.test(body.link) ? { found: false, url: body.link, host: 'shop.example.com' }
+          : { found: true, name: 'Taobao kurtka', price: 299, currency: 'CNY', priceUsd: 41.87, fxApprox: true, qty: 1, store: 'Taobao', category: 'kiyim', country: 'Xitoy', weightKg: 0.9, confidence: 0.95, url: body.link, host: 'item.taobao.com' };
+        if (shotDelay) await new Promise(z => setTimeout(z, shotDelay));
+        return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: '', shot: sh, cart: cartOf(sh), cards: sh.found ? [{ type: 'product', ...sh }] : [], tools: [], model: '', usage: {}, stop: 'link', via: 'jsonld' }) });
+      }
       /* Yagona manzil: rasm kelsa skrinshot javobi (savolsiz — kartalar). */
       if (body.image) {
         shotBodies.push(body);
@@ -767,10 +774,27 @@ try {
     const heroField = page.locator('main input[aria-label="Mahsulot nomi"]');
     check('yagona kirish: maydon ichida mikrofon, yuborish yonida (rasm — pastdagi katta tugma)',
       (await page.locator('main form').first().locator('button[aria-label="Rasm biriktirish"]').count()) === 0 && (await page.locator('main form button[aria-label="Ovoz bilan aytish"]').count()) === 1);
+    /* Havola → skrinshotdagi kabi "Jami narx" ekrani: kutishda "Havolani
+       o'qiyapman" va "Sahifani ochyapman", keyin jami va tarkib, sahifaga
+       havola. So'rovda link (savolsiz). */
+    shotDelay = 1500;
     await heroField.fill('https://item.taobao.com/item.htm?id=1'); await page.waitForTimeout(200);
-    await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(700);
+    await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(500);
+    const linkBusy = (await page.locator('main [data-shot-busy]').innerText().catch(() => '')).replace(/\s+/g, ' ');
+    await page.waitForTimeout(1500); shotDelay = 0;
     { const lb = aiBodies[aiBodies.length - 1] || {};
-      check('yagona kirish: havola → Pochtam AI sahifani o\'qiydi (url bilan)', /Pochtam AI/.test(await page.locator('header').innerText()) && lb.url === 'https://item.taobao.com/item.htm?id=1' && lb.q === 'Bu mahsulot menga qanchaga tushadi?', JSON.stringify(lb).slice(0, 160)); }
+      const lt = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
+      check('yagona kirish: havola → "Jami narx" (link, savolsiz), kutishda "Havolani o\'qiyapman · Sahifani ochyapman"', /Jami narx/.test(await page.locator('header').innerText()) && lb.link === 'https://item.taobao.com/item.htm?id=1' && !lb.q && /^Havolani o'qiyapman item\.taobao\.com · odatda/.test(linkBusy) && /Sahifani ochyapman/.test(linkBusy), linkBusy.slice(0, 120) + ' · ' + JSON.stringify(lb).slice(0, 100));
+      check('havola natijasi: jami, narx tarkibi, "Sahifani ochish" havolasi, izoh "sahifadan o\'qildi"', /^SIZGA JAMI TUSHADI Taxminiy \$\d/.test(lt) && /Taobao kurtka/.test(lt) && /299 CNY ≈ \$/.test(lt) && (await page.locator('main a[data-rs-url]').getAttribute('href')) === 'https://item.taobao.com/item.htm?id=1' && /Narx do'kon sahifasidan o'qildi/.test(lt), lt.slice(0, 160)); }
+    await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
+    await heroField.fill('https://shop.example.com/nonprice/item'); await page.waitForTimeout(200);
+    await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(900);
+    { const nt = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
+      const nb = await page.evaluate(() => [...document.querySelectorAll('main button')].map(b => b.innerText.trim()));
+      check('havoladan narx o\'qilmasa: sabab, "Skrinshot yuklash", "Qo\'lda hisoblash", "Pochtam AI\'dan so\'rash"', /Havoladan narx o'qilmadi/.test(nt) && /skrinshot qilib yuklang/.test(nt) && ['Skrinshot yuklash', "Qo'lda hisoblash", "Pochtam AI'dan so'rash"].every(t => nb.includes(t)), nt.slice(0, 120) + ' · ' + nb.join('|'));
+      await page.locator('main button', { hasText: "Pochtam AI'dan so'rash" }).first().click(); await page.waitForTimeout(700);
+      const ab = aiBodies[aiBodies.length - 1] || {};
+      check('"Pochtam AI\'dan so\'rash" — AI sahifani url bilan o\'qiydi', /Pochtam AI/.test(await page.locator('header').innerText()) && ab.url === 'https://shop.example.com/nonprice/item' && ab.q === 'Bu mahsulot menga qanchaga tushadi?', JSON.stringify(ab).slice(0, 120)); }
     /* Ovoz: brauzer tanisa — aytib bo'lingach o'zi qidiradi; tanimasa —
        klaviatura mikrofoni haqida maslahat va maydonga fokus. */
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);

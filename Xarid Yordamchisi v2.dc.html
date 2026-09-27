@@ -2986,12 +2986,13 @@
         <div data-shot-busy="1" role="status" aria-live="polite" style="background:#FFFFFF;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:16px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
           <div style="display:flex;align-items:center;gap:16px">
             <div aria-hidden="true" style="width:64px;height:88px;flex:none;border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background-color:#E9EAFD;background-size:cover;background-repeat:no-repeat;background-position:top center;background-image:{{ rsPrevCss }}">
+              <sc-if value="{{ rsIsLink }}" hint-placeholder-val="{{ false }}"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a5 5 0 007.07 0l3-3a5 5 0 00-7.07-7.07l-1 1"></path><path d="M14 10a5 5 0 00-7.07 0l-3 3a5 5 0 007.07 7.07l1-1"></path></svg></sc-if>
               <sc-if value="{{ rsNoPrev }}" hint-placeholder-val="{{ false }}"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5A2.5 2.5 0 016.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0120 8.5V17a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></sc-if>
               <i class="xy-scan-line"></i>
             </div>
             <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
-              <span style="font-size:17px;font-weight:700;color:#131429">Skrinshotni o'qiyapman<span class="xy-dots" aria-hidden="true"><i></i><i></i><i></i></span></span>
-              <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5">Odatda 5–10 soniya. Jami narx va uning tarkibi shu yerda chiqadi.</span>
+              <span style="font-size:17px;font-weight:700;color:#131429">{{ rsBusyT }}<span class="xy-dots" aria-hidden="true"><i></i><i></i><i></i></span></span>
+              <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5;overflow-wrap:anywhere">{{ rsBusySub }}</span>
             </div>
           </div>
           <div aria-hidden="true" style="height:6px;border-radius:999px;background:#E9EAFD;overflow:hidden">
@@ -3073,6 +3074,9 @@
             </div>
           </div>
           <span style="font-size:22px;font-weight:800;letter-spacing:-.02em;color:#1A1FB0;font-variant-numeric:tabular-nums">{{ rsPrice }}</span>
+          <sc-if value="{{ rsHasUrl }}" hint-placeholder-val="{{ false }}">
+            <a data-rs-url="1" class="xy-tap" href="{{ rsUrl }}" target="_blank" rel="noopener noreferrer" style="align-self:flex-start;display:inline-flex;align-items:center;gap:6px;min-height:40px;font-size:13px;font-weight:700;color:#1A1FB0;text-decoration:none">Sahifani ochish<svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+          </sc-if>
         </div>
         <!-- Kuryer -->
         <div style="background:#FFFFFF;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
@@ -3130,7 +3134,7 @@
           <button sc-camel-on-click="{{ rsAdjust }}" style="height:48px;border-radius:20px;border:1.5px solid #DCDDFA;cursor:pointer;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:15px;font-weight:700">Vaznni aniqlashtirish</button>
           <button sc-camel-on-click="{{ rsAddPlan }}" style="height:48px;border-radius:20px;border:1.5px solid #DCDDFA;cursor:pointer;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:15px;font-weight:700">Xaridlarimga qo'shish</button>
         </div>
-        <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4;padding:0 4px">Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. AI faqat rasmni o'qidi, hisob ilovaniki.</span>
+        <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4;padding:0 4px">{{ rsFoot }}</span>
         <!-- Uchinchi savol pastda yopishib turadi: qancha aylantirilsa ham
              "Qanday buyurtma qilaman?" ko'rinadi. -->
         <div style="position:sticky;bottom:0;padding:8px 0 4px;background:linear-gradient(rgba(246,247,251,0),#F6F7FB 40%)">
@@ -3142,18 +3146,23 @@
       </sc-if>
       <sc-if value="{{ rsNone }}" hint-placeholder-val="{{ false }}">
         <div style="background:#FDF3E3;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:12px">
-          <span style="font-size:17px;font-weight:700;color:#B45309">Rasmdan narx o'qilmadi</span>
+          <span style="font-size:17px;font-weight:700;color:#B45309">{{ rsNoneT }}</span>
+          <sc-if value="{{ rsIsLink }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:15px;font-weight:500;color:#282944;line-height:1.5">Sayt narxni yashirgan yoki sahifa faqat ilovada ochiladi. Sahifani skrinshot qilib yuklang — narx o'zi o'qiladi.</span>
+          </sc-if>
+          <sc-if value="{{ rsIsShot }}" hint-placeholder-val="{{ true }}">
           <div style="display:flex;flex-direction:column;gap:8px">
             <div style="display:flex;gap:8px;align-items:flex-start"><span style="flex:none;width:18px;height:18px;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#B45309">1</span><span style="font-size:15px;font-weight:500;color:#282944;line-height:1.5">Do'konda mahsulot sahifasini oching.</span></div>
             <div style="display:flex;gap:8px;align-items:flex-start"><span style="flex:none;width:18px;height:18px;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#B45309">2</span><span style="font-size:15px;font-weight:500;color:#282944;line-height:1.5">Narx, nom va (bo'lsa) og'irlik ko'rinadigan joyni skrinshot qiling.</span></div>
             <div style="display:flex;gap:8px;align-items:flex-start"><span style="flex:none;width:18px;height:18px;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#B45309">3</span><span style="font-size:15px;font-weight:500;color:#282944;line-height:1.5">Qayta yuklang — qolganini o'zim qilaman.</span></div>
           </div>
+          </sc-if>
         </div>
         <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px">
-          <button sc-camel-on-click="{{ rsRetry }}" style="height:48px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(155deg,#494FE9,#13189D);color:#FFFFFF;font-family:inherit;font-size:15px;font-weight:700">Qayta yuklash</button>
+          <button sc-camel-on-click="{{ rsRetry }}" style="height:48px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(155deg,#494FE9,#13189D);color:#FFFFFF;font-family:inherit;font-size:15px;font-weight:700">{{ rsRetryT }}</button>
           <button sc-camel-on-click="{{ rsManual }}" style="height:48px;border-radius:20px;border:1.5px solid #DCDDFA;cursor:pointer;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:15px;font-weight:700">Qo'lda hisoblash</button>
         </div>
-        <button sc-camel-on-click="{{ rsHelper }}" style="height:44px;border-radius:14px;border:1.5px solid #DCDDFA;cursor:pointer;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;padding:0 12px;align-self:flex-start">Qayerdan topaman?</button>
+        <button sc-camel-on-click="{{ rsHelperGo }}" style="height:44px;border-radius:14px;border:1.5px solid #DCDDFA;cursor:pointer;background:#FFFFFF;color:#1A1FB0;font-family:inherit;font-size:13px;font-weight:700;padding:0 12px;align-self:flex-start">{{ rsHelperT }}</button>
       </sc-if>
       <sc-if value="{{ rsErr }}" hint-placeholder-val="{{ false }}">
         <div style="background:#FDF3E3;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:2px">
@@ -3906,6 +3915,13 @@ const toCyr = s => {
 };
 
 const RU = {
+  /* Havola orqali o'qish (2026-09-27) */
+  "Havolani o'qiyapman":'Читаю ссылку', 'Sahifani ochyapman':'Открываю страницу',
+  "{0} · odatda 3–15 soniya. Jami narx va uning tarkibi shu yerda chiqadi.":'{0} · обычно 3–15 секунд. Итоговая цена и её состав появятся здесь.',
+  "Havoladan narx o'qilmadi":'Не удалось прочитать цену по ссылке', "Pochtam AI'dan so'rash":'Спросить Pochtam AI',
+  "Sayt narxni yashirgan yoki sahifa faqat ilovada ochiladi. Sahifani skrinshot qilib yuklang — narx o'zi o'qiladi.":'Сайт скрывает цену или страница открывается только в приложении. Сделайте скриншот страницы и загрузите — цена прочитается сама.',
+  "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. Narx do'kon sahifasidan o'qildi, hisob ilovaniki.":'Расчёт примерный — итоговую сумму определят таможня и курьер. Цена прочитана со страницы магазина, расчёт — приложения.',
+  'Sahifani ochish':'Открыть страницу',
   /* Kuryerlar ro'yxati: narx kartasi (2026-09-27) */
   'Qayerdan':'Откуда', 'Arzonroq':'Дешевле', 'Tezroq':'Быстрее',
   "{0} kg · {1}: kuryer saytidagi tarif bo'yicha taxminiy narx.":'{0} кг · {1}: примерная цена по тарифу на сайте курьера.',
@@ -7164,6 +7180,46 @@ class Component extends DCLogic {
         .then(() => clearTimeout(timer));
     }).catch(() => done({ state: 'err', code: 'img' }));
   }
+  /* Havola → "Jami narx" (2026-09-27). Skrinshot bilan bir xil oqim:
+     natija ekrani darrov ochiladi ("havola o'qilmoqda"), worker sahifani
+     o'qib skrinshot shaklidagi javob (shot) qaytaradi, hisob ilovada.
+     Havola lc.url ga yoziladi — kuryerga yuboriladigan xabarda ham turadi. */
+  linkRead(url) {
+    const st = this.state;
+    if (!url || (st.shotRes && st.shotRes.state === 'busy')) return;
+    let host = '';
+    try { host = new URL(url).hostname.replace(/^www\./, ''); } catch (e) { return; }
+    this.setState({ shotRes: { state: 'busy', src: 'link', host, url, t0: Date.now() } });
+    if (this.cur() !== 'result') this.push('result');
+    metrics.hit('ai_question', 'link');
+    clearInterval(this._shotTick);
+    this._shotTick = setInterval(() => {
+      const r = this.state.shotRes;
+      if (r && r.state === 'busy') this.setState({ shotRes: { ...r } }); else clearInterval(this._shotTick);
+    }, 500);
+    const done = r => { clearInterval(this._shotTick); this.setState({ shotRes: { src: 'link', host, url, ...r } }); };
+    if (!METRICS_URL) { done({ state: 'err', code: 'no_key' }); return; }
+    const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = setTimeout(() => { if (ctrl) ctrl.abort(); }, 60000);
+    fetch(METRICS_URL + 'ai', { method: 'POST', headers: { 'content-type': 'text/plain;charset=UTF-8' },
+      body: JSON.stringify({ link: url, lang: st.lang, usdRate: USD_RATE, cart: this.cartForAi() }), signal: ctrl ? ctrl.signal : undefined })
+      .then(async r => {
+        const j = await r.json().catch(() => null);
+        if (!r.ok || !j) { const e = new Error('link'); e.code = (j && j.code) || (r.status === 429 ? 'limit' : 'upstream'); throw e; }
+        return j;
+      })
+      .then(j => {
+        const sh = j.shot;
+        if (!sh || !sh.found) { done({ state: 'none' }); return; }
+        const conv = this.shotToLc(sh);
+        const ok = { ...conv, lc: { ...conv.lc, url }, state: 'ok', src: 'link', host, url, at: Date.now() };
+        done(ok);
+        try { localStorage.setItem('xy_last', JSON.stringify(ok)); } catch (e) {}
+        this.setState({ lastRes: ok });
+      })
+      .catch(e => done({ state: 'err', code: (e && e.code) || 'net' }))
+      .then(() => clearTimeout(timer));
+  }
   /* Skrinshot javobi → kalkulyator kirishlari. Do'kon bazadan (nomi yoki
      domeni bo'yicha), davlat — do'konniki, bo'lmasa AI taxmini, bo'lmasa
      valyutadan; kategoriya va vazn AI dan (vazn bo'lmasa kategoriya
@@ -7315,6 +7371,24 @@ class Component extends DCLogic {
       const t = String(raw || '').trim();
       if (!t) { this.toast(L('Avval nima qidirayotganingizni yozing')); focusField(); return; }
       const link = this.linkStore(t);
+      /* Mahsulot havolasi (yo'li bor) — skrinshotdagi kabi "Jami narx"
+         ekrani: sahifa o'qiladi, hisobni ilova qiladi. Faqat domen
+         (do'kon bosh sahifasi) bo'lsa — do'kon sahifasi. */
+      const href = link ? (/^https?:\/\//i.test(t) ? t : 'https://' + t) : '';
+      const productLink = !!href && /^https?:\/\/[^/?#\s]+\/[^\s]{2,}/i.test(href);
+      if (st.aiOn && productLink) {
+        metrics.hit('hero', 'link:' + (link.store ? link.store.id : '?'));
+        if (link.store) this.warmGuide(link.store.id);
+        this.linkRead(href);
+        return;
+      }
+      if (st.aiOn && link && link.store) {
+        metrics.hit('hero', 'link:' + link.store.id);
+        this.warmGuide(link.store.id);
+        this.setState({ storeId: link.store.id });
+        this.push('store');
+        return;
+      }
       if (st.aiOn) {
         this.setState({ aiMsgs: [], aiDone: {} });
         this.push('ai');
@@ -7391,22 +7465,34 @@ class Component extends DCLogic {
     if (cur !== 'result') return {};
     const lang = st.lang, L_ = k => tr(lang, k);
     const r = st.shotRes || { state: 'none' };
+    const isLink = r.src === 'link';
+    const askAi = () => { metrics.hit('quick', 'link:ai'); this.setState({ aiMsgs: [], aiDone: {} }); this.push('ai'); this.aiAsk(L_('Bu mahsulot menga qanchaga tushadi?'), { url: r.url }); };
     const base = { rsBusy: r.state === 'busy', rsOk: r.state === 'ok', rsNone: r.state === 'none', rsErr: r.state === 'err',
-      rsErrT: L_(r.code === 'limit' ? 'Bugungi skrinshot chegarasi tugadi' : "Hozir o'qiy olmadim"),
+      rsErrT: L_(r.code === 'limit' ? (isLink ? 'Bugungi savollar chegarasi tugadi' : 'Bugungi skrinshot chegarasi tugadi') : "Hozir o'qiy olmadim"),
       rsRetry: () => this.shotPick(), rsManual: () => this.openLanded(r.lc ? { ...r.lc } : {}),
-      rsHelper: () => { metrics.hit('quick', 'ai:where'); this.setState({ where: { ...(st.where || {}), find: true } }); this.go('home'); } };
+      rsHelper: () => { metrics.hit('quick', 'ai:where'); this.setState({ where: { ...(st.where || {}), find: true } }); this.go('home'); },
+      /* Havola manbasi: sarlavha, ikonka, "o'qilmadi" kartasi va tugmalar. */
+      rsIsLink: isLink, rsIsShot: !isLink, rsHost: r.host || '',
+      rsNoneT: L_(isLink ? "Havoladan narx o'qilmadi" : "Rasmdan narx o'qilmadi"),
+      rsRetryT: L_(isLink ? 'Skrinshot yuklash' : 'Qayta yuklash'),
+      rsHelperT: L_(isLink ? "Pochtam AI'dan so'rash" : 'Qayerdan topaman?'),
+      rsHelperGo: isLink ? askAi : () => { metrics.hit('quick', 'ai:where'); this.setState({ where: { ...(st.where || {}), find: true } }); this.go('home'); },
+      rsFoot: L_(isLink ? "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. Narx do'kon sahifasidan o'qildi, hisob ilovaniki." : "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. AI faqat rasmni o'qidi, hisob ilovaniki."),
+      rsHasUrl: !!(r.url || (r.lc && r.lc.url)), rsUrl: r.url || (r.lc && r.lc.url) || '' };
     if (r.state === 'busy') {
       /* Rasm o'qish bir so'rov (oqimsiz), shuning uchun bosqichlar vaqt
          bo'yicha: oxirgisi javob kelguncha "hozir" bo'lib turadi. Chiziq
          94% dan oshmaydi — to'lishi javob kelganini bildiradi. */
       const t = Math.max(0, Date.now() - (r.t0 || Date.now()));
-      const STEPS = ["Rasmni o'qiyapman", 'Narx va valyutani topyapman', "Do'kon va davlatni aniqlayapman", 'Kuryer, boj va jami narxni hisoblayapman'];
+      const STEPS = [isLink ? 'Sahifani ochyapman' : "Rasmni o'qiyapman", 'Narx va valyutani topyapman', "Do'kon va davlatni aniqlayapman", 'Kuryer, boj va jami narxni hisoblayapman'];
       const at = Math.min(STEPS.length - 1, Math.floor(t / 2200));
       return { ...base,
         rsSteps: STEPS.map((x, i) => ({ t: L_(x), done: i < at, now: i === at, idle: i !== at,
           bg: i < at ? '#0F7B3E' : i === at ? '#E9EAFD' : '#F1F1F8', fg: i < at ? '#131429' : '#A6A7BC' })),
         rsProg: Math.min(94, Math.round(100 * (1 - Math.exp(-t / 6000)))) + '%',
-        rsNoPrev: !r.prev, rsPrevCss: r.prev ? "url('" + r.prev + "')" : 'none' };
+        rsNoPrev: !r.prev && !isLink, rsPrevCss: r.prev ? "url('" + r.prev + "')" : 'none',
+        rsBusyT: L_(isLink ? "Havolani o'qiyapman" : "Skrinshotni o'qiyapman"),
+        rsBusySub: isLink ? tx(lang, "{0} · odatda 3–15 soniya. Jami narx va uning tarkibi shu yerda chiqadi.", r.host || '') : L_('Odatda 5–10 soniya. Jami narx va uning tarkibi shu yerda chiqadi.') };
     }
     if (r.state !== 'ok') return base;
     const C = this.landedCalc(r.lc, st);

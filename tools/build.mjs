@@ -60,6 +60,13 @@ function build(src) {
   /* Kanonik va OG manzillar: manbada GitHub Pages manzili turadi; o'z domen
      ulangan bo'lsa (CNAME) index.html da o'sha domen yoziladi. */
   if (SITE !== DEFAULT_SITE) src = src.split(DEFAULT_SITE).join(SITE);
+  /* Izohlar faqat manbada (2026-09-27): butun qatorni egallagan /* … *\/ va
+     <!-- … --> bloklari index.html ga tushmaydi — ~80 KB, gzip ~35 KB kam.
+     Kod bilan bir qatordagi izohga tegilmaydi; izoh tanasi birinchi *\/
+     yoki --> dan o'tmaydi, shuning uchun ikki izoh orasidagi kod yutilmaydi.
+     Manbadagi izohlar o'zgarmaydi — hujjat sifatida o'sha yerda. */
+  src = src.replace(/^[ \t]*<!--(?:[^-]|-(?!->))*-->[ \t]*\n/gm, '')
+    .replace(/^[ \t]*\/\*(?:[^*]|\*(?!\/))*\*\/[ \t]*\n/gm, '');
   return BANNER + src;
 }
 

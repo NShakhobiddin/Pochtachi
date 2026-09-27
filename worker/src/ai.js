@@ -31,6 +31,7 @@ import '../../core/customs.js';
 import '../../core/tariffs.js';
 import '../../core/landed.js';
 import * as KB from './kb.generated.js';
+import { safeLink, fetchPage, extractProduct, pageText, tldCountry, looksBlocked } from './link.js';
 
 const Core = globalThis.PochtamCore;
 export const AI_LIMITS = { q: 600, hist: 6, histText: 800, body: 1500000, rounds: 4 };
@@ -455,7 +456,9 @@ export function parseAiBody(text) {
   const shot = parseImage(d);
   if (typeof shot === 'string') return shot;
   const url = parseUrl(d.url);
-  if (!q && !shot && !url) return 'savol bo\'sh';
+  /* link — "havoladan jami narx": sahifa o'qiladi, javob skrinshot bilan bir xil (shot). */
+  const link = parseUrl(d.link);
+  if (!q && !shot && !url && !link) return 'savol bo\'sh';
   if (q.length > AI_LIMITS.q) return 'savol ' + AI_LIMITS.q + ' belgidan uzun';
   const lang = ['uz', 'uzc', 'ru'].includes(d.lang) ? d.lang : 'uz';
   const hist = [];
@@ -470,7 +473,7 @@ export function parseAiBody(text) {
   while (hist.length && hist[0].role !== 'user') hist.shift();
   if (hist.length && hist[hist.length - 1].role === 'user') hist.pop();
   const usdRate = num(d.usdRate);
-  return { q, shot, url, cart: parseCart(d.cart), lang, history: hist,
+  return { q, shot, url, link, cart: parseCart(d.cart), lang, history: hist,
     usdRate: usdRate >= 5000 && usdRate <= 50000 ? usdRate : 0, find: d.find === true, stream: d.stream === true };
 }
 
@@ -747,6 +750,24 @@ async function runAi({ parsed, env, count, fetchImpl, emit }) {
   const fetchFn0 = fetchImpl || globalThis.fetch;
   const usage = { input: 0, output: 0, cacheRead: 0 };
 
+  /* 0) Havola (link) — sahifadan nom, narx, valyuta; asosiy model
+     chaqirilmaydi, hisobni ilova qiladi (skrinshot kabi). */
+  if (parsed.link && !parsed.q && !parsed.shot) {
+    say({ t: 'status', s: 'link' });
+    const rl = await readLink({ url: parsed.link, usdRate, env, fetchFn: fetchFn0 });
+    if (rl.usage) { usage.input += rl.usage.input; usage.output += rl.usage.output; }
+    if (rl.err) {
+      console.log('ai link upstream', rl.err.status, rl.err.type || '', rl.err.error);
+      count('link_err');
+      return json({ error: 'AI vaqtincha mavjud emas', code: rl.err.status === 401 || rl.err.status === 403 ? 'key' : 'upstream' }, 503);
+    }
+    const shotL = rl.out;
+    count(shotL.found ? 'link' : 'link_empty'); count('link:' + rl.via);
+    const cartL = mergeCart(parsed.cart, shotL);
+    count('ok');
+    return json({ text: '', cards: buildCards({ shot: shotL, used: [], cart: cartL }), cart: cartL, shot: shotL, tools: [], model: rl.model || '', usage, stop: 'link', via: rl.via });
+  }
+
   /* 1) Rasm bo'lsa — avval arzon model o'qiydi (asosiy modelga rasm
      ko'rsatilmaydi). Natija joriy xaridga qo'shiladi. */
   let shot = null;
@@ -924,4 +945,68 @@ export async function readShot({ image, mime, usdRate, env, fetchFn }) {
   const u = msg.usage || {};
   if (msg.stop_reason === 'refusal' || !raw) return { unreadable: true, model: msg.model || base.model, usage: { input: u.input_tokens || 0, output: u.output_tokens || 0 } };
   return { out: normalizeShot(raw, usdRate), model: msg.model || base.model, usage: { input: u.input_tokens || 0, output: u.output_tokens || 0 } };
+}
+
+/* --- Havola → mahsulot ma'lumoti (skrinshot bilan bir xil shakl).
+   1) Sahifani Worker o'zi ochadi: JSON-LD / meta'dagi narx — AI'siz, bepul.
+   2) Tuzilgan ma'lumot yo'q, lekin matn bor — arzon model (AI_SHOT_MODEL)
+      matndan o'qiydi (~4 ming token).
+   3) Sayt Worker'ni to'sdi (captcha, 403) — asosiy model web_fetch bilan
+      o'qiydi (Anthropic serveri ochadi), faqat shu domen.
+   Javob: { out, via, model, usage } yoki { err }. via: jsonld | meta |
+   text | fetch | bad | none. --- */
+const LINK_PROMPT = 'Bu do\'kon sahifasining matni. Faqat matnda yozilgan ma\'lumotni ber: mahsulot nomi, joriy narx (chegirmali, eski narx emas), valyuta kodi, do\'kon nomi, kategoriya (ro\'yxatdan bittasi), do\'kon qaysi davlatdan yuborishi (domen, til, valyutadan; aniq bo\'lmasa bo\'sh), og\'irlik yozilgan bo\'lsa kilogrammda (bo\'lmasa 0). Taxmin qilma: narx topilmasa price 0, confidence 0. Javob faqat JSON.';
+const parseJsonLoose = text => {
+  try { return JSON.parse(text); } catch (e) { const m = /\{[\s\S]*\}/.exec(String(text || '')); if (m) { try { return JSON.parse(m[0]); } catch (e2) {} } }
+  return null;
+};
+export async function readLink({ url, usdRate, env, fetchFn }) {
+  const u = safeLink(url);
+  if (!u) return { out: { found: false }, via: 'bad' };
+  const host = u.hostname.toLowerCase().replace(/^www\./, '');
+  const kb = KB.STORES.find(s => s.domain && (host === s.domain || host.endsWith('.' + s.domain)));
+  const known = { store: kb ? kb.name : '', country: kb ? kb.country : tldCountry(host) };
+  const fill = (raw, conf) => {
+    const o = normalizeShot({ qty: 1, category: '', weightKg: 0, confidence: conf, ...raw,
+      store: known.store || raw.store || host, country: known.country || raw.country || '' }, usdRate);
+    return { ...o, url: u.href, host };
+  };
+  const page = await fetchPage(u.href, fetchFn);
+  const blocked = !page.ok || looksBlocked(page.html);
+  if (page.ok) {
+    const p = extractProduct(page.html);
+    if (p && p.price > 0) return { out: fill({ name: p.name, price: p.price, currency: p.currency, weightKg: p.weightKg, store: p.store || p.brand }, 0.95), via: p.source };
+  }
+  const usageOf = m => ({ input: (m.usage && m.usage.input_tokens) || 0, output: (m.usage && m.usage.output_tokens) || 0 });
+  const text = page.ok && !looksBlocked(page.html) ? pageText(page.html) : '';
+  if (text.length >= 300) {
+    const base = { model: env.AI_SHOT_MODEL || 'claude-haiku-4-5', max_tokens: SHOT_MAX_TOKENS,
+      messages: [{ role: 'user', content: LINK_PROMPT + '\n\nManzil: ' + u.href + '\n\n' + text }] };
+    let r = await callClaude({ ...base, output_config: { format: { type: 'json_schema', schema: SHOT_SCHEMA } } }, env, fetchFn);
+    if (r.error && r.status === 400 && /output_config|format|schema/i.test(r.error)) r = await callClaude(base, env, fetchFn);
+    if (r.error) return { err: r };
+    const msg = r.data || {};
+    const raw = parseJsonLoose((Array.isArray(msg.content) ? msg.content : []).filter(b => b.type === 'text').map(b => b.text).join('\n'));
+    if (raw && pos(raw.price) > 0) return { out: fill(raw, num(raw.confidence) || 0.7), via: 'text', model: msg.model || base.model, usage: usageOf(msg) };
+    if (!blocked) return { out: { found: false, url: u.href, host }, via: 'none', model: msg.model || base.model, usage: usageOf(msg) };
+  }
+  if (!blocked) return { out: { found: false, url: u.href, host }, via: 'none' };
+  /* 3) web_fetch: sahifani Anthropic ochadi. Fikrlash past, bitta o'qish. */
+  const body = { model: env.AI_MODEL || DEFAULT_MODEL, max_tokens: 1500,
+    tools: [{ type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 1, max_content_tokens: 8000, allowed_domains: [host] }],
+    output_config: { effort: 'low' },
+    messages: [{ role: 'user', content: 'Sahifani web_fetch bilan och: ' + u.href + '\n' + LINK_PROMPT + ' Kalitlar: name, price, currency, store, category, country, weightKg, confidence.' }] };
+  const messages = body.messages;
+  let msg = null, usage = { input: 0, output: 0 };
+  for (let i = 0; i < 3; i++) {
+    const r = await callClaude({ ...body, messages }, env, fetchFn);
+    if (r.error) return { err: r };
+    msg = r.data || {};
+    const uu = usageOf(msg); usage.input += uu.input; usage.output += uu.output;
+    if (msg.stop_reason !== 'pause_turn') break;
+    messages.push({ role: 'assistant', content: msg.content });
+  }
+  const raw = parseJsonLoose((Array.isArray(msg && msg.content) ? msg.content : []).filter(b => b.type === 'text').map(b => b.text).join('\n'));
+  if (raw && pos(raw.price) > 0) return { out: fill(raw, num(raw.confidence) || 0.7), via: 'fetch', model: msg.model || body.model, usage };
+  return { out: { found: false, url: u.href, host }, via: 'none', model: (msg && msg.model) || body.model, usage };
 }

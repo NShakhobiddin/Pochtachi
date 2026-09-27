@@ -458,5 +458,59 @@ check('purge: 90 kun yangilanmagan holat o\'chadi (200 dan ortiq ham), yangisi q
 check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit('/partner/status', { method: 'POST', headers: { authorization: 'Bearer sir' }, body: '{}' })).status === 503
   && JSON.stringify(await (await hit('/track', { method: 'POST', headers: { origin: 'https://x' }, body: '{"q":[{"c":"d2d","n":"RB123456789CN"}]}' })).json()) === '{"r":[]}');
 
+/* --- Havola orqali o'qish (link): sahifa → skrinshot bilan bir xil shot. --- */
+{
+  const L = await import('./src/link.js');
+  check('safeLink: https do\'kon — ha; IP, localhost, port, login — yo\'q', !!L.safeLink('https://www.trendyol.com/x-p-1') && !L.safeLink('http://127.0.0.1/x') && !L.safeLink('https://localhost/x') && !L.safeLink('https://shop.com:8080/x') && !L.safeLink('https://a:b@shop.com/x') && !L.safeLink('ftp://shop.com/x') && !L.safeLink('https://printer.local/x'));
+  check('parsePrice: 1,299.00 · 1.299,00 · 129,99 · 1 299 · 12.345.678', L.parsePrice('1,299.00') === 1299 && L.parsePrice('1.299,00') === 1299 && L.parsePrice('129,99') === 129.99 && L.parsePrice('1 299') === 1299 && L.parsePrice('12.345.678') === 12345678 && L.parsePrice('') === 0);
+  check('toKg: 800 g, 2 lb, KGM', L.toKg(800, 'GRM') === 0.8 && Math.abs(L.toKg(2, 'lb') - 0.907) < 0.01 && L.toKg('1.5', 'KGM') === 1.5);
+  const ld = '<html><head><title>X</title><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList"},{"@type":"Product","name":"Nike Air Max 90 &amp; Co","brand":{"name":"Nike"},"weight":{"value":"850","unitCode":"GRM"},"offers":[{"@type":"Offer","price":"2.499,90","priceCurrency":"try"}]}]}</script></head></html>';
+  const p1 = L.extractProduct(ld);
+  check('extractProduct: JSON-LD @graph → nom, narx (1.234,56 shakli), valyuta, vazn', p1 && p1.source === 'jsonld' && p1.name === 'Nike Air Max 90 & Co' && p1.price === 2499.9 && p1.currency === 'TRY' && p1.weightKg === 0.85, JSON.stringify(p1));
+  const agg = L.extractProduct('<script type="application/ld+json">[{"@type":["Product"],"name":"Kurtka","offers":{"@type":"AggregateOffer","lowPrice":39.5,"priceCurrency":"USD"}}]</script>');
+  check('extractProduct: AggregateOffer lowPrice', agg && agg.price === 39.5 && agg.currency === 'USD');
+  const mt = L.extractProduct('<meta property="og:title" content="Krem 50 ml"><meta property="og:site_name" content="Olive Young"><meta property="product:price:amount" content="25,000"><meta property="product:price:currency" content="KRW">');
+  check('extractProduct: meta (og/product:price) zaxira', mt && mt.source === 'meta' && mt.price === 25000 && mt.currency === 'KRW' && mt.name === 'Krem 50 ml' && mt.store === 'Olive Young', JSON.stringify(mt));
+  check('extractProduct: narxsiz sahifa — null', L.extractProduct('<title>Bosh sahifa</title><p>Salom</p>') === null);
+  check('pageText: skript va uslubsiz, sarlavha bilan', /^Sarlavha: Kurtka/.test(L.pageText('<title>Kurtka</title><style>.a{}</style><script>var x=1</script><p>Narx: $49.99</p>')) && !/var x/.test(L.pageText('<script>var x=1</script>')));
+  check('tldCountry: .co.uk, .com.tr, .cn; .com — noma\'lum', L.tldCountry('shop.co.uk') === 'Angliya' && L.tldCountry('trendyol.com.tr') === 'Turkiya' && L.tldCountry('jd.cn') === 'Xitoy' && L.tldCountry('nike.com') === '');
+
+  const html = (body, ct = 'text/html; charset=utf-8', status = 200) => new Response(body, { status, headers: { 'content-type': ct } });
+  const linkAsk = (link, fetchFn, ip) => worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': ip },
+    body: JSON.stringify({ link, lang: 'uz', usdRate: 12650 }) }), aiEnv({ AI_FETCH: fetchFn }), ctx);
+  /* 1) JSON-LD: Claude umuman chaqirilmaydi. */
+  const calls1 = [];
+  const r1 = await linkAsk('https://www.trendyol.com/nike/air-max-p-123', async (u, i) => { calls1.push(String(u)); return /anthropic/.test(u) ? claudeText('x') : html(ld); }, '4.4.4.1');
+  const j1 = await r1.json();
+  check('link: JSON-LD → shot (TRY, vazn, do\'kon bazadan), Claude chaqirilmaydi, stop link', r1.status === 200 && j1.stop === 'link' && j1.via === 'jsonld' && j1.shot.found && j1.shot.currency === 'TRY' && j1.shot.weightKg === 0.85 && j1.shot.store === 'Trendyol' && j1.shot.country === 'Turkiya' && j1.shot.url === 'https://www.trendyol.com/nike/air-max-p-123' && calls1.length === 1 && !calls1.some(u => /anthropic/.test(u)) && j1.cards[0].type === 'product', JSON.stringify(j1).slice(0, 200));
+  /* 2) Tuzilgan ma'lumot yo'q — sahifa matni arzon modelga. */
+  const calls2 = [];
+  const txt = '<title>Winter jacket</title><body>' + 'Warm winter jacket for men. '.repeat(20) + ' Price: £59.99 </body>';
+  const r2 = await linkAsk('https://shop.example.co.uk/jacket', async (u, i) => { calls2.push(i && i.body ? JSON.parse(i.body) : String(u));
+    if (/anthropic/.test(u)) return new Response(JSON.stringify({ model: 'claude-haiku-4-5', stop_reason: 'end_turn', usage: { input_tokens: 3000, output_tokens: 50 },
+      content: [{ type: 'text', text: JSON.stringify({ name: 'Winter jacket', price: 59.99, currency: 'GBP', qty: 1, store: 'Example', category: 'kiyim', country: '', weightKg: 0, confidence: 0.85 }) }] }), { status: 200 });
+    return html(txt); }, '4.4.4.2');
+  const j2 = await r2.json();
+  const cl2 = calls2.find(x => x && x.model);
+  check('link: matn → arzon model (sxema bilan, sahifa matni ichida), GBP, davlat domendan', r2.status === 200 && j2.via === 'text' && j2.shot.found && j2.shot.currency === 'GBP' && j2.shot.country === 'Angliya' && cl2 && cl2.model === 'claude-haiku-4-5' && cl2.output_config.format.type === 'json_schema' && /Price: £59\.99/.test(cl2.messages[0].content) && !cl2.tools, JSON.stringify(j2).slice(0, 200));
+  /* 3) Sayt to'sdi (403) — asosiy model web_fetch bilan, faqat shu domen. */
+  const calls3 = [];
+  const r3 = await linkAsk('https://www.amazon.com/dp/B0TEST', async (u, i) => { if (/anthropic/.test(u)) { calls3.push(JSON.parse(i.body));
+      return new Response(JSON.stringify({ model: 'claude-sonnet-5', stop_reason: 'end_turn', usage: { input_tokens: 5000, output_tokens: 80 },
+        content: [{ type: 'server_tool_use', id: 's1', name: 'web_fetch', input: { url: 'https://www.amazon.com/dp/B0TEST' } }, { type: 'text', text: 'Natija: {"name":"Echo Dot","price":49.99,"currency":"USD","store":"Amazon","category":"elektronika","country":"AQSh","weightKg":0.3,"confidence":0.9}' }] }), { status: 200 }); }
+    return html('<html>Robot Check — enter the characters</html>'); }, '4.4.4.3');
+  const j3 = await r3.json();
+  check('link: to\'silgan sayt → web_fetch (faqat amazon.com), USD, do\'kon bazadan', r3.status === 200 && j3.via === 'fetch' && j3.shot.found && j3.shot.priceUsd === 49.99 && j3.shot.store === 'Amazon' && calls3.length === 1 && calls3[0].tools[0].type === 'web_fetch_20260209' && calls3[0].tools[0].allowed_domains[0] === 'amazon.com' && calls3[0].output_config.effort === 'low', JSON.stringify(j3).slice(0, 200));
+  /* 4) Xavfli manzil — sahifa ham, Claude ham chaqirilmaydi. */
+  let calls4 = 0;
+  const j4 = await (await linkAsk('https://192.168.1.1/admin', async () => { calls4++; return html(''); }, '4.4.4.4')).json();
+  check('link: IP-manzil — ochilmaydi, found=false', j4.stop === 'link' && j4.via === 'bad' && j4.shot.found === false && calls4 === 0 && j4.cards.length === 0);
+  /* 5) Sahifa ochildi, lekin narx yo'q (qisqa) — found=false, Claude'siz. */
+  let calls5 = 0;
+  const j5 = await (await linkAsk('https://nike.com/', async (u) => { if (/anthropic/.test(u)) calls5++; return html('<title>Nike</title><p>Just do it</p>'); }, '4.4.4.5')).json();
+  check('link: narxsiz qisqa sahifa — found=false, AI chaqirilmaydi', j5.via === 'none' && j5.shot.found === false && calls5 === 0, JSON.stringify(j5).slice(0, 120));
+  check('parseAiBody: faqat link — to\'g\'ri; buzuq link — bo\'sh', parseAiBody(JSON.stringify({ link: 'https://a.com/x' })).link === 'https://a.com/x' && typeof parseAiBody(JSON.stringify({ link: 'javascript:alert(1)' })) === 'string');
+}
+
 console.log(fails ? `\n${fails} ta tekshiruv o'tmadi.` : '\nWorker testlari o\'tdi.');
 process.exit(fails ? 1 : 0);
