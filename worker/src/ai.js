@@ -31,7 +31,7 @@ import '../../core/customs.js';
 import '../../core/tariffs.js';
 import '../../core/landed.js';
 import * as KB from './kb.generated.js';
-import { safeLink, fetchPage, extractProduct, pageText, tldCountry, looksBlocked } from './link.js';
+import { safeLink, fetchPage, extractProduct, pageText, tldCountry, tldCurrency, looksBlocked } from './link.js';
 
 const Core = globalThis.PochtamCore;
 export const AI_LIMITS = { q: 600, hist: 6, histText: 800, body: 1500000, rounds: 4 };
@@ -975,6 +975,7 @@ export async function readLink({ url, usdRate, env, fetchFn }) {
   const known = { store: kb ? kb.name : '', country: kb ? kb.country : tldCountry(host) };
   const fill = (raw, conf) => {
     const o = normalizeShot({ qty: 1, category: '', weightKg: 0, confidence: conf, ...raw,
+      currency: raw.currency || tldCurrency(host),
       store: known.store || raw.store || host, country: known.country || raw.country || '' }, usdRate);
     return { ...o, url: fin.href, host };
   };
@@ -993,11 +994,15 @@ export async function readLink({ url, usdRate, env, fetchFn }) {
       messages: [{ role: 'user', content: LINK_PROMPT + '\n\nManzil: ' + u.href + '\n\n' + text }] };
     let r = await callClaude({ ...base, output_config: { format: { type: 'json_schema', schema: SHOT_SCHEMA } } }, env, fetchFn);
     if (r.error && r.status === 400 && /output_config|format|schema/i.test(r.error)) r = await callClaude(base, env, fetchFn);
-    if (r.error) return { err: r };
-    const msg = r.data || {};
-    const raw = parseJsonLoose((Array.isArray(msg.content) ? msg.content : []).filter(b => b.type === 'text').map(b => b.text).join('\n'));
-    if (raw && pos(raw.price) > 0) return { out: fill(raw, num(raw.confidence) || 0.7), via: 'text', model: msg.model || base.model, usage: usageOf(msg), page: pinfo };
-    textUsage = usageOf(msg);
+    /* Kalit xatosi — 503 (ilova "AI mavjud emas" deydi); boshqa xato
+       (ortiqcha yuk, tarmoq) — keyingi yo'l sinaladi. */
+    if (r.error && (r.status === 401 || r.status === 403)) return { err: r };
+    if (!r.error) {
+      const msg = r.data || {};
+      const raw = parseJsonLoose((Array.isArray(msg.content) ? msg.content : []).filter(b => b.type === 'text').map(b => b.text).join('\n'));
+      if (raw && pos(raw.price) > 0) return { out: fill(raw, num(raw.confidence) || 0.7), via: 'text', model: msg.model || base.model, usage: usageOf(msg), page: pinfo };
+      textUsage = usageOf(msg);
+    }
   }
   /* Qisqa sahifa (narxsiz bosh sahifa va h.k.) — web_fetch ham yordam bermaydi. */
   if (!blocked && text.length < 300) return { out: { found: false, url: u.href, host }, via: 'none', page: pinfo };
@@ -1010,13 +1015,15 @@ export async function readLink({ url, usdRate, env, fetchFn }) {
   let msg = null, usage = { ...textUsage };
   for (let i = 0; i < 3; i++) {
     const r = await callClaude({ ...body, messages }, env, fetchFn);
-    if (r.error) return { err: r };
+    if (r.error && (r.status === 401 || r.status === 403)) return { err: r };
+    /* Boshqa xato — "narx o'qilmadi" (skrinshot taklif qilinadi), 503 emas. */
+    if (r.error) { console.log('ai link fetch', r.status, r.type || '', r.error); msg = null; break; }
     msg = r.data || {};
     const uu = usageOf(msg); usage.input += uu.input; usage.output += uu.output;
     if (msg.stop_reason !== 'pause_turn') break;
     messages.push({ role: 'assistant', content: msg.content });
   }
-  const raw = parseJsonLoose((Array.isArray(msg && msg.content) ? msg.content : []).filter(b => b.type === 'text').map(b => b.text).join('\n'));
+  const raw = msg ? parseJsonLoose((Array.isArray(msg.content) ? msg.content : []).filter(b => b.type === 'text').map(b => b.text).join('\n')) : null;
   if (raw && pos(raw.price) > 0) return { out: fill(raw, num(raw.confidence) || 0.7), via: 'fetch', model: msg.model || body.model, usage, page: pinfo };
   return { out: { found: false, url: u.href, host }, via: 'none', model: (msg && msg.model) || body.model, usage, page: pinfo };
 }

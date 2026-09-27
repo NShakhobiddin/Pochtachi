@@ -31,44 +31,64 @@ export function safeLink(u) {
   return x;
 }
 
-/* Sahifani yuklaydi: vaqt va hajm chegarasi bilan. Javob:
-   { ok, status, html, url } — ok faqat 2xx va HTML bo'lsa. */
+/* Sahifani yuklaydi: vaqt (hammasi uchun bitta) va hajm chegarasi bilan.
+   Yo'naltirishlar qo'lda, 5 tagacha: har keyingi manzil ham safeLink dan
+   o'tadi — ochiq manzil ichki yoki IP manzilga yo'naltira olmaydi.
+   Kodlash: sarlavhadagi yoki <meta charset> dagi (GBK, Shift_JIS…), bilmasa
+   UTF-8. Javob: { ok, status, html, url } — ok faqat 2xx va HTML bo'lsa. */
+const HEADERS = {
+  /* Desktop sahifa: mobil versiyada narx bloklari boshqa nomda va
+     kamroq tuzilgan ma'lumot bo'ladi. */
+  'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36 PochtamLinkReader/1.0',
+  accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.5',
+  'accept-language': 'en-US,en;q=0.8,ru;q=0.6'
+};
+const cancel = async res => { try { if (res.body && res.body.cancel) await res.body.cancel(); } catch (e) {} };
+export function charsetOf(ct, head) {
+  const m = /charset\s*=\s*["']?([\w-]+)/i.exec(String(ct || '')) || /<meta[^>]+charset\s*=\s*["']?([\w-]+)/i.exec(String(head || ''));
+  return m ? m[1].toLowerCase() : 'utf-8';
+}
 export async function fetchPage(url, fetchFn, ms = LINK_TIMEOUT_MS) {
-  const init = {
-    method: 'GET', redirect: 'follow',
-    headers: {
-      /* Desktop sahifa: mobil versiyada narx bloklari boshqa nomda va
-         kamroq tuzilgan ma'lumot bo'ladi. */
-      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36 PochtamLinkReader/1.0',
-      accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.5',
-      'accept-language': 'en-US,en;q=0.8,ru;q=0.6'
+  const deadline = Date.now() + ms;
+  let cur = url;
+  for (let hop = 0; hop <= 5; hop++) {
+    const init = { method: 'GET', redirect: 'manual', headers: HEADERS };
+    if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) init.signal = AbortSignal.timeout(Math.max(500, deadline - Date.now()));
+    let res;
+    try { res = await fetchFn(cur, init); } catch (e) { return { ok: false, status: 0, html: '', url: cur }; }
+    const loc = res.headers && res.headers.get && res.headers.get('location');
+    if (res.status >= 300 && res.status < 400 && loc) {
+      await cancel(res);
+      let next = null;
+      try { next = safeLink(new URL(loc, cur).href); } catch (e) { next = null; }
+      if (!next) return { ok: false, status: res.status, html: '', url: cur };
+      cur = next.href;
+      continue;
     }
-  };
-  if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) init.signal = AbortSignal.timeout(ms);
-  let res;
-  try { res = await fetchFn(url, init); } catch (e) { return { ok: false, status: 0, html: '', url }; }
-  const ct = (res.headers && res.headers.get && res.headers.get('content-type')) || '';
-  const finalUrl = res.url || url;
-  if (!res.ok || (ct && !/html|xml/i.test(ct))) {
-    try { if (res.body && res.body.cancel) await res.body.cancel(); } catch (e) {}
-    return { ok: false, status: res.status || 0, html: '', url: finalUrl };
-  }
-  let html = '';
-  if (res.body && typeof res.body.getReader === 'function') {
-    const rd = res.body.getReader(), dec = new TextDecoder('utf-8');
-    let n = 0;
-    for (;;) {
-      let chunk;
-      try { chunk = await rd.read(); } catch (e) { break; }
-      if (chunk.done) break;
-      n += chunk.value.byteLength;
-      html += dec.decode(chunk.value, { stream: true });
-      if (n >= LINK_MAX_BYTES) { try { await rd.cancel(); } catch (e) {} break; }
+    const ct = (res.headers && res.headers.get && res.headers.get('content-type')) || '';
+    if (!res.ok || (ct && !/html|xml/i.test(ct))) { await cancel(res); return { ok: false, status: res.status || 0, html: '', url: cur }; }
+    const parts = []; let n = 0;
+    if (res.body && typeof res.body.getReader === 'function') {
+      const rd = res.body.getReader();
+      for (;;) {
+        let chunk;
+        try { chunk = await rd.read(); } catch (e) { break; }
+        if (chunk.done) break;
+        parts.push(chunk.value); n += chunk.value.byteLength;
+        if (n >= LINK_MAX_BYTES) { try { await rd.cancel(); } catch (e) {} break; }
+      }
+    } else {
+      try { const b = new Uint8Array(await res.arrayBuffer()); parts.push(b.subarray(0, LINK_MAX_BYTES)); n = parts[0].byteLength; } catch (e) {}
     }
-  } else {
-    try { html = String(await res.text()).slice(0, LINK_MAX_BYTES); } catch (e) { html = ''; }
+    const buf = new Uint8Array(n); let o = 0;
+    for (const p of parts) { const take = Math.min(p.byteLength, n - o); buf.set(p.subarray(0, take), o); o += take; }
+    let head = ''; for (let k = 0; k < Math.min(4096, n); k++) head += String.fromCharCode(buf[k]);
+    let dec;
+    try { dec = new TextDecoder(charsetOf(ct, head)); } catch (e) { dec = new TextDecoder('utf-8'); }
+    const html = dec.decode(buf);
+    return { ok: html.length > 0, status: res.status || 200, html, url: cur };
   }
-  return { ok: html.length > 0, status: res.status || 200, html, url: finalUrl };
+  return { ok: false, status: 310, html: '', url: cur };
 }
 
 /* "1,299.00" · "1.299,00" · "129.99" · "1 299" · "12900" → son. */
@@ -223,6 +243,16 @@ export function tldCountry(host) {
   const h = String(host || '').toLowerCase();
   const map = [[/\.(cn|com\.cn|hk)$/, 'Xitoy'], [/\.(com\.)?tr$/, 'Turkiya'], [/\.(co\.)?uk$/, 'Angliya'], [/\.de$/, 'Germaniya'],
     [/\.(co\.)?kr$/, 'Koreya'], [/\.ae$/, 'BAA'], [/\.ru$/, 'Rossiya']];
+  for (const [re, c] of map) if (re.test(h)) return c;
+  return '';
+}
+
+/* Narxda valyuta yozilmagan bo'lsa — domen oxiridan (bo'lmasa bo'sh:
+   normalizeShot USD deb oladi). */
+export function tldCurrency(host) {
+  const h = String(host || '').toLowerCase();
+  const map = [[/\.(cn|com\.cn)$/, 'CNY'], [/\.(com\.)?tr$/, 'TRY'], [/\.(co\.)?uk$/, 'GBP'], [/\.(de|fr|it|es|nl|at|be|fi|ie|pt)$/, 'EUR'],
+    [/\.(co\.)?kr$/, 'KRW'], [/\.ae$/, 'AED'], [/\.ru$/, 'RUB'], [/\.(co\.)?jp$/, 'JPY']];
   for (const [re, c] of map) if (re.test(h)) return c;
   return '';
 }

@@ -524,10 +524,36 @@ check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit(
     return html(long); }, '4.4.4.6')).json();
   check('link: matndan narx chiqmasa web_fetch sinaladi (arzon → asosiy), EUR, sahifa holati javobda', j6.via === 'fetch' && j6.shot.found && j6.shot.currency === 'EUR' && calls6.join(',') === 'claude-haiku-4-5,claude-sonnet-5:tools' && j6.page && j6.page.status === 200 && j6.page.blocked === false && j6.usage.input === 6000, JSON.stringify({ via: j6.via, calls6, page: j6.page, u: j6.usage }));
   /* Qisqa havola yo'naltiradi — do'kon oxirgi manzildan, web_fetch ikkala domenga. */
-  const j7 = await (await linkAsk('https://a.co/d/abc123', async (u) => { if (/anthropic/.test(u)) return claudeText('x');
-      const r = html(ld); Object.defineProperty(r, 'url', { value: 'https://www.amazon.com/dp/B0TEST' }); return r; }, '4.4.4.7')).json();
+  const redirs7 = [];
+  const j7 = await (await linkAsk('https://a.co/d/abc123', async (u, i) => { if (/anthropic/.test(u)) return claudeText('x'); redirs7.push(String(u) + ':' + (i && i.redirect));
+      if (/a\.co\//.test(u)) return new Response('', { status: 301, headers: { location: 'https://www.amazon.com/dp/B0TEST' } });
+      return html(ld); }, '4.4.4.7')).json();
+  check('link: yo\'naltirish qo\'lda (redirect: manual), har qadam tekshiriladi', redirs7.length === 2 && redirs7.every(x => /:manual$/.test(x)), redirs7.join(' | '));
   check('link: qisqa havola (a.co) → oxirgi manzil amazon.com: do\'kon Amazon, url oxirgisi', j7.shot.found && j7.shot.store === 'Amazon' && j7.shot.url === 'https://www.amazon.com/dp/B0TEST' && j7.shot.host === 'amazon.com', JSON.stringify(j7.shot).slice(0, 160));
   check('parseAiBody: uzun (2000 gacha) Amazon havolasi qabul qilinadi', parseAiBody(JSON.stringify({ link: 'https://www.amazon.com/dp/B0X?' + 'a=1&'.repeat(200) })).link.length > 400);
+  /* Ochiq manzil ichki manzilga yo'naltirsa — ochilmaydi. */
+  const seen8 = [];
+  const j8 = await (await linkAsk('https://evil.example.com/r', async (u) => { seen8.push(String(u)); if (/anthropic/.test(u)) return claudeText('x');
+      return new Response('', { status: 302, headers: { location: 'http://169.254.169.254/latest/meta-data' } }); }, '4.4.4.8')).json();
+  check('link: ichki/IP manzilga yo\'naltirish — ochilmaydi, found=false', j8.shot.found === false && !seen8.some(u => /169\.254/.test(u)), seen8.join(' | '));
+  /* GBK sahifa to'g'ri o'qiladi (sarlavhadagi charset). */
+  const gbkBytes = Buffer.from([0x3c,0x6d,0x65,0x74,0x61,0x20,0x70,0x72,0x6f,0x70,0x65,0x72,0x74,0x79,0x3d,0x22,0x6f,0x67,0x3a,0x74,0x69,0x74,0x6c,0x65,0x22,0x20,0x63,0x6f,0x6e,0x74,0x65,0x6e,0x74,0x3d,0x22,0xc4,0xd0,0xd0,0xac,0x22,0x3e,0x3c,0x6d,0x65,0x74,0x61,0x20,0x70,0x72,0x6f,0x70,0x65,0x72,0x74,0x79,0x3d,0x22,0x70,0x72,0x6f,0x64,0x75,0x63,0x74,0x3a,0x70,0x72,0x69,0x63,0x65,0x3a,0x61,0x6d,0x6f,0x75,0x6e,0x74,0x22,0x20,0x63,0x6f,0x6e,0x74,0x65,0x6e,0x74,0x3d,0x22,0x39,0x39,0x22,0x3e,0x3c,0x6d,0x65,0x74,0x61,0x20,0x70,0x72,0x6f,0x70,0x65,0x72,0x74,0x79,0x3d,0x22,0x70,0x72,0x6f,0x64,0x75,0x63,0x74,0x3a,0x70,0x72,0x69,0x63,0x65,0x3a,0x63,0x75,0x72,0x72,0x65,0x6e,0x63,0x79,0x22,0x20,0x63,0x6f,0x6e,0x74,0x65,0x6e,0x74,0x3d,0x22,0x43,0x4e,0x59,0x22,0x3e]);
+  const j9 = await (await linkAsk('https://shop.example.cn/p/1', async (u) => /anthropic/.test(u) ? claudeText('x') : new Response(gbkBytes, { status: 200, headers: { 'content-type': 'text/html; charset=gbk' } }), '4.4.4.9')).json();
+  check('link: GBK kodlangan sahifa — nom to\'g\'ri (男鞋), CNY', j9.shot.found && j9.shot.name === '男鞋' && j9.shot.currency === 'CNY', JSON.stringify(j9.shot).slice(0, 120));
+  /* JSON-LD da valyuta yo'q — domendan (.com.tr → TRY). */
+  const j10 = await (await linkAsk('https://www.example.com.tr/p/2', async (u) => /anthropic/.test(u) ? claudeText('x') : html('<script type="application/ld+json">{"@type":"Product","name":"Ceket","offers":{"price":"1499.90"}}</script>'), '4.4.4.10')).json();
+  check('link: valyutasiz narx — domendan TRY (USD emas)', j10.shot.found && j10.shot.currency === 'TRY' && j10.shot.country === 'Turkiya', JSON.stringify(j10.shot).slice(0, 120));
+  /* Arzon model yiqilsa (529) — 503 emas, web_fetch sinaladi. */
+  const calls11 = [];
+  const j11r = await linkAsk('https://shop.example.de/k2', async (u, i) => { if (/anthropic/.test(u)) { const b = JSON.parse(i.body); calls11.push(b.tools ? 'fetch' : 'text');
+      if (!b.tools) return new Response(JSON.stringify({ error: { type: 'overloaded_error', message: 'Overloaded' } }), { status: 529 });
+      return new Response(JSON.stringify({ model: 'm', stop_reason: 'end_turn', usage: {}, content: [{ type: 'text', text: '{"name":"Kurtka","price":50,"currency":"EUR"}' }] }), { status: 200 }); }
+    return html(long); }, '4.4.4.11');
+  const j11 = await j11r.json();
+  check('link: arzon model yiqilsa 503 emas — web_fetch bilan topiladi', j11r.status === 200 && j11.via === 'fetch' && j11.shot.found && calls11.join(',') === 'text,fetch', JSON.stringify({ s: j11r.status, via: j11.via, calls11 }));
+  const j12r = await linkAsk('https://shop.example.de/k3', async (u, i) => { if (/anthropic/.test(u)) return new Response(JSON.stringify({ error: { type: 'overloaded_error', message: 'Overloaded' } }), { status: 529 }); return html(long); }, '4.4.4.12');
+  const j12 = await j12r.json();
+  check('link: ikkala AI yo\'li yiqilsa — 200, found=false ("narx o\'qilmadi", skrinshot taklifi)', j12r.status === 200 && j12.shot.found === false, JSON.stringify({ s: j12r.status, shot: j12.shot }));
   check('parseAiBody: faqat link — to\'g\'ri; buzuq link — bo\'sh', parseAiBody(JSON.stringify({ link: 'https://a.com/x' })).link === 'https://a.com/x' && typeof parseAiBody(JSON.stringify({ link: 'javascript:alert(1)' })) === 'string');
 }
 

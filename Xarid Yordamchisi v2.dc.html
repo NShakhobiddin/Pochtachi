@@ -5210,6 +5210,16 @@ function etaText(days, lang) {
   if (lang === 'ru') return 'примерно до ' + day + ' ' + ETA_MONTHS.ru[mon];
   return tx(lang, 'taxminan {0}-{1}gacha', day, tr(lang, ETA_MONTHS.uz[mon]));
 }
+/* Kuryer muddati bazada o'zbekcha erkin matn ("7–10 kun (sayt umumiy
+   va'da)", "5–7 ish kuni Xitoy omboridan"). Lug'atda bo'lsa — tarjima;
+   ruschada lug'atda yo'q bo'lsa faqat muddatning o'zi ("7–10 дн."), aks
+   holda o'zbekcha dum qolib ketardi. Kirill rejimini tr() o'giradi. */
+const trDays = (lang, d) => {
+  const s = String(d || ''), t = tr(lang, s);
+  if (lang !== 'ru' || t !== s) return t;
+  const m = /^\s*(\d+(?:\s*[–-]\s*\d+)?)\s*(ish\s+kuni|kun)/i.exec(s);
+  return m ? m[1].replace(/\s+/g, '') + (/ish/i.test(m[2]) ? ' раб. дн.' : ' дн.') : t;
+};
 /* Do'konning yetkazish davlatlari: `from` bo'lmasa — bitta `country`. */
 const storeFrom = s => (Array.isArray(s.from) && s.from.length ? s.from : [s.country]).filter(Boolean);
 const COUNTRY_FLAG = Object.fromEntries(STORE_COUNTRIES.map(([k, , , f]) => [k, f]));
@@ -6039,7 +6049,10 @@ class Component extends DCLogic {
       return true;
     });
     const s = this.state.sort;
-    return [...list].sort((a, b) => s === 'price' ? a.price - b.price : s === 'days' ? a.dnum - b.dnum : b.nRoutes - a.nRoutes);
+    /* Saralash sahifada ikkitagina: Arzonroq / Tezroq. Eski saqlangan
+       "routes" (Davlatlar) — narx bo'yicha, aks holda "Arzonroq" belgilangan
+       turib ro'yxat boshqacha tartibda chiqardi. */
+    return [...list].sort((a, b) => s === 'days' ? a.dnum - b.dnum : a.price - b.price);
   }
 
   _rootRef = React.createRef();
@@ -6784,7 +6797,7 @@ class Component extends DCLogic {
       b4m: list.map(b => ({
         name: b.c.name, logoCss: b.c.logoCss, logoFit: b.c.logoFit, logoBg: b.c.logoBg,
         sub: [b.pct > 0 ? tx(lang, 'Xizmat haqi {0}%', b.pct) + (b.fee > 0 ? ' ≈ $' + b.fee.toFixed(2) : '') : L('Haqini kuryer aytadi'),
-          b.ship > 0 ? tx(lang, 'kargo ${0}', b.ship.toFixed(2)) : '', b.days ? tr(lang, b.days) : ''].filter(Boolean).join(' · '),
+          b.ship > 0 ? tx(lang, 'kargo ${0}', b.ship.toFixed(2)) : '', b.days ? trDays(lang, b.days) : ''].filter(Boolean).join(' · '),
         aria: tx(lang, '{0} ga Telegramda yozish', b.c.name),
         go: () => {
           metrics.hit('quick', 'b4m:' + b.c.id);
@@ -7545,10 +7558,10 @@ class Component extends DCLogic {
       rsCourierSub: sel ? '' : (noCourier
         ? L_("Jami narxda faqat tovar narxi va boj hisoblandi. Boshqa davlatdan olib kelish yo'lini ko'ring.")
         : L_("Bu yo'nalishda kuryerlar bor, lekin narxi jadvalda yo'q — kuryerdan so'rab, kargoni qo'shing.")),
-      rsDays: sel && sel.days ? tr(lang, sel.days) : '', rsShip: sel ? '$' + sel.usd.toFixed(2) : '', rsFastOn: !!(fast && sel && fast !== sel),
+      rsDays: sel && sel.days ? trDays(lang, sel.days) : '', rsShip: sel ? '$' + sel.usd.toFixed(2) : '', rsFastOn: !!(fast && sel && fast !== sel),
       /* Tepadagi javob qatori: kuryer · muddat · taxminiy sana. */
-      rsEta: sel ? [sel.name, sel.days ? tr(lang, sel.days) : '', etaText(sel.days, lang)].filter(Boolean).join(' · ') : '',
-      rsFast: fast ? fast.name + ' — ' + (fast.days ? tr(lang, fast.days) : '') + ', $' + fast.usd.toFixed(2) : '',
+      rsEta: sel ? [sel.name, sel.days ? trDays(lang, sel.days) : '', etaText(sel.days, lang)].filter(Boolean).join(' · ') : '',
+      rsFast: fast ? fast.name + ' — ' + (fast.days ? trDays(lang, fast.days) : '') + ', $' + fast.usd.toFixed(2) : '',
       rsKg: kgIn > 0 ? tx(lang, 'Og\'irlik {0} kg (sahifadan)', kgTxt) : tx(lang, "Taxminiy og'irlik {0} kg ({1})", kgTxt, tr(lang, catDef.label)),
       rsRows: rows, rsBar: bar, rsTotal: '$' + L.totalUsd.toFixed(2), rsTotalUzs: money(Math.round(L.totalUzs)) + " so'm",
       rsRate: tx(lang, "1 USD = {0} so'm, Markaziy bank kursi", money(Math.round(L.usdRate))),
@@ -7904,7 +7917,7 @@ class Component extends DCLogic {
         logoCss:s.logoCss, logoFit:'contain', logoBg:'transparent', boxW:'48px', logoInset:'0',
         logoOff:s.logoOn === false, price:s.price }));
       if (st.wizStep === 3) return (wizCouriers.length ? wizCouriers : COURIERS).map(k => ({
-        label:k.name, note:tr(st.lang, k.days) + ' · ' + tr(st.lang, k.mode) + ' · ' + tr(st.lang, k.nRoutes + ' ta yo\'nalish'),
+        label:k.name, note:trDays(st.lang, k.days) + ' · ' + tr(st.lang, k.mode) + ' · ' + tr(st.lang, k.nRoutes + ' ta yo\'nalish'),
         pick:() => this.setState({ wizCourier:k.name, wizStep:4 }),
         hasMono:true, hasPrice:true, plain:false, color:k.color, ink:k.color, mono:k.mono,
         logoCss:k.logoCss, logoFit:k.logoFit, logoBg:k.logoBg, boxW:'48px', logoInset:'0',
@@ -8219,7 +8232,7 @@ class Component extends DCLogic {
             ? tx(st.lang, "{0} dan olib keladigan kuryer yo'q — kargo qatorisiz hisoblandi.", tr(st.lang, lc.country))
             : tx(st.lang, "Bu yo'nalishda kuryer bor, lekin narxi jadvalda yo'q ({0}) — narxini so'rab, kargoni qo'shing.", (C.askCourier || []).join(', ')),
           lcQuotes: top.map(q => { const on = q === sel; const b = badgeOf(q); return {
-            name: q.name, sub: [q.days ? tr(st.lang, q.days) : '', q.mode].filter(Boolean).join(' · '),
+            name: q.name, sub: [q.days ? trDays(st.lang, q.days) : '', q.mode].filter(Boolean).join(' · '),
             price: '$' + q.usd.toFixed(2) + (q.from ? ' ' + tr(st.lang, 'dan') : ''),
             on, bg: on ? '#E9EAFD' : '#FFFFFF', bd: on ? '#1A1FB0' : '#F1F1F8', dotBd: on ? '#1A1FB0' : '#DCDDFA', dotBg: on ? '#1A1FB0' : '#FFFFFF',
             hasBadge: !!b, badge: b ? tr(st.lang, b[0]) : '', badgeBg: b ? b[1] : '', badgeFg: b ? b[2] : '',
@@ -8335,7 +8348,7 @@ class Component extends DCLogic {
           .filter(c => matches(hay(c.name, c.mode, c.route, c.countries, c.note, (c.from || []).join(' '), geoSyn(String(c.route || '') + ' ' + (c.from || []).join(' '))), q)), 'name')
           .slice(0, 5)
           .map(c => ({
-            kind: 'Kuryer', name: c.name, sub: tr(st.lang, c.days) + ' · ' + tr(st.lang, c.mode),
+            kind: 'Kuryer', name: c.name, sub: trDays(st.lang, c.days) + ' · ' + tr(st.lang, c.mode),
             mono: (c.mono || '').slice(0, 4), color: '#FFFFFF', ink: '#FFFFFF',
             /* Logotip bor bo'lsa plita shaffof: 3D ikonkaning burchaklari
                shaffof, ostidagi brend rangi halqa bo'lib ko'rinib qolardi. */
@@ -8731,7 +8744,7 @@ class Component extends DCLogic {
         const b = k._best ? badgeOf(k, k._best[0], k._best[1]) : badgeOf(k);
         const feat = k.svc.filter(s => FEAT_ICONS[s.k] && !/^tracking$/i.test(s.k))
           .slice(0, 2).map(s => ({ k: s.k.replace('Return/Refundga yordam','Qaytarish').replace('Marketplace mosligi','Marketplace').replace('Door delivery UZ','Uyga yetkazish').replace('Foto/tekshiruv','Foto'), pic: strokePic(FEAT_ICONS[s.k], '#1A1FB0', 2.1) }));
-        return { ...k, ...b, hasBadge: !!b.badge, feat, hasFeat: feat.length > 0,
+        return { ...k, ...b, days: trDays(st.lang, k.days), hasBadge: !!b.badge, feat, hasFeat: feat.length > 0,
           priceSub: tr(st.lang, 'eng arzon tarif'), ...(k._cc || {}),
           open:() => { this.setState({ courierId:k.id }); this.push('courier'); },
           toggleSel:() => this.toggleIn('selected', k.id),
@@ -8760,7 +8773,7 @@ class Component extends DCLogic {
         return [
           ...(costRow ? [costRow] : []),
           { k:'Eng arzon tarif', vals: sel.map(k => k.priceLabel) },
-          { k:'Muddat', vals: sel.map(k => k.days) },
+          { k:'Muddat', vals: sel.map(k => trDays(st.lang, k.days)) },
           { k:'Turi', vals: sel.map(k => k.mode) },
           { k:'Davlatlar', vals: sel.map(k => k.nRoutes + ' ta') },
           { k:'Tracking', vals: sel.map(k => k.tracking ? 'Mavjud' : 'Ma\'lumot yo\'q') },
@@ -8769,7 +8782,7 @@ class Component extends DCLogic {
         ];
       })(),
 
-      courier: { ...courier, links: courier.links.map(l => {
+      courier: { ...courier, days: trDays(st.lang, courier.days), links: courier.links.map(l => {
         const ic = LINK_ICON[l.l] || {};
         return { ...l, linePic: strokePic(ic.d, '#1A1FB0', 1.9), hasD: !!ic.d,
           pic: ic.pic || 'none', hasPic: !!ic.pic };
