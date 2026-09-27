@@ -321,6 +321,24 @@ const sg2 = runTool('suggest_stores', { category: 'elektronika', original: false
 check('suggest_stores: arzon elektronika — arzon marketplace ham ro\'yxatda', sg2.found && sg2.stores.slice(0, 3).some(x => ['aliexpress', 'taobao', 'pinduoduo', 'walmart'].includes(x.id)), sg2.stores.map(x => x.id).join(','));
 check('searchUrl: shablonsiz do\'kon — o\'z manzili', /^https:\/\//.test(searchUrl({ id: 'yoq', url: 'https://example.com' }, 'x')) && searchUrl({ id: 'amazon', url: 'https://www.amazon.com' }, 'red shoes') === 'https://www.amazon.com/s?k=red+shoes');
 
+/* --- Ro'yxatdan tashqari do'konlar (other_stores) --- */
+{
+  const { toolOther } = await import('./src/ai.js');
+  const o = toolOther({ stores: [
+    { name: 'Zalando', url: 'https://www.zalando.de/herren-schuhe/?q=air+max', country: 'Germaniya', why: 'Yevropadagi eng katta poyabzal tanlovi' },
+    { name: 'Yomon', url: 'http://example.com' }, { name: 'IP', url: 'https://192.168.1.1/x' }, { name: 'Parol', url: 'https://u:p@evil.com/' },
+    { name: 'JS', url: 'javascript:alert(1)' }, { name: 'Takror', url: 'https://zalando.de/boshqa' },
+    { name: 'Amazon', url: 'https://www.amazon.com/s?k=x' } ] });
+  check('other_stores: faqat https va haqiqiy domen; IP, parolli, http, javascript va takror tashlanadi', o.ok && o.stores.length === 2 && o.stores[0].host === 'zalando.de' && o.stores[0].inList === false && o.stores[0].country === 'Germaniya', JSON.stringify(o.stores.map(x => x.host)));
+  check('other_stores: bazadagi do\'kon domeni bo\'lsa — inList va id bilan', o.stores[1].host === 'amazon.com' && o.stores[1].inList === true && o.stores[1].id === 'amazon');
+  check('other_stores: hech biri o\'tmasa ok:false', toolOther({ stores: [{ name: 'x', url: 'ftp://x.com' }] }).ok === false);
+  const cards = buildCards({ shot: null, used: [{ name: 'other_stores', input: {}, result: o }], cart: null });
+  check('other_stores → stores_ext kartasi', cards.length === 1 && cards[0].type === 'stores_ext' && cards[0].stores.length === 2);
+  const nf = runTool('suggest_stores', { category: 'yo\'q-kategoriya', query: 'x' }, { usdRate: 12650, today: '2026-09-27' });
+  check('suggest_stores natijasi: mos kelmasa other_stores ga yo\'naltiradi (topilgan va topilmagan holatda ham)', /other_stores/.test(nf.next || '') && /other_stores/.test(runTool('suggest_stores', { category: 'poyabzal', query: 'x' }, { usdRate: 12650, today: '2026-09-27' }).next || ''), JSON.stringify(nf.next));
+  check('other_stores vositalar ro\'yxatida', TOOLS.some(t => t.name === 'other_stores'));
+}
+
 /* --- Oqim (stream: true): SSE dan xabar yig'iladi, ilovaga NDJSON --- */
 const sseOf = m => {
   const ev = (type, o) => 'event: ' + type + '\ndata: ' + JSON.stringify({ type, ...o }) + '\n\n';

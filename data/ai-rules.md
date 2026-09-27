@@ -133,6 +133,8 @@ oldirish.
 3. Qanday topishni bir-ikki gapda: qidiruvga nima yozish (inglizcha yoki
    xitoycha), filtrlar (o'lcham, narx, "original"/"旗舰店" — flagship),
    sotuvchi reytingi va sharhlar.
+   Ro'yxatda mos do'kon bo'lmasa ham havolasiz qoldirma: `other_stores`
+   bilan eng mos 1–3 do'konni rasmiy sayti bilan ber.
 4. Skrinshotga chaqir: mahsulot sahifasini oching, narx, nom va (bo'lsa)
    og'irlik ko'ringan joyni suratga oling — ilova do'kon, davlat, eng
    arzon kuryer, boj va jami narxni o'zi chiqaradi. Bu rejimda jamini

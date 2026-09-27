@@ -201,6 +201,46 @@ TOOLS.push({
     required: ['links']
   }
 });
+/* Ro'yxatdan tashqari do'konlar (2026-09-27): bazada mos do'kon bo'lmasa
+   (yoki aniq yaxshiroq bo'lsa) model eng mos 1–3 do'konni havolasi bilan
+   beradi — foydalanuvchi hech qachon havolasiz qolmaydi. Worker manzilni
+   tekshiradi: faqat https, haqiqiy domen, IP va parolli manzil emas. */
+TOOLS.push({
+  name: 'other_stores',
+  description: 'Ro\'yxatimizdan (suggest_stores) TASHQARIDAGI eng mos 1–3 do\'kon: bazada mos do\'kon bo\'lmasa yoki mahsulot uchun aniq yaxshiroq do\'kon bo\'lsa (brendning rasmiy sayti, maxsus do\'kon, mahalliy marketpleys). Har biriga rasmiy sayt manzili (https; iloji bo\'lsa mahsulot qidiruvi sahifasi), davlat va bir gapda nega mos. Faqat haqiqatda mavjud, taniqli do\'konlar; domenni aniq bilmasang (veb-qidiruv bo\'lsa — tekshir) qo\'shma.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      stores: { type: 'array', maxItems: 3, items: { type: 'object', properties: {
+        name: { type: 'string', description: 'Do\'kon nomi' },
+        url: { type: 'string', description: 'Rasmiy sayt yoki qidiruv sahifasining to\'liq https manzili' },
+        country: { type: 'string', description: 'Qaysi davlatdan yuboradi (o\'zbekcha: Xitoy, AQSh, Turkiya, Germaniya…)' },
+        why: { type: 'string', description: 'Nega mos — bir qisqa gap, foydalanuvchi tilida' }
+      }, required: ['name', 'url'] } }
+    },
+    required: ['stores']
+  }
+});
+export function toolOther(inp) {
+  const seen = new Set(); const out = [];
+  for (const o of Array.isArray(inp.stores) ? inp.stores : []) {
+    if (!o || typeof o !== 'object') continue;
+    const url = String(o.url || '').trim();
+    if (!/^https:\/\/[^\s"'<>]+$/i.test(url) || url.length > 300) continue;
+    let u; try { u = new URL(url); } catch (e) { continue; }
+    const host = u.hostname.toLowerCase().replace(/^www\./, '');
+    if (u.username || u.password || !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(host) || /^\d+(\.\d+){3}$/.test(host)) continue;
+    if (seen.has(host)) continue; seen.add(host);
+    /* Aslida bazadagi do'kon bo'lsa — belgilanadi, ilova uni oddiy karta qiladi. */
+    const kb = KB.STORES.find(s => s.domain && (host === s.domain || host.endsWith('.' + s.domain)));
+    out.push({ name: String(o.name || '').trim().slice(0, 40) || host, url, host,
+      country: String(o.country || '').trim().slice(0, 30), why: String(o.why || '').trim().slice(0, 140),
+      inList: !!kb, id: kb ? kb.id : '' });
+    if (out.length >= 3) break;
+  }
+  return { ok: out.length > 0, stores: out, note: out.length ? 'Ro\'yxatimizda yo\'q do\'konlar ilovada alohida belgilanadi; foydalanuvchiga buyurtmadan oldin sharhlarni tekshirishni ayt.' : 'Manzillar tekshiruvdan o\'tmadi (faqat https va haqiqiy domen).' };
+}
+
 /* Veb-qidiruv — serverda bajariladigan vosita; faqat "find" so'rovlarida
    qo'shiladi (har qidiruv alohida to'lanadi). */
 export const WEB_SEARCH_TOOL = { type: 'web_search_20260209', name: 'web_search', max_uses: 2 };
@@ -274,7 +314,7 @@ function toolSuggest(inp) {
     if (SEARCH_URL[s.id]) sc += 1;
     return { s, sc };
   }).filter(Boolean).sort((a, b) => b.sc - a.sc).slice(0, 5);
-  if (!scored.length) return { found: false, note: 'Bu kategoriya uchun bazada do\'kon yo\'q.' };
+  if (!scored.length) return { found: false, note: 'Bu kategoriya uchun bazada do\'kon yo\'q.', next: 'other_stores bilan eng mos 1–3 do\'konni rasmiy havolasi bilan ber — foydalanuvchini havolasiz qoldirma.' };
   return {
     found: true, query: q,
     stores: scored.map(({ s }) => ({
@@ -284,7 +324,7 @@ function toolSuggest(inp) {
     })),
     note: wantOrig ? 'Original talab qilinsa "Yuqori" originallikdagi do\'konlar birinchi; marketplace\'larda originallik sotuvchiga bog\'liq — sotuvchi reytingini tekshirish kerak; replika bojxonada olib qo\'yiladi.' : '',
     sizeNote: SIZE_NOTE[cat] || '',
-    next: 'Foydalanuvchini mahsulot sahifasining skrinshotiga chaqir (narx, nom, og\'irlik ko\'ringan joy) — jami narxni ilova o\'zi hisoblaydi; landed_cost chaqirma.'
+    next: 'Bu do\'konlar mahsulotga mos kelmasa yoki undan aniq yaxshiroq do\'kon bo\'lsa (brendning rasmiy sayti, maxsus do\'kon) — other_stores bilan 1–2 tasini qo\'sh. Keyin foydalanuvchini mahsulot sahifasining skrinshotiga chaqir (narx, nom, og\'irlik ko\'ringan joy) — jami narxni ilova o\'zi hisoblaydi; landed_cost chaqirma.'
   };
 }
 
@@ -396,6 +436,7 @@ export function runTool(name, input, ctx) {
     if (name === 'suggest_stores') return toolSuggest(inp);
     if (name === 'product_links') return toolLinks(inp);
     if (name === 'ask_user') return toolAsk(inp);
+    if (name === 'other_stores') return toolOther(inp);
     return { error: 'noma\'lum vosita: ' + name };
   } catch (e) {
     return { error: 'hisoblab bo\'lmadi: ' + (e && e.message || e) };
@@ -614,6 +655,7 @@ async function gate({ request, env, ctx, origin, originOk, cors, counter, maxBod
    ask      — bitta savol va 2–4 bosiladigan variant
    links    — aniq mahsulot sahifalari (veb-qidiruvdan)
    stores   — mos do'konlar (qidiruv havolasi bilan) + got
+   stores_ext — ro'yxatdan tashqari do'konlar (nom, https havola, davlat, nega)
    store    — bazadagi do'kon (find_store)
    warning  — taqiq/cheklov
    duty     — boj va yig'im (customs_duty) + got
@@ -629,6 +671,7 @@ export function buildCards({ shot, used, cart }) {
     if (t.name === 'ask_user' && r.ok) cards.push({ type: 'ask', question: r.question, options: r.options });
     else if (t.name === 'product_links' && r.ok) cards.push({ type: 'links', links: r.links });
     else if (t.name === 'suggest_stores' && r.found) cards.push({ type: 'stores', stores: r.stores, got });
+    else if (t.name === 'other_stores' && r.ok) cards.push({ type: 'stores_ext', stores: r.stores });
     else if (t.name === 'find_store' && r.found && r.stores[0]) cards.push({ type: 'store', id: r.stores[0].id, name: r.stores[0].name });
     else if (t.name === 'check_banned' && r.found && Array.isArray(r.items) && r.items.length) cards.push({ type: 'warning', items: r.items.slice(0, 2) });
     else if (t.name === 'customs_duty' && r.totalUzs >= 0) cards.push({ type: 'duty', duty: r, got });
@@ -756,7 +799,7 @@ async function runAi({ parsed, env, count, fetchImpl, emit }) {
   const body = { model: env.AI_MODEL || DEFAULT_MODEL, max_tokens: +env.AI_MAX_TOKENS || 2048, system, tools, messages };
   /* Veb-qidiruv ko'rsatmasi faqat shu yerda (qoidalar faylida yo'q):
      vosita bo'lmaganda model uni o'qimasin. */
-  if (webOn) system.push({ type: 'text', text: 'Bu "Qayerdan topaman" so\'rovi: suggest_stores dan keyin web_search bilan (ko\'pi bilan 2 ta qidiruv) indekslanadigan do\'konlarda (Amazon, AliExpress, eBay, Trendyol, SHEIN, brend saytlari) ANIQ mahsulot sahifalarini top va product_links vositasiga ber: nom, https havola, do\'kon, narx, valyuta. Qidiruv natijalari sahifasini berma; Taobao, Pinduoduo, Poizon uchun qidirma — ularga qidiruv havolasi yetadi; topilmasa vositani chaqirma.' });
+  if (webOn) system.push({ type: 'text', text: 'Bu "Qayerdan topaman" so\'rovi: suggest_stores dan keyin web_search bilan (ko\'pi bilan 2 ta qidiruv) indekslanadigan do\'konlarda (Amazon, AliExpress, eBay, Trendyol, SHEIN, brend saytlari) ANIQ mahsulot sahifalarini top va product_links vositasiga ber: nom, https havola, do\'kon, narx, valyuta. Qidiruv natijalari sahifasini berma; Taobao, Pinduoduo, Poizon uchun qidirma — ularga qidiruv havolasi yetadi; topilmasa vositani chaqirma. Ro\'yxatimizda mos do\'kon bo\'lmasa, qidiruvda topgan eng mos do\'konni other_stores bilan rasmiy havolasi bilan ber.' });
   /* Tezlik: oddiy savolga past fikrlash darajasi (AI_EFFORT, standart
      "low") — vositalar hisoblaydi, model faqat yo'naltiradi. Veb-qidiruv
      yoki havola o'qish (to'g'ri mahsulotni tanlash) — AI_EFFORT_FIND

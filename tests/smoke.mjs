@@ -1109,7 +1109,10 @@ try {
       await new Promise(res => setTimeout(res, 1500));
       const ev = [{ t: 'status', s: 'suggest_stores' }, { t: 'text', d: 'Qarab ko', r: 0 }, { t: 'text', d: "'raman.", r: 0 }, { t: 'status', s: 'web_search' },
         { t: 'text', d: 'Nike rasmiy ', r: 1 }, { t: 'text', d: "do'koni mos.", r: 1 },
-        { t: 'done', text: "Nike rasmiy do'koni mos.", cards: [{ type: 'stores', got: {}, stores: [{ id: 'nike', name: 'Nike', searchUrl: 'https://www.nike.com/w?q=air+max' }] }], tools: ['suggest_stores'], model: 'm', usage: {} }];
+        { t: 'done', text: "Nike rasmiy do'koni mos.", cards: [{ type: 'stores', got: {}, stores: [{ id: 'nike', name: 'Nike', searchUrl: 'https://www.nike.com/w?q=air+max' }] },
+          { type: 'stores_ext', stores: [{ name: 'Zalando', url: 'https://www.zalando.de/herren-schuhe/?q=air+max', host: 'zalando.de', country: 'Germaniya', why: "Yevropadagi eng katta poyabzal tanlovi", inList: false, id: '' },
+            { name: 'Amazon', url: 'https://www.amazon.com/s?k=air+max', host: 'amazon.com', country: 'AQSh', why: '', inList: true, id: 'amazon' },
+            { name: 'Yomon', url: 'javascript:alert(1)', host: 'x', inList: false, id: '' }] }], tools: ['suggest_stores', 'other_stores'], model: 'm', usage: {} }];
       r.fulfill({ status: 200, contentType: 'application/x-ndjson; charset=utf-8', body: ev.map(e => JSON.stringify(e)).join('\n') + '\n' });
     });
     const sp = await scx.newPage();
@@ -1121,6 +1124,8 @@ try {
     check('AI o\'ylayotganda: "o\'ylayapti" bloki — orb, bosqich nomi, uch nuqta, role=status', !!th && th.role === 'status' && th.step === "Savolni o'qiyapman" && th.orb && th.dots === 3, JSON.stringify(th));
     await sp.waitForTimeout(1800);
     const fin = await sp.evaluate(() => ({ think: !!document.querySelector('main [data-ai-thinking]'), t: document.querySelector('main').innerText.replace(/\s+/g, ' ') }));
+    const ext = await sp.evaluate(() => { const b = document.querySelector('main [data-ext-stores]'); return b ? { t: b.innerText.replace(/\s+/g, ' '), hrefs: [...b.querySelectorAll('a')].map(x => x.getAttribute('href')), rel: (b.querySelector('a') || {}).rel || '' } : null; });
+    check('ro\'yxatdan tashqari do\'kon: "Boshqa mos do\'konlar", "Ro\'yxatda yo\'q" belgisi, sabab, ogohlantirish; faqat https', !!ext && /^BOSHQA MOS DO'KONLAR Z Zalando Ro'yxatda yo'q zalando\.de · Germaniya Yevropadagi eng katta poyabzal tanlovi Ochish Amazon amazon\.com · AQSh Ochish Ro'yxatimizda yo'q do'kon/i.test(ext.t) && ext.hrefs.length === 2 && ext.hrefs[0] === 'https://www.zalando.de/herren-schuhe/?q=air+max' && /nofollow/.test(ext.rel), JSON.stringify(ext));
     check('oqim: so\'rovda stream:true, "done" — yakuniy javob va kartalar, o\'ylash bloki yo\'qoladi', sb.length === 1 && sb[0].stream === true && !fin.think && /Nike rasmiy do'koni mos\./.test(fin.t) && !/Qarab ko'raman/.test(fin.t) && /Qidirish/.test(fin.t), fin.t.slice(0, 200));
     await scx.close();
   }

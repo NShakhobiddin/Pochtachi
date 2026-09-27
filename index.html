@@ -2524,6 +2524,32 @@
                 </sc-for>
               </div>
             </sc-if>
+            <!-- Ro'yxatdan tashqari eng mos do'konlar (other_stores): bazada mos
+                 do'kon bo'lmasa ham foydalanuvchi havolasiz qolmaydi. -->
+            <sc-if value="{{ m.hasExt }}" hint-placeholder-val="{{ false }}">
+              <div data-ext-stores="1" style="display:flex;flex-direction:column;gap:8px">
+                <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85">Boshqa mos do'konlar</span>
+                <sc-for list="{{ m.ext }}" as="ex" hint-placeholder-count="2">
+                  <a class="xy-tap" sc-camel-on-click="{{ ex.hit }}" href="{{ ex.href }}" target="_blank" rel="noopener noreferrer nofollow" style="display:flex;align-items:center;gap:12px;background:#F6F7FB;border-radius:16px;padding:10px 12px;text-decoration:none">
+                    <div aria-hidden="true" style="width:34px;height:34px;border-radius:12px;flex:none;position:relative;display:flex;align-items:center;justify-content:center;background-color:{{ ex.plate }};background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ ex.logoCss }}">
+                      <sc-if value="{{ ex.hasMono }}" hint-placeholder-val="{{ true }}"><span style="font-size:13px;font-weight:700;color:#1A1FB0">{{ ex.mono }}</span></sc-if>
+                    </div>
+                    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                      <div style="display:flex;align-items:center;gap:6px;min-width:0">
+                        <span style="font-size:15px;font-weight:700;color:#131429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ex.name }}</span>
+                        <sc-if value="{{ ex.off }}" hint-placeholder-val="{{ true }}"><span style="flex:none;font-size:11px;font-weight:700;color:#B45309;background:#FDF3E3;border-radius:999px;padding:2px 8px">Ro'yxatda yo'q</span></sc-if>
+                      </div>
+                      <span style="font-size:11px;font-weight:600;color:#6B6C85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ex.sub }}</span>
+                      <sc-if value="{{ ex.hasWhy }}" hint-placeholder-val="{{ true }}"><span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5">{{ ex.why }}</span></sc-if>
+                    </div>
+                    <span style="flex:none;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;color:#1A1FB0">Ochish<svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></span>
+                  </a>
+                </sc-for>
+                <sc-if value="{{ m.extWarn }}" hint-placeholder-val="{{ true }}">
+                  <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">Ro'yxatimizda yo'q do'kon — buyurtmadan oldin sharhlarini va O'zbekistonga yetkazishini (yoki kuryer omboriga yuborishini) tekshiring.</span>
+                </sc-if>
+              </div>
+            </sc-if>
             <sc-if value="{{ m.hasTotal }}" hint-placeholder-val="{{ false }}">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#F6F7FB;border-radius:16px;padding:10px 12px">
                 <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
@@ -3841,6 +3867,8 @@ const toCyr = s => {
 };
 
 const RU = {
+  'Yagona boj (30%)':'Единая пошлина (30%)',
+  "Me'yordan ortiq qismning bojxona qiymatidan 30 foiz, lekin har bir kilogrami uchun $3 dan kam emas. Qaysi hisob ko'p chiqsa, o'sha olinadi.":'30 процентов от таможенной стоимости части сверх лимита, но не менее $3 за каждый килограмм. Берётся тот расчёт, который больше.',
   /* Sehrgar — do'kon va kuryer tanlash (2026-09-24) */
   "Hisobni ko'rish":"Посмотреть расчёт",
   "Hisob tayyor":"Расчёт готов",
@@ -3944,25 +3972,14 @@ const RU = {
   "Pullik konsultatsiya: bojxona, hujjat, yuridik":"Платная консультация: таможня, документы, юристы",
   "Til · kurs {0} so'm":"Язык · курс {0} сум",
   /* Bosh sahifa: universal maydon, tez o'tish, mashhur do'konlar, kuryer solishtirish */
-  'Nima olib':'Что хотите', 'Nima mahsulot':'Какой товар', 'qidiryapsiz?':'вы ищете?', 'kelmoqchisiz?':'привезти?',
-  "Mahsulot havolasini yoki nomini yozing — do'kon, kuryer va bojni ko'rsatib beraman.":'Вставьте ссылку на товар или напишите его название — покажу магазин, курьера и пошлину.',
-  'Havola yoki mahsulot nomi':'Ссылка или название товара', 'Mahsulot havolasi yoki nomi':'Ссылка или название товара',
-  'Havola, nom yoki skrinshot':'Ссылка, название или скриншот',
-  "Havola, nom yoki skrinshot — do'kon, kuryer va jami narxni ko'rsataman.":'Ссылка, название или скриншот — покажу магазин, курьера и итоговую цену.',
+  'Nima mahsulot':'Какой товар', 'qidiryapsiz?':'вы ищете?',
   'krossovka, 41 razmer, $100 gacha':'кроссовки, 41 размер, до $100', 'Masalan:':'Например:',
-  'Boj hisoblash':'Рассчитать пошлину', 'Taqiqni tekshirish':'Проверить запреты',
-  "Mashhur do'konlar":'Популярные магазины', 'Barchasi':'Все', 'Kuryerlarni solishtirish':'Сравнить курьеров',
+  "Mashhur do'konlar":'Популярные магазины', 'Kuryerlarni solishtirish':'Сравнить курьеров',
   "Og'irlik":'Вес', 'dan':'от',
-  '{0} topildi — narx va vaznni kiritib bojni hisoblang':'{0} найден — введите цену и вес, чтобы рассчитать пошлину',
-  "Bu do'kon hali ro'yxatda yo'q — o'xshashini qidiruvda ko'ring":'Этого магазина пока нет в списке — посмотрите похожие в поиске',
   'Angliya':'Англия', 'Germaniya':'Германия', "Qozog'iston":'Казахстан',
   /* Xaridlarim, jo'natma holatlari */
   'Xaridlarim':'Мои покупки', 'Rejalar':'Планы', 'Hisoblar':'Расчёты', "Jo'natmalar":'Отправления',
-  '{0} reja':'{0} план', "{0} jo'natma":'{0} отправл.', '{0} sevimli':'{0} избр.', "Reja, jo'natma, sevimlilar va hisoblar":'Планы, отправления, избранное и расчёты',
-  "Hali reja yo'q":'Планов пока нет', "Reja — do'kon, kuryer va boj bilan bitta karta. Sehrgar orqali 5 qadamda yoki \"Jami narx\" kalkulyatoridan tuziladi.":'План — одна карточка с магазином, курьером и пошлиной. Составляется мастером за 5 шагов или из калькулятора «Итоговая цена».',
-  "Sevimlilar bo'sh":'Избранное пусто', "Do'kon, kuryer yoki qo'llanma sahifasidagi yulduzchani bosing — shu yerga tushadi.":'Нажмите звёздочку на странице магазина, курьера или инструкции — появится здесь.',
-  'Hisoblar shu yerda saqlanadi':'Расчёты сохраняются здесь', '"Jami narx" kalkulyatorida hisoblagan oxirgi 10 ta natija — qayta ochib davom etasiz.':'Последние 10 результатов калькулятора «Итоговая цена» — откройте и продолжите.',
-  'Jami narxni hisoblash':'Рассчитать итоговую цену',
+  '{0} reja':'{0} план', "{0} jo'natma":'{0} отправл.', '{0} sevimli':'{0} избр.',
   'Bojxonada':'На таможне', "Rasmiylashtirish — xabarnoma tasdiqlanadi, boj bo'lsa to'lanadi":'Оформление — подтверждается уведомление, при необходимости оплачивается пошлина',
   /* Kuryerlar: vazn bo'yicha hisob paneli */
   "Vazn bo'yicha hisob":'Расчёт по весу', 'Tarif':'Тариф', 'Tez':'Быстро', "narx so'raladi":'цена по запросу',
@@ -3974,14 +3991,13 @@ const RU = {
   "Og'irligi, 1 dona":'Вес, 1 шт', "Do'kon ichida yetkazish":'Доставка внутри магазина', "Do'kon ichida yetkazish, dollarda":'Доставка внутри магазина, в долларах',
   "Quti o'lchami, sm (ixtiyoriy)":'Размер коробки, см (необязательно)', 'uzunlik':'длина', 'kenglik':'ширина', 'balandlik':'высота',
   'Quti uzunligi, sm':'Длина коробки, см', 'Quti kengligi, sm':'Ширина коробки, см', 'Quti balandligi, sm':'Высота коробки, см',
-  'Jami tannarx':'Итоговая стоимость', "Xarid rejasiga qo'shish":'Добавить в план покупки',
+  'Jami tannarx':'Итоговая стоимость',
   "Olish foydalimi? O'zbekistondagi narxini yozing":'Выгодно ли? Укажите цену в Узбекистане', "O'zbekistondagi narx, so'mda":'Цена в Узбекистане, в сумах', 'masalan 4 300 000':'например 4 300 000',
   'Taxminiy hisob. Boj — VMQ 244-son bo\'yicha, kargo — kuryer saytidagi tarif. Yakuniy summani bojxona va kuryer belgilaydi.':'Ориентировочный расчёт. Пошлина — по ПКМ №244, карго — по тарифу с сайта курьера. Итоговую сумму определяют таможня и курьер.',
   'Narxni yozing — jami tannarx shu yerda chiqadi.':'Введите цену — итоговая стоимость появится здесь.',
   "Tovar qiymati ${0} me'yor ichida — boj va yig'im yo'q.":'Стоимость товара в пределах нормы ${0} — пошлины и сбора нет.',
   "Me'yordan oshgan qism uchun vazn bo'yicha hisob (har kg ${0}) ustun keldi.":'Для части сверх нормы расчёт по весу (${0} за кг) оказался больше.',
   '{0} dona × {1}':'{0} шт × {1}', 'Kargo · {0} ({1} kg)':'Карго · {0} ({1} кг)', 'Kargo':'Карго',
-  "Hajmiy og'irlik {0} kg haqiqiy {1} kg dan katta — kargo shu bo'yicha.":'Объёмный вес {0} кг больше фактического {1} кг — карго считается по нему.',
   "Hisob og'irligi: {0} kg.":'Расчётный вес: {0} кг.',
   "Og'irlik yozilmadi — kategoriya bo'yicha taxmin: {0} kg/dona. Aniq vazn kiritsangiz hisob aniqroq bo'ladi.":'Вес не указан — оценка по категории: {0} кг/шт. Укажите точный вес, чтобы расчёт был точнее.',
   'Optimal':'Оптимально',
@@ -3995,22 +4011,16 @@ const RU = {
   'Interfeys tili — keyinchalik sozlamalarda o\'zgartirishingiz mumkin.':'Язык интерфейса — позже можно изменить в настройках.',
   'Do\'kon tavsiflari va qo\'llanmalar hozircha faqat o\'zbek tilida.':'Описания магазинов и инструкции пока только на узбекском.',
   'Bosh sahifa':'Главная', "Qo'llanmalar":'Инструкции', "Reja":'План', 'Bojxona':'Таможня', 'Sozlamalar':'Настройки',
-  "Do'konlar":'Магазины', 'Kuryerlar':'Курьеры', 'Kuzatuv':'Отслеживание', 'Taqqoslash':'Сравнение', 'Xarid rejasi':'План покупки',
+  "Do'konlar":'Магазины', 'Kuryerlar':'Курьеры', 'Kuzatuv':'Отслеживание', 'Taqqoslash':'Сравнение',
   "Qo'llanma":'Инструкция',
-  'Saqlangan rejalar':'Сохранённые планы', 'Yangi reja':'Новый план',
   "Tanlovingizga mos {0} ta do'kon.":'Под ваш выбор подходит {0} магазинов.',
-  "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi ko'p davlatga yuboradi.":'Под ваш выбор подходит {0} магазинов, последние {1} доставляют во многие страны.',
   "Do'kon, kuryer yoki mahsulot":'Магазин, курьер или товар', "Do'kon nomi yoki kategoriya":'Название магазина или категория',
   'Tovar nomini yozing':'Введите название товара', "Saytga o'tish":'Перейти на сайт', "Telegram'da yozish":'Написать в Telegram',
-  'Tozalash':'Очистить', "Natijani ko'rish":'Показать результат', 'Filtr':'Фильтр', "O'zgartirish":'Изменить',
+  'Tozalash':'Очистить', "Natijani ko'rish":'Показать результат', 'Filtr':'Фильтр',
   "O'tkazib yuborish":'Пропустить', 'Keyingi':'Далее', 'Tushunarli':'Понятно', 'Ilova bilan tanishish':'Знакомство с приложением',
   /* Tanishtiruv qadamlari */
-  "Havola, mahsulot nomi yoki savol yozing — do'kon, kuryer va jami narxni ko'rsataman.":'Введите ссылку, название товара или вопрос — покажу магазин, курьера и итоговую цену.',
-  'Skrinshot':'Скриншот', "Do'kon sahifasi skrinshotini yuklang — narx o'zi o'qiladi va kalkulyatorga tushadi.":'Загрузите скриншот страницы магазина — цена прочитается сама и попадёт в калькулятор.',
-  "To'rt asosiy vosita":'Четыре основных инструмента', "Jami narx, do'konlar, kuryerlar va taqiqlarni tekshirish — har biri bitta bosishda.":'Итоговая цена, магазины, курьеры и проверка запретов — каждый в одно касание.',
-  "Rejalar, jo'natmalar, sevimlilar va hisoblar shu yerda saqlanadi.":'Планы, отправления, избранное и расчёты хранятся здесь.',
-  "Bo'limlar":'Разделы', "Qo'llanmalar, Bojxona va Sozlamalar. O'rtadagi tugma — xarid rejasini tuzish.":'Инструкции, Таможня и Настройки. Кнопка в центре — составить план покупки.', 'Yangilash':'Обновить', 'Yuklanmoqda…':'Загрузка…', 'Hisob qanday chiqdi':'Как получился расчёт',
-  "Qo'llanmalarga qaytish":'Вернуться к инструкциям', 'Nusxalash':'Копировать',
+  'Skrinshot':'Скриншот',
+  "Bo'limlar":'Разделы', 'Yangilash':'Обновить', 'Yuklanmoqda…':'Загрузка…',
   'ta':'шт.', "ta bo'lim":'разделов', "ta jo'natma":'отправлений',
   'ta platforma':'платформ', 'ta pozitsiya':'позиций', "ta yo'nalish":'направлений',
   /* Qo'llanma kartochkalarining yorlig'i va tavsifi: butun ekran rus
@@ -4025,20 +4035,17 @@ const RU = {
   "Turk manzili, KDV qaytarilishi, beden tablosu va lug'at":'Турецкий адрес, возврат НДС, таблица размеров и словарь',
   "AQSh manzili, sales tax 0% shtatlari, US o'lchamlari":'Адрес в США, штаты с sales tax 0%, размеры US',
   "Auksion strategiyasi, eIS orqali to'g'ridan yetkazish":'Стратегия аукциона, прямая доставка через eIS',
-  'Bojxona konsultatsiyasi · kuryerlarga yuridik va texnik yordam':'Таможенная консультация · юридическая и техническая помощь курьерам',
-  "ushlangan jo'natma · boj hisobi · hujjatlar":'задержанная посылка · расчёт пошлины · документы',
   /* Shu sessiyada qo'shilgan matnlar: ular lug'atsiz qolganda rus tilida
      ham o'zbekcha ko'rinardi. */
   "ta do'kon":'магазинов', 'ta kuryer':'курьеров', "ta qo'llanma":'инструкций',
-  "me'yor":'лимит', "so'm / 1 USD":'сум / 1 USD',
+  "me'yor":'лимит',
   'Sevimlilar':'Избранное',
-  'Pullik konsultatsiya · bojxona, hujjat va yuridik yordam':'Платная консультация · таможня, документы и юридическая помощь',
   "Pullik konsultatsiya · ushlangan jo'natma, boj hisobi, hujjatlar":'Платная консультация · задержанная посылка, расчёт пошлины, документы',
   /* Pullik xizmatlar ekrani. */
   "Ilovadagi ma'lumot yetmasa — mutaxassis bilan ishlash. Quyidagilar pullik xizmatlar.":'Если информации в приложении не хватает — работа со специалистом. Ниже платные услуги.',
   'Chet eldan buyurtma qilgan jismoniy shaxslar uchun.':'Для физических лиц, заказывающих из-за рубежа.',
   'Kuryerlik va logistika kompaniyalari uchun yuridik va texnik yordam.':'Юридическая и техническая помощь курьерским и логистическим компаниям.',
-  'Kelishilgan holda':'По договорённости', "Loyiha bo'yicha":'По проекту',
+  "Loyiha bo'yicha":'По проекту',
   'YURIDIK':'ЮРИДИЧЕСКОЕ', 'TEXNIK':'ТЕХНИЧЕСКОЕ', 'HAMKORLIK':'ПАРТНЁРСТВО',
   "ENG KO'P SO'RALADI":'СПРАШИВАЮТ ЧАЩЕ ВСЕГО',
   'Dush–Shan, 09:00–19:00':'Пн–Сб, 09:00–19:00',
@@ -4149,8 +4156,7 @@ const RU = {
   "Kurs Markaziy bank ochiq ma'lumotlaridan (cbu.uz) avtomatik olinadi va 6 soatda bir yangilanadi. Barcha so'mdagi hisob-kitob shu kursga asoslanadi.":'Курс берётся из открытых данных Центрального банка (cbu.uz) и обновляется раз в 6 часов. Все расчёты в сумах опираются на него.',
   "Ma'lumotlar amaldagi qonunchilik hujjatlaridan olingan. Yakuniy qaror bojxona organi tomonidan qabul qilinadi.":'Данные взяты из действующих нормативных актов. Окончательное решение принимает таможенный орган.',
   "Pochtam \u2014 mustaqil ma'lumot xizmati. Bu rasmiy davlat portali emas va bojxona organlari bilan bog'liq emas. Barcha hisob-kitoblar taxminiy.":'Pochtam \u2014 независимый информационный сервис. Это не официальный государственный портал и он не связан с таможенными органами. Все расчёты приблизительные.',
-  'Global xaridlar':'Глобальные покупки',
-  'biz bilan oson.':'с нами — просто.', 'Boshlash':'Начать',
+  'Boshlash':'Начать',
   'Oflayn zaxira kurs':'Офлайн резервный курс', 'Bugungi':'Сегодняшний', 'Markaziy bank · {0}':'Центральный банк · {0}', 'bugungi kurs':'курс на сегодня', 'Markaziy bank kursi yuklanmoqda…':'Курс Центрального банка загружается…',
   'Hisob':'Расчёт',
   "Kategoriyani tanlang — shunga qarab do'kon tavsiya qilaman.":'Выберите категорию — по ней подберу магазин.',
@@ -4158,7 +4164,7 @@ const RU = {
   'Poyabzal va krossovka':'Обувь и кроссовки', 'Elektronika va texnika':'Электроника и техника',
   'Kosmetika va parfyumeriya':'Косметика и парфюмерия', "Bolalar va o'yinchoq":'Детские товары и игрушки',
   'Universal marketpleys':'Универсальные маркетплейсы',
-  "To'lov yo'q":'Платежа нет', "me'yordan oshmadi":'не превысило лимит', "me'yordan ortiq · boj va yig'im":'сверх лимита · пошлина и сбор',
+  "me'yordan oshmadi":'не превысило лимит',
   "Qo'llanma bor":'Есть инструкция',
   'Solishtirish uchun 2-3 kuryerni belgilang':'Отметьте 2-3 курьера для сравнения',
   'Natijalar':'Результаты',
@@ -4169,32 +4175,23 @@ const RU = {
   "Qo'ng'iroq qilish":'Позвонить', "Boshqa jo'natma raqami":'Другой трек-номер',
   'Kuryer saytida kuzatish':'Отследить на сайте курьера', "Og'irligi":'Вес',
   'Taxminiy jami':'Примерный итог', 'Dollar kursi':'Курс доллара',
-  'Reja tayyor':'План готов',
-  'Oxirgi qidiruvlar':'Последние запросы', "Bosqichma-bosqich qo'llanma":'Пошаговая инструкция',
+  'Oxirgi qidiruvlar':'Последние запросы',
   "Yagona bojxona to'lovi":'Единый таможенный платёж', 'Bojxona organlari':'Таможенные органы',
   'Taqiqlangan tovarlar':'Запрещённые товары', 'Rasmiylashtirish tartibi':'Порядок оформления',
-  "Bojsiz olib kirish me'yori":'Беспошлинный лимит ввоза',
   "Eng ko'p kuryer":'Больше всего курьеров', 'kuryer':'курьеров',
-  "ortiqcha qismga":'на сумму превышения', 'pozitsiya · manba bilan':'позиций · с источником',
-  "xabarnoma · tasdiqlash · saqlov":'уведомление · подтверждение · хранение',
-  "manzil · telefon · xarita":'адрес · телефон · карта',
-  "oyiga · notijorat maqsad · miqdoriy normalar":'в месяц · для личных нужд · количественные нормы',
-  'Rejangiz tayyor':'Ваш план готов',
+  "ortiqcha qismga":'на сумму превышения',
   "Bojxonaning oylik me'yoriga ham qo'shildi":'Также добавлено в месячный лимит',
-  "Bu oyda hali jo'natma yo'q. Reja saqlasangiz shu yerga o'zi qo'shiladi — yoki kalkulyatorda hisoblab qo'ying.":'В этом месяце отправлений пока нет. Сохранённый план добавится сюда сам — или посчитайте в калькуляторе.',
-  'Kalkulyatorda hisoblash':'Посчитать в калькуляторе', 'Reja tuzish':'Составить план',
+  'Kalkulyatorda hisoblash':'Посчитать в калькуляторе',
   'Xitoy':'Китай', 'Turkiya':'Турция', 'AQSh':'США', 'Yevropa':'Европа', 'Koreya':'Корея',
   'Rossiya':'Россия', 'BAA':'ОАЭ', 'MDH':'СНГ', 'Malayziya':'Малайзия',
   'Buyuk Britaniya':'Великобритания', 'Global':'Глобальные',
   "{0} yo'nalishi":'Направление: {0}', 'kg':'кг', 'Sayt':'Сайт', 'avia':'авиа', 'avto':'авто', 'avia · avto':'авиа · авто',
-  'Bojxona kalkulyatori':'Таможенный калькулятор', "boj va yig'imni shu yerda hisoblang":'рассчитайте пошлину и сбор',
-  'KALENDAR OYDAGI UMUMIY SUMMA':'ОБЩАЯ СУММА ЗА КАЛЕНДАРНЫЙ МЕСЯЦ', 'VAZN':'ВЕС', 'YETKAZISH, 1 KG':'ДОСТАВКА, 1 КГ',
-  "Bojsiz me'yor · $200 / oy":'Беспошлинный лимит · $200 / мес', "Taxminiy to'lov":'Примерный платёж', "so'm":'сум',
-  "Ma'lumotnoma":'Справочник', 'Bojxona qiymati (ortiqcha)':'Таможенная стоимость (превышение)',
-  "Bojxona yig'imi (BHM 25%)":'Таможенный сбор (25% БРВ)', 'Yagona boj (30%)':'Единая пошлина (30%)',
-  'Yagona boj ($3 × kg)':'Единая пошлина ($3 × кг)', 'Bu oyda':'В этом месяце', "Jo'natma qo'shish":'Добавить посылку',
+  'Bojxona kalkulyatori':'Таможенный калькулятор',
+  "Taxminiy to'lov":'Примерный платёж', "so'm":'сум',
+  "Ma'lumotnoma":'Справочник',
+  'Bu oyda':'В этом месяце', "Jo'natma qo'shish":'Добавить посылку',
   "Oy summasini qo'yish":'Сумма месяца', "Jo'natmani o'chirish":'Удалить посылку',
-  'Til':'Язык', "Jo'natma bildirishnomalari":'Уведомления о посылках',
+  'Til':'Язык',
   'Mutaxassis yordami':'Помощь специалиста',
   /* Monetizatsiya: narxlar, og'riq nuqtalaridagi tugmalar, affiliate */
   "oyiga 500 000 so'm":'500 000 сум в месяц', "Assalomu alaykum! «{0}» xizmati ({1}) bo'yicha yozmoqchiman.":'Здравствуйте! Хочу обратиться по услуге «{0}» ({1}).',
@@ -4202,7 +4199,7 @@ const RU = {
   'Hisobni tekshirtirish':'Проверить расчёт', "Kalkulyator: oyda ${0}, {1} kg, yetkazish ${2}/kg — taxminiy to'lov {3} so'm.":'Калькулятор: за месяц ${0}, {1} кг, доставка ${2}/кг — примерный платёж {3} сум.',
   "Jo'natmangiz ushlanib qoldimi?":'Ваше отправление задержали?', "Sabab aniqlanadi, kerakli hujjatlar ro'yxati va ariza matni tayyorlab beriladi.":'Определим причину, подготовим список документов и текст заявления.',
   'Qanday hujjat kerak?':'Какой документ нужен?', 'Tovar: {0}':'Товар: {0}',
-  '{0} kun — ushlanib qoldimi?':'{0} дн. — задержали?', "Jo'natma: {0}, kuryer: {1}, trek: {2}, {3} kun.":'Отправление: {0}, курьер: {1}, трек: {2}, {3} дн.',
+  '{0} kun — ushlanib qoldimi?':'{0} дн. — задержали?',
   'hamkorlik havolasi':'партнёрская ссылка', "Ba'zi do'kon havolalari — hamkorlik havolasi: siz uchun narx o'zgarmaydi, ilova do'kondan kichik komissiya oladi.":'Некоторые ссылки на магазины — партнёрские: цена для вас не меняется, приложение получает небольшую комиссию от магазина.',
   'Mutaxassis konsultatsiyasi':'Консультация специалиста',
   'Men xaridorman':'Я покупатель', 'Kuryer tashkilotiman':'Я курьерская компания',
@@ -4217,7 +4214,7 @@ const RU = {
   'Kategoriya':'Категория', 'Davlat':'Страна', "Do'kon":'Магазин', 'Mahsulot':'Товар',
   'Eng arzon':'Самый дешёвый', 'Eng tez':'Самый быстрый', 'Ishonchli':'Надёжный', 'Eng arzon tarif':'Самый дешёвый тариф',
   'Hammasi':'Все', 'Taqiqlangan':'Запрещено', 'Cheklangan':'Ограничено', 'TAQIQLANGAN':'ЗАПРЕЩЕНО', 'CHEKLANGAN':'ОГРАНИЧЕНО',
-  'Mavjud':'Есть', "Ma'lumot yo'q":'Нет данных', 'TREK RAQAM':'ТРЕК-НОМЕР', 'Turi':'Тип', 'Xizmatlar':'Услуги',
+  'Mavjud':'Есть', "Ma'lumot yo'q":'Нет данных', 'Turi':'Тип', 'Xizmatlar':'Услуги',
   'Cheklovlar':'Ограничения', 'Boshqalar':'Другие', 'Universal':'Универсальные', 'Kiyim va moda':'Одежда и мода',
   'Poyabzal':'Обувь', 'Elektronika':'Электроника', 'Kosmetika':'Косметика', 'Bolalar':'Детские товары',
   'Arzon segment':'Бюджетный сегмент', "O'rta segment":'Средний сегмент', 'Yuqori segment':'Высокий сегмент',
@@ -4231,22 +4228,19 @@ const RU = {
      ketgan edi, chunki smoke test faqat beshta bo'limni tekshirardi. */
   'Qidiruv':'Поиск', 'Nusxa':'Копия', 'universal':'универсальный', 'bo\'lim':'разд.',
   "Hech narsa topilmadi. Do'kon nomi, kuryer nomi yoki kategoriya bilan urinib ko'ring.":'Ничего не найдено. Попробуйте название магазина, курьера или категорию.',
-  "Hali kuzatiladigan jo'natma yo'q":'Пока нет отслеживаемых отправлений',
-  "Reja tuzsangiz, u shu yerda jo'natmaga aylanadi: holatini belgilab borasiz va trek raqamini saqlaysiz.":'Составьте план — здесь он станет отправлением: вы будете отмечать статус и сохраните трек-номер.',
   "Holatni o'zingiz belgilaysiz — ilova kuryer tizimlariga ulanmagan. Rasmiy holatni kuryerning o'z sayti yoki botida ko'ring.":'Статус отмечаете вы сами — приложение не подключено к системам курьеров. Официальный статус смотрите на сайте или в боте курьера.',
   "Rejasiz jo'natma raqamini shu yerda saqlab, quyidagi kuryer saytiga qo'ying.":'Сохраните здесь номер отправления без плана и вставьте его на сайте курьера ниже.',
   'Bojxona xabarnomasi':'Уведомление таможни',
-  "Jo'natma bojxonada ushlansa, YIDXP orqali tasdiqlanadi":'Если отправление задержит таможня, подтверждение — через ЕПИГУ',
   "Bo'lim tanlang":'Выберите раздел', 'Tovar turi':'Тип товара', 'Hamma turdagi tovarlar':'Товары всех типов',
   'Kiyim, sumka, aksessuar':'Одежда, сумки, аксессуары', 'Krossovka, sneaker, sport':'Кроссовки, сникеры, спорт',
   'Gadjet, texnika, komponent':'Гаджеты, техника, комплектующие', "Parvarish va bo'yoq":'Уход и макияж',
   'Bolalar va chaqaloqlar uchun':'Для детей и малышей', "Barcha do'konlar":'Все магазины',
   'Arzon narx, keng tanlov':'Низкие цены, широкий выбор', 'Original brend va texnika':'Оригинальные бренды и техника',
   'Yaqin ombor, tez yetkazish':'Близкий склад, быстрая доставка', 'Moda va kosmetika':'Мода и косметика',
-  'Dubay omborlari orqali':'Через склады в Дубае', "Ko'p davlatga yuboradi":'Отправляет во многие страны',
+  'Dubay omborlari orqali':'Через склады в Дубае',
   "To'g'ridan-to'g'ri":'Напрямую', "ta do'kon topildi":'магазинов найдено', 'VPN kerak':'Нужен VPN',
   'Sotuvchiga bog\'liq':'Зависит от продавца', 'Buyurtma murakkab':'Заказ сложный', 'Buyurtma oson':'Заказ простой',
-  "Bu do'kondan qanday keltirish":'Как доставить из этого магазина', 'Vositachi (kuryer) kerak':'Нужен посредник (курьер)',
+  "Bu do'kondan qanday keltirish":'Как доставить из этого магазина',
   "O'zbekistonga to'g'ridan-to'g'ri yuboradi":'Отправляет в Узбекистан напрямую',
   "Do'kon O'zbekistonga yubormaydi. Chetdagi ombor manzilini beruvchi kuryer tanlanadi, tovar o'sha manzilga keladi va u yerdan sizga jo'natiladi.":'Магазин не отправляет в Узбекистан. Выбирается курьер, который даёт адрес зарубежного склада: товар приходит туда, а оттуда отправляется вам.',
   'Shu yo\'nalishdagi':'Показать', 'kuryerni ko\'rish':'курьеров на этом направлении',
@@ -4259,7 +4253,7 @@ const RU = {
   'Arzon':'Дёшево', 'Katta assortiment':'Большой ассортимент', 'Chegirma':'Скидки',
   "To'liq qo'llanma":'Полная инструкция', "bo'lim · kalkulyator · lug'at · FAQ":'разд. · калькулятор · словарь · FAQ',
   "Ma'lumot noto'g'rimi?":'Информация неверна?',
-  "Yo'nalishni tanlang":'Выберите направление', 'Kuryer va konsolidatsiya':'Курьеры и консолидация',
+  "Yo'nalishni tanlang":'Выберите направление',
   'AQSh omborlari orqali':'Через склады в США', "Koreya yo'nalishi":'Корейское направление',
   'Rossiya orqali':'Через Россию', 'Dubay omborlari':'Склады в Дубае', "Qo'shni davlatlar":'Соседние страны',
   'Janubi-sharqiy Osiyo':'Юго-Восточная Азия', 'Barcha kuryerlar':'Все курьеры', "Ro'yxatdagi hamma kuryer":'Все курьеры из списка',
@@ -4275,15 +4269,13 @@ const RU = {
   'Qisman / sayt JS':'Частично / сайт на JS', 'Sayt ishlamadi':'Сайт не открылся',
   'Tariflar ·':'Тарифы ·', 'Tariflar kuryerlarning rasmiy manbalaridan':'Тарифы взяты из официальных источников курьеров по состоянию на',
   "holatiga ko'ra olingan. Yakuniy narx vazn, hajm va yo'nalishga qarab o'zgaradi.":'— итоговая цена зависит от веса, объёма и направления.',
-  'Tariflar':'Тарифы', 'Xizmatlar va cheklovlar':'Услуги и ограничения',
+  'Tariflar':'Тарифы',
   /* --- Bojxona bo'limlari --- */
   'Kalendar oydagi umumiy summani yozing':'Введите общую сумму за календарный месяц',
   "Shu oyda kelgan barcha jo'natmalar qiymatini qo'shib yozing":'Сложите стоимость всех отправлений, пришедших в этом месяце',
   'Umumiy vaznni yozing':'Введите общий вес', 'Yetkazish, 1 kg':'Доставка, 1 кг', "Bojsiz me'yor · $":'Беспошлинный лимит · $', '/ oy':'/ мес',
   'Hisob bosqichlari':'Шаги расчёта',
-  "Kalendar oyda kelgan barcha jo'natmalar summasi qo'shiladi, undan $200 imtiyoz ayriladi.":'Складывается сумма всех отправлений за календарный месяц, из неё вычитается льгота $200.',
   "Shu vaznning yetkazish xarajati tovar qiymatiga qo'shiladi — bu bojxona qiymati.":'Стоимость доставки этого веса прибавляется к цене товара — это таможенная стоимость.',
-  "30% va har kg uchun $3 hisoblanadi, kattasi olinadi; ustiga BHM ning 25% yig'imi qo'shiladi.":'Считаются 30% и $3 за каждый кг, берётся большее; сверху добавляется сбор 25% БРВ.',
   "Oyda nechta jo'natma keldi?":'Сколько отправлений пришло за месяц?',
   "my.gov.uz orqali nomingizga kelgan jo'natmalarni tekshiring":'Проверьте отправления на ваше имя через my.gov.uz',
   "Bu hisob taxminiy. Yakuniy summa bojxona organi aniqlagan bojxona qiymati va to'lov kunidagi kurs bo'yicha belgilanadi.":'Расчёт приблизительный. Итоговая сумма определяется по таможенной стоимости, установленной таможенным органом, и курсу на день оплаты.',
@@ -4291,23 +4283,8 @@ const RU = {
   /* Motion-tushuntirish */
   'Qanday ishlaydi':'Как это работает', '{0} soniya · {1} qadam':'{0} секунд · {1} шагов', '≈ {0} daqiqa · {1} qadam':'≈ {0} мин · {1} шагов', 'Qadamlar':'Шаги', '{0}-qadam':'Шаг {0}',
   'Pauza':'Пауза', "Qayta ko'rish":'Смотреть снова', 'Yopish':'Закрыть',
-  "Bir kalendar oyda kelgan barcha jo'natmalar bitta hisobga qo'shiladi.":'Все отправления за один календарный месяц складываются в один счёт.',
-  "$50 + $70 + $60 = $180 — me'yor ichida, boj yo'q.":'$50 + $70 + $60 = $180 — в пределах лимита, пошлины нет.',
-  "To'rtinchi jo'natma $40: jami $220 — me'yordan $20 ortiq.":'Четвёртое отправление $40: итого $220 — на $20 сверх лимита.',
-  "Boj faqat ortiqcha $20 dan hisoblanadi — butun summadan emas.":'Пошлина считается только с лишних $20 — не со всей суммы.',
-  'Yangi oyning 1-sanasida hisob noldan boshlanadi.':'1-го числа нового месяца счёт начинается с нуля.',
-  "Jo'natma $320 va 2,5 kg. Ortiqcha: $320 − $200 = $120.":'Отправление $320 и 2,5 кг. Превышение: $320 − $200 = $120.',
-  'Ortiqcha ulushga mos vazn: 2,5 kg × 120/320 ≈ 0,9 kg.':'Вес, приходящийся на превышение: 2,5 кг × 120/320 ≈ 0,9 кг.',
-  'Bojxona qiymati: $120 + 0,9 kg × $9 yetkazish = $128.':'Таможенная стоимость: $120 + 0,9 кг × $9 доставки = $128.',
-  'Boj: 30% dan $38 yoki $3/kg dan $3 — kattasi olinadi, $38.':'Пошлина: 30% дают $38, $3/кг дают $3 — берётся большее, $38.',
-  "Ustiga yig'im: BHM ning 25% = 110 000 so'm. Jami ≈ 597 000 so'm.":'Плюс сбор: 25% БРВ = 110 000 сум. Итого ≈ 597 000 сум.',
-  "Jo'natma bojxona nazoratiga keladi va tizimda ro'yxatga olinadi.":'Отправление поступает на таможенный контроль и регистрируется в системе.',
-  'Sizga xabarnoma keladi — YIDXP yoki mobil ilova orqali.':'Вам приходит уведомление — через ЕПИГУ или мобильное приложение.',
-  'Tasdiqlaysiz yoki rad etasiz. Past xavfda ixtiyoriy, yuqori xavfda majburiy.':'Вы подтверждаете или отклоняете. При низком риске — по желанию, при высоком — обязательно.',
-  "Me'yordan ortiq bo'lsa boj va yig'im to'lanadi — jo'natma chiqariladi.":'Если сверх лимита — оплачиваются пошлина и сбор, отправление выпускается.',
-  'Hujjat yetmasa jo\'natma vaqtincha saqlovga olinadi — muddat ichida hujjat topshiring.':'Если не хватает документов, отправление временно помещается на хранение — подайте документы в срок.',
   'Sentabr':'Сентябрь', 'Sentabr · $220':'Сентябрь · $220', '1 oktabr':'1 октября', 'bojsiz':'без пошлины', 'boj shundan':'пошлина с этого',
-  '1,6 kg bojsiz':'1,6 кг без пошлины', 'bojxona qiymati':'таможенная стоимость', 'Boj $38':'Пошлина $38', "Yig'im 25% BHM":'Сбор 25% БРВ', 'Jami':'Итого',
+  '1,6 kg bojsiz':'1,6 кг без пошлины', 'bojxona qiymati':'таможенная стоимость', "Yig'im 25% BHM":'Сбор 25% БРВ', 'Jami':'Итого',
   'ilova':'приложение', 'Tasdiqlash':'Подтвердить', 'Rad etish':'Отклонить', "Boj + yig'im":'Пошлина + сбор', "to'landi":'оплачено', 'Saqlov':'Хранение',
   /* Motion-tushuntirish (bojxona): sarlavhalar, izohlar va sahna so'zlari */
   "Oyiga $200 bojsiz":'$200 в месяц без пошлины', "Davlat shaxsiy ehtiyoj uchun chet eldan olingan tovarlarni oyiga $200 gacha bojsiz olib kirishga ruxsat beradi. Bu summa har bir qabul qiluvchi uchun alohida hisoblanadi.":'Государство разрешает ввозить товары для личных нужд без пошлины на сумму до $200 в месяц. Лимит считается отдельно для каждого получателя.',
@@ -4319,7 +4296,7 @@ const RU = {
   "Bo'lib yuborish yordam bermaydi":'Разделить посылку не поможет', "Katta xaridni ikkiga bo'lib yuborsangiz ham, ikkalasi bir oyda kelsa hisob baribir qo'shiladi. Me'yor jo'natma soniga emas, oyga bog'liq.":'Даже если разбить крупную покупку на две посылки, обе придут в одном месяце — и сложатся. Лимит привязан к месяцу, а не к числу посылок.',
   'Shaxsiy ehtiyoj sharti':'Условие личного пользования', "Imtiyoz faqat shaxsiy va oilaviy foydalanish uchun. Bir xil tovar ko'p miqdorda bo'lsa (masalan, 10 ta bir xil telefon), bojxona uni tijorat deb hisoblashi mumkin.":'Льгота только для личного и семейного пользования. Если одинакового товара много (например, 10 одинаковых телефонов), таможня может признать ввоз коммерческим.',
   'Narx qanday aniqlanadi':'Как определяется стоимость', "Qiymat chek yoki invoys bo'yicha olinadi. Narx bozor narxidan ancha past ko'rinsa, bojxona uni qayta baholashi mumkin — chekni saqlab qo'ying.":'Стоимость берётся по чеку или инвойсу. Если цена заметно ниже рыночной, таможня может переоценить товар — сохраните чек.',
-  "Hisobni qayerda ko'rish mumkin":'Где посмотреть счёт', "Nomingizga kelgan jo'natmalar va oylik hisobni my.gov.uz (YIDXP) shaxsiy kabinetida ko'rasiz. Ilovadagi «Bu oyda» bloki ham shu hisobni yuritishga yordam beradi.":'Отправления на ваше имя и месячный счёт видны в личном кабинете my.gov.uz (ЕПИГУ). Блок «В этом месяце» в приложении помогает вести тот же учёт.',
+  "Hisobni qayerda ko'rish mumkin":'Где посмотреть счёт',
   'Yangi oy — yangi hisob':'Новый месяц — новый счёт', "Keyingi oyning 1-sanasida hisob noldan boshlanadi: yana $200 bojsiz. Katta xaridni oy boshiga rejalashtirish foyda beradi.":'1-го числа следующего месяца счёт обнуляется: снова $200 без пошлины. Крупную покупку выгодно планировать на начало месяца.',
   "Qachon to'lanadi":'Когда платится', "Oylik $200 me'yordan oshganda. To'lov butun summadan emas, faqat ortiqcha qismdan olinadi. Me'yor ichida bo'lsa hech narsa to'lanmaydi.":'При превышении месячного лимита $200. Платёж берётся не со всей суммы, а только с превышения. В пределах лимита не платится ничего.',
   'Misol':'Пример', "Bitta jo'natma: tovar $320, vazn 2,5 kg, yetkazish $9 har kilogramm uchun. Shu oyda boshqa jo'natma bo'lmagan.":'Одно отправление: товар $320, вес 2,5 кг, доставка $9 за килограмм. Других отправлений в этом месяце не было.',
@@ -4328,13 +4305,12 @@ const RU = {
   '3-qadam: bojxona qiymati':'Шаг 3: таможенная стоимость', "Ortiqcha $120 ga shu qismning yetkazish haqi qo'shiladi: 0,9 kg × $9 ≈ $8. Bojxona qiymati ≈ $128. Ha, yetkazish ham hisobga kiradi.":'К $120 добавляется доставка этой части: 0,9 кг × $9 ≈ $8. Таможенная стоимость ≈ $128. Да, доставка тоже входит в расчёт.',
   '4-qadam: ikki usul':'Шаг 4: два способа', "Boj ikki usulda hisoblanadi: qiymatning 30% i ({0}) yoki har ortiqcha kilogramm uchun $3 (≈ $3). Qaysi biri katta bo'lsa, o'sha olinadi — {0}.":'Пошлина считается двумя способами: 30% стоимости ({0}) или $3 за каждый килограмм сверх (≈ $3). Берётся большее — {0}.',
   "Og'ir, arzon tovarda":'Тяжёлый дешёвый товар', "Tovar og'ir va arzon bo'lsa, $3/kg usuli kattaroq chiqadi. Masalan, 20 kg ortiqcha vazn — kamida $60 boj, narxi past bo'lsa ham.":'Если товар тяжёлый и дешёвый, способ $3/кг даёт больше. Например, 20 кг сверх лимита — минимум $60 пошлины, даже при низкой цене.',
-  "5-qadam: bojxona yig'imi":'Шаг 5: таможенный сбор', "Bojdan tashqari rasmiylashtirish yig'imi bor: BHM ning 25% i = {0} so'm. U qat'iy — summa katta yoki kichik bo'lishidan qat'i nazar bir xil.":'Кроме пошлины есть сбор за оформление: 25% БРВ = {0} сум. Он фиксированный — одинаков при любой сумме.',
+  "5-qadam: bojxona yig'imi":'Шаг 5: таможенный сбор',
   "6-qadam: so'mga o'tkazish":'Шаг 6: перевод в сумы', "Boj dollarda hisoblanib, Markaziy bank kursi bo'yicha so'mga o'tkaziladi: {0} × {1} ≈ {2} so'm.":'Пошлина считается в долларах и переводится в сумы по курсу Центрального банка: {0} × {1} ≈ {2} сум.',
   "Jami to'lov":'Итого к оплате', "Boj {0} + yig'im {1} ≈ {2} so'm. Bu $320 lik jo'natma uchun taxminiy to'lov; kurs o'zgarsa summa ham biroz o'zgaradi.":'Пошлина {0} + сбор {1} ≈ {2} сум. Это примерный платёж за отправление на $320; при изменении курса сумма немного изменится.',
   "O'zingiznikini hisoblang":'Посчитайте своё', "Kalkulyatorga oylik summa, vazn va yetkazish narxini kiriting — ilova shu qadamlarni siz uchun bajaradi va hisob bosqichlarini ko'rsatadi.":'Введите в калькулятор сумму за месяц, вес и цену доставки — приложение выполнит эти шаги за вас и покажет этапы расчёта.',
-  "Jo'natma chegaraga keldi":'Отправление на границе', "Kuryer yoki pochta jo'natmani bojxona nazoratiga topshiradi. Deklaratsiya tizimda ro'yxatga olinadi — bu avtomatik, sizdan hech narsa talab qilinmaydi.":'Курьер или почта передаёт отправление на таможенный контроль. Декларация регистрируется в системе автоматически — от вас ничего не требуется.',
+  "Jo'natma chegaraga keldi":'Отправление на границе',
   'Xavf darajasi':'Уровень риска', "Tizim har jo'natmaga xavf darajasini belgilaydi: past, o'rta yoki yuqori. Bunga tovar turi, qiymati va jo'natmalar takrorlanishi ta'sir qiladi.":'Система присваивает каждому отправлению уровень риска: низкий, средний или высокий. На него влияют тип товара, стоимость и повторяемость отправлений.',
-  "Sizga YIDXP (my.gov.uz) yoki mobil ilova orqali xabarnoma yuboriladi. Kuryerlar ko'pincha Telegram yoki SMS orqali ham ogohlantiradi.":'Уведомление приходит через ЕПИГУ (my.gov.uz) или мобильное приложение. Курьеры часто дублируют его в Telegram или по SMS.',
   'Xabarnomada nima bor':'Что в уведомлении', "Tovar tavsifi, qiymati, vazni, hisoblangan boj (agar bo'lsa) va javob berish muddati. Hammasini diqqat bilan tekshiring.":'Описание товара, стоимость, вес, рассчитанная пошлина (если есть) и срок ответа. Внимательно проверьте всё.',
   'Tasdiqlash yoki rad etish':'Подтвердить или отклонить', "Ma'lumot to'g'ri bo'lsa tasdiqlaysiz. Past va o'rta xavfda bu ixtiyoriy, yuqori xavfda majburiy. Rad etsangiz, jo'natma rasmiylashtirilmaydi.":'Если данные верны — подтверждаете. При низком и среднем риске это по желанию, при высоком — обязательно. Если отклонить, отправление не оформляется.',
   "Xato ko'rsangiz":'Если видите ошибку', "Qiymat yoki tovar noto'g'ri yozilgan bo'lsa, darhol tasdiqlamang: kuryerga xabar bering yoki eng yaqin bojxona organiga chek bilan murojaat qiling.":'Если стоимость или товар указаны неверно, не подтверждайте сразу: сообщите курьеру или обратитесь с чеком в ближайший таможенный орган.',
@@ -4356,7 +4332,6 @@ const RU = {
   "Biologik faol qo'shimchalar":'Биологически активные добавки', 'nom':'наимен.',
   "Turli nomdagi va birlamchi qadoqda, umumiy og'irligi 3 kg dan hamda har bir nomdagi qo'shimcha 1 ta qadoqdan oshmagan miqdorda.":'Разных наименований и в первичной упаковке, общим весом не более 3 кг и не более 1 упаковки каждого наименования.',
   "Alkogol va tamaki mahsulotlarini xalqaro pochta va kuryerlik jo'natmalari orqali olib kirish taqiqlanadi.":'Ввоз алкогольной и табачной продукции международными почтовыми и курьерскими отправлениями запрещён.',
-  'Notijorat maqsad deb topilishi':'Признание некоммерческой цели',
   'Imtiyoz faqat shaxsiy va oilaviy ehtiyoj uchun tovarlarga beriladi. Bojxona xodimi quyidagilarga qarab aniqlaydi:':'Льгота даётся только на товары для личных и семейных нужд. Сотрудник таможни определяет это по следующим признакам:',
   "Tovarning xususiyati — iste'mol xususiyatlari shaxsiy, oilaviy va maishiy ehtiyoj uchun mo'ljallanganligi.":'Характер товара — потребительские свойства предназначены для личных, семейных и бытовых нужд.',
   "Tovarning miqdori — bir turdagi tovar shaxs va oilasi ehtiyojidan ortiq bo'lsa, aksi isbotlanmaguncha tijorat deb e'tirof etiladi.":'Количество товара — если однотипного товара больше, чем нужно человеку и его семье, он считается коммерческим, пока не доказано обратное.',
@@ -4365,7 +4340,6 @@ const RU = {
   "Oluvchining yoshi, shu jumladan 16 yoshga to'lmagan farzandlariniki, tovar xususiyatiga muvofiqligi.":'Соответствие товара возрасту получателя, включая детей до 16 лет.',
   "Bir manzilda yashovchi shaxslar tomonidan bir xil turdagi tovarlarni olib o'tish takroriyligi.":'Повторяемость ввоза однотипных товаров лицами, живущими по одному адресу.',
   "Qabul qiluvchi manzilning shaxs ro'yxatdan o'tgan joyi bilan farqliligi.":'Отличие адреса получателя от места регистрации.',
-  "Me'yordan ortiq qismning bojxona qiymatidan 30 foiz, lekin har bir kilogrami uchun $3 dan kam emas. Qaysi hisob ko'p chiqsa, o'sha olinadi.":'30 процентов от таможенной стоимости части сверх лимита, но не менее $3 за каждый килограмм. Берётся тот расчёт, который больше.',
   "Bojxona yig'imi":'Таможенный сбор', 'Qanday hisoblanadi':'Как рассчитывается',
   "Yagona bojxona to'lovi bojxona to'lovlari undirilmaydigan tovarlarni olib kirishning cheklangan me'yorlaridan ortgan taqdirda, faqat ortiqcha qismga nisbatan undiriladi.":'Единый таможенный платёж взимается только с части, превышающей нормы беспошлинного ввоза.',
   'Giyohvandlik vositalari, psixotrop moddalar va prekursorlar':'Наркотические средства, психотропные вещества и прекурсоры',
@@ -4387,15 +4361,11 @@ const RU = {
   "Qimmatbaho buyumlar (qiymati e'lon qilinmagan posilkada)":'Ценные предметы (в посылке без объявленной ценности)',
   'Alkogol va tamaki mahsulotlari':'Алкогольная и табачная продукция', 'Dori vositalari':'Лекарственные средства',
   "Jo'natma bojxona nazoratidan o'tadi":'Отправление проходит таможенный контроль',
-  "Jo'natmalar deklaratsiyasi tizimda ro'yxatga olinadi.":'Декларация на отправления регистрируется в системе.',
   'Xabarnoma keladi':'Приходит уведомление',
-  "Har bir kuryerlik jo'natmasi bo'yicha xabarnoma qabul qiluvchiga YIDXP yoki mobil ilova orqali avtomatik yuboriladi.":'По каждому курьерскому отправлению уведомление автоматически отправляется получателю через ЕПИГУ или мобильное приложение.',
   'Tasdiqlaysiz yoki rad etasiz':'Вы подтверждаете или отклоняете',
-  "Qabul qiluvchi YIDXP, mobil ilova orqali yoki eng yaqin bojxona organiga murojaat qilib xabarnomani tasdiqlaydi yoki rad etadi.":'Получатель подтверждает или отклоняет уведомление через ЕПИГУ, мобильное приложение или обратившись в ближайший таможенный орган.',
   "To'lov va chiqarish":'Оплата и выпуск',
   "Me'yordan ortiq bo'lsa yagona bojxona to'lovi va yig'im to'lanadi, so'ng jo'natma chiqariladi.":'Если лимит превышен, оплачиваются единый таможенный платёж и сбор, затем отправление выпускается.',
   "Tasdiqlash yoki rad etish past va o'rta xavfli jo'natmalar uchun ixtiyoriy, yuqori xavflilar uchun majburiy.":'Подтверждение или отклонение необязательно для отправлений низкого и среднего риска и обязательно для отправлений высокого риска.',
-  'YIDXP orqali xabarnomani tasdiqlash →':'Подтвердить уведомление через ЕПИГУ →',
   "Jo'natma qachon ushlab qolinadi":'Когда отправление задерживают',
   "Quyidagi hollarda jo'natma vaqtincha saqlovga olinishi mumkin:":'В следующих случаях отправление может быть временно задержано:',
   "Bojxona to'lovi to'lanishi lozim bo'lgan tovarlar aniqlanganda.":'Когда выявлены товары, за которые нужно уплатить таможенный платёж.',
@@ -4411,7 +4381,6 @@ const RU = {
   "{0} ta jo'natma · {1} kg · {2}":'{0} отправл. · {1} кг · {2}',
   "Kalendar oyda kelgan barcha jo'natmalar summasi qo'shiladi, undan ${0} imtiyoz ayriladi.":'Складывается сумма всех отправлений за календарный месяц, из неё вычитается льгота ${0}.',
   "Ortiqcha qismga to'g'ri keladigan vazn nisbat bo'yicha ajratiladi: {0} kg.":'Вес, приходящийся на часть сверх лимита, выделяется пропорционально: {0} кг.',
-  "{0}% va har kg uchun ${1} hisoblanadi, kattasi olinadi; ustiga BHM ning {2}% yig'imi qo'shiladi.":'Считаются {0}% и ${1} за каждый кг, берётся большее; сверху добавляется сбор {2}% БРВ.',
   "Summa ${0} me'yordan oshmadi — yagona bojxona to'lovi undirilmaydi.":'Сумма не превысила лимит ${0} — единый таможенный платёж не взимается.',
   "Vazn bo'yicha hisob ko'proq chiqdi: {0} kg × ${1} = ${2} ({3}% varianti ${4} edi).":'Расчёт по весу оказался больше: {0} кг × ${1} = ${2} (вариант {3}% давал ${4}).',
   "Qiymat bo'yicha hisob ko'proq chiqdi: {0} × {1}% = {2} (vazn varianti {3} edi).":'Расчёт по стоимости оказался больше: {0} × {1}% = {2} (вариант по весу давал {3}).',
@@ -4419,13 +4388,12 @@ const RU = {
   /* --- Toastlar --- */
   'Aloqa manzili hali kiritilmagan':'Контакт ещё не указан', "Avval jo'natma summasini yozing":'Сначала введите сумму отправления',
   /* Reja bosqichlari va kuzatuv kartasi: ilgari ruscha lug'atda yo'q edi. */
-  'Reja tuzildi':'План составлен', 'Buyurtma qilindi':'Заказ оформлен', 'Kuryer omborida':'На складе курьера', "Yo'lda":'В пути', 'Qabul qilindi':'Получено', 'Omborda':'На складе', 'Keldi':'Получено', "Do'kon, kuryer va taxminiy xarajat aniqlandi":'Магазин, курьер и примерные расходы определены', "Do'konda to'lov amalga oshirildi":'Оплата в магазине выполнена', 'Tovar chetdagi omborga yetib keldi':'Товар прибыл на зарубежный склад', "Jo'natma O'zbekiston tomon uchdi":'Отправление вылетело в Узбекистан', "Bojxonadan chiqdi va qo'lingizga tegdi":'Прошло таможню и получено вами', '{0} — belgilash':'{0} — отметить', '{0} — belgilandi':'{0} — отмечено', "Mening jo'natmalarim":'Мои отправления', 'Trek raqamini yozing':'Введите трек-номер', "Rejani o'chirish":'Удалить план', 'Hisob-kitob':'Расчёт', 'Bosqichlar':'Этапы', 'Jami (taxminiy)':'Итого (примерно)', 'Trek raqam':'Трек-номер',
-  'Avval trek raqamini yozing':'Сначала введите трек-номер', 'Bosqich yangilandi':'Этап обновлён', "Do'kon topilmadi":'Магазин не найден',
+  'Reja tuzildi':'План составлен', 'Buyurtma qilindi':'Заказ оформлен', 'Kuryer omborida':'На складе курьера', "Yo'lda":'В пути', 'Qabul qilindi':'Получено', 'Omborda':'На складе', 'Keldi':'Получено', "Do'kon, kuryer va taxminiy xarajat aniqlandi":'Магазин, курьер и примерные расходы определены', "Do'konda to'lov amalga oshirildi":'Оплата в магазине выполнена', 'Tovar chetdagi omborga yetib keldi':'Товар прибыл на зарубежный склад', "Jo'natma O'zbekiston tomon uchdi":'Отправление вылетело в Узбекистан', "Bojxonadan chiqdi va qo'lingizga tegdi":'Прошло таможню и получено вами', '{0} — belgilandi':'{0} — отмечено', 'Hisob-kitob':'Расчёт', 'Bosqichlar':'Этапы', 'Jami (taxminiy)':'Итого (примерно)', 'Trek raqam':'Трек-номер',
+  "Do'kon topilmadi":'Магазин не найден',
   "Havola e'lon qilinmagan":'Ссылка не указана', "Jo'natma bu oyga qo'shildi":'Отправление добавлено в этот месяц', 'Kuryer topilmadi':'Курьер не найден',
   "Markaziy bank kursini olib bo'lmadi — zaxira qiymat ishlatilmoqda":'Не удалось получить курс ЦБ — используется резервное значение',
   "O'rnatib bo'lmadi":'Не удалось установить', "Oy summasi kalkulyatorga qo'yildi":'Сумма за месяц подставлена в калькулятор',
-  "Reja Telegram'dagi saqlangan xabarlarga yuborildi":'План отправлен в «Избранное» Telegram', "Reja o'chirildi":'План удалён',
-  'Telefon raqami hali kiritilmagan':'Номер телефона ещё не указан', 'Trek raqam nusxalandi':'Трек-номер скопирован', 'Telegram ochildi':'Telegram открыт',
+  'Telefon raqami hali kiritilmagan':'Номер телефона ещё не указан', 'Telegram ochildi':'Telegram открыт',
   'Xabar berish sahifasi ochildi':'Страница для сообщения открыта', 'Sevimlilardan olib tashlandi':'Удалено из избранного', "Sevimlilarga qo'shildi":'Добавлено в избранное',
   "Nusxalab bo'lmadi — matnni qo'lda belgilang":'Не удалось скопировать — выделите текст вручную', 'nusxalandi':'скопировано',
   'Milliy valyutada':'В национальной валюте', "Bu oyda ${0} kelgan — bojsiz qoldiq ${1}.":'В этом месяце уже пришло ${0} — беспошлинный остаток ${1}.',
@@ -4441,16 +4409,17 @@ const RU = {
   /* Pochtam AI (7-bosqich) */
   'Pochtam AI':'Pochtam AI',
   /* Skrinshot natija ekrani va do'kon tanlash yordamchisi */
-  'Qayerdan topaman?':'Где найти?', "Mahsulot sahifasini skrinshot qiling — do'kon, davlat, eng arzon kuryer, boj va jami narxni o'zim chiqaraman.":'Сделайте скриншот страницы товара — магазин, страну, самого дешёвого курьера, пошлину и итоговую цену покажу сам.', "Havola yoki nom yozing — yoki mahsulot sahifasini skrinshot qiling, jami narxni o'zim hisoblayman.":'Введите ссылку или название — или сделайте скриншот страницы товара, итоговую цену посчитаю сам.', "Mahsulot sahifasini skrinshot qiling — do'kon, davlat, eng arzon kuryer, boj va jami narxni o'zim chiqaraman. Yonida — qayerdan topishni so'rash.":'Сделайте скриншот страницы товара — магазин, страну, самого дешёвого курьера, пошлину и итоговую цену покажу сам. Рядом — спросить, где найти.', "Nimani qidirayotganingizni yozing — qaysi do'konda borligini, qanday topish va skrinshot qilishni aytaman. Boj, kuryer, taqiq bo'yicha savol ham mumkin.":'Напишите, что ищете — скажу, в каком магазине есть, как найти и как сделать скриншот. Вопросы о пошлине, курьере, запретах тоже можно.', "Do'kon, davlat, kuryer, boj va jami narx bir necha soniyada.":'Магазин, страна, курьер, пошлина и итоговая цена — через несколько секунд.', 'Eng arzon kuryer':'Самый дешёвый курьер', 'Tezroq:':'Быстрее:', 'Boshqa kuryerlar':'Другие курьеры', 'Qanday buyurtma qilaman?':'Как заказать?', 'Vaznni aniqlashtirish':'Уточнить вес', "Rejaga qo'shish":'В план', "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. AI faqat rasmni o'qidi, hisob ilovaniki.":'Расчёт примерный — итоговую сумму определяют таможня и курьер. ИИ только прочитал картинку, расчёт — приложения.', "Do'konda mahsulot sahifasini oching.":'Откройте страницу товара в магазине.', "Narx, nom va (bo'lsa) og'irlik ko'rinadigan joyni skrinshot qiling.":'Сделайте скриншот там, где видны цена, название и (если есть) вес.', "Qayta yuklang — qolganini o'zim qilaman.":'Загрузите снова — остальное сделаю сам.', 'Qayta yuklash':'Загрузить снова', "Qo'lda hisoblash":'Посчитать вручную', 'Qayta urinish':'Попробовать снова', "Kategoriya bo'yicha eslatma":'Заметка по категории', 'Narxga ishonch past':'Уверенность в цене низкая', "Skrinshotda narx aniq ko'rinmagan — kalkulyatorda tekshiring.":'На скриншоте цена видна нечётко — проверьте в калькуляторе.', "Og'irlik {0} kg (sahifadan)":'Вес {0} кг (со страницы)', "Taxminiy og'irlik {0} kg ({1})":'Примерный вес {0} кг ({1})', "Do'kon aniqlanmadi":'Магазин не определён', 'taxmin':'предположительно', "do'kon":'магазин', 'Men {0} ({1}) dan \"{2}\" ({3}) buyurtma qilmoqchiman{4}. Qanday buyurtma qilaman — qadam-baqadam?':'Хочу заказать \"{2}\" ({3}) из {0} ({1}){4}. Как заказать — по шагам?',
-  "Quti bilan kargo og'irligi oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi.":'С коробкой вес для доставки растёт — многие курьеры предлагают отправку без коробки.', "Litiy batareya va powerbank avia bilan yuborilmaydi; telefon O'zbekistonda IMEI ro'yxatidan o'tkaziladi.":'Литиевые батареи и повербанки авиа не отправляются; телефон в Узбекистане регистрируется по IMEI.', "Aerozol va spirtli atirlar avia jo'natmada cheklanadi — kuryerning ro'yxatini tekshiring.":'Аэрозоли и спиртовые духи ограничены в авиаотправке — проверьте список курьера.', "Topgan mahsulotingizni suratga oling — jami narxni o'zim hisoblayman.":'Сфотографируйте найденный товар — итоговую цену посчитаю сам.', "Mahsulot sahifasini suratga oling — qolganini o'zim hisoblayman.":'Сфотографируйте страницу товара — остальное посчитаю сам.', "Hali topmadingizmi?":'Ещё не нашли?', "Nimani qidirayotganingizni tanlang — mos do'konlarni ko'rsataman.":'Выберите, что ищете — покажу подходящие магазины.', "Do'kon yoki mahsulot qidirish":'Поиск магазина или товара', "Havola tashlang yoki nom yozing — do'kon, kuryer va bojni ko'rsataman.":'Вставьте ссылку или введите название — покажу магазин, курьера и пошлину.', "Nima qidiryapsiz?":'Что ищете?', "Qanaqasi?":'Какой именно?', 'Byudjet':'Бюджет', "Farqi yo'q":'Не важно', 'gacha':'до', "Do'konlarni ko'rsat":'Показать магазины', "Boshqa savol bormi? Pochtam AI ga yozing":'Есть другой вопрос? Напишите Pochtam AI', "Aniqroq yozing":'Уточните запрос', '{0} qidiryapman':'Ищу {0}', "Qaysi do'kondan topaman?":'В каком магазине это найти?', "Skrinshot — asosiy yo'l":'Скриншот — главный путь', "Mahsulot sahifasini suratga oling: do'kon, davlat, eng arzon kuryer, boj va jami narxni o'zim chiqaraman.":'Сфотографируйте страницу товара: магазин, страну, самого дешёвого курьера, пошлину и итоговую цену покажу сам.', "Tovarni hali topmagan bo'lsangiz — kategoriya va byudjetni tanlang, mos do'konlarni ko'rsataman.":'Если товар ещё не найден — выберите категорию и бюджет, покажу подходящие магазины.', "Do'kon, kuryer yoki qo'llanma nomini yozing — havola tashlasangiz do'kon sahifasi ochiladi.":'Введите название магазина, курьера или инструкции — если вставите ссылку, откроется страница магазина.', "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi shu davlatdan ham yuboradi.":'Под ваш выбор подходит {0} магазинов, последние {1} отправляют и из этой страны.', "Qaysi davlatdan olib kelamiz":'Из какой страны везём', 'Yevropa omborlari':'Европейские склады', 'Texnika va kosmetika':'Техника и косметика', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', "Nomini yozing yoki ayting — qayerdan olish, qanchaga tushishi va qanday buyurtma qilishni ko'rsataman.":'Напишите или продиктуйте название — покажу, где купить, во сколько обойдётся и как заказать.', 'Mahsulot':'Товар', 'Mahsulot nomi':'Название товара', "Yoki turini tanlang:":'Или выберите тип:', "Topdim — qanchaga tushadi?":'Нашёл — во сколько обойдётся?', "Mahsulot sahifasini suratga oling: kuryer, boj va jami narx.":'Сфотографируйте страницу товара: курьер, пошлина и итоговая цена.', "Mos do'konlarni va qanday topishni ko'rsataman.":'Покажу подходящие магазины и как найти.', 'Ovoz bilan aytish':'Сказать голосом', "Tinglashni to'xtatish":'Остановить запись', 'Mikrofonga ruxsat berilmadi':'Доступ к микрофону не разрешён', "Shu yerdan boshlang":'Начните отсюда', "Nima qidirayotganingizni yozing yoki ayting — keyin skrinshot yuklab jami narxni olasiz yoki mos do'konlarni ko'rasiz.":'Напишите или продиктуйте, что ищете — потом загрузите скриншот и получите итоговую цену либо увидите подходящие магазины.', 'Kuryer':'Курьер', "{0} dan olib keladigan kuryer yo'q":'Нет курьера, который везёт из {0}', "Jami narxda faqat tovar narxi va boj hisoblandi. Boshqa davlatdan olib kelish yo'lini ko'ring.":'В итоговую цену вошли только стоимость товара и пошлина. Посмотрите доставку из другой страны.', "Narxini kuryerdan so'rash kerak: {0}":'Цену нужно уточнить у курьера: {0}', "Bu yo'nalishda kuryerlar bor, lekin narxi jadvalda yo'q — kuryerdan so'rab, kargoni qo'shing.":'На этом направлении курьеры есть, но цены в таблице нет — уточните у курьера и добавьте доставку.', "{0} dan olib keladigan kuryer yo'q — kargo qatorisiz hisoblandi.":'Нет курьера из {0} — расчёт без строки доставки.', "Bu yo'nalishda kuryer bor, lekin narxi jadvalda yo'q ({0}) — narxini so'rab, kargoni qo'shing.":'На этом направлении курьер есть, но цены в таблице нет ({0}) — уточните и добавьте доставку.', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', "Skrinshot yuklang: kuryer, boj va jami narx.":'Загрузите скриншот: курьер, пошлина и итоговая цена.', "Narxni o'zim yozaman":'Введу цену сам', "Narx, davlat va vazn — kalkulyatorda.":'Цена, страна и вес — в калькуляторе.', "Savol bormi? Pochtam AI ga yozing":'Есть вопрос? Напишите Pochtam AI', 'Oxirgi hisob':'Последний расчёт', "Uch ma'lumotnoma":'Три справочника', "Do'konlar, kuryerlar va taqiqlarni tekshirish — har biri bitta bosishda.":'Магазины, курьеры и проверка запретов — каждый в одно касание.', "Nima qidirayotganingizni yozing yoki ayting, keyin mahsulot sahifasini suratga olib yuklang — jami narxni o'zim chiqaraman.":'Напишите или продиктуйте, что ищете, затем сфотографируйте страницу товара и загрузите — итоговую цену посчитаю сам.', "Narx, davlat va vaznni o'zingiz yozsangiz ham jami narx chiqadi.":'Итоговая цена появится, даже если ввести цену, страну и вес вручную.', 'taxminan {0}-{1}gacha':'примерно до {0} {1}', 'yanvar':'января', 'fevral':'февраля', 'mart':'марта', 'aprel':'апреля', 'iyun':'июня', 'iyul':'июля', 'avgust':'августа', 'sentabr':'сентября', 'oktabr':'октября', 'noyabr':'ноября', 'dekabr':'декабря', "{0} qo'llanmasi — qadam-baqadam":'Инструкция {0} — по шагам', "Pochtam AI qadam-baqadam tushuntiradi":'Pochtam AI объяснит по шагам', "Topilgan sahifalar · bugun":'Найденные страницы · сегодня', 'Ochish':'Открыть', "Narx va mavjudlik sahifada o'zgarishi mumkin — ochib tekshiring, keyin skrinshot qiling.":'Цена и наличие на странице могут измениться — откройте и проверьте, затем сделайте скриншот.', 'may':'мая', 'Rasm biriktirish':'Прикрепить фото', 'Yuborish':'Отправить', "Bu mahsulot menga qanchaga tushadi?":'Во сколько мне обойдётся этот товар?', 'Nima kerak?':'Что нужно?', "Tovarni tasvirlang yoki boj, kuryer, taqiq bo'yicha savol bering.":'Опишите товар или задайте вопрос о пошлине, курьере, запретах.',
+  'Qayerdan topaman?':'Где найти?', "Nimani qidirayotganingizni yozing — qaysi do'konda borligini, qanday topish va skrinshot qilishni aytaman. Boj, kuryer, taqiq bo'yicha savol ham mumkin.":'Напишите, что ищете — скажу, в каком магазине есть, как найти и как сделать скриншот. Вопросы о пошлине, курьере, запретах тоже можно.', "Do'kon, davlat, kuryer, boj va jami narx bir necha soniyada.":'Магазин, страна, курьер, пошлина и итоговая цена — через несколько секунд.', 'Eng arzon kuryer':'Самый дешёвый курьер', 'Tezroq:':'Быстрее:', 'Boshqa kuryerlar':'Другие курьеры', 'Qanday buyurtma qilaman?':'Как заказать?', 'Vaznni aniqlashtirish':'Уточнить вес', "Rejaga qo'shish":'В план', "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. AI faqat rasmni o'qidi, hisob ilovaniki.":'Расчёт примерный — итоговую сумму определяют таможня и курьер. ИИ только прочитал картинку, расчёт — приложения.', "Do'konda mahsulot sahifasini oching.":'Откройте страницу товара в магазине.', "Narx, nom va (bo'lsa) og'irlik ko'rinadigan joyni skrinshot qiling.":'Сделайте скриншот там, где видны цена, название и (если есть) вес.', "Qayta yuklang — qolganini o'zim qilaman.":'Загрузите снова — остальное сделаю сам.', 'Qayta yuklash':'Загрузить снова', "Qo'lda hisoblash":'Посчитать вручную', 'Qayta urinish':'Попробовать снова', "Kategoriya bo'yicha eslatma":'Заметка по категории', 'Narxga ishonch past':'Уверенность в цене низкая', "Skrinshotda narx aniq ko'rinmagan — kalkulyatorda tekshiring.":'На скриншоте цена видна нечётко — проверьте в калькуляторе.', "Og'irlik {0} kg (sahifadan)":'Вес {0} кг (со страницы)', "Taxminiy og'irlik {0} kg ({1})":'Примерный вес {0} кг ({1})', "Do'kon aniqlanmadi":'Магазин не определён', 'taxmin':'предположительно', "do'kon":'магазин', 'Men {0} ({1}) dan \"{2}\" ({3}) buyurtma qilmoqchiman{4}. Qanday buyurtma qilaman — qadam-baqadam?':'Хочу заказать \"{2}\" ({3}) из {0} ({1}){4}. Как заказать — по шагам?',
+  "Quti bilan kargo og'irligi oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi.":'С коробкой вес для доставки растёт — многие курьеры предлагают отправку без коробки.', "Litiy batareya va powerbank avia bilan yuborilmaydi; telefon O'zbekistonda IMEI ro'yxatidan o'tkaziladi.":'Литиевые батареи и повербанки авиа не отправляются; телефон в Узбекистане регистрируется по IMEI.', "Aerozol va spirtli atirlar avia jo'natmada cheklanadi — kuryerning ro'yxatini tekshiring.":'Аэрозоли и спиртовые духи ограничены в авиаотправке — проверьте список курьера.', "Qanaqasi?":'Какой именно?', 'Byudjet':'Бюджет', "Farqi yo'q":'Не важно', 'gacha':'до', "Do'konlarni ko'rsat":'Показать магазины', '{0} qidiryapman':'Ищу {0}', "Qaysi do'kondan topaman?":'В каком магазине это найти?', "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi shu davlatdan ham yuboradi.":'Под ваш выбор подходит {0} магазинов, последние {1} отправляют и из этой страны.', "Qaysi davlatdan olib kelamiz":'Из какой страны везём', 'Yevropa omborlari':'Европейские склады', 'Texnika va kosmetika':'Техника и косметика', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', 'Mahsulot':'Товар', 'Mahsulot nomi':'Название товара', "Topdim — qanchaga tushadi?":'Нашёл — во сколько обойдётся?', 'Ovoz bilan aytish':'Сказать голосом', "Tinglashni to'xtatish":'Остановить запись', 'Mikrofonga ruxsat berilmadi':'Доступ к микрофону не разрешён', "Shu yerdan boshlang":'Начните отсюда', 'Kuryer':'Курьер', "{0} dan olib keladigan kuryer yo'q":'Нет курьера, который везёт из {0}', "Jami narxda faqat tovar narxi va boj hisoblandi. Boshqa davlatdan olib kelish yo'lini ko'ring.":'В итоговую цену вошли только стоимость товара и пошлина. Посмотрите доставку из другой страны.', "Narxini kuryerdan so'rash kerak: {0}":'Цену нужно уточнить у курьера: {0}', "Bu yo'nalishda kuryerlar bor, lekin narxi jadvalda yo'q — kuryerdan so'rab, kargoni qo'shing.":'На этом направлении курьеры есть, но цены в таблице нет — уточните у курьера и добавьте доставку.', "{0} dan olib keladigan kuryer yo'q — kargo qatorisiz hisoblandi.":'Нет курьера из {0} — расчёт без строки доставки.', "Bu yo'nalishda kuryer bor, lekin narxi jadvalda yo'q ({0}) — narxini so'rab, kargoni qo'shing.":'На этом направлении курьер есть, но цены в таблице нет ({0}) — уточните и добавьте доставку.', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', "Skrinshot yuklang: kuryer, boj va jami narx.":'Загрузите скриншот: курьер, пошлина и итоговая цена.', "Narxni o'zim yozaman":'Введу цену сам', "Narx, davlat va vazn — kalkulyatorda.":'Цена, страна и вес — в калькуляторе.', 'Oxirgi hisob':'Последний расчёт', "Nima qidirayotganingizni yozing yoki ayting, keyin mahsulot sahifasini suratga olib yuklang — jami narxni o'zim chiqaraman.":'Напишите или продиктуйте, что ищете, затем сфотографируйте страницу товара и загрузите — итоговую цену посчитаю сам.', "Narx, davlat va vaznni o'zingiz yozsangiz ham jami narx chiqadi.":'Итоговая цена появится, даже если ввести цену, страну и вес вручную.', 'taxminan {0}-{1}gacha':'примерно до {0} {1}', 'yanvar':'января', 'fevral':'февраля', 'mart':'марта', 'aprel':'апреля', 'iyun':'июня', 'iyul':'июля', 'avgust':'августа', 'sentabr':'сентября', 'oktabr':'октября', 'noyabr':'ноября', 'dekabr':'декабря', "{0} qo'llanmasi — qadam-baqadam":'Инструкция {0} — по шагам', "Pochtam AI qadam-baqadam tushuntiradi":'Pochtam AI объяснит по шагам', "Topilgan sahifalar · bugun":'Найденные страницы · сегодня', 'Ochish':'Открыть', "Narx va mavjudlik sahifada o'zgarishi mumkin — ochib tekshiring, keyin skrinshot qiling.":'Цена и наличие на странице могут измениться — откройте и проверьте, затем сделайте скриншот.', 'may':'мая', 'Rasm biriktirish':'Прикрепить фото', 'Yuborish':'Отправить', "Bu mahsulot menga qanchaga tushadi?":'Во сколько мне обойдётся этот товар?',
   'Tushundim:':'Понял:', 'original':'оригинал', '{0} gacha':'до {0}', 'Qidirish':'Искать', 'Yana savol':'Ещё вопрос', "Savol yoki tovar so'rovi":'Вопрос или запрос товара',
   'Bugungi savollar chegarasi tugadi':'Лимит вопросов на сегодня исчерпан', "Ertaga davom etamiz. Hozircha kalkulyator va do'konlar ro'yxati ishlaydi.":'Продолжим завтра. Пока работают калькулятор и список магазинов.',
   'Hozir javob bera olmadim':'Сейчас не смог ответить', "Kalkulyator va do'konlar ro'yxati ishlayveradi.":'Калькулятор и список магазинов работают.',
-  'Savolingiz':'Ваш вопрос', 'Yuborish':'Отправить', 'Javob tayyorlanmoqda…':'Готовлю ответ…', 'Yangi suhbat':'Новый диалог',
+  'Savolingiz':'Ваш вопрос', 'Yuborish':'Отправить', 'Yangi suhbat':'Новый диалог',
   'Pochtam AI xato qilishi mumkin. Yakuniy qaror — bojxona organida.':'Pochtam AI может ошибаться. Окончательное решение — за таможенным органом.',
   'Kalkulyatorda ochish':'Открыть в калькуляторе', "Kuryerlarni ko'rish":'Посмотреть курьеров', "Taqiqlar ro'yxati":'Список запретов', "Do'konni ochish":'Открыть магазин',
-  
   // Pochtam AI o'ylash bosqichlari (2026-09-27)
+  "Boshqa mos do'konlarni qidiryapman":'Ищу другие подходящие магазины', "Boshqa mos do'konlar":'Другие подходящие магазины', "Ro'yxatda yo'q":'Нет в списке',
+  "Ro'yxatimizda yo'q do'kon — buyurtmadan oldin sharhlarini va O'zbekistonga yetkazishini (yoki kuryer omboriga yuborishini) tekshiring.":'Магазина нет в нашем списке — перед заказом проверьте отзывы и доставку в Узбекистан (или на склад курьера).',
   "Rasmni o'qiyapman":"Читаю изображение",
   "Internetdan qidiryapman":"Ищу в интернете",
   "Sahifani o'qiyapman":"Читаю страницу",
@@ -5749,7 +5718,8 @@ const AI_STEP = {
   suggest_stores: "Mos do'konlarni tanlayapman", product_links: 'Aniq havolalarni tekshiryapman',
   customs_duty: "Boj va yig'imni hisoblayapman", landed_cost: 'Jami narxni hisoblayapman',
   courier_quotes: 'Kuryer narxlarini solishtiryapman', check_banned: "Taqiqlar ro'yxatini tekshiryapman",
-  find_store: "Do'konni bazadan topyapman", ask_user: 'Aniqlashtiruvchi savol tayyorlayapman'
+  find_store: "Do'konni bazadan topyapman", ask_user: 'Aniqlashtiruvchi savol tayyorlayapman',
+  other_stores: "Boshqa mos do'konlarni qidiryapman"
 };
 /* Oqimdagi jonli matn: worker yakunda qiladigan tozalash (plainText) bilan
    bir xil — yozilayotganda ** va # ko'rinib-yo'qolib turmasin. */
@@ -7434,6 +7404,20 @@ class Component extends DCLogic {
           hit: () => metrics.hit('quick', 'ai:link') };
       });
     };
+    /* Ro'yxatdan tashqari do'konlar: faqat https; bazadagi bo'lsa logotipi bilan va belgisiz. */
+    const extOf = m => {
+      const c = card(m, 'stores_ext'); if (!c || !Array.isArray(c.stores)) return [];
+      return c.stores.slice(0, 3).filter(x => x && /^https:\/\/[^\s"'<>]+$/i.test(String(x.url || ''))).map(x => {
+        const loc = x.id ? STORES.find(y => y.id === x.id) : null;
+        const bor = !!(loc && loc.logoCss && loc.logoCss !== 'none');
+        return { name: loc ? loc.name : String(x.name || x.host || ''), href: x.url, off: !loc,
+          logoCss: bor ? loc.logoCss : 'none', plate: bor ? 'transparent' : '#E9EAFD',
+          hasMono: !bor, mono: String((loc ? loc.name : x.name) || x.host || '?').trim().charAt(0).toUpperCase(),
+          sub: [x.host, tr(lang, x.country || '')].filter(Boolean).join(' · '),
+          hasWhy: !!x.why, why: String(x.why || ''),
+          hit: () => metrics.hit('quick', loc ? 'ai:ext-known' : 'ai:ext') };
+      });
+    };
     const totalOf = m => {
       const c = card(m, 'total'); const r = c && c.total; if (!r || !(num(r.totalUsd) > 0)) return null;
       return { total: usd(r.totalUsd), sub: [tr(lang, 'Kargo') + ' ' + usd(r.shipUsd), tr(lang, 'Boj') + ' ' + usd(r.dutyUsd), r.courier && r.courier.name].filter(Boolean).join(' · ') };
@@ -7469,7 +7453,7 @@ class Component extends DCLogic {
           const [t, sub] = errOf(m.err);
           return { user: false, bot: true, text: t, hasSteps: false, steps: [], fw: '700', fg: '#B45309', bg: '#FDF3E3', hasSub: true, sub, hasGot: false, got: [], hasStores: false, stores: [], hasLinks: false, links: [], hasAsk: false, askQ: '', askOpts: [], hasTotal: false, acts: errActs(), hasActs: true };
         }
-        const got = gotOf(m), stores = storesOf(m), total = totalOf(m), a = acts(m), links = linksOf(m), askc = asksOf(m);
+        const got = gotOf(m), stores = storesOf(m), total = totalOf(m), a = acts(m), links = linksOf(m), askc = asksOf(m), ext = extOf(m);
         /* Buyurtma yo'riqnomasi kabi raqamli javob (3+ qadam) matn devori
            emas, belgilanadigan ro'yxat bo'lib chiqadi: qadam bajarilgach
            bosiladi, holat suhbat davomida saqlanadi. */
@@ -7486,6 +7470,7 @@ class Component extends DCLogic {
         const text = hasSteps ? lines.filter(l => !stepRe.test(l)).join('\n').replace(/\n{3,}/g, '\n\n').trim() : m.text;
         return { user: false, bot: true, text, hasSteps, steps, fw: '500', fg: '#131429', bg: '#FFFFFF', hasSub: false, sub: '',
           hasGot: got.length > 0, got, hasStores: stores.length > 0, stores, hasLinks: links.length > 0, links,
+          hasExt: ext.length > 0, ext, extWarn: ext.some(x => x.off),
           hasAsk: !!askc, askQ: askc ? askc.q : '', askOpts: askc ? askc.opts : [],
           hasTotal: !!total, total: total ? total.total : '', totalSub: total ? total.sub : '', acts: a, hasActs: a.length > 0 };
       }),

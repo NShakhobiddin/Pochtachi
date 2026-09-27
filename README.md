@@ -454,6 +454,20 @@ shunday deb yoziladi; holat qo'lda belgilanadi. Kuryer API uchun joy:
 
 ## Pochtam AI (7–8-bosqich)
 
+**Ro'yxatdan tashqari do'kon ham (2026-09-27).** Bazadagi 43 do'kondan
+birortasi ham tovarga mos kelmasa (yoki aniq yaxshiroq do'kon bo'lsa),
+AI `other_stores` vositasini chaqiradi. Vosita eng mos 1–3 do'konni
+qaytaradi: nom, rasmiy sayt yoki qidiruv sahifasi, davlat va nega mosligi.
+
+Worker manzilni tekshiradi: faqat https, haqiqiy domen; IP va parolli
+manzil o'tmaydi. Domen bazadagi do'konniki bo'lsa, `inList` bo'ladi.
+`suggest_stores` natijasi va veb-qidiruv ko'rsatmasi ham modelni shunga
+yo'naltiradi, ya'ni foydalanuvchi havolasiz qolmaydi.
+
+Ilovada "Boshqa mos do'konlar" kartasi (`stores_ext`) chiqadi. Bazada
+yo'q do'konda "Ro'yxatda yo'q" belgisi va sabab turadi, havolada
+`rel=nofollow`. Ostida "sharhlarini va yetkazishini tekshiring" eslatmasi.
+
 **Tezroq javob va "o'ylayapti" animatsiyasi (2026-09-27).** Ilova savolni
 `stream: true` bilan yuboradi. Worker Claude javobini oqim (SSE) bilan
 oladi va ilovaga NDJSON qatorlarini uzatadi:
