@@ -321,6 +321,61 @@ const sg2 = runTool('suggest_stores', { category: 'elektronika', original: false
 check('suggest_stores: arzon elektronika — arzon marketplace ham ro\'yxatda', sg2.found && sg2.stores.slice(0, 3).some(x => ['aliexpress', 'taobao', 'pinduoduo', 'walmart'].includes(x.id)), sg2.stores.map(x => x.id).join(','));
 check('searchUrl: shablonsiz do\'kon — o\'z manzili', /^https:\/\//.test(searchUrl({ id: 'yoq', url: 'https://example.com' }, 'x')) && searchUrl({ id: 'amazon', url: 'https://www.amazon.com' }, 'red shoes') === 'https://www.amazon.com/s?k=red+shoes');
 
+/* --- Oqim (stream: true): SSE dan xabar yig'iladi, ilovaga NDJSON --- */
+const sseOf = m => {
+  const ev = (type, o) => 'event: ' + type + '\ndata: ' + JSON.stringify({ type, ...o }) + '\n\n';
+  let out = ev('message_start', { message: { id: 'msg_s', type: 'message', role: 'assistant', model: m.model || 'claude-test', content: [], usage: { input_tokens: 50, cache_read_input_tokens: 40, output_tokens: 1 } } });
+  m.content.forEach((b, i) => {
+    if (b.type === 'text') {
+      out += ev('content_block_start', { index: i, content_block: { type: 'text', text: '' } });
+      const h = Math.ceil(b.text.length / 2);
+      for (const part of [b.text.slice(0, h), b.text.slice(h)]) if (part) out += ev('content_block_delta', { index: i, delta: { type: 'text_delta', text: part } });
+    } else if (b.type === 'tool_use' || b.type === 'server_tool_use') {
+      out += ev('content_block_start', { index: i, content_block: { type: b.type, id: b.id, name: b.name, input: {} } });
+      const js = JSON.stringify(b.input), h = Math.ceil(js.length / 2);
+      out += ev('content_block_delta', { index: i, delta: { type: 'input_json_delta', partial_json: js.slice(0, h) } });
+      out += ev('content_block_delta', { index: i, delta: { type: 'input_json_delta', partial_json: js.slice(h) } });
+    } else if (b.type === 'thinking') {
+      out += ev('content_block_start', { index: i, content_block: { type: 'thinking', thinking: '', signature: '' } });
+      out += ev('content_block_delta', { index: i, delta: { type: 'thinking_delta', thinking: b.thinking } });
+      out += ev('content_block_delta', { index: i, delta: { type: 'signature_delta', signature: b.signature } });
+    } else {
+      out += ev('content_block_start', { index: i, content_block: b });
+    }
+    out += ev('content_block_stop', { index: i });
+  });
+  out += ev('message_delta', { delta: { stop_reason: m.stop_reason }, usage: { output_tokens: 30 } }) + ev('message_stop', {});
+  return new Response(out, { status: 200, headers: { 'content-type': 'text/event-stream' } });
+};
+const lines = async res => (await res.text()).split('\n').filter(Boolean).map(l => JSON.parse(l));
+{
+  const sent = [];
+  const fakeS = async (u, i) => {
+    const b = JSON.parse(i.body); sent.push(b);
+    if (sent.length === 1) return sseOf({ stop_reason: 'tool_use', content: [
+      { type: 'thinking', thinking: '', signature: 'sig-abc' },
+      { type: 'text', text: 'Hisoblayman.' },
+      { type: 'tool_use', id: 'toolu_s1', name: 'customs_duty', input: { goodsUsd: 320, shipUsd: 22.5, kg: 2.5 } }] });
+    return sseOf({ stop_reason: 'end_turn', content: [{ type: 'text', text: '**Boj** 38.53 dollar. Taxminiy.' }] });
+  };
+  const rs = await ask('320 dollarlik 2.5 kg tovar uchun boj qancha?', { AI_FETCH: fakeS, AI_EFFORT: 'low', AI_EFFORT_FIND: 'medium' }, { headers: { 'cf-connecting-ip': '2.3.4.5' }, body: { stream: true } });
+  const ls = await lines(rs);
+  const done = ls.find(l => l.t === 'done') || {};
+  check('oqim: NDJSON, holat (vosita nomi), matn bo\'laklari raund bilan, oxirida done', /ndjson/.test(rs.headers.get('content-type') || '') && ls.some(l => l.t === 'status' && l.s === 'customs_duty') && ls.filter(l => l.t === 'text' && l.r === 0).map(l => l.d).join('') === 'Hisoblayman.' && ls.filter(l => l.t === 'text' && l.r === 1).map(l => l.d).join('') === '**Boj** 38.53 dollar. Taxminiy.' && ls[ls.length - 1].t === 'done', JSON.stringify(ls.map(l => l.t)));
+  check('oqim: done — oqimsiz javob bilan bir xil (markdownsiz matn, boj kartasi, vosita, sarf)', done.text === 'Boj 38.53 dollar. Taxminiy.' && done.cards && done.cards[0].type === 'duty' && done.cards[0].got.goodsUsd === 320 && done.tools.join() === 'customs_duty' && done.usage.input === 100 && done.usage.cacheRead === 80, JSON.stringify(done).slice(0, 200));
+  const as = (sent[1] && sent[1].messages[1]) || {};
+  check('oqim: Claude\'ga stream:true; 2-raundda thinking imzosi va vosita kirishi (JSON bo\'laklaridan) o\'zgarishsiz', sent[0].stream === true && as.role === 'assistant' && as.content[0].type === 'thinking' && as.content[0].signature === 'sig-abc' && as.content[2].type === 'tool_use' && JSON.stringify(as.content[2].input) === '{"goodsUsd":320,"shipUsd":22.5,"kg":2.5}', JSON.stringify(as).slice(0, 200));
+  check('tezlik: oddiy savolda effort low', sent[0].output_config && sent[0].output_config.effort === 'low', JSON.stringify(sent[0].output_config));
+  const fsent = [];
+  await ask('krossovka qidiryapman', { AI_FETCH: async (u, i) => { fsent.push(JSON.parse(i.body)); return claudeText('ok'); }, AI_EFFORT: 'low', AI_EFFORT_FIND: 'medium' }, { headers: { 'cf-connecting-ip': '2.3.4.6' }, body: { find: true } });
+  check('tezlik: veb-qidiruvli (find) so\'rovda effort medium', fsent[0] && fsent[0].output_config.effort === 'medium', JSON.stringify(fsent[0] && fsent[0].output_config));
+  const errS = await ask('x', { AI_FETCH: async () => new Response('event: error\ndata: {"type":"error","error":{"type":"overloaded_error","message":"Overloaded"}}\n\n', { status: 200, headers: { 'content-type': 'text/event-stream' } }) }, { headers: { 'cf-connecting-ip': '2.3.4.7' }, body: { stream: true } });
+  const el = await lines(errS);
+  check('oqim: API oqimdagi xato — {t:"error", code:"upstream"}', el.length && el[el.length - 1].t === 'error' && el[el.length - 1].code === 'upstream', JSON.stringify(el));
+  const badS = await ask('   ', { AI_FETCH: () => claudeText('x') }, { headers: { 'cf-connecting-ip': '2.3.4.8' }, body: { stream: true } });
+  check('oqim: kirish xatosi oqimgacha oddiy JSON (400)', badS.status === 400 && /json/.test(badS.headers.get('content-type') || ''));
+}
+
 /* --- Hamkor kuryer holat API (src/track.js): soxta Durable Object ombori --- */
 const { Tracks, partnerKeys, partnerIds, parseEvent, whoIs } = await import('./src/track.js');
 function fakeKv() {

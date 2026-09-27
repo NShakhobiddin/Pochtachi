@@ -24,8 +24,12 @@ AI_SHOT_MODEL = "claude-haiku-4-5"
 AI_DAILY_PER_IP = "20"
 AI_DAILY_TOTAL = "300"
 # Javob uzunligi (token) va fikrlash darajasi (bo'sh — API standarti).
+# Tezlik uchun oddiy savolga "low" (hisobni vositalar qiladi, model faqat
+# yo'naltiradi); veb-qidiruv va havola o'qishda to'g'ri mahsulotni tanlash
+# kerak — "medium". Ilova javobni oqim (stream) bilan oladi.
 AI_MAX_TOKENS = "2048"
-AI_EFFORT = "medium"
+AI_EFFORT = "low"
+AI_EFFORT_FIND = "medium"
 # "Qayerdan topaman" so'rovlarida veb-qidiruv (aniq mahsulot havolalari):
 # "0" — o'chiq. Har qidiruv $0.01, bitta so'rovda ko'pi bilan AI_WEB_SEARCH_USES ta.
 AI_WEB_SEARCH = "1"

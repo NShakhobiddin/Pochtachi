@@ -241,6 +241,25 @@ jobs:
             [ "$code2" = "200" ] || { echo "::error::Kalit qo'yilgan, lekin /ai (rasm) $code2 qaytardi — $(head -c 300 /tmp/ai2)"; exit 1; }
             grep -q '"stop":"shot"' /tmp/ai2 || { echo "::error::Faqat rasmli so'rovda asosiy model chaqirilmasligi kerak edi (stop:shot yo'q) — $(head -c 300 /tmp/ai2)"; exit 1; }
             echo "::notice::Pochtam AI ishlayapti — /ai savol 200, /ai rasm 200 (stop:shot), model: $MODEL"
+            # Oqim (stream: true): birinchi so'z qancha soniyada chiqdi va
+            # butun javob qancha — ilovadagi "tezroq javob" shu.
+            echo "== POST /ai (stream: true)"
+            STREAM=$(URL="$URL" node -e '
+              const t0 = Date.now(); let first = 0, texts = 0, last = null, statuses = [];
+              (async () => {
+                const r = await fetch(process.env.URL + "ai", { method: "POST", headers: { origin: "https://nshakhobiddin.github.io", "content-type": "text/plain" },
+                  body: JSON.stringify({ q: "Xitoydan 1 kg krossovka olib kelsam boj tushadimi?", lang: "uz", usdRate: 12650, stream: true }) });
+                const ct = r.headers.get("content-type") || "";
+                if (!/ndjson/.test(ct)) { console.log("xato: content-type " + ct + " status " + r.status); return; }
+                const rd = r.body.getReader(), dec = new TextDecoder(); let buf = "";
+                for (;;) { const { value, done } = await rd.read(); if (done) break; buf += dec.decode(value, { stream: true });
+                  let i; while ((i = buf.indexOf("\n")) >= 0) { const l = buf.slice(0, i).trim(); buf = buf.slice(i + 1); if (!l) continue;
+                    const e = JSON.parse(l); if (e.t === "text") { texts++; if (!first) first = Date.now(); } if (e.t === "status") statuses.push(e.s); last = e; } }
+                const s = x => ((x - t0) / 1000).toFixed(1) + " s";
+                console.log((last && last.t === "done" && last.text ? "ok" : "xato: oxirgi " + JSON.stringify(last).slice(0, 200)) + " | birinchi so`z " + (first ? s(first) : "—") + " | jami " + s(Date.now()) + " | bo`laklar " + texts + " | bosqichlar " + (statuses.join(",") || "—"));
+              })().catch(e => console.log("xato: " + e.message));')
+            echo "$STREAM"
+            case "$STREAM" in ok*) echo "::notice::Oqim: $STREAM";; *) echo "::error::Oqimli /ai ishlamadi: $STREAM"; exit 1;; esac
             # "Qayerdan topaman" (find:true) — veb-qidiruv va aniq havolalar.
             # Natija internetga bog'liq, shuning uchun xato emas, faqat xabar:
             # nechta qidiruv bo'ldi va product_links keldimi. Narxi ≈ $0.05.

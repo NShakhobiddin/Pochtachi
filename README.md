@@ -454,6 +454,30 @@ shunday deb yoziladi; holat qo'lda belgilanadi. Kuryer API uchun joy:
 
 ## Pochtam AI (7–8-bosqich)
 
+**Tezroq javob va "o'ylayapti" animatsiyasi (2026-09-27).** Ilova savolni
+`stream: true` bilan yuboradi. Worker Claude javobini oqim (SSE) bilan
+oladi va ilovaga NDJSON qatorlarini uzatadi:
+- `status` — AI hozir nima qilyapti (vosita nomi);
+- `text` — matn bo'lagi, raund raqami bilan;
+- `done` — oqimsiz javob bilan bir xil yakuniy natija, yoki `error`.
+
+Ilova (`aiReadStream`) birinchi so'zni butun javobni kutmasdan ko'rsatadi.
+Ekran soniyasiga ~16 marta yangilanadi. Yangi raund boshlansa, oldingi
+qisqa matn almashadi.
+
+O'ylash bloki `[data-ai-thinking]` uch qismdan iborat: aylanib nafas
+oladigan orb, bosqich nomi va sakrovchi uch nuqta. Bosqich nomi
+`AI_STEP` dan olinadi: "Internetdan qidiryapman", "Boj va yig'imni
+hisoblayapman" va boshqalar. Oqim bo'lmasa, vaqt bo'yicha almashadi:
+"Savolni o'qiyapman" → "Ma'lumotlarni tekshiryapman" → "Javobni
+tayyorlayapman". Matn kela boshlasa, u blok ichida kursor bilan
+yoziladi. Harakat kamaytirilgan qurilmada hammasi jim turadi.
+
+Model fikrlash darajasi: oddiy savolda `AI_EFFORT = "low"` — hisobni
+vositalar qiladi. Veb-qidiruv va havolada `AI_EFFORT_FIND = "medium"`.
+Worker eski bo'lsa yoki oqim o'qib bo'lmasa, oddiy JSON avvalgidek
+ishlaydi.
+
 **Yagona yordamchi (2026-09-19).** Ommabop ilovalar (Amazon Rufus →
 Alexa for Shopping, Taobao Pailitao va AI qidiruvi, Google Lens) bitta
 naqshga keldi: bitta kirish hamma narsani qabul qiladi, foydalanuvchi

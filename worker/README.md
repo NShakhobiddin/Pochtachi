@@ -217,6 +217,32 @@ kartasini o'zi oldinga suradi. To'liq tavsif kuryerlar uchun:
   kuryerlar uchun `POST /track` so'raydi (20 tagacha, faqat ALLOW_ORIGIN
   dan).
 
+## Oqim (`POST /ai` + `stream: true`)
+
+`stream: true` bo'lsa, javob `application/x-ndjson` bo'ladi. Qatorlar
+turi:
+- `{"t":"status","s":"<vosita>"}`
+- `{"t":"text","d":"…","r":<raund>}`
+- oxirida `{"t":"done", …}` yoki `{"t":"error","code":…}`.
+
+`done` ichidagi maydonlar oqimsiz javob bilan bir xil. Kirish, Origin va
+kunlik chegara xatolari oqim boshlanmasdan, oddiy JSON bo'lib qaytadi.
+
+Worker Claude'ga `stream: true` bilan murojaat qiladi va SSE ni
+`readSse` bilan yig'adi:
+- `thinking` bloklari imzosi bilan saqlanadi;
+- `tool_use` / `server_tool_use` kirishi `input_json_delta` bo'laklaridan
+  tiklanadi;
+- `web_search_tool_result` o'zgarishsiz qoladi;
+- iqtiboslar `citations_delta` dan to'planadi.
+
+Shu tufayli vositalar tsikli oqimsiz rejim bilan bir xil ishlaydi.
+
+Fikrlash darajasi: oddiy savolda `AI_EFFORT` (`low`), veb-qidiruv va
+havolada `AI_EFFORT_FIND` (`medium`). Workflow har safar oqimli savol
+beradi va birinchi so'z hamda butun javob necha soniyada kelganini
+yozadi.
+
 ## Saqlash muddati va xarajat
 
 Har kuni 03:00 UTC da 90 kundan eski qatorlar o'chiriladi (`crons`).

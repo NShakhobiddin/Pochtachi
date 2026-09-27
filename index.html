@@ -563,6 +563,24 @@
   @media (prefers-reduced-motion: reduce) {
     .mo-in, .mo-pop, .mo-grow, .mo-shrink, .mo-rise, .mo-drive, .mo-out, .mo-ring, .mo-tap { animation-delay:0s !important }
   }
+  /* Pochtam AI o'ylayapti (2026-09-27): "tirik" nuqta-orb aylanib nafas
+     oladi, bosqich nomi ustidan yorug'lik o'tadi, uch nuqta sakraydi;
+     javob yozilayotganda kursor miltillaydi. Harakat kamaytirilsa hammasi
+     jim, matn oddiy rangda. */
+  @keyframes xy-orb { 0%, 100% { transform:scale(1) rotate(0deg); opacity:1 } 50% { transform:scale(1.12) rotate(180deg); opacity:.82 } }
+  @keyframes xy-shimmer { from { background-position:100% 0 } to { background-position:-100% 0 } }
+  @keyframes xy-dot { 0%, 80%, 100% { transform:translateY(0); opacity:.35 } 40% { transform:translateY(-4px); opacity:1 } }
+  @keyframes xy-blink { 50% { opacity:0 } }
+  .xy-orb { animation:xy-orb 1.6s ease-in-out infinite }
+  .xy-shimmer { background:linear-gradient(90deg,#1A1FB0 0%,#1A1FB0 38%,#9A9EF7 50%,#1A1FB0 62%,#1A1FB0 100%); background-size:200% 100%; -webkit-background-clip:text; background-clip:text; color:transparent; animation:xy-shimmer 1.8s linear infinite }
+  .xy-dots i { display:inline-block; width:6px; height:6px; margin-left:4px; border-radius:999px; background:#494FE9; animation:xy-dot 1.2s ease-in-out infinite both }
+  .xy-dots i:nth-child(2) { animation-delay:.16s }
+  .xy-dots i:nth-child(3) { animation-delay:.32s }
+  .xy-caret { display:inline-block; width:2px; height:1em; margin-left:2px; vertical-align:-2px; background:#1A1FB0; animation:xy-blink 1s steps(2) infinite }
+  @media (prefers-reduced-motion: reduce) {
+    .xy-orb, .xy-dots i, .xy-caret { animation:none !important }
+    .xy-shimmer { animation:none !important; background:none; color:#1A1FB0 }
+  }
   @keyframes xy-rise { from { opacity:0; transform:translateY(14px) } to { opacity:1; transform:none } }
   main.xy-in > * > *:nth-child(-n+8) { animation:xy-rise .36s cubic-bezier(.22,.9,.3,1) both }
   main.xy-in > * > *:nth-child(2) { animation-delay:40ms }
@@ -2525,8 +2543,21 @@
           </div>
         </sc-if>
       </sc-for>
+      <!-- O'ylayotganda: orb, hozirgi bosqich (worker oqimidan — "Internetdan
+           qidiryapman", "Boj va yig'imni hisoblayapman"…, oqim bo'lmasa vaqt
+           bo'yicha) va uch nuqta. Javob yozila boshlasa matn shu yerda
+           so'zma-so'z chiqadi. -->
       <sc-if value="{{ aiBusy }}" hint-placeholder-val="{{ false }}">
-        <div aria-live="polite" style="align-self:flex-start;background:#FFFFFF;border-radius:20px 20px 20px 6px;padding:12px 14px;font-size:13px;font-weight:500;color:#6B6C85;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">Javob tayyorlanmoqda…</div>
+        <div data-ai-thinking="1" role="status" aria-live="polite" style="align-self:flex-start;width:100%;max-width:100%;display:flex;flex-direction:column;gap:10px;background:#FFFFFF;border-radius:20px 20px 20px 6px;padding:12px 14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+          <sc-if value="{{ aiLiveHasText }}" hint-placeholder-val="{{ false }}">
+            <span data-ai-live="1" style="font-size:15px;font-weight:500;color:#131429;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere">{{ aiLiveText }}<span aria-hidden="true" class="xy-caret"></span></span>
+          </sc-if>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span aria-hidden="true" class="xy-orb" style="flex:none;width:28px;height:28px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#494FE9,#13189D)"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.6l1.9 4.6 4.6 1.9-4.6 1.9L11 16.6l-1.9-4.6L4.5 10.1l4.6-1.9z"></path></svg></span>
+            <span data-ai-step="1" class="xy-shimmer" style="font-size:13px;font-weight:700;line-height:1.5">{{ aiStep }}</span>
+            <span aria-hidden="true" class="xy-dots" style="display:inline-flex;align-items:center"><i></i><i></i><i></i></span>
+          </div>
+        </div>
       </sc-if>
       </div>
       <div style="flex:1"></div>
@@ -4419,6 +4450,22 @@ const RU = {
   'Pochtam AI xato qilishi mumkin. Yakuniy qaror — bojxona organida.':'Pochtam AI может ошибаться. Окончательное решение — за таможенным органом.',
   'Kalkulyatorda ochish':'Открыть в калькуляторе', "Kuryerlarni ko'rish":'Посмотреть курьеров', "Taqiqlar ro'yxati":'Список запретов', "Do'konni ochish":'Открыть магазин',
   
+  // Pochtam AI o'ylash bosqichlari (2026-09-27)
+  "Rasmni o'qiyapman":"Читаю изображение",
+  "Internetdan qidiryapman":"Ищу в интернете",
+  "Sahifani o'qiyapman":"Читаю страницу",
+  "Mos do'konlarni tanlayapman":"Подбираю магазины",
+  "Aniq havolalarni tekshiryapman":"Проверяю ссылки",
+  "Boj va yig'imni hisoblayapman":"Считаю пошлину и сбор",
+  "Jami narxni hisoblayapman":"Считаю итоговую цену",
+  "Kuryer narxlarini solishtiryapman":"Сравниваю цены курьеров",
+  "Taqiqlar ro'yxatini tekshiryapman":"Проверяю список запретов",
+  "Do'konni bazadan topyapman":"Ищу магазин в базе",
+  "Aniqlashtiruvchi savol tayyorlayapman":"Готовлю уточняющий вопрос",
+  "Savolni o'qiyapman":"Читаю вопрос",
+  "Ma'lumotlarni tekshiryapman":"Проверяю данные",
+  "Javobni tayyorlayapman":"Готовлю ответ",
+  "Javob yozilyapti":"Пишу ответ",
   // Bosh sahifa: qo'llanma va ovoz (2026-09-26)
   "Havola yoki tovar nomini yozing":"Ссылка или название товара",
   "Tovar nomini yozing yoki ayting — AI mos do'konlar va aniq mahsulot havolalarini topadi.":"Напишите или скажите название товара — ИИ найдёт подходящие магазины и точные ссылки на товар.",
@@ -5695,6 +5742,18 @@ const stageOf = p => p.find ? 0 : p.step >= PLAN_LAST ? 4 : p.step >= 2 ? 3 : p.
 /* Keyingi harakat: tugmada nima bo'lganini foydalanuvchi o'zi aytadi —
    "belgilash" so'zi yo'q, jumla birinchi shaxsda. */
 const BUY_NEXT = ['Buyurtma qildim', 'Omborga yetib keldi', "Yo'lga chiqdi", 'Bojxonaga keldi', "Qo'limga tegdi"];
+/* Pochtam AI bosqichlari: worker oqimidagi vosita nomi → foydalanuvchiga
+   ko'rinadigan "nima qilyapman". */
+const AI_STEP = {
+  shot: "Rasmni o'qiyapman", web_search: 'Internetdan qidiryapman', web_fetch: "Sahifani o'qiyapman",
+  suggest_stores: "Mos do'konlarni tanlayapman", product_links: 'Aniq havolalarni tekshiryapman',
+  customs_duty: "Boj va yig'imni hisoblayapman", landed_cost: 'Jami narxni hisoblayapman',
+  courier_quotes: 'Kuryer narxlarini solishtiryapman', check_banned: "Taqiqlar ro'yxatini tekshiryapman",
+  find_store: "Do'konni bazadan topyapman", ask_user: 'Aniqlashtiruvchi savol tayyorlayapman'
+};
+/* Oqimdagi jonli matn: worker yakunda qiladigan tozalash (plainText) bilan
+   bir xil — yozilayotganda ** va # ko'rinib-yo'qolib turmasin. */
+const aiPlain = t => String(t || '').replace(/\*\*/g, '').replace(/(^|\n)#{1,6}\s+/g, '$1').replace(/(^|\n)\s*[-*•]\s+/g, '$1— ');
 /* Hamkor kuryer holatlari (5-bosqich, worker/src/track.js STATUSES) → reja
    qadami. Kuryer tizimi holatni o'zi yuboradi; qadam hech qachon orqaga
    qaytmaydi — foydalanuvchi o'zi oldinga surgan bo'lsa, shu qoladi. */
@@ -5744,7 +5803,7 @@ class Component extends DCLogic {
     /* Xaridlarim: faol tab va saqlangan hisoblar. */
     mineTab: 'plans', calcs: Array.isArray(SAVED.calcs) ? SAVED.calcs : [],
     /* Pochtam AI suhbati — faqat xotirada. */
-    aiMsgs: [], aiQ: '', aiBusy: false,
+    aiMsgs: [], aiQ: '', aiBusy: false, aiLive: null,
     /* Kalkulyator tepasidagi skrinshot banneri: null yoki { state: busy|ok|none|err, … }. */
     lcShot: null,
     /* Skrinshot natija ekrani: null yoki { state: busy|ok|none|err, shot, lc, … }. */
@@ -6107,6 +6166,7 @@ class Component extends DCLogic {
   pauseWarm() { this._warmPause = Date.now() + 1200; }
 
   componentWillUnmount() {
+    clearInterval(this._aiTick);
     clearTimeout(this._warmT);
     clearTimeout(this._moT);
     clearTimeout(this._tourT);
@@ -6921,22 +6981,61 @@ class Component extends DCLogic {
     const q = String(qText != null ? qText : st.aiQ).trim().slice(0, 600);
     if (!q || st.aiBusy) return;
     const history = st.aiMsgs.filter(m => !m.err).slice(-6).map(m => ({ role: m.role, text: m.text }));
-    this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'user', text: q }], aiQ: '', aiBusy: !!METRICS_URL }));
+    this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'user', text: q }], aiQ: '', aiBusy: !!METRICS_URL, aiLive: { t0: Date.now(), text: '', step: '', r: -1 } }));
     this._aiScroll();
     if (!METRICS_URL) { this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', err: 'no_key' }] })); return; }
     metrics.hit('ai_question', '-');
+    /* Bosqich matni vaqt bo'yicha ham almashsin (oqim bo'lmasa). */
+    clearInterval(this._aiTick);
+    this._aiTick = setInterval(() => { if (this.state.aiBusy) this.setState(x => ({ aiLive: { ...(x.aiLive || {}) } })); }, 1000);
     const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
     const timer = setTimeout(() => { if (ctrl) ctrl.abort(); }, 60000);
+    /* stream: true — javob bo'lak-bo'lak keladi (NDJSON): birinchi so'z
+       to'liq javobni kutmasdan ko'rinadi. Worker eski bo'lsa yoki oqim
+       o'qib bo'lmasa — oddiy JSON, avvalgidek. */
     fetch(METRICS_URL + 'ai', { method: 'POST', headers: { 'content-type': 'text/plain;charset=UTF-8' },
-      body: JSON.stringify({ q, history, lang: st.lang, usdRate: USD_RATE, cart: this.cartForAi(), ...(extra && typeof extra === 'object' ? extra : {}) }), signal: ctrl ? ctrl.signal : undefined })
+      body: JSON.stringify({ q, history, lang: st.lang, usdRate: USD_RATE, cart: this.cartForAi(), stream: true, ...(extra && typeof extra === 'object' ? extra : {}) }), signal: ctrl ? ctrl.signal : undefined })
       .then(async r => {
+        const ct = (r.headers && r.headers.get('content-type')) || '';
+        if (r.ok && /ndjson/.test(ct) && r.body && typeof r.body.getReader === 'function') return this.aiReadStream(r.body);
         const j = await r.json().catch(() => null);
         if (!r.ok || !j || !j.text) { const e = new Error('ai'); e.code = (j && j.code) || (r.status === 429 ? 'limit' : 'upstream'); throw e; }
         return j;
       })
       .then(j => this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', text: String(j.text), cards: Array.isArray(j.cards) ? j.cards : [] }] })))
       .catch(e => this.setState(x => ({ aiMsgs: [...x.aiMsgs, { role: 'assistant', err: (e && e.code) || 'net' }] })))
-      .then(() => { clearTimeout(timer); this.setState({ aiBusy: false }); this._aiScroll(); });
+      .then(() => { clearTimeout(timer); clearInterval(this._aiTick); this.setState({ aiBusy: false, aiLive: null }); this._aiScroll(); });
+  }
+  /* NDJSON oqimini o'qiydi: status → bosqich, text → jonli matn (yangi
+     raund boshlansa oldingisi o'rniga), done → yakuniy javob, error → xato.
+     Ekran har bo'lakda emas, ~16 marta/soniyada yangilanadi. */
+  aiReadStream(body) {
+    const reader = body.getReader();
+    const dec = new TextDecoder();
+    let buf = '', live = { ...(this.state.aiLive || {}) }, dirty = false, flushT = null, final = null, fail = null;
+    const flush = () => { flushT = null; if (!dirty) return; dirty = false; this.setState({ aiLive: { ...live } }); this._aiScroll(); };
+    const later = () => { dirty = true; if (!flushT) flushT = setTimeout(flush, 60); };
+    const handle = ev => {
+      if (!ev || typeof ev !== 'object') return;
+      if (ev.t === 'status' && typeof ev.s === 'string') { live.step = ev.s; later(); }
+      else if (ev.t === 'text' && typeof ev.d === 'string') {
+        const r = typeof ev.r === 'number' ? ev.r : 0;
+        if (r !== live.r) { live.r = r; live.text = ''; }
+        live.text = (live.text || '') + ev.d; live.step = ''; later();
+      } else if (ev.t === 'done') final = ev;
+      else if (ev.t === 'error') fail = ev;
+    };
+    const pump = () => reader.read().then(({ value, done }) => {
+      if (value) buf += dec.decode(value, { stream: !done });
+      let i;
+      while ((i = buf.indexOf('\n')) >= 0) { const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1); if (line) { try { handle(JSON.parse(line)); } catch (e) {} } }
+      if (!done && !final && !fail) return pump();
+      if (buf.trim()) { try { handle(JSON.parse(buf.trim())); } catch (e) {} }
+      clearTimeout(flushT);
+      if (final && final.text) return final;
+      const e = new Error('ai'); e.code = (fail && fail.code) || (fail && fail.status === 429 ? 'limit' : 'net'); throw e;
+    });
+    return pump();
   }
   /* Joriy xarid AI uchun: ochiq natija (shotRes) yoki oxirgi saqlangan
      hisob (lastRes) — nom, do'kon, davlat, kategoriya, narx, valyuta,
@@ -7349,6 +7448,14 @@ class Component extends DCLogic {
     ];
     return {
       aiEmpty: !st.aiMsgs.length, aiHasMsgs: st.aiMsgs.length > 0, aiBusy: !!st.aiBusy, aiQ: st.aiQ || '',
+      /* O'ylash holati: worker aytgan bosqich; bo'lmasa o'tgan vaqt bo'yicha. */
+      ...(() => {
+        const lv = st.aiLive || {};
+        const txt = aiPlain(lv.text || '');
+        const secs = lv.t0 ? (Date.now() - lv.t0) / 1000 : 0;
+        const step = txt ? 'Javob yozilyapti' : (AI_STEP[lv.step] || (secs < 2 ? "Savolni o'qiyapman" : secs < 6 ? "Ma'lumotlarni tekshiryapman" : 'Javobni tayyorlayapman'));
+        return { aiLiveHasText: !!txt, aiLiveText: txt, aiStep: tr(lang, step) };
+      })(),
       aiSendBg: st.aiBusy ? '#C4C6FA' : 'linear-gradient(155deg,#494FE9,#13189D)',
       onAiQ: e => this.setState({ aiQ: e.target.value }),
       aiSubmit: e => { e.preventDefault(); this.aiAsk(); },

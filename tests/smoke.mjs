@@ -1097,6 +1097,34 @@ try {
     await pcx.close();
   }
 
+  /* Pochtam AI oqimi (2026-09-27): so'rov stream:true bilan ketadi; javob
+     kelguncha "o'ylayapti" bloki (orb, bosqich nomi, nuqtalar) turadi;
+     NDJSON oqimidagi "done" yakuniy javob bo'ladi, blok yo'qoladi. */
+  {
+    const scx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+    await aiStatusRoute(scx, true);
+    const sb = [];
+    await scx.route(METRICS_URL + 'ai', async r => {
+      sb.push(JSON.parse(r.request().postData() || '{}'));
+      await new Promise(res => setTimeout(res, 1500));
+      const ev = [{ t: 'status', s: 'suggest_stores' }, { t: 'text', d: 'Qarab ko', r: 0 }, { t: 'text', d: "'raman.", r: 0 }, { t: 'status', s: 'web_search' },
+        { t: 'text', d: 'Nike rasmiy ', r: 1 }, { t: 'text', d: "do'koni mos.", r: 1 },
+        { t: 'done', text: "Nike rasmiy do'koni mos.", cards: [{ type: 'stores', got: {}, stores: [{ id: 'nike', name: 'Nike', searchUrl: 'https://www.nike.com/w?q=air+max' }] }], tools: ['suggest_stores'], model: 'm', usage: {} }];
+      r.fulfill({ status: 200, contentType: 'application/x-ndjson; charset=utf-8', body: ev.map(e => JSON.stringify(e)).join('\n') + '\n' });
+    });
+    const sp = await scx.newPage();
+    await sp.goto(base + '/', { waitUntil: 'load' }); await sp.waitForTimeout(1200);
+    await passOnboarding(sp); await sp.waitForTimeout(1300); await sp.keyboard.press('Escape'); await sp.waitForTimeout(300);
+    const fld = sp.locator('main input[aria-label="Mahsulot nomi"]');
+    await fld.fill('nike air max'); await fld.press('Enter'); await sp.waitForTimeout(500);
+    const th = await sp.evaluate(() => { const d = document.querySelector('main [data-ai-thinking]'); return d ? { role: d.getAttribute('role'), step: (d.querySelector('[data-ai-step]') || {}).textContent || '', orb: !!d.querySelector('.xy-orb'), dots: d.querySelectorAll('.xy-dots i').length } : null; });
+    check('AI o\'ylayotganda: "o\'ylayapti" bloki — orb, bosqich nomi, uch nuqta, role=status', !!th && th.role === 'status' && th.step === "Savolni o'qiyapman" && th.orb && th.dots === 3, JSON.stringify(th));
+    await sp.waitForTimeout(1800);
+    const fin = await sp.evaluate(() => ({ think: !!document.querySelector('main [data-ai-thinking]'), t: document.querySelector('main').innerText.replace(/\s+/g, ' ') }));
+    check('oqim: so\'rovda stream:true, "done" — yakuniy javob va kartalar, o\'ylash bloki yo\'qoladi', sb.length === 1 && sb[0].stream === true && !fin.think && /Nike rasmiy do'koni mos\./.test(fin.t) && !/Qarab ko'raman/.test(fin.t) && /Qidirish/.test(fin.t), fin.t.slice(0, 200));
+    await scx.close();
+  }
+
   /* --- Audit tuzatishlari qaytib kelmasin --- */
 
   /* Buzuq yoki eski reja ilovani yiqitmasin: ilgari maydoni yetishmagan

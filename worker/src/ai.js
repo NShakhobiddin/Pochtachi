@@ -430,7 +430,7 @@ export function parseAiBody(text) {
   if (hist.length && hist[hist.length - 1].role === 'user') hist.pop();
   const usdRate = num(d.usdRate);
   return { q, shot, url, cart: parseCart(d.cart), lang, history: hist,
-    usdRate: usdRate >= 5000 && usdRate <= 50000 ? usdRate : 0, find: d.find === true };
+    usdRate: usdRate >= 5000 && usdRate <= 50000 ? usdRate : 0, find: d.find === true, stream: d.stream === true };
 }
 
 /* Rasm: data URL yoki { image, mime }. Yo'q bo'lsa null, buzuq bo'lsa xato matni. */
@@ -496,17 +496,86 @@ async function ipKey(request, env, today) {
 }
 
 /* Bitta Claude chaqiruvi. Muvaffaqiyatsiz bo'lsa { error, status } qaytadi,
-   tashlamaydi — chaqiruvchi 503 beradi va sanaydi. */
-async function callClaude(body, env, fetchImpl) {
+   tashlamaydi — chaqiruvchi 503 beradi va sanaydi. onEvent berilsa javob
+   oqim (SSE) bilan olinadi: matn bo'laklari va vosita boshlanishi darhol
+   onEvent ga uzatiladi, oxirida esa oqimsiz javob bilan bir xil xabar
+   obyekti yig'iladi — vositalar tsikli o'zgarmaydi. */
+async function callClaude(body, env, fetchImpl, onEvent) {
   const headers = { 'content-type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' };
-  const init = { method: 'POST', headers, body: JSON.stringify(body) };
+  const init = { method: 'POST', headers, body: JSON.stringify(onEvent ? { ...body, stream: true } : body) };
   if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) init.signal = AbortSignal.timeout(+env.AI_TIMEOUT_MS || 50000);
   let res;
   try { res = await fetchImpl(API_URL, init); } catch (e) { return { error: 'tarmoq: ' + (e && e.message || e), status: 0 }; }
+  const ctype = (res.headers && res.headers.get && res.headers.get('content-type')) || '';
+  if (onEvent && res.ok && /event-stream/.test(ctype) && res.body) {
+    try { return await readSse(res.body, onEvent); } catch (e) { return { error: 'oqim: ' + (e && e.message || e), status: 0 }; }
+  }
   let data = null;
   try { data = await res.json(); } catch (e) { data = null; }
   if (!res.ok) return { error: (data && data.error && data.error.message) || ('HTTP ' + res.status), status: res.status, type: data && data.error && data.error.type };
   return { data };
+}
+
+/* SSE oqimidan xabar obyektini yig'adi (message_start → content_block_* →
+   message_delta → message_stop). Bloklar API yuborganidek saqlanadi:
+   thinking (imzosi bilan), tool_use / server_tool_use (kirishi JSON
+   bo'laklaridan), web_search_tool_result, matn (iqtiboslari bilan) —
+   keyingi raundda ular o'zgarishsiz qaytariladi. */
+export async function readSse(stream, onEvent) {
+  const reader = stream.getReader();
+  const dec = new TextDecoder();
+  const msg = { content: [], usage: {} };
+  const partial = {};
+  let buf = '', failed = null;
+  const handle = ev => {
+    if (!ev || typeof ev !== 'object') return;
+    if (ev.type === 'message_start' && ev.message) {
+      Object.assign(msg, ev.message, { content: [], usage: { ...(ev.message.usage || {}) } });
+    } else if (ev.type === 'content_block_start') {
+      const b = { ...(ev.content_block || {}) };
+      msg.content[ev.index] = b;
+      if (b.type === 'tool_use' || b.type === 'server_tool_use') { partial[ev.index] = ''; onEvent({ kind: 'tool', name: b.name }); }
+      if (b.type === 'thinking' || b.type === 'redacted_thinking') onEvent({ kind: 'thinking' });
+    } else if (ev.type === 'content_block_delta') {
+      const b = msg.content[ev.index], d = ev.delta || {};
+      if (!b) return;
+      if (d.type === 'text_delta') { b.text = (b.text || '') + d.text; onEvent({ kind: 'text', text: d.text }); }
+      else if (d.type === 'input_json_delta') partial[ev.index] = (partial[ev.index] || '') + (d.partial_json || '');
+      else if (d.type === 'thinking_delta') b.thinking = (b.thinking || '') + (d.thinking || '');
+      else if (d.type === 'signature_delta') b.signature = (b.signature || '') + (d.signature || '');
+      else if (d.type === 'citations_delta' && d.citation) (b.citations = b.citations || []).push(d.citation);
+    } else if (ev.type === 'content_block_stop') {
+      const b = msg.content[ev.index];
+      if (b && partial[ev.index] !== undefined) {
+        const raw = partial[ev.index];
+        try { b.input = raw ? JSON.parse(raw) : (b.input || {}); } catch (e) { b.input = {}; }
+      }
+    } else if (ev.type === 'message_delta') {
+      if (ev.delta) { if (ev.delta.stop_reason !== undefined) msg.stop_reason = ev.delta.stop_reason; if (ev.delta.stop_details !== undefined) msg.stop_details = ev.delta.stop_details; }
+      if (ev.usage) msg.usage = { ...msg.usage, ...ev.usage };
+    } else if (ev.type === 'error') {
+      failed = ev.error || { message: 'oqim xatosi' };
+    }
+  };
+  const flush = chunk => {
+    for (const line of chunk.split('\n')) {
+      if (!line.startsWith('data:')) continue;
+      const t = line.slice(5).trim();
+      if (!t || t === '[DONE]') continue;
+      try { handle(JSON.parse(t)); } catch (e) { /* buzuq qator — o'tkazib yuboriladi */ }
+    }
+  };
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let i;
+    while ((i = buf.indexOf('\n\n')) >= 0) { flush(buf.slice(0, i)); buf = buf.slice(i + 2); }
+  }
+  if (buf.trim()) flush(buf);
+  msg.content = msg.content.filter(Boolean);
+  if (failed) return { error: failed.message || 'oqim xatosi', status: failed.type === 'overloaded_error' ? 529 : 500, type: failed.type };
+  return { data: msg };
 }
 
 /* Darvoza: Origin, kalit, tana hajmi. Xato
@@ -593,6 +662,41 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
   const parsed = parseAiBody(g.text);
   if (typeof parsed === 'string') return json({ error: parsed, code: 'bad_input' }, 400);
   const limited = await g.limit(); if (limited) return limited;
+  if (!parsed.stream) {
+    const out = await runAi({ parsed, env, count, fetchImpl, emit: null });
+    return json(out.body, out.status);
+  }
+  /* Oqim (stream: true): javob NDJSON qatorlari bilan keladi — ilova
+     birinchi so'zni to'liq javobni kutmasdan ko'radi.
+       {"t":"status","s":"web_search"}  — AI hozir nima qilyapti
+       {"t":"text","d":"…","r":0}        — matn bo'lagi (r — raund)
+       {"t":"done", …oqimsiz javob bilan bir xil…}  yoki  {"t":"error", code}
+     Kirish, Origin va kunlik chegara xatolari oqimgacha oddiy JSON. */
+  const { readable, writable } = new TransformStream();
+  const writer = writable.getWriter();
+  const enc = new TextEncoder();
+  const emit = obj => { writer.write(enc.encode(JSON.stringify(obj) + '\n')).catch(() => {}); };
+  const job = (async () => {
+    try {
+      const out = await runAi({ parsed, env, count, fetchImpl, emit });
+      if (out.status === 200) emit({ t: 'done', ...out.body });
+      else emit({ t: 'error', status: out.status, ...out.body });
+    } catch (e) {
+      console.log('ai stream', e && e.message || e);
+      emit({ t: 'error', status: 503, error: 'AI vaqtincha mavjud emas', code: 'upstream' });
+    } finally {
+      try { await writer.close(); } catch (e) {}
+    }
+  })();
+  if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(job);
+  return new Response(readable, { status: 200, headers: cors(env, { 'content-type': 'application/x-ndjson; charset=utf-8', 'cache-control': 'no-store', 'x-accel-buffering': 'no' }, origin) });
+}
+
+/* Asosiy ish: rasm (bo'lsa) → Claude + vositalar tsikli. emit berilsa
+   holat va matn bo'laklari oqimga yoziladi. Natija: { status, body }. */
+async function runAi({ parsed, env, count, fetchImpl, emit }) {
+  const json = (body, status = 200) => ({ body, status });
+  const say = emit || (() => {});
   const today = isoDay();
 
   const usdRate = parsed.usdRate || FALLBACK_RATE;
@@ -604,6 +708,7 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
      ko'rsatilmaydi). Natija joriy xaridga qo'shiladi. */
   let shot = null;
   if (parsed.shot) {
+    say({ t: 'status', s: 'shot' });
     const rs = await readShot({ image: parsed.shot.image, mime: parsed.shot.mime, usdRate, env, fetchFn: fetchFn0 });
     if (rs.err) {
       console.log('ai shot upstream', rs.err.status, rs.err.type || '', rs.err.error);
@@ -652,12 +757,21 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
   /* Veb-qidiruv ko'rsatmasi faqat shu yerda (qoidalar faylida yo'q):
      vosita bo'lmaganda model uni o'qimasin. */
   if (webOn) system.push({ type: 'text', text: 'Bu "Qayerdan topaman" so\'rovi: suggest_stores dan keyin web_search bilan (ko\'pi bilan 2 ta qidiruv) indekslanadigan do\'konlarda (Amazon, AliExpress, eBay, Trendyol, SHEIN, brend saytlari) ANIQ mahsulot sahifalarini top va product_links vositasiga ber: nom, https havola, do\'kon, narx, valyuta. Qidiruv natijalari sahifasini berma; Taobao, Pinduoduo, Poizon uchun qidirma — ularga qidiruv havolasi yetadi; topilmasa vositani chaqirma.' });
-  if (env.AI_EFFORT) body.output_config = { effort: env.AI_EFFORT };
+  /* Tezlik: oddiy savolga past fikrlash darajasi (AI_EFFORT, standart
+     "low") — vositalar hisoblaydi, model faqat yo'naltiradi. Veb-qidiruv
+     yoki havola o'qish (to'g'ri mahsulotni tanlash) — AI_EFFORT_FIND
+     ("medium"). Bo'sh bo'lsa API standarti. */
+  const effort = (parsed.find || parsed.url) ? (env.AI_EFFORT_FIND || env.AI_EFFORT) : env.AI_EFFORT;
+  if (effort) body.output_config = { effort };
 
   const used = []; let textOut = '', model = body.model, stop = '';
   const fetchFn = fetchFn0;
   for (let round = 0; round < AI_LIMITS.rounds; round++) {
-    const r = await callClaude(body, env, fetchFn);
+    const onEvent = emit ? ev => {
+      if (ev.kind === 'text') emit({ t: 'text', d: ev.text, r: round });
+      else if (ev.kind === 'tool') emit({ t: 'status', s: ev.name });
+    } : null;
+    const r = await callClaude(body, env, fetchFn, onEvent);
     if (r.error) {
       console.log('ai upstream', r.status, r.type || '', r.error);
       count('err');
