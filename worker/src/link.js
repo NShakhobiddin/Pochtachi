@@ -12,7 +12,9 @@
  * qilish oson.
  */
 
-export const LINK_MAX_BYTES = 1500000;
+/* Amazon kabi sahifalar 2–3 MB: narx bloki 1,5 MB dan keyin ham kelishi
+   mumkin (jonli sinovda sahifa aynan 1,5 MB da kesilgan edi). */
+export const LINK_MAX_BYTES = 3500000;
 export const LINK_TIMEOUT_MS = 8000;
 const TEXT_MAX = 12000;
 
@@ -35,7 +37,9 @@ export async function fetchPage(url, fetchFn, ms = LINK_TIMEOUT_MS) {
   const init = {
     method: 'GET', redirect: 'follow',
     headers: {
-      'user-agent': 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Mobile Safari/537.36 PochtamLinkReader/1.0',
+      /* Desktop sahifa: mobil versiyada narx bloklari boshqa nomda va
+         kamroq tuzilgan ma'lumot bo'ladi. */
+      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36 PochtamLinkReader/1.0',
       accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.5',
       'accept-language': 'en-US,en;q=0.8,ru;q=0.6'
     }
@@ -173,8 +177,9 @@ export function extractProduct(html) {
   }
   /* Amazon: JSON-LD yo'q, narx asosiy narx blokida (corePrice…) — birinchi
      a-offscreen shu blok ichidan olinadi (reklama bloklaridagi narx emas). */
-  const ci = h.search(/id="(corePrice_feature_div|corePriceDisplay_desktop_feature_div|corePrice_desktop|apex_desktop|apex_offerDisplay_desktop)"/);
-  const at = /id="productTitle"[^>]*>([\s\S]*?)</.exec(h);
+  const ci = h.search(/id="(corePrice[A-Za-z_]*|apex_[A-Za-z_]*|priceblock_[A-Za-z_]*|tp_price_block[A-Za-z_]*)"/);
+  const at = /id="(?:productTitle|title)"[^>]*>(?:\s*<span[^>]*>)?([^<]{3,})</.exec(h)
+    || (/amazon\./i.test((/<link rel="canonical" href="([^"]+)"/.exec(h) || [])[1] || '') ? /<title[^>]*>(?:Amazon\.[a-z.]+:\s*)?([^<]{3,})<\/title>/i.exec(h) : null);
   if (ci >= 0 && at) {
     const pm = /class="a-offscreen">\s*([^<]{1,24})</.exec(h.slice(ci, ci + 30000));
     const raw = pm ? unescapeHtml(pm[1]).trim() : '';
@@ -200,7 +205,10 @@ export function pageText(html) {
   const h = String(html || '');
   const meta = metaMap(h);
   const title = unescapeHtml((/<title[^>]*>([\s\S]*?)<\/title>/i.exec(h) || [])[1] || '').replace(/\s+/g, ' ').trim();
-  const body = unescapeHtml(h
+  /* Mahsulot qismidan boshlanadi (menyu va reklama emas): productTitle,
+     <main> yoki itemprop="name" bo'lsa — o'sha joydan. */
+  const start = Math.max(0, h.search(/id="productTitle"|<main\b|itemprop="name"|id="centerCol"/));
+  const body = unescapeHtml(h.slice(start)
     .replace(/<(script|style|noscript|svg|template|iframe)\b[\s\S]*?<\/\1>/gi, ' ')
     .replace(/<!--[\s\S]*?-->/g, ' ')
     .replace(/<[^>]+>/g, ' '))

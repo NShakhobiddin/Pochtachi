@@ -511,6 +511,9 @@ check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit(
   check('link: narxsiz qisqa sahifa — found=false, AI chaqirilmaydi', j5.via === 'none' && j5.shot.found === false && calls5 === 0, JSON.stringify(j5).slice(0, 120));
   const amz = L.extractProduct('<span id="productTitle" class="a-size-large"> Echo Dot (5th Gen) </span><div class="a-section"><span class="a-offscreen">$9.99</span></div><div id="corePrice_feature_div"><span class="a-price"><span class="a-offscreen">$49.99</span></span></div>');
   check('extractProduct: Amazon — asosiy narx bloki (reklama narxi emas), nom', amz && amz.source === 'amazon' && amz.price === 49.99 && amz.currency === 'USD' && amz.name === 'Echo Dot (5th Gen)', JSON.stringify(amz));
+  const amz2 = L.extractProduct('<link rel="canonical" href="https://www.amazon.com/dp/B0X"><title>Amazon.com: Kindle Paperwhite</title><div id="apex_desktop_newAccordionRow"><span class="a-price"><span class="a-offscreen">$149.99</span></span></div>');
+  check('extractProduct: Amazon — apex_* bloki, nom <title> dan (productTitle yo\'q)', amz2 && amz2.price === 149.99 && amz2.name === 'Kindle Paperwhite', JSON.stringify(amz2));
+  check('pageText: mahsulot qismidan boshlanadi (menyu tashlanadi)', /^Sarlavha: X\nKurtka narxi/.test(L.pageText('<title>X</title><nav>Menyu Menyu</nav><main><p>Kurtka narxi $5</p></main>')));
   check('looksBlocked: Amazon "continue shopping" oraliq sahifasi', L.looksBlocked('<p>Click the button below to continue shopping</p>') && !L.looksBlocked('<p>Echo Dot</p>'));
   /* Uzun matndan narx topilmasa — web_fetch ham sinab ko'riladi. */
   const calls6 = [];
