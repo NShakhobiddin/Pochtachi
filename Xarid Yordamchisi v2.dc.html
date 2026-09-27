@@ -625,6 +625,8 @@
   }
   /* Tor telefonda (320–374 px) bosh maydon yozuvi to'liq ko'rinsin. */
   @media (max-width: 374px) { input[data-hero]::placeholder { font-size:13px; } }
+  /* Quti o'lchami: uch tor maydon — yozuv ("balandlik", "высота") kesilmasin. */
+  input[data-dim]::placeholder { font-size:13px; }
   /* Xaridlarim tablari: telefonda 2×2, kompyuter ustunida bir qator. */
   .xy-tabs4 { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:6px; }
   /* Barmoq ostidagi element bosilib turganda ko'rinib tursin. */
@@ -3257,29 +3259,30 @@
             <button sc-camel-on-click="{{ lco.pick }}" aria-pressed="{{ lco.on }}" style="flex:none;height:34px;padding:0 12px;border-radius:999px;border:1.5px solid {{ lco.bd }};background:{{ lco.bg }};color:{{ lco.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ lco.t }}</button>
           </sc-for>
         </div>
-        <div style="display:flex;gap:12px">
-          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
-            <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85">Og'irligi, 1 dona</span>
-            <div style="display:flex;align-items:center;gap:8px;background:#F1F1F8;border-radius:20px;padding:0 14px;height:56px;box-shadow:inset 0 0 0 1px #E3E4EE">
-              <input value="{{ lc.kg }}" sc-camel-on-change="{{ lcKg }}" inputmode="decimal" size="1" placeholder="{{ lcKgHint }}" aria-label="Og'irligi, kilogrammda" autocomplete="off" style="flex:1;min-width:0;width:100%;border:none;background:transparent;outline:none;font-family:inherit;font-size:22px;font-weight:800;color:#131429">
-              <span style="font-size:15px;font-weight:700;color:#6B6C85">kg</span>
-            </div>
+        <!-- Og'irlik va do'kon yetkazishi: yozuvlar bitta qatorda (uzunrog'i
+             ikki qatorga tushsa, ikkinchisi pastga tekislanadi), maydonlar
+             bitta chiziqda. Birlik ikkalasida ham o'ngda — narx maydoni kabi. -->
+        <div data-kg-row="1" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:12px;row-gap:8px">
+          <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85;line-height:1.3;align-self:end">1 dona og'irligi</span>
+          <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85;line-height:1.3;align-self:end">Do'kon yetkazishi</span>
+          <div style="display:flex;align-items:center;gap:8px;background:#F1F1F8;border-radius:20px;padding:0 14px;height:56px;box-shadow:inset 0 0 0 1px #E3E4EE">
+            <input value="{{ lc.kg }}" sc-camel-on-change="{{ lcKg }}" inputmode="decimal" size="1" placeholder="{{ lcKgHint }}" aria-label="Og'irligi, kilogrammda" autocomplete="off" style="flex:1;min-width:0;width:100%;border:none;background:transparent;outline:none;font-family:inherit;font-size:22px;font-weight:800;color:#131429">
+            <span style="flex:none;font-size:15px;font-weight:700;color:#6B6C85">kg</span>
           </div>
-          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
-            <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85">Do'kon ichida yetkazish</span>
-            <div style="display:flex;align-items:center;gap:8px;background:#F1F1F8;border-radius:20px;padding:0 14px;height:56px;box-shadow:inset 0 0 0 1px #E3E4EE">
-              <span style="font-size:22px;font-weight:800;color:#6B6C85">$</span>
-              <input value="{{ lc.domestic }}" sc-camel-on-change="{{ lcDomestic }}" inputmode="decimal" size="1" placeholder="0" aria-label="Do'kon ichida yetkazish, dollarda" autocomplete="off" style="flex:1;min-width:0;width:100%;border:none;background:transparent;outline:none;font-family:inherit;font-size:22px;font-weight:800;color:#131429">
-            </div>
+          <div style="display:flex;align-items:center;gap:8px;background:#F1F1F8;border-radius:20px;padding:0 14px;height:56px;box-shadow:inset 0 0 0 1px #E3E4EE">
+            <input value="{{ lc.domestic }}" sc-camel-on-change="{{ lcDomestic }}" inputmode="decimal" size="1" placeholder="0" aria-label="Do'kon ichida yetkazish, dollarda" autocomplete="off" style="flex:1;min-width:0;width:100%;border:none;background:transparent;outline:none;font-family:inherit;font-size:22px;font-weight:800;color:#131429">
+            <span style="flex:none;font-size:15px;font-weight:700;color:#6B6C85">$</span>
           </div>
+          <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">Tovar va qadoq bilan</span>
+          <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">Do'kondan kuryer omboriga</span>
         </div>
         <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85">Quti o'lchami, sm (ixtiyoriy)</span>
-        <div style="display:flex;align-items:center;gap:8px">
-          <input value="{{ lc.l }}" sc-camel-on-change="{{ lcL }}" inputmode="decimal" size="1" placeholder="uzunlik" aria-label="Quti uzunligi, sm" autocomplete="off" style="flex:1;min-width:0;height:44px;border-radius:14px;border:1.5px solid #DCDDFA;padding:0 12px;font-family:inherit;font-size:15px;font-weight:500;color:#131429;outline:none;background:#FFFFFF;text-align:center">
+        <div style="display:flex;align-items:center;gap:6px">
+          <input value="{{ lc.l }}" sc-camel-on-change="{{ lcL }}" inputmode="decimal" size="1" data-dim="1" placeholder="uzunlik" aria-label="Quti uzunligi, sm" autocomplete="off" style="flex:1;min-width:0;height:44px;border-radius:14px;border:1.5px solid #DCDDFA;padding:0 4px;font-family:inherit;font-size:15px;font-weight:500;color:#131429;outline:none;background:#FFFFFF;text-align:center">
           <span style="font-size:13px;font-weight:700;color:#A6A7BC">×</span>
-          <input value="{{ lc.w }}" sc-camel-on-change="{{ lcW }}" inputmode="decimal" size="1" placeholder="kenglik" aria-label="Quti kengligi, sm" autocomplete="off" style="flex:1;min-width:0;height:44px;border-radius:14px;border:1.5px solid #DCDDFA;padding:0 12px;font-family:inherit;font-size:15px;font-weight:500;color:#131429;outline:none;background:#FFFFFF;text-align:center">
+          <input value="{{ lc.w }}" sc-camel-on-change="{{ lcW }}" inputmode="decimal" size="1" data-dim="1" placeholder="kenglik" aria-label="Quti kengligi, sm" autocomplete="off" style="flex:1;min-width:0;height:44px;border-radius:14px;border:1.5px solid #DCDDFA;padding:0 4px;font-family:inherit;font-size:15px;font-weight:500;color:#131429;outline:none;background:#FFFFFF;text-align:center">
           <span style="font-size:13px;font-weight:700;color:#A6A7BC">×</span>
-          <input value="{{ lc.h }}" sc-camel-on-change="{{ lcH }}" inputmode="decimal" size="1" placeholder="balandlik" aria-label="Quti balandligi, sm" autocomplete="off" style="flex:1;min-width:0;height:44px;border-radius:14px;border:1.5px solid #DCDDFA;padding:0 12px;font-family:inherit;font-size:15px;font-weight:500;color:#131429;outline:none;background:#FFFFFF;text-align:center">
+          <input value="{{ lc.h }}" sc-camel-on-change="{{ lcH }}" inputmode="decimal" size="1" data-dim="1" placeholder="balandlik" aria-label="Quti balandligi, sm" autocomplete="off" style="flex:1;min-width:0;height:44px;border-radius:14px;border:1.5px solid #DCDDFA;padding:0 4px;font-family:inherit;font-size:15px;font-weight:500;color:#131429;outline:none;background:#FFFFFF;text-align:center">
         </div>
         <span style="font-size:13px;color:#6B6C85;font-weight:500;line-height:1.5">{{ lcKgNote }}</span>
       </div>
@@ -3939,7 +3942,7 @@ const RU = {
   "Do'kon va davlatni aniqlayapman":'Определяю магазин и страну', 'Kuryer, boj va jami narxni hisoblayapman':'Считаю курьера, пошлину и итог',
   "Skrinshotni o'qiyapman":'Читаю скриншот', 'Odatda 5–10 soniya. Jami narx va uning tarkibi shu yerda chiqadi.':'Обычно 5–10 секунд. Итоговая цена и её состав появятся здесь.',
   'Sizga jami tushadi':'Итого для вас', 'Taxminiy':'Примерно', 'Narx qanday shakllandi':'Из чего складывается цена',
-  'Tovar narxi':'Цена товара', "Do'kon ichida yetkazish":'Доставка внутри страны магазина', "Do'kondan kuryer omboriga":'От магазина до склада курьера',
+  'Tovar narxi':'Цена товара', "Do'kondan kuryer omboriga":'От магазина до склада курьера',
   'Xalqaro yetkazish':'Международная доставка', 'vazn sahifadan':'вес со страницы', 'vazn taxminiy':'вес примерный',
   "Kuryer narxi qo'shilmagan":'Стоимость курьера не включена', '{0} · {1} kg':'{0} · {1} кг',
   "Me'yordan ortiq qism {0} kg × ${1}":'Часть сверх лимита: {0} кг × ${1}',
@@ -4067,7 +4070,7 @@ const RU = {
   /* Universal kalkulyator (Jami narx) */
   'Jami narx':'Итоговая цена', 'Nomi (ixtiyoriy), masalan: Nike Air Max':'Название (необязательно), например: Nike Air Max', 'Mahsulot nomi':'Название товара',
   'Narxi':'Цена', 'Miqdor':'Количество', 'Miqdor, dona':'Количество, шт', 'Qayerdan va qancha':'Откуда и сколько',
-  "Og'irligi, 1 dona":'Вес, 1 шт', "Do'kon ichida yetkazish":'Доставка внутри магазина', "Do'kon ichida yetkazish, dollarda":'Доставка внутри магазина, в долларах',
+  "Og'irligi, 1 dona":'Вес, 1 шт', "1 dona og'irligi":'Вес 1 шт', "Do'kon yetkazishi":'Доставка магазина', 'Tovar va qadoq bilan':'С товаром и упаковкой', "Do'kon ichida yetkazish":'Доставка внутри магазина', "Do'kon ichida yetkazish, dollarda":'Доставка внутри магазина, в долларах',
   "Quti o'lchami, sm (ixtiyoriy)":'Размер коробки, см (необязательно)', 'uzunlik':'длина', 'kenglik':'ширина', 'balandlik':'высота',
   'Quti uzunligi, sm':'Длина коробки, см', 'Quti kengligi, sm':'Ширина коробки, см', 'Quti balandligi, sm':'Высота коробки, см',
   'Jami tannarx':'Итоговая стоимость',

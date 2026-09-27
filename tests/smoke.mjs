@@ -866,6 +866,12 @@ try {
     await page.locator('main button').filter({ hasText: /^Vaznni aniqlashtirish$/ }).first().click(); await page.waitForTimeout(600);
     const shotCalc = await page.evaluate(() => ({ h: document.querySelector('header').innerText.replace(/\s+/g, ' '), t: document.querySelector('main').innerText.replace(/\s+/g, ' '), name: document.querySelector('input[aria-label="Mahsulot nomi"]')?.value, price: document.querySelector('input[aria-label="Mahsulot narxi"]')?.value, kg: document.querySelector('input[aria-label="Og\'irligi, kilogrammda"]')?.value, on: [...document.querySelectorAll('main button[aria-pressed="true"]')].map(b => b.innerText.trim()).slice(0, 3), banner: !!document.querySelector('main [role="status"]') }));
     check('Vaznni aniqlashtirish → kalkulyator: nom, 699, ¥, Xitoy, 0.8 kg, banner "o\'qildi"', /Jami narx/.test(shotCalc.h) && shotCalc.banner && /Skrinshotdan o'qildi: Nike Air Max 90 — 699 CNY ≈ \$97\.80/.test(shotCalc.t) && /Do'kon: Taobao\./.test(shotCalc.t) && shotCalc.name === 'Nike Air Max 90' && shotCalc.price === '699' && shotCalc.kg === '0.8' && shotCalc.on.includes('¥') && shotCalc.on.includes('Xitoy'), JSON.stringify(shotCalc).slice(0, 200));
+    /* Og'irlik va do'kon yetkazishi maydonlari bitta chiziqda (yozuv ikki
+       qatorga tushsa ham), birlik ikkalasida o'ngda. */
+    const kgRow = await page.evaluate(() => { const r = document.querySelector('main [data-kg-row]'); if (!r) return null;
+      const b = [...r.children].filter(c => c.tagName === 'DIV').map(d => d.getBoundingClientRect());
+      return { n: b.length, dy: b.length === 2 ? Math.abs(b[0].top - b[1].top) : -1, units: [...r.querySelectorAll(':scope > div > span:last-child')].map(x => x.textContent.trim()) }; });
+    check('kalkulyator: og\'irlik va do\'kon yetkazishi bir chiziqda, birlik o\'ngda (kg, $)', !!kgRow && kgRow.n === 2 && kgRow.dy < 1 && kgRow.units.join(',') === 'kg,$', JSON.stringify(kgRow));
     await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(400);
     const orderBtn = page.locator('main button').filter({ hasText: /Qanday buyurtma qilaman\?/ });
     check('kalkulyatordan orqaga → natija ekrani turibdi, buyurtma tugmasi yopishgan (Taobao qo\'llanmasi)', /Nike Air Max 90/.test(await aiMain()) && (await orderBtn.count()) === 1 && /Taobao qo'llanmasi/.test(await orderBtn.innerText()) && (await orderBtn.evaluate(b => getComputedStyle(b.parentElement).position)) === 'sticky');
