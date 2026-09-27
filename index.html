@@ -581,6 +581,14 @@
     .xy-orb, .xy-dots i, .xy-caret { animation:none !important }
     .xy-shimmer { animation:none !important; background:none; color:#1A1FB0 }
   }
+  /* Skrinshot o'qilmoqda: rasm ustidan skaner chizig'i o'tadi, jami
+     kartaning skeleti yorug'lik bilan "tirik" turadi. */
+  @keyframes xy-scan { 0%, 100% { transform:translateY(-8px) } 50% { transform:translateY(88px) } }
+  .xy-scan-line { position:absolute; left:0; right:0; top:0; height:8px; background:linear-gradient(180deg,rgba(73,79,233,0),rgba(73,79,233,.85),rgba(73,79,233,0)); animation:xy-scan 2.2s ease-in-out infinite }
+  .xy-skel { background:linear-gradient(90deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,.14) 35%,rgba(255,255,255,.36) 50%,rgba(255,255,255,.14) 65%,rgba(255,255,255,.14) 100%); background-size:200% 100%; animation:xy-shimmer 1.4s linear infinite }
+  @media (prefers-reduced-motion: reduce) {
+    .xy-scan-line, .xy-skel { animation:none !important }
+  }
   @keyframes xy-rise { from { opacity:0; transform:translateY(14px) } to { opacity:1; transform:none } }
   main.xy-in > * > *:nth-child(-n+8) { animation:xy-rise .36s cubic-bezier(.22,.9,.3,1) both }
   main.xy-in > * > *:nth-child(2) { animation-delay:40ms }
@@ -2993,26 +3001,87 @@
     <div style="display:flex;flex-direction:column;gap:14px">
       <input type="file" accept="image/*" data-shot="1" sc-camel-on-change="{{ onShotFile }}" aria-label="Skrinshot tanlash" style="display:none">
       <sc-if value="{{ rsBusy }}" hint-placeholder-val="{{ true }}">
-        <div role="status" aria-live="polite" style="display:flex;align-items:center;gap:12px;background:#E9EAFD;border-radius:20px;padding:14px 16px">
-          <div aria-hidden="true" style="width:34px;height:34px;border-radius:12px;flex:none;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8.5A2.5 2.5 0 016.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0120 8.5V17a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></div>
-          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
-            <span style="font-size:15px;font-weight:700;color:#1A1FB0">Skrinshot o'qilmoqda…</span>
-            <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5">Do'kon, davlat, kuryer, boj va jami narx bir necha soniyada.</span>
+        <!-- Skrinshot o'qilmoqda: rasmning o'zi (skaner chizig'i ustidan
+             o'tadi), bosqichlar ro'yxati (bajarilgani belgi bilan, joriysi
+             yorug'lik bilan), to'layotgan chiziq va jami kartaning skeleti —
+             javob kelganda aynan shu joyda jami chiqadi. -->
+        <div data-shot-busy="1" role="status" aria-live="polite" style="background:#FFFFFF;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:16px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+          <div style="display:flex;align-items:center;gap:16px">
+            <div aria-hidden="true" style="width:64px;height:88px;flex:none;border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background-color:#E9EAFD;background-size:cover;background-repeat:no-repeat;background-position:top center;background-image:{{ rsPrevCss }}">
+              <sc-if value="{{ rsNoPrev }}" hint-placeholder-val="{{ false }}"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5A2.5 2.5 0 016.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0120 8.5V17a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></sc-if>
+              <i class="xy-scan-line"></i>
+            </div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:17px;font-weight:700;color:#131429">Skrinshotni o'qiyapman<span class="xy-dots" aria-hidden="true"><i></i><i></i><i></i></span></span>
+              <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5">Odatda 5–10 soniya. Jami narx va uning tarkibi shu yerda chiqadi.</span>
+            </div>
+          </div>
+          <div aria-hidden="true" style="height:6px;border-radius:999px;background:#E9EAFD;overflow:hidden">
+            <div data-shot-prog="1" style="height:100%;width:{{ rsProg }};border-radius:999px;background:linear-gradient(90deg,#494FE9,#13189D);transition:width .5s ease"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ rsSteps }}" as="sp" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span aria-hidden="true" style="width:24px;height:24px;flex:none;border-radius:999px;display:flex;align-items:center;justify-content:center;background:{{ sp.bg }}">
+                  <sc-if value="{{ sp.done }}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+                  <sc-if value="{{ sp.now }}" hint-placeholder-val="{{ false }}"><i class="xy-orb" style="display:block;width:10px;height:10px;border-radius:999px;background:#494FE9"></i></sc-if>
+                </span>
+                <sc-if value="{{ sp.now }}" hint-placeholder-val="{{ false }}"><span data-shot-step="1" class="xy-shimmer" style="font-size:15px;font-weight:700;line-height:1.4">{{ sp.t }}</span></sc-if>
+                <sc-if value="{{ sp.idle }}" hint-placeholder-val="{{ true }}"><span style="font-size:15px;font-weight:500;line-height:1.4;color:{{ sp.fg }}">{{ sp.t }}</span></sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <div aria-hidden="true" style="border-radius:20px;background:linear-gradient(155deg,#494FE9,#13189D);padding:16px 18px;display:flex;flex-direction:column;gap:8px">
+            <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#DCDDFA">Sizga jami tushadi</span>
+            <span class="xy-skel" style="display:block;width:56%;height:34px;border-radius:12px"></span>
+            <span class="xy-skel" style="display:block;width:38%;height:16px;border-radius:8px"></span>
           </div>
         </div>
       </sc-if>
       <sc-if value="{{ rsOk }}" hint-placeholder-val="{{ false }}">
-        <!-- Javob birinchi: qanchaga tushadi va qachon keladi. Tafsilot
-             (mahsulot, kuryer, qatorlar) pastda — ilgari jami uchinchi karta
-             edi, buyurtma tugmasi esa ekrandan tashqarida. -->
-        <div style="background:#FFFFFF;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:8px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-          <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85">Jami</span>
-          <span style="font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.1;color:#1A1FB0;font-variant-numeric:tabular-nums">{{ rsTotal }}</span>
-          <span style="font-size:17px;font-weight:700;color:#131429;font-variant-numeric:tabular-nums">{{ rsTotalUzs }}</span>
-          <sc-if value="{{ rsHasCourier }}" hint-placeholder-val="{{ true }}">
-            <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">{{ rsEta }}</span>
-          </sc-if>
-          <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5;text-wrap:pretty">{{ rsDutyNote }}</span>
+        <!-- Jami narx — ekranning bosh qahramoni: katta raqam ko'k fonda,
+             ostida narx qanday shakllangani: rangli tarkib chizig'i va har
+             bo'lak (tovar, yetkazish, boj, yig'im) qanday hisoblangani bilan. -->
+        <div data-total="1" class="mo-pop" style="border-radius:24px;overflow:hidden;background:#FFFFFF;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">
+          <div style="background:linear-gradient(155deg,#494FE9,#13189D);padding:20px 18px;display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#DCDDFA">Sizga jami tushadi</span>
+              <span style="flex:none;font-size:11px;font-weight:700;color:#FFFFFF;background:rgba(255,255,255,.16);border-radius:999px;padding:2px 8px">Taxminiy</span>
+            </div>
+            <span data-total-usd="1" style="font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.1;color:#FFFFFF;font-variant-numeric:tabular-nums">{{ rsTotal }}</span>
+            <span style="font-size:17px;font-weight:700;color:#FFFFFF;font-variant-numeric:tabular-nums">{{ rsTotalUzs }}</span>
+            <sc-if value="{{ rsHasCourier }}" hint-placeholder-val="{{ true }}">
+              <span style="font-size:13px;font-weight:500;color:#DCDDFA;line-height:1.5;margin-top:4px">{{ rsEta }}</span>
+            </sc-if>
+          </div>
+          <div data-breakdown="1" style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px">
+            <span style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B6C85">Narx qanday shakllandi</span>
+            <div aria-hidden="true" class="mo-grow" style="display:flex;gap:2px;height:10px;border-radius:999px;overflow:hidden;background:#F1F1F8">
+              <sc-for list="{{ rsBar }}" as="b" hint-placeholder-count="3">
+                <span style="display:block;flex:{{ b.g }} 1 0px;min-width:4px;background:{{ b.bg }}"></span>
+              </sc-for>
+            </div>
+            <sc-for list="{{ rsRows }}" as="r" hint-placeholder-count="4">
+              <div data-part="1" style="display:flex;align-items:flex-start;gap:10px">
+                <span aria-hidden="true" style="width:10px;height:10px;flex:none;border-radius:999px;margin-top:6px;background:{{ r.dot }}"></span>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                  <span style="font-size:15px;font-weight:700;color:#131429;line-height:1.4">{{ r.k }}</span>
+                  <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5;overflow-wrap:anywhere">{{ r.how }}</span>
+                </div>
+                <div style="flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:2px">
+                  <span style="font-size:15px;font-weight:700;color:{{ r.c }};font-variant-numeric:tabular-nums">{{ r.v }}</span>
+                  <span style="font-size:11px;font-weight:600;color:#6B6C85;font-variant-numeric:tabular-nums">{{ r.share }}</span>
+                </div>
+              </div>
+            </sc-for>
+            <div style="border-top:1.5px dashed #E3E4EE;padding-top:12px;display:flex;flex-direction:column;gap:2px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+                <span style="font-size:17px;font-weight:700;color:#131429">Jami</span>
+                <span style="font-size:17px;font-weight:700;color:#1A1FB0;font-variant-numeric:tabular-nums">{{ rsTotal }}</span>
+              </div>
+              <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">{{ rsTotalUzs }} · {{ rsRate }}</span>
+            </div>
+          </div>
         </div>
         <!-- Mahsulot va do'kon -->
         <div style="background:#FFFFFF;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
@@ -3070,15 +3139,6 @@
             <span style="font-size:11px;font-weight:600;color:#6B6C85;line-height:1.4">Telegramda tayyor xabar ochiladi — skrinshotni ham yuboring. Xizmat haqi kuryer ma'lumotidan; yakuniy summani kuryer aytadi.</span>
           </div>
         </sc-if>
-        <!-- Tafsilot qatorlari -->
-        <div style="background:#FFFFFF;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-          <sc-for list="{{ rsRows }}" as="r" hint-placeholder-count="4">
-            <div style="display:flex;justify-content:space-between;gap:12px">
-              <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">{{ r.k }}</span>
-              <span style="font-size:13px;font-weight:700;color:{{ r.c }};font-variant-numeric:tabular-nums;flex:none">{{ r.v }}</span>
-            </div>
-          </sc-for>
-        </div>
         <!-- Eslatmalar: taqiq/cheklov, kategoriya, oylik me'yor, ishonch -->
         <sc-if value="{{ rsHasNotes }}" hint-placeholder-val="{{ false }}">
           <sc-for list="{{ rsNotes }}" as="n" hint-placeholder-count="2">
@@ -3867,6 +3927,18 @@ const toCyr = s => {
 };
 
 const RU = {
+  /* Skrinshot natijasi: jami narx tarkibi va kutish (2026-09-27) */
+  "Rasmni o'qiyapman":'Читаю изображение', 'Narx va valyutani topyapman':'Ищу цену и валюту',
+  "Do'kon va davlatni aniqlayapman":'Определяю магазин и страну', 'Kuryer, boj va jami narxni hisoblayapman':'Считаю курьера, пошлину и итог',
+  "Skrinshotni o'qiyapman":'Читаю скриншот', 'Odatda 5–10 soniya. Jami narx va uning tarkibi shu yerda chiqadi.':'Обычно 5–10 секунд. Итоговая цена и её состав появятся здесь.',
+  'Sizga jami tushadi':'Итого для вас', 'Taxminiy':'Примерно', 'Narx qanday shakllandi':'Из чего складывается цена',
+  'Tovar narxi':'Цена товара', "Do'kon ichida yetkazish":'Доставка внутри страны магазина', "Do'kondan kuryer omboriga":'От магазина до склада курьера',
+  'Xalqaro yetkazish':'Международная доставка', 'vazn sahifadan':'вес со страницы', 'vazn taxminiy':'вес примерный',
+  "Kuryer narxi qo'shilmagan":'Стоимость курьера не включена', '{0} · {1} kg':'{0} · {1} кг',
+  "Me'yordan ortiq qism {0} kg × ${1}":'Часть сверх лимита: {0} кг × ${1}',
+  "Me'yordan (${0}) ortiq qism {1} × {2}%":'Часть сверх лимита (${0}): {1} × {2}%',
+  "BHM ning {0}% — qat'iy {1} so'm":'{0}% БРВ — фиксированно {1} сум', "Me'yor ichida — yig'im yo'q":'В пределах лимита — сбора нет',
+  "1 USD = {0} so'm, Markaziy bank kursi":'1 USD = {0} сум, курс ЦБ',
   'Yagona boj (30%)':'Единая пошлина (30%)',
   "Me'yordan ortiq qismning bojxona qiymatidan 30 foiz, lekin har bir kilogrami uchun $3 dan kam emas. Qaysi hisob ko'p chiqsa, o'sha olinadi.":'30 процентов от таможенной стоимости части сверх лимита, но не менее $3 за каждый килограмм. Берётся тот расчёт, который больше.',
   /* Sehrgar — do'kon va kuryer tanlash (2026-09-24) */
@@ -6137,6 +6209,7 @@ class Component extends DCLogic {
 
   componentWillUnmount() {
     clearInterval(this._aiTick);
+    clearInterval(this._shotTick);
     clearTimeout(this._warmT);
     clearTimeout(this._moT);
     clearTimeout(this._tourT);
@@ -7045,10 +7118,21 @@ class Component extends DCLogic {
     /* Natija ekrani darrov ochiladi ("o'qilmoqda"), javob kelgach shu
        ekranda karta chiziladi: do'kon, davlat, eng arzon kuryer, muddat,
        boj, yig'im, jami. Hisob core'da — AI faqat rasmni o'qiydi. */
-    this.setState({ shotRes: { state: 'busy' } });
+    /* Kutish jonli: t0 dan bosqichlar va chiziq hisoblanadi, rasmning
+       o'zi (blob manzil — data URL dagi ";" style qatorini buzadi) skaner
+       chizig'i ostida turadi. Rasm faqat xotirada, natija kelgach manzil
+       bo'shatiladi. */
+    let prev = '';
+    try { prev = URL.createObjectURL(file); } catch (e) {}
+    this.setState({ shotRes: { state: 'busy', t0: Date.now(), prev } });
     if (this.cur() !== 'result') this.push('result');
     metrics.hit('ai_question', 'shot');
-    const done = r => this.setState({ shotRes: r });
+    clearInterval(this._shotTick);
+    this._shotTick = setInterval(() => {
+      const r = this.state.shotRes;
+      if (r && r.state === 'busy') this.setState({ shotRes: { ...r } }); else clearInterval(this._shotTick);
+    }, 500);
+    const done = r => { clearInterval(this._shotTick); if (prev) URL.revokeObjectURL(prev); this.setState({ shotRes: r }); };
     this.shotResize(file).then(dataUrl => {
       if (!METRICS_URL) { done({ state: 'err', code: 'no_key' }); return; }
       const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
@@ -7257,6 +7341,19 @@ class Component extends DCLogic {
       rsErrT: L_(r.code === 'limit' ? 'Bugungi skrinshot chegarasi tugadi' : "Hozir o'qiy olmadim"),
       rsRetry: () => this.shotPick(), rsManual: () => this.openLanded(r.lc ? { ...r.lc } : {}),
       rsHelper: () => { metrics.hit('quick', 'ai:where'); this.setState({ where: { ...(st.where || {}), find: true } }); this.go('home'); } };
+    if (r.state === 'busy') {
+      /* Rasm o'qish bir so'rov (oqimsiz), shuning uchun bosqichlar vaqt
+         bo'yicha: oxirgisi javob kelguncha "hozir" bo'lib turadi. Chiziq
+         94% dan oshmaydi — to'lishi javob kelganini bildiradi. */
+      const t = Math.max(0, Date.now() - (r.t0 || Date.now()));
+      const STEPS = ["Rasmni o'qiyapman", 'Narx va valyutani topyapman', "Do'kon va davlatni aniqlayapman", 'Kuryer, boj va jami narxni hisoblayapman'];
+      const at = Math.min(STEPS.length - 1, Math.floor(t / 2200));
+      return { ...base,
+        rsSteps: STEPS.map((x, i) => ({ t: L_(x), done: i < at, now: i === at, idle: i !== at,
+          bg: i < at ? '#0F7B3E' : i === at ? '#E9EAFD' : '#F1F1F8', fg: i < at ? '#131429' : '#A6A7BC' })),
+        rsProg: Math.min(94, Math.round(100 * (1 - Math.exp(-t / 6000)))) + '%',
+        rsNoPrev: !r.prev, rsPrevCss: r.prev ? "url('" + r.prev + "')" : 'none' };
+    }
     if (r.state !== 'ok') return base;
     const C = this.landedCalc(r.lc, st);
     const { priceUsd, qty, catDef, kgIn, kg, billKg, store, quotes, sel, fast, NL, freeLeft, monthUsd, L, noCourier, askCourier } = C;
@@ -7268,15 +7365,26 @@ class Component extends DCLogic {
     if (catDef.caution) notes.push({ fg: '#B45309', bg: '#FDF3E3', t: L_('Kategoriya bo\'yicha eslatma'), sub: tr(lang, catDef.caution) });
     if (monthUsd > 0) notes.push({ fg: '#1A1FB0', bg: '#E9EAFD', t: tx(lang, "Bu oyda ${0} kelgan — bojsiz qoldiq ${1}.", Math.round(monthUsd), Math.round(freeLeft)), sub: '' });
     if (r.low) notes.push({ fg: '#B45309', bg: '#FDF3E3', t: L_("Narxga ishonch past"), sub: L_("Skrinshotda narx aniq ko'rinmagan — kalkulyatorda tekshiring.") });
-    const rows = [
-      { k: qty > 1 ? tx(lang, '{0} dona × {1}', qty, usd(priceUsd)) : L_('Mahsulot narxi'), v: usd(L.goodsUsd), c: '#131429' },
-      { k: sel ? tx(lang, 'Kargo · {0} ({1} kg)', sel.name, kgTxt) : L_('Kargo'), v: sel ? '$' + L.shipUsd.toFixed(2) : '—', c: '#131429' },
-      { k: L_("Bojxona to'lovi"), v: L.dutyUsd > 0 ? '$' + L.dutyUsd.toFixed(2) : '$0', c: L.dutyUsd > 0 ? '#B45309' : '#0F7B3E' },
-      { k: L_("Yagona yig'im"), v: L.feeUsd > 0 ? '$' + L.feeUsd.toFixed(2) : '$0', c: L.feeUsd > 0 ? '#B45309' : '#0F7B3E' }
-    ];
-    const dutyNote = L.basis === 'none' ? tx(lang, "Tovar qiymati ${0} me'yor ichida — boj va yig'im yo'q.", Math.round(freeLeft))
-      : L.basis === 'weight' ? tx(lang, "Me'yordan oshgan qism uchun vazn bo'yicha hisob (har kg ${0}) ustun keldi.", NL.minPerKg)
-      : tx(lang, "Me'yordan (${0}) oshgan qismdan {1}% boj va {2} so'm qat'iy yig'im.", Math.round(freeLeft), Math.round(NL.dutyPct * 100), money(Math.round(NL.bhm * NL.feeShare)));
+    /* Jami narx tarkibi: har bo'lak — rang (chiziq va nuqta bir xil),
+       nomi, qanday hisoblangani, summasi va jamidagi ulushi. Raqamlar
+       landedCalc() dan — kalkulyator bilan bir xil. */
+    const cu = L.customs || {};
+    const d2 = v => '$' + num(v).toFixed(2);
+    const parts = [{ c: '#1A1FB0', k: L_('Tovar narxi'), how: qty > 1 ? tx(lang, '{0} dona × {1}', qty, r.priceTxt) : r.priceTxt, usd: L.goodsUsd }];
+    if (L.domesticUsd > 0) parts.push({ c: '#9093EE', k: L_("Do'kon ichida yetkazish"), how: L_("Do'kondan kuryer omboriga"), usd: L.domesticUsd });
+    parts.push({ c: '#0E8595', k: L_('Xalqaro yetkazish'),
+      how: sel ? tx(lang, '{0} · {1} kg', sel.name, kgTxt) + ' · ' + L_(kgIn > 0 ? 'vazn sahifadan' : 'vazn taxminiy') : L_("Kuryer narxi qo'shilmagan"),
+      usd: sel ? L.shipUsd : null });
+    parts.push({ c: '#B45309', k: L_("Bojxona to'lovi"), usd: L.dutyUsd,
+      how: L.basis === 'none' ? tx(lang, "Tovar qiymati ${0} me'yor ichida — boj va yig'im yo'q.", Math.round(freeLeft))
+        : L.basis === 'weight' ? tx(lang, "Me'yordan ortiq qism {0} kg × ${1}", num(cu.excessKg).toFixed(1).replace('.', ','), NL.minPerKg)
+        : tx(lang, "Me'yordan (${0}) ortiq qism {1} × {2}%", Math.round(freeLeft), d2(cu.cv), Math.round(NL.dutyPct * 100)) });
+    parts.push({ c: '#E0A32E', k: L_("Bojxona yig'imi"), usd: L.feeUsd,
+      how: L.feeUsd > 0 ? tx(lang, "BHM ning {0}% — qat'iy {1} so'm", Math.round(NL.feeShare * 100), money(Math.round(L.feeUzs))) : L_("Me'yor ichida — yig'im yo'q") });
+    const rows = parts.map(p => ({ dot: p.c, k: p.k, how: p.how,
+      v: p.usd == null ? '—' : d2(p.usd), c: p.usd === 0 ? '#0F7B3E' : '#131429',
+      share: p.usd > 0 && L.totalUsd > 0 ? Math.max(1, Math.round(p.usd / L.totalUsd * 100)) + '%' : '' }));
+    const bar = parts.filter(p => p.usd > 0).map(p => ({ bg: p.c, g: (p.usd / Math.max(0.01, L.totalUsd)).toFixed(4) }));
     const orderQ = tx(lang, "Men {0} ({1}) dan \"{2}\" ({3}) buyurtma qilmoqchiman{4}. Qanday buyurtma qilaman — qadam-baqadam?",
       r.storeName || L_("do'kon"), tr(lang, r.lc.country), r.lc.name || L_('mahsulot'), r.priceTxt, sel ? ', ' + L_('kuryer') + ' ' + sel.name : '');
     return { ...base,
@@ -7296,7 +7404,8 @@ class Component extends DCLogic {
       rsEta: sel ? [sel.name, sel.days ? tr(lang, sel.days) : '', etaText(sel.days, lang)].filter(Boolean).join(' · ') : '',
       rsFast: fast ? fast.name + ' — ' + (fast.days ? tr(lang, fast.days) : '') + ', $' + fast.usd.toFixed(2) : '',
       rsKg: kgIn > 0 ? tx(lang, 'Og\'irlik {0} kg (sahifadan)', kgTxt) : tx(lang, "Taxminiy og'irlik {0} kg ({1})", kgTxt, tr(lang, catDef.label)),
-      rsRows: rows, rsTotal: '$' + L.totalUsd.toFixed(2), rsTotalUzs: money(Math.round(L.totalUzs)) + " so'm", rsDutyNote: dutyNote,
+      rsRows: rows, rsBar: bar, rsTotal: '$' + L.totalUsd.toFixed(2), rsTotalUzs: money(Math.round(L.totalUzs)) + " so'm",
+      rsRate: tx(lang, "1 USD = {0} so'm, Markaziy bank kursi", money(Math.round(L.usdRate))),
       rsNotes: notes, rsHasNotes: notes.length > 0,
       /* Buyurtma: do'konning bosqichli qo'llanmasi bo'lsa — o'sha (aniq,
          tez, bepul); bo'lmasa — Pochtam AI ga tayyor savol. */

@@ -707,7 +707,7 @@ try {
        javob ostidagi tugma kalkulyatorni to'ldirib ochadi; xato holatida
        "vaqtincha mavjud emas"; bosh sahifadagi savol AI ga boradi. Mobil
        pastki menyu 5 ta qoladi. */
-    const aiBodies = []; const shotBodies = []; let aiMode = 'ok';
+    const aiBodies = []; const shotBodies = []; let aiMode = 'ok', shotDelay = 0;
     /* Savollar (rasmsiz so'rovlar) — sanoq shular bo'yicha. */
     const qBodies = () => aiBodies.filter(b => b && b.q);
     /* Skrinshot javoblari: 1 — CNY Nike, 2 va 4 — topilmadi, 3 — KRW. */
@@ -722,6 +722,7 @@ try {
       if (body.image) {
         shotBodies.push(body);
         const sh = shotOf(shotBodies.length);
+        if (shotDelay) await new Promise(z => setTimeout(z, shotDelay));
         return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: '', shot: sh, cart: cartOf(sh), cards: sh.found ? [{ type: 'product', ...sh }] : [], tools: [], model: 'm', usage: {}, stop: 'shot' }) });
       }
       if (aiMode === '503') return r.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: 'AI vaqtincha mavjud emas', code: 'no_key' }) });
@@ -801,11 +802,35 @@ try {
        kuryer va muddat, vazn (sahifadan), qatorlar, jami, eslatma. */
     const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFklEQVR42mP8z8BQz0AEYBxVSF+FAAhKDveksOjmAAAAAElFTkSuQmCC', 'base64');
     check('bosh sahifada yozilgan nom turibdi', await camBtn.count() === 1 && (await page.locator('main input[aria-label="Mahsulot nomi"]').inputValue()) === '41 razmer');
-    await page.locator('input[type="file"][data-shot]').first().setInputFiles({ name: 'shot.png', mimeType: 'image/png', buffer: PNG }); await page.waitForTimeout(1200);
+    /* Kutish: rasmning o'zi (blob), skaner chizig'i, bosqichlar vaqt bilan
+       o'tadi (bajarilgani belgi bilan), chiziq to'lib boradi, jami skeleti. */
+    shotDelay = 3200;
+    await page.locator('input[type="file"][data-shot]').first().setInputFiles({ name: 'shot.png', mimeType: 'image/png', buffer: PNG }); await page.waitForTimeout(400);
+    const busyOf = () => page.evaluate(() => {
+      const b = document.querySelector('main [data-shot-busy]');
+      if (!b) return null;
+      const thumb = b.querySelector('.xy-scan-line') && b.querySelector('.xy-scan-line').parentElement;
+      return { t: b.innerText.replace(/\s+/g, ' '), role: b.getAttribute('role'), step: (b.querySelector('[data-shot-step]') || {}).textContent || '',
+        done: b.querySelectorAll('svg path[d="M5 12.5l4.5 4.5L19 7.5"]').length, prog: parseFloat((b.querySelector('[data-shot-prog]') || {}).style?.width || '0'),
+        img: thumb ? getComputedStyle(thumb).backgroundImage : '', skel: b.querySelectorAll('.xy-skel').length };
+    });
+    const busy1 = await busyOf(); await page.waitForTimeout(2300); const busy2 = await busyOf();
+    check('skrinshot kutish: rasm prevyusi, skaner, bosqichlar vaqt bilan o\'tadi, chiziq to\'ladi, jami skeleti', !!busy1 && !!busy2 && busy1.role === 'status' && /Skrinshotni o'qiyapman/.test(busy1.t) && busy1.step === "Rasmni o'qiyapman" && busy1.done === 0 && busy2.step === 'Narx va valyutani topyapman' && busy2.done === 1 && busy2.prog > busy1.prog && /^url\("blob:/.test(busy1.img) && busy1.skel === 2 && /Sizga jami tushadi/i.test(busy1.t), JSON.stringify({ b1: busy1 && { ...busy1, t: busy1.t.slice(0, 60) }, s2: busy2 && busy2.step, d2: busy2 && busy2.done }));
+    await page.waitForTimeout(1500); shotDelay = 0;
     const mainBtns = () => page.evaluate(() => [...document.querySelectorAll('main button')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).filter(Boolean));
     const shotRes = { h: (await page.locator('header').innerText()).replace(/\s+/g, ' '), t: await aiMain(), b: await mainBtns() };
     check('Skrinshot: yagona /ai manziliga rasm va joriy xarid, narx Markaziy bank kursi bo\'yicha', shotBodies.length === 1 && /^data:image\/jpeg;base64,/.test(shotBodies[0].image) && shotBodies[0].usdRate > 1000 && 'cart' in shotBodies[0] && /Jami narx/.test(shotRes.h) && /Nike Air Max 90/.test(shotRes.t) && /699 CNY ≈ \$97\.80/.test(shotRes.t) && !/taxminiy kurs/.test(shotRes.t) && /Taobao · Xitoy/.test(shotRes.t) && /eng arzon kuryer/i.test(shotRes.t) && /Og'irlik 0,8 kg \(sahifadan\)/.test(shotRes.t), shotRes.t.slice(0, 160));
-    check('Skrinshot natijasi: jami tepada, kuryer · muddat · taxminiy sana, so\'mda ham', /^JAMI \$102\.20 1 292 890 so'm D2D · 20–25 kun · taxminan \d{1,2}-\w+gacha/.test(shotRes.t) && /Kargo · \S+ \(0,8 kg\) \$\d+\.\d\d/.test(shotRes.t) && /so'm/.test(shotRes.t) && /me'yor ichida — boj va yig'im yo'q/.test(shotRes.t) && !/Topildi|Skrinshotdan o'qildi/.test(shotRes.t), shotRes.t.slice(160, 360));
+    check('Skrinshot natijasi: jami tepada (ko\'k karta), kuryer · muddat · taxminiy sana, so\'mda ham', /^SIZGA JAMI TUSHADI Taxminiy \$102\.20 1 292 890 so'm D2D · 20–25 kun · taxminan \d{1,2}-\w+gacha/.test(shotRes.t) && (await page.locator('main [data-busy], main [data-shot-busy]').count()) === 0 && !/Topildi|Skrinshotdan o'qildi/.test(shotRes.t), shotRes.t.slice(0, 160));
+    /* Narx tarkibi: rangli chiziq (faqat noldan katta bo'laklar) va har
+       bo'lak — nomi, qanday hisoblangani, summasi, ulushi; oxirida jami
+       va kurs. */
+    const bd = await page.evaluate(() => {
+      const b = document.querySelector('main [data-breakdown]');
+      return b ? { t: b.innerText.replace(/\s+/g, ' '), parts: b.querySelectorAll('[data-part]').length,
+        bar: b.querySelector('.mo-grow').children.length } : null;
+    });
+    check('narx qanday shakllandi: tovar, xalqaro yetkazish, boj, yig\'im — har biri izoh va ulush bilan, oxirida jami va kurs', !!bd && bd.parts === 4 && bd.bar === 2
+      && /^NARX QANDAY SHAKLLANDI Tovar narxi 699 CNY ≈ \$97\.80 \$97\.80 9\d% Xalqaro yetkazish D2D · 0,8 kg · vazn sahifadan \$4\.40 \d% Bojxona to'lovi Tovar qiymati \$200 me'yor ichida — boj va yig'im yo'q\. \$0\.00 Bojxona yig'imi Me'yor ichida — yig'im yo'q \$0\.00 Jami \$102\.20 1 292 890 so'm · 1 USD = [\d ]+ so'm, Markaziy bank kursi$/.test(bd.t), bd && bd.t);
     check('Skrinshot natijasi tugmalari: Qanday buyurtma qilaman? · Vaznni aniqlashtirish · Xaridlarimga qo\'shish · Boshqa kuryerlar', ['Qanday buyurtma qilaman?', 'Vaznni aniqlashtirish', "Xaridlarimga qo'shish", 'Boshqa kuryerlar'].every(t => shotRes.b.some(b => b.indexOf(t) === 0)), shotRes.b.join(' | '));
     /* Kuryer siz uchun sotib oladi: Xitoy uchun "Buy for me" kuryerlari,
        "Yozish" kuryer Telegramini tayyor xabar bilan ochadi (tovar, do'kon,
@@ -833,7 +858,7 @@ try {
     const lastCard = page.locator('main button').filter({ hasText: /Oxirgi hisob/ });
     check('bosh sahifada "Oxirgi hisob" kartasi: nom, do\'kon, jami', (await lastCard.count()) === 1 && /Nike Air Max 90/.test(await lastCard.innerText()) && /Taobao · Xitoy/.test(await lastCard.innerText()) && /\$102\.20/.test(await lastCard.innerText()) && (await page.evaluate(() => !!localStorage.getItem('xy_last'))), (await lastCard.innerText()).replace(/\s+/g, ' '));
     await lastCard.first().click(); await page.waitForTimeout(500);
-    check('"Oxirgi hisob" → natija ekrani qayta ochiladi', /Jami narx/.test(await page.locator('header').innerText()) && /JAMI \$102\.20/.test(await aiMain()));
+    check('"Oxirgi hisob" → natija ekrani qayta ochiladi', /Jami narx/.test(await page.locator('header').innerText()) && /JAMI TUSHADI Taxminiy \$102\.20/.test(await aiMain()));
     /* Qo'llanmasi yo'q do'kon: buyurtma savoli Pochtam AI ga ketadi va
        raqamli qadamlar belgilanadigan ro'yxat bo'lib chiqadi. */
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
