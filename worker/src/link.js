@@ -171,6 +171,18 @@ export function extractProduct(html) {
     return { name: unescapeHtml(String(p.name || '')).trim().slice(0, 120), price: off.price, currency: off.currency,
       weightKg: w, store: '', brand: String(brand || '').trim().slice(0, 40), category: String(p.category || '').slice(0, 60), source: 'jsonld' };
   }
+  /* Amazon: JSON-LD yo'q, narx asosiy narx blokida (corePrice…) — birinchi
+     a-offscreen shu blok ichidan olinadi (reklama bloklaridagi narx emas). */
+  const ci = h.search(/id="(corePrice_feature_div|corePriceDisplay_desktop_feature_div|corePrice_desktop|apex_desktop|apex_offerDisplay_desktop)"/);
+  const at = /id="productTitle"[^>]*>([\s\S]*?)</.exec(h);
+  if (ci >= 0 && at) {
+    const pm = /class="a-offscreen">\s*([^<]{1,24})</.exec(h.slice(ci, ci + 30000));
+    const raw = pm ? unescapeHtml(pm[1]).trim() : '';
+    const sym = { '$': 'USD', '£': 'GBP', '€': 'EUR', '¥': 'JPY', '₺': 'TRY', 'AED': 'AED' };
+    const cur = (Object.keys(sym).find(k => raw.startsWith(k) || raw.endsWith(k)) || '');
+    const pr = parsePrice(raw);
+    if (pr > 0 && cur) return { name: unescapeHtml(at[1]).replace(/\s+/g, ' ').trim().slice(0, 120), price: pr, currency: sym[cur], weightKg: 0, store: 'Amazon', brand: '', category: '', source: 'amazon' };
+  }
   const meta = metaMap(h);
   const price = parsePrice(meta['product:price:amount'] || meta['og:price:amount'] || meta['price'] || meta['twitter:data1']);
   const cur = String(meta['product:price:currency'] || meta['og:price:currency'] || meta['pricecurrency'] || '').toUpperCase();
@@ -208,4 +220,4 @@ export function tldCountry(host) {
 }
 
 /* Sayt o'zi "odam emasmisiz?" sahifasini qaytardimi (Amazon, Cloudflare). */
-export const looksBlocked = html => /captcha|are you a (human|robot)|robot check|access denied|cf-chl-|attention required/i.test(String(html || '').slice(0, 20000));
+export const looksBlocked = html => /captcha|are you a (human|robot)|robot check|access denied|cf-chl-|attention required|continue shopping|automated access|api-services-support@amazon|characters you see|verify you are human|px-captcha|datadome/i.test(String(html || '').slice(0, 30000));

@@ -275,7 +275,7 @@ jobs:
             for LU in "https://www.allbirds.com/products/mens-tree-runners" "https://www.amazon.com/dp/B0CX23V2ZK"; do
               t0=$(date +%s)
               code5=$(curl -s -m 90 -o /tmp/ai5 -w '%{http_code}' -X POST "${URL}ai" -H 'origin: https://nshakhobiddin.github.io' -H 'content-type: text/plain' -d "{\"link\":\"$LU\",\"lang\":\"uz\",\"usdRate\":12650}")
-              LINK=$(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/ai5','utf8'));const s=j.shot||{};process.stdout.write('via='+(j.via||'?')+' topildi='+(s.found?'ha '+s.price+' '+s.currency+' '+String(s.name||'').slice(0,40):'yo_q'))}catch(e){process.stdout.write('xato')}")
+              LINK=$(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/ai5','utf8'));const s=j.shot||{};const p=j.page||{};process.stdout.write('via='+(j.via||'?')+' topildi='+(s.found?'ha '+s.price+' '+s.currency+' '+String(s.name||'').slice(0,40):'yo_q')+' sahifa='+(p.status||0)+'/'+(p.kb||0)+'KB'+(p.blocked?'/tosildi':''))}catch(e){process.stdout.write('xato')}")
               echo "::notice::Havola ($code5, $(( $(date +%s) - t0 )) s): $LU — $LINK"
             done
             # Yagona kirish: joriy xarid (cart) bilan savol — AI qayta

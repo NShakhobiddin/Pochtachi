@@ -509,6 +509,17 @@ check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit(
   let calls5 = 0;
   const j5 = await (await linkAsk('https://nike.com/', async (u) => { if (/anthropic/.test(u)) calls5++; return html('<title>Nike</title><p>Just do it</p>'); }, '4.4.4.5')).json();
   check('link: narxsiz qisqa sahifa — found=false, AI chaqirilmaydi', j5.via === 'none' && j5.shot.found === false && calls5 === 0, JSON.stringify(j5).slice(0, 120));
+  const amz = L.extractProduct('<span id="productTitle" class="a-size-large"> Echo Dot (5th Gen) </span><div class="a-section"><span class="a-offscreen">$9.99</span></div><div id="corePrice_feature_div"><span class="a-price"><span class="a-offscreen">$49.99</span></span></div>');
+  check('extractProduct: Amazon — asosiy narx bloki (reklama narxi emas), nom', amz && amz.source === 'amazon' && amz.price === 49.99 && amz.currency === 'USD' && amz.name === 'Echo Dot (5th Gen)', JSON.stringify(amz));
+  check('looksBlocked: Amazon "continue shopping" oraliq sahifasi', L.looksBlocked('<p>Click the button below to continue shopping</p>') && !L.looksBlocked('<p>Echo Dot</p>'));
+  /* Uzun matndan narx topilmasa — web_fetch ham sinab ko'riladi. */
+  const calls6 = [];
+  const long = '<title>Kurtka</title><body>' + 'Chiroyli kurtka, sifatli mato. '.repeat(30) + '</body>';
+  const j6 = await (await linkAsk('https://shop.example.de/kurtka', async (u, i) => { if (/anthropic/.test(u)) { const b = JSON.parse(i.body); calls6.push(b.model + (b.tools ? ':tools' : ''));
+      if (!b.tools) return new Response(JSON.stringify({ model: b.model, stop_reason: 'end_turn', usage: { input_tokens: 2000, output_tokens: 20 }, content: [{ type: 'text', text: '{"name":"","price":0,"currency":"","qty":1,"store":"","category":"universal","country":"","weightKg":0,"confidence":0}' }] }), { status: 200 });
+      return new Response(JSON.stringify({ model: b.model, stop_reason: 'end_turn', usage: { input_tokens: 4000, output_tokens: 60 }, content: [{ type: 'text', text: '{"name":"Kurtka","price":79.9,"currency":"EUR","store":"Example","country":"Germaniya","weightKg":1.1,"confidence":0.8}' }] }), { status: 200 }); }
+    return html(long); }, '4.4.4.6')).json();
+  check('link: matndan narx chiqmasa web_fetch sinaladi (arzon → asosiy), EUR, sahifa holati javobda', j6.via === 'fetch' && j6.shot.found && j6.shot.currency === 'EUR' && calls6.join(',') === 'claude-haiku-4-5,claude-sonnet-5:tools' && j6.page && j6.page.status === 200 && j6.page.blocked === false && j6.usage.input === 6000, JSON.stringify({ via: j6.via, calls6, page: j6.page, u: j6.usage }));
   check('parseAiBody: faqat link — to\'g\'ri; buzuq link — bo\'sh', parseAiBody(JSON.stringify({ link: 'https://a.com/x' })).link === 'https://a.com/x' && typeof parseAiBody(JSON.stringify({ link: 'javascript:alert(1)' })) === 'string');
 }
 

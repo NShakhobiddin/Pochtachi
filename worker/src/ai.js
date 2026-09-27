@@ -765,7 +765,7 @@ async function runAi({ parsed, env, count, fetchImpl, emit }) {
     count(shotL.found ? 'link' : 'link_empty'); count('link:' + rl.via);
     const cartL = mergeCart(parsed.cart, shotL);
     count('ok');
-    return json({ text: '', cards: buildCards({ shot: shotL, used: [], cart: cartL }), cart: cartL, shot: shotL, tools: [], model: rl.model || '', usage, stop: 'link', via: rl.via });
+    return json({ text: '', cards: buildCards({ shot: shotL, used: [], cart: cartL }), cart: cartL, shot: shotL, tools: [], model: rl.model || '', usage, stop: 'link', via: rl.via, page: rl.page || null });
   }
 
   /* 1) Rasm bo'lsa — avval arzon model o'qiydi (asosiy modelga rasm
@@ -951,10 +951,12 @@ export async function readShot({ image, mime, usdRate, env, fetchFn }) {
    1) Sahifani Worker o'zi ochadi: JSON-LD / meta'dagi narx — AI'siz, bepul.
    2) Tuzilgan ma'lumot yo'q, lekin matn bor — arzon model (AI_SHOT_MODEL)
       matndan o'qiydi (~4 ming token).
-   3) Sayt Worker'ni to'sdi (captcha, 403) — asosiy model web_fetch bilan
-      o'qiydi (Anthropic serveri ochadi), faqat shu domen.
+   3) Sayt Worker'ni to'sdi (captcha, 403, Amazon oraliq sahifasi) yoki
+      uzun matndan narx topilmadi — asosiy model web_fetch bilan o'qiydi
+      (Anthropic serveri ochadi), faqat shu domen. Qisqa narxsiz sahifada
+      (bosh sahifa) bu qadam yo'q.
    Javob: { out, via, model, usage } yoki { err }. via: jsonld | meta |
-   text | fetch | bad | none. --- */
+   text | fetch | amazon | bad | none; page — sahifa holati (jonli tekshiruv). --- */
 const LINK_PROMPT = 'Bu do\'kon sahifasining matni. Faqat matnda yozilgan ma\'lumotni ber: mahsulot nomi, joriy narx (chegirmali, eski narx emas), valyuta kodi, do\'kon nomi, kategoriya (ro\'yxatdan bittasi), do\'kon qaysi davlatdan yuborishi (domen, til, valyutadan; aniq bo\'lmasa bo\'sh), og\'irlik yozilgan bo\'lsa kilogrammda (bo\'lmasa 0). Taxmin qilma: narx topilmasa price 0, confidence 0. Javob faqat JSON.';
 const parseJsonLoose = text => {
   try { return JSON.parse(text); } catch (e) { const m = /\{[\s\S]*\}/.exec(String(text || '')); if (m) { try { return JSON.parse(m[0]); } catch (e2) {} } }
@@ -973,12 +975,15 @@ export async function readLink({ url, usdRate, env, fetchFn }) {
   };
   const page = await fetchPage(u.href, fetchFn);
   const blocked = !page.ok || looksBlocked(page.html);
+  /* Jonli tekshiruv uchun: sahifa nima qaytardi (maxfiy narsa yo'q). */
+  const pinfo = { status: page.status, kb: Math.round(page.html.length / 1024), blocked };
   if (page.ok) {
     const p = extractProduct(page.html);
-    if (p && p.price > 0) return { out: fill({ name: p.name, price: p.price, currency: p.currency, weightKg: p.weightKg, store: p.store || p.brand }, 0.95), via: p.source };
+    if (p && p.price > 0) return { out: fill({ name: p.name, price: p.price, currency: p.currency, weightKg: p.weightKg, store: p.store || p.brand }, 0.95), via: p.source, page: pinfo };
   }
   const usageOf = m => ({ input: (m.usage && m.usage.input_tokens) || 0, output: (m.usage && m.usage.output_tokens) || 0 });
   const text = page.ok && !looksBlocked(page.html) ? pageText(page.html) : '';
+  let textUsage = { input: 0, output: 0 };
   if (text.length >= 300) {
     const base = { model: env.AI_SHOT_MODEL || 'claude-haiku-4-5', max_tokens: SHOT_MAX_TOKENS,
       messages: [{ role: 'user', content: LINK_PROMPT + '\n\nManzil: ' + u.href + '\n\n' + text }] };
@@ -987,17 +992,18 @@ export async function readLink({ url, usdRate, env, fetchFn }) {
     if (r.error) return { err: r };
     const msg = r.data || {};
     const raw = parseJsonLoose((Array.isArray(msg.content) ? msg.content : []).filter(b => b.type === 'text').map(b => b.text).join('\n'));
-    if (raw && pos(raw.price) > 0) return { out: fill(raw, num(raw.confidence) || 0.7), via: 'text', model: msg.model || base.model, usage: usageOf(msg) };
-    if (!blocked) return { out: { found: false, url: u.href, host }, via: 'none', model: msg.model || base.model, usage: usageOf(msg) };
+    if (raw && pos(raw.price) > 0) return { out: fill(raw, num(raw.confidence) || 0.7), via: 'text', model: msg.model || base.model, usage: usageOf(msg), page: pinfo };
+    textUsage = usageOf(msg);
   }
-  if (!blocked) return { out: { found: false, url: u.href, host }, via: 'none' };
+  /* Qisqa sahifa (narxsiz bosh sahifa va h.k.) — web_fetch ham yordam bermaydi. */
+  if (!blocked && text.length < 300) return { out: { found: false, url: u.href, host }, via: 'none', page: pinfo };
   /* 3) web_fetch: sahifani Anthropic ochadi. Fikrlash past, bitta o'qish. */
   const body = { model: env.AI_MODEL || DEFAULT_MODEL, max_tokens: 1500,
     tools: [{ type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 1, max_content_tokens: 8000, allowed_domains: [host] }],
     output_config: { effort: 'low' },
     messages: [{ role: 'user', content: 'Sahifani web_fetch bilan och: ' + u.href + '\n' + LINK_PROMPT + ' Kalitlar: name, price, currency, store, category, country, weightKg, confidence.' }] };
   const messages = body.messages;
-  let msg = null, usage = { input: 0, output: 0 };
+  let msg = null, usage = { ...textUsage };
   for (let i = 0; i < 3; i++) {
     const r = await callClaude({ ...body, messages }, env, fetchFn);
     if (r.error) return { err: r };
@@ -1007,6 +1013,6 @@ export async function readLink({ url, usdRate, env, fetchFn }) {
     messages.push({ role: 'assistant', content: msg.content });
   }
   const raw = parseJsonLoose((Array.isArray(msg && msg.content) ? msg.content : []).filter(b => b.type === 'text').map(b => b.text).join('\n'));
-  if (raw && pos(raw.price) > 0) return { out: fill(raw, num(raw.confidence) || 0.7), via: 'fetch', model: msg.model || body.model, usage };
-  return { out: { found: false, url: u.href, host }, via: 'none', model: (msg && msg.model) || body.model, usage };
+  if (raw && pos(raw.price) > 0) return { out: fill(raw, num(raw.confidence) || 0.7), via: 'fetch', model: msg.model || body.model, usage, page: pinfo };
+  return { out: { found: false, url: u.href, host }, via: 'none', model: (msg && msg.model) || body.model, usage, page: pinfo };
 }
