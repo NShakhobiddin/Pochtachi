@@ -788,6 +788,26 @@ try {
     await page.evaluate(() => { delete window.SpeechRecognition; window.SpeechRecognition = undefined; window.webkitSpeechRecognition = undefined; });
     await page.locator('main form button[aria-label="Ovoz bilan aytish"]').first().click(); await page.waitForTimeout(400);
     check('ovoz tanilmasa — klaviatura mikrofoni maslahati va maydonga fokus', /Klaviaturadagi mikrofon tugmasini bosib ayting/.test(await page.locator('body').innerText()) && (await page.evaluate(() => document.activeElement && document.activeElement.getAttribute('aria-label'))) === 'Mahsulot nomi');
+    /* Ruxsat yo'q (not-allowed): oddiy brauzerda bloklangan bo'lsa —
+       ruxsatni qaytarish yo'li; Telegram ichida — sababi va klaviatura
+       mikrofoni, keyingi bosishda xatosiz to'g'ri klaviaturaga. */
+    await page.evaluate(() => {
+      window.__srStarts = 0;
+      window.SpeechRecognition = class { start() { window.__srStarts++; setTimeout(() => { this.onerror && this.onerror({ error: 'not-allowed' }); this.onend && this.onend(); }, 40); } stop() {} };
+      window.__permBak = navigator.permissions.query;
+      navigator.permissions.query = () => Promise.resolve({ state: 'denied' });
+      document.activeElement && document.activeElement.blur();
+    });
+    await page.locator('main form button[aria-label="Ovoz bilan aytish"]').first().click(); await page.waitForTimeout(400);
+    check('mikrofon bloklangan (brauzer): qulf belgisi → Mikrofon → Ruxsat berish, maydonga fokus', /Mikrofon bloklangan: manzil satridagi qulf belgisini bosing → Mikrofon → Ruxsat berish/.test(await page.locator('body').innerText()) && (await page.evaluate(() => document.activeElement && document.activeElement.getAttribute('aria-label'))) === 'Mahsulot nomi' && (await page.evaluate(() => localStorage.getItem('xy_mic_kb'))) === null);
+    await page.evaluate(() => { window.TelegramWebviewProxy = {}; });
+    await page.locator('main form button[aria-label="Ovoz bilan aytish"]').first().click(); await page.waitForTimeout(400);
+    const tgMic = await page.locator('body').innerText();
+    const st1 = await page.evaluate(() => window.__srStarts);
+    await page.locator('main form button[aria-label="Ovoz bilan aytish"]').first().click(); await page.waitForTimeout(300);
+    const st2 = await page.evaluate(() => window.__srStarts), kbTxt = await page.locator('body').innerText();
+    check('Telegram ichida mikrofon: sababi va klaviatura yo\'li; keyingi bosishda xatosiz klaviaturaga', /Telegram ichida ovozli qidiruv ishlamaydi/.test(tgMic) && st1 === 2 && st2 === 2 && /Klaviaturadagi mikrofon tugmasini bosib ayting/.test(kbTxt) && !/Telegram ichida ovozli/.test(kbTxt), `starts ${st1}/${st2}`);
+    await page.evaluate(() => { delete window.TelegramWebviewProxy; localStorage.removeItem('xy_mic_kb'); navigator.permissions.query = window.__permBak; });
     await page.evaluate(() => { window.SpeechRecognition = window.__srBak; window.webkitSpeechRecognition = window.__wsrBak; });
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
     await heroField.fill("Boj qancha bo'ladi?"); await page.waitForTimeout(200);
