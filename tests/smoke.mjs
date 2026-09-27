@@ -786,6 +786,12 @@ try {
       const lt = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
       check('yagona kirish: havola → "Jami narx" (link, savolsiz), kutishda "Havolani o\'qiyapman · Sahifani ochyapman"', /Jami narx/.test(await page.locator('header').innerText()) && lb.link === 'https://item.taobao.com/item.htm?id=1' && !lb.q && /^Havolani o'qiyapman item\.taobao\.com · odatda/.test(linkBusy) && /Sahifani ochyapman/.test(linkBusy), linkBusy.slice(0, 120) + ' · ' + JSON.stringify(lb).slice(0, 100));
       check('havola natijasi: jami, narx tarkibi, "Sahifani ochish" havolasi, izoh "sahifadan o\'qildi"', /^SIZGA JAMI TUSHADI Taxminiy \$\d/.test(lt) && /Taobao kurtka/.test(lt) && /299 CNY ≈ \$/.test(lt) && (await page.locator('main a[data-rs-url]').getAttribute('href')) === 'https://item.taobao.com/item.htm?id=1' && /Narx do'kon sahifasidan o'qildi/.test(lt), lt.slice(0, 160)); }
+    /* Ulashish matni: havola atrofida nom va boshqa so'zlar — havola ajratib olinadi. */
+    await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
+    await heroField.fill("【淘宝】Qishki kurtka https://item.taobao.com/item.htm?id=2&spm=a1z10, CZ0001 「kurtka」 zo'r"); await page.waitForTimeout(200);
+    await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(900);
+    { const lb = aiBodies[aiBodies.length - 1] || {};
+      check('ulashish matnidagi havola ajratib olinadi → "Jami narx" (link)', lb.link === 'https://item.taobao.com/item.htm?id=2&spm=a1z10' && !lb.q && /Jami narx/.test(await page.locator('header').innerText()), JSON.stringify(lb).slice(0, 140)); }
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
     await heroField.fill('https://shop.example.com/nonprice/item'); await page.waitForTimeout(200);
     await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(900);

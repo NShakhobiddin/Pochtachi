@@ -5432,6 +5432,9 @@ const NORMS_META = { checked: '', live: false };
    core/tariffs.js bilan hisoblanadi. */
 let TARIFFS = null;
 /* Havoladagi domen → do'kon: qisqartirilgan va mobil manzillar. */
+/* Matn ichidagi birinchi http(s) havola (ulashish tugmasi havola atrofiga
+   nom, narx, xitoycha matn qo'shadi). Oxiridagi tinish belgisi olinadi. */
+const urlIn = t => { const m = /https?:\/\/[^\s"'<>\u3000-\u303f\uff00-\uffef]+/i.exec(String(t || '')); return m ? m[0].replace(/[).,;:!?]+$/, '') : ''; };
 const DOMAIN_ALIAS = { 'tb.cn': 'taobao', 'tmall.com': 'tmall', 'yangkeduo.com': 'pinduoduo', 'pinduoduo.com': 'pinduoduo', 'pddpic.com': 'pinduoduo',
   'dewu.com': 'poizon', 'poizon.com': 'poizon', 'a.co': 'amazon', 'amzn.to': 'amazon', 'amzn.com': 'amazon', 'amzn.eu': 'amazon', 'amazon.de': 'amazon', 'amazon.co.uk': 'amazon',
   'ty.gl': 'trendyol', 'trendyol-milla.com': 'trendyol', 'shein.co.uk': 'shein', 'sheinoutlet.com': 'shein', 'ebay.de': 'ebay', 'ebay.co.uk': 'ebay', 'aliexpress.ru': 'aliexpress', 'aliexpress.us': 'aliexpress', 'mi.com': 'xiaomi' };
@@ -6722,8 +6725,11 @@ class Component extends DCLogic {
      natijaning tepasida turadi, ro'yxatda bo'lmasa domen so'zi bo'yicha
      qidiriladi. */
   linkStore(raw) {
-    const s = String(raw || '').trim();
-    if (!s || /\s/.test(s)) return null;
+    /* Ulashish matni ("Check out … https://a.co/d/x", "【淘宝】https://m.tb.cn/h.X …")
+       — ichidagi havola olinadi; bo'shliqli oddiy matn havola emas. */
+    const s0 = String(raw || '').trim();
+    const s = /\s/.test(s0) ? urlIn(s0) : s0;
+    if (!s) return null;
     const m = /^(?:https?:\/\/)?(?:[a-z0-9-]+\.)*?([a-z0-9-]+\.(?:com|net|org|cn|ru|uz|tr|de|co\.uk|co|us|eu|to|kr|jp|shop|store|cn\.com|com\.tr))(?:[\/?#:]|$)/i.exec(s);
     const full = /^(?:https?:\/\/)?(?:www\.)?([a-z0-9.-]+\.[a-z]{2,})(?:[\/?#:]|$)/i.exec(s);
     if (!m && !full) return null;
@@ -7374,7 +7380,7 @@ class Component extends DCLogic {
       /* Mahsulot havolasi (yo'li bor) — skrinshotdagi kabi "Jami narx"
          ekrani: sahifa o'qiladi, hisobni ilova qiladi. Faqat domen
          (do'kon bosh sahifasi) bo'lsa — do'kon sahifasi. */
-      const href = link ? (/^https?:\/\//i.test(t) ? t : 'https://' + t) : '';
+      const href = link ? (urlIn(t) || (/^https?:\/\//i.test(t) ? t : 'https://' + t)) : '';
       const productLink = !!href && /^https?:\/\/[^/?#\s]+\/[^\s]{2,}/i.test(href);
       if (st.aiOn && productLink) {
         metrics.hit('hero', 'link:' + (link.store ? link.store.id : '?'));
@@ -7427,7 +7433,7 @@ class Component extends DCLogic {
          "Narxni bilsangiz — \"Narxni o'zim yozaman\": kuryer, boj va jami summa."];
     return {
       whText: w.text, whPh: L('Havola yoki tovar nomini yozing'),
-      onWhText: e => set({ text: String(e.target.value || '').slice(0, 400) }),
+      onWhText: e => set({ text: String(e.target.value || '').slice(0, 1500) }),
       whGuide: G.map((t, i) => ({ n: String(i + 1), t: L(t) })),
       /* Ovoz: brauzer nutqni tanisa — tinglaydi va aytib bo'lingach o'zi
          qidiradi. Tanimasa (Telegram ichidagi brauzer) tugma baribir

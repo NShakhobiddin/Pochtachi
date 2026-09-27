@@ -523,6 +523,11 @@ check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit(
       return new Response(JSON.stringify({ model: b.model, stop_reason: 'end_turn', usage: { input_tokens: 4000, output_tokens: 60 }, content: [{ type: 'text', text: '{"name":"Kurtka","price":79.9,"currency":"EUR","store":"Example","country":"Germaniya","weightKg":1.1,"confidence":0.8}' }] }), { status: 200 }); }
     return html(long); }, '4.4.4.6')).json();
   check('link: matndan narx chiqmasa web_fetch sinaladi (arzon → asosiy), EUR, sahifa holati javobda', j6.via === 'fetch' && j6.shot.found && j6.shot.currency === 'EUR' && calls6.join(',') === 'claude-haiku-4-5,claude-sonnet-5:tools' && j6.page && j6.page.status === 200 && j6.page.blocked === false && j6.usage.input === 6000, JSON.stringify({ via: j6.via, calls6, page: j6.page, u: j6.usage }));
+  /* Qisqa havola yo'naltiradi — do'kon oxirgi manzildan, web_fetch ikkala domenga. */
+  const j7 = await (await linkAsk('https://a.co/d/abc123', async (u) => { if (/anthropic/.test(u)) return claudeText('x');
+      const r = html(ld); Object.defineProperty(r, 'url', { value: 'https://www.amazon.com/dp/B0TEST' }); return r; }, '4.4.4.7')).json();
+  check('link: qisqa havola (a.co) → oxirgi manzil amazon.com: do\'kon Amazon, url oxirgisi', j7.shot.found && j7.shot.store === 'Amazon' && j7.shot.url === 'https://www.amazon.com/dp/B0TEST' && j7.shot.host === 'amazon.com', JSON.stringify(j7.shot).slice(0, 160));
+  check('parseAiBody: uzun (2000 gacha) Amazon havolasi qabul qilinadi', parseAiBody(JSON.stringify({ link: 'https://www.amazon.com/dp/B0X?' + 'a=1&'.repeat(200) })).link.length > 400);
   check('parseAiBody: faqat link — to\'g\'ri; buzuq link — bo\'sh', parseAiBody(JSON.stringify({ link: 'https://a.com/x' })).link === 'https://a.com/x' && typeof parseAiBody(JSON.stringify({ link: 'javascript:alert(1)' })) === 'string');
 }
 

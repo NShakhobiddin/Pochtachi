@@ -455,9 +455,9 @@ export function parseAiBody(text) {
   const q = String(d.q == null ? '' : d.q).replace(/[\x00-\x08\x0b-\x1f]/g, '').trim();
   const shot = parseImage(d);
   if (typeof shot === 'string') return shot;
-  const url = parseUrl(d.url);
+  const url = parseUrl(d.url, 2000);
   /* link — "havoladan jami narx": sahifa o'qiladi, javob skrinshot bilan bir xil (shot). */
-  const link = parseUrl(d.link);
+  const link = parseUrl(d.link, 2000);
   if (!q && !shot && !url && !link) return 'savol bo\'sh';
   if (q.length > AI_LIMITS.q) return 'savol ' + AI_LIMITS.q + ' belgidan uzun';
   const lang = ['uz', 'uzc', 'ru'].includes(d.lang) ? d.lang : 'uz';
@@ -492,9 +492,9 @@ export function parseImage(d) {
 export function hostOf(u) {
   try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return ''; }
 }
-export function parseUrl(v) {
+export function parseUrl(v, max = 400) {
   const u = String(v || '').trim();
-  if (!u || u.length > 400) return '';
+  if (!u || u.length > max) return '';
   return /^https?:\/\/[^\s"'<>]+$/i.test(u) ? u : '';
 }
 /* Joriy xarid: ilova nimani bilsa shuni yuboradi — AI qayta so'ramaydi. */
@@ -965,15 +965,19 @@ const parseJsonLoose = text => {
 export async function readLink({ url, usdRate, env, fetchFn }) {
   const u = safeLink(url);
   if (!u) return { out: { found: false }, via: 'bad' };
-  const host = u.hostname.toLowerCase().replace(/^www\./, '');
-  const kb = KB.STORES.find(s => s.domain && (host === s.domain || host.endsWith('.' + s.domain)));
+  const page = await fetchPage(u.href, fetchFn);
+  /* Qisqa havola (a.co, m.tb.cn, ty.gl, a.aliexpress.com…) yo'naltiradi:
+     do'kon va davlat oxirgi manzildan aniqlanadi (u ham ochiq manzil bo'lsa). */
+  const fin = (page.url && page.url !== u.href && safeLink(page.url)) || u;
+  const host = fin.hostname.toLowerCase().replace(/^www\./, '');
+  const hosts = [...new Set([host, u.hostname.toLowerCase().replace(/^www\./, '')])];
+  const kb = KB.STORES.find(s => s.domain && hosts.some(h => h === s.domain || h.endsWith('.' + s.domain)));
   const known = { store: kb ? kb.name : '', country: kb ? kb.country : tldCountry(host) };
   const fill = (raw, conf) => {
     const o = normalizeShot({ qty: 1, category: '', weightKg: 0, confidence: conf, ...raw,
       store: known.store || raw.store || host, country: known.country || raw.country || '' }, usdRate);
-    return { ...o, url: u.href, host };
+    return { ...o, url: fin.href, host };
   };
-  const page = await fetchPage(u.href, fetchFn);
   const blocked = !page.ok || looksBlocked(page.html);
   /* Jonli tekshiruv uchun: sahifa nima qaytardi (maxfiy narsa yo'q). */
   const pinfo = { status: page.status, kb: Math.round(page.html.length / 1024), blocked };
@@ -999,9 +1003,9 @@ export async function readLink({ url, usdRate, env, fetchFn }) {
   if (!blocked && text.length < 300) return { out: { found: false, url: u.href, host }, via: 'none', page: pinfo };
   /* 3) web_fetch: sahifani Anthropic ochadi. Fikrlash past, bitta o'qish. */
   const body = { model: env.AI_MODEL || DEFAULT_MODEL, max_tokens: 1500,
-    tools: [{ type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 1, max_content_tokens: 8000, allowed_domains: [host] }],
+    tools: [{ type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 1, max_content_tokens: 8000, allowed_domains: hosts }],
     output_config: { effort: 'low' },
-    messages: [{ role: 'user', content: 'Sahifani web_fetch bilan och: ' + u.href + '\n' + LINK_PROMPT + ' Kalitlar: name, price, currency, store, category, country, weightKg, confidence.' }] };
+    messages: [{ role: 'user', content: 'Sahifani web_fetch bilan och: ' + fin.href + '\n' + LINK_PROMPT + ' Kalitlar: name, price, currency, store, category, country, weightKg, confidence.' }] };
   const messages = body.messages;
   let msg = null, usage = { ...textUsage };
   for (let i = 0; i < 3; i++) {
