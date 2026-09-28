@@ -121,6 +121,22 @@ jobs:
             fi
           done
           [ "$bad" = "0" ] || exit 1
+          # Kalit to'g'ri bo'lsa ham so'rov rad etilishi mumkin (hisobda
+          # kredit tugagan, cheklov). 1 tokenli arzon so'rov — xato turi va
+          # matni chiqadi (kalitning o'zi emas).
+          code=$(curl -s -o /tmp/msg -w '%{http_code}' https://api.anthropic.com/v1/messages \
+            -H "x-api-key: $K" -H 'anthropic-version: 2023-06-01' -H 'content-type: application/json' \
+            -d '{"model":"claude-haiku-4-5","max_tokens":1,"messages":[{"role":"user","content":"ok"}]}')
+          if [ "$code" = "200" ]; then
+            echo "Sinov so'rovi: 200 — hisob ishlayapti"
+          else
+            MSG=$(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/msg','utf8'));const e=j.error||{};process.stdout.write(String(e.type||'')+': '+String(e.message||'').slice(0,240))}catch(e){process.stdout.write('?')}")
+            echo "::error::Anthropic so'rovni rad etdi ($code): $MSG"
+            case "$MSG" in
+              *credit*|*billing*) echo "::error::Anthropic hisobida kredit tugagan. console.anthropic.com → Settings → Billing → kredit qo'shing, keyin workflow'ni qayta ishga tushiring.";;
+            esac
+            exit 1
+          fi
 
       - name: Pochtam AI kalitini o'rnatish (ANTHROPIC_API_KEY, ixtiyoriy)
         id: aikey
