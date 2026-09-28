@@ -23,6 +23,13 @@ AI_SHOT_MODEL = "claude-haiku-4-5"
 # Kunlik chegara: bitta IP (xesh) uchun va hammasi uchun. Xarajat nazorati.
 AI_DAILY_PER_IP = "20"
 AI_DAILY_TOTAL = "300"
+# Kunlik xarajat chegarasi, $ (taxminiy, hisobotdagi "AI xarajati"): oshsa
+# ertagacha AI javob bermaydi — oylik Anthropic chegarasiga urilmaslik uchun.
+# Taxminan: chat savoli $0.01–0.03, skrinshot $0.002, "Qayerdan topaman" $0.03–0.05.
+AI_DAILY_USD = "2"
+# "Qayerdan topaman" (veb-qidiruv) bitta IP uchun kuniga; oshsa qidiruvsiz
+# javob (do'konlar + qidiruv havolasi), rad etilmaydi.
+AI_DAILY_FIND_PER_IP = "5"
 # Javob uzunligi (token) va fikrlash darajasi (bo'sh — API standarti).
 # Tezlik uchun oddiy savolga "low" (hisobni vositalar qiladi, model faqat
 # yo'naltiradi); veb-qidiruv va havola o'qishda to'g'ri mahsulotni tanlash
@@ -33,7 +40,7 @@ AI_EFFORT_FIND = "medium"
 # "Qayerdan topaman" so'rovlarida veb-qidiruv (aniq mahsulot havolalari):
 # "0" — o'chiq. Har qidiruv $0.01, bitta so'rovda ko'pi bilan AI_WEB_SEARCH_USES ta.
 AI_WEB_SEARCH = "1"
-AI_WEB_SEARCH_USES = "2"
+AI_WEB_SEARCH_USES = "1"
 
 # READ_TOKEN — sir, toml ga yozilmaydi:  wrangler secret put READ_TOKEN
 

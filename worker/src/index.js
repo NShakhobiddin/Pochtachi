@@ -112,36 +112,45 @@ export class Counter {
          kunda oshirilib, chegara bilan solishtiriladi. Xesh kun va sir bilan
          tuzlangan — IP qayta tiklanmaydi; 90 kundan keyin boshqa qatorlar
          bilan birga o'chadi. */
-      const { key, max, total } = await request.json();
-      const day = isoDay();
-      for (const [name, k] of [['ai_ip', String(key || '-')], ['ai', 'q']]) {
+      /* budget — kunlik xarajat chegarasi, mikro-dollar (ai_usd yig'indisi,
+         0 — yo'q). find — "Qayerdan topaman" so'rovi: ai_ipf sanog'i
+         maxFind dan oshsa noFind (rad emas — qidiruvsiz javob). */
+      const { key, max, total, budget, find, maxFind } = await request.json();
+      const day = isoDay(), k0 = String(key || '-');
+      const bump = [['ai_ip', k0], ['ai', 'q']];
+      if (find) bump.push(['ai_ipf', k0]);
+      for (const [name, k] of bump) {
         this.sql.exec(`INSERT INTO counts (day, name, key, n) VALUES (?, ?, ?, ?)
           ON CONFLICT(day, name, key) DO UPDATE SET n = n + excluded.n`, day, name, k, 1);
       }
-      let n = 0, t = 0;
+      let n = 0, t = 0, nf = 0, spent = 0;
       for (const r of this.sql.exec(`SELECT day, name, key, n FROM counts WHERE day >= ? ORDER BY day, name, n DESC`, day)) {
         if (r.day !== day) continue;
-        if (r.name === 'ai_ip' && r.key === String(key || '-')) n = r.n;
+        if (r.name === 'ai_ip' && r.key === k0) n = r.n;
+        if (r.name === 'ai_ipf' && r.key === k0) nf = r.n;
         if (r.name === 'ai' && r.key === 'q') t = r.n;
+        if (r.name === 'ai_usd') spent += r.n;
       }
-      const overTotal = total > 0 && t > total, overIp = max > 0 && n > max;
-      return json(this.env, { ok: !overTotal && !overIp, n, t, scope: overTotal ? 'total' : 'ip' });
+      const overTotal = total > 0 && t > total, overIp = max > 0 && n > max, overBudget = budget > 0 && spent >= budget;
+      const noFind = !!find && maxFind > 0 && nf > maxFind;
+      return json(this.env, { ok: !overTotal && !overIp && !overBudget, n, t, spent, noFind, scope: overBudget ? 'budget' : overTotal ? 'total' : 'ip' });
     }
     if (url.pathname === '/stats') {
       const days = Math.min(MAX_DAYS, Math.max(1, +url.searchParams.get('days') || 7));
       const from = daysBack(days - 1);
       const cur = this.sql.exec(`SELECT day, name, key, n FROM counts WHERE day >= ? ORDER BY day, name, n DESC`, from);
-      const byName = {}, byDay = {};
+      const byName = {}, byDay = {}, usdByDay = {};
       for (const r of cur) {
-        if (r.name === 'ai_ip') continue;   /* chegara uchun ichki sanoq, hisobotga chiqmaydi */
+        if (r.name === 'ai_ip' || r.name === 'ai_ipf') continue;   /* chegara uchun ichki sanoq, hisobotga chiqmaydi */
         (byName[r.name] ||= {})[r.key] = ((byName[r.name] || {})[r.key] || 0) + r.n;
         if (r.name === 'screen') byDay[r.day] = (byDay[r.day] || 0) + r.n;
+        if (r.name === 'ai_usd') usdByDay[r.day] = (usdByDay[r.day] || 0) + r.n;
       }
       /* Har nom ichida kalitlar kamayish tartibida. */
       for (const name of Object.keys(byName)) {
         byName[name] = Object.fromEntries(Object.entries(byName[name]).sort((a, b) => b[1] - a[1]));
       }
-      return json(this.env, { from, to: isoDay(), days, byDay, byName });
+      return json(this.env, { from, to: isoDay(), days, byDay, usdByDay, byName });
     }
     if (request.method === 'DELETE' && url.pathname === '/purge') {
       /* Saqlash muddati: MAX_DAYS dan eski qatorlar o'chiriladi. */

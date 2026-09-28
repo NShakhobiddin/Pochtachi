@@ -154,13 +154,25 @@ qo'shiladi. `find: true` ("Qayerdan topaman") bo'lsa Claude'ning server
 tomonidagi `web_search_20260209` (ko'pi bilan `AI_WEB_SEARCH_USES`, har
 qidiruv $0.01) va tizim ko'rsatmasiga faqat shu holatda qisqa yo'riqnoma
 qo'shiladi; `usage.search` — qidiruvlar soni, `/stats` da `search`.
-Xatolar: 400 (kirish), 403 (begona Origin), 429 (`code: "limit"` — IP yoki
-umumiy kunlik chegara), 503 (`no_key`, `key`, `upstream`).
+Xatolar: 400 (kirish), 403 (begona Origin), 429 (`code: "limit"`, `scope`:
+`ip`, `total` yoki `budget` — kunlik chegara), 503 (`no_key`, `key`,
+`billing` — kredit yoki oylik sarf chegarasi, `upstream`).
+
+Xarajat nazorati: har javobda `usage` (tokenlar, `cacheWrite`, taxminiy
+`usd`); sarf `/stats` da `ai_usd` (mikro-dollar, so'rov turi: chat, find,
+shot, link), `ai_tok` va `usdByDay` — /hisobot "AI xarajati" bo'limida.
+`AI_DAILY_USD` — kunlik $ chegarasi (oshsa ertagacha 429 `budget`),
+`AI_DAILY_FIND_PER_IP` — "Qayerdan topaman" IP uchun kuniga (oshsa rad
+emas, veb-qidiruvsiz javob, `ai/find_limit`). Tizim ko'rsatmasida faqat
+qoidalar va nomlar (~11 400 belgi); "Qanday buyurtma qilaman" bo'limi
+faqat shu mavzudagi savolga keshdan keyingi blok bo'lib qo'shiladi
+(`orderRules`).
 
 Qoidalar `data/ai-rules.md` da, bilimlar bazasi `src/kb.generated.js`
 (`node tools/ai-kb.mjs` tuzadi — qo'lda o'zgartirilmaydi), hisob-kitob
 `core/` vositalari orqali. Sozlamalar `wrangler.toml`: `AI_MODEL`,
-`AI_SHOT_MODEL`, `AI_DAILY_PER_IP`, `AI_DAILY_TOTAL`, `AI_MAX_TOKENS`,
+`AI_SHOT_MODEL`, `AI_DAILY_PER_IP`, `AI_DAILY_TOTAL`, `AI_DAILY_USD`,
+`AI_DAILY_FIND_PER_IP`, `AI_MAX_TOKENS`,
 `AI_EFFORT`, `AI_WEB_SEARCH` ("0" — o'chiq), `AI_WEB_SEARCH_USES`.
 
 Qo'riqlov kodda: javob matnidan markdown belgilari (`**`, `#`, `` ` ``,

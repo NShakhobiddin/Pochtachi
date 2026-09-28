@@ -74,7 +74,7 @@ check('/hisobot yorliqlar to\'liq', ['Do\'konga o\'tish', 'Pullik xizmat', 'Boj 
 check('/hisobot indekslanmaydi', hs.headers.get('x-robots-tag') === 'noindex');
 
 /* --- Pochtam AI (/ai): soxta Claude API (env.AI_FETCH), haqiqiy vositalar --- */
-const { runTool, buildSystem, TOOLS, parseAiBody, buildCards, mergeCart, toolAsk, parseCart, parseUrl, plainText } = await import('./src/ai.js');
+const { runTool, buildSystem, TOOLS, parseAiBody, buildCards, mergeCart, toolAsk, parseCart, parseUrl, plainText, orderRules, costUsd } = await import('./src/ai.js');
 check('plainText: markdown belgilari olib tashlanadi, raqamli qadamlar qoladi', plainText('**Nike.com** — rasmiy.\n## Sarlavha\n- birinchi\n1. Qadam *muhim* `kod`') === 'Nike.com — rasmiy.\nSarlavha\n— birinchi\n1. Qadam muhim kod', JSON.stringify(plainText('**Nike.com** — rasmiy.\n## Sarlavha\n- birinchi\n1. Qadam *muhim* `kod`')));
 import '../core/customs.js';
 const Core = globalThis.PochtamCore;
@@ -160,7 +160,7 @@ check('/ai javobida markdown yo\'q (kodda qo\'riqlov)', (await md.json()).text =
   const fr = await ask('Poyabzal qidiryapman. Qaysi do\'kondan topaman?', { AI_FETCH: fakeFind }, { headers: { 'cf-connecting-ip': '3.3.3.3' }, body: { find: true } });
   const fj = await fr.json();
   const ws = fcalls[0].tools.find(t => t.type === 'web_search_20260209');
-  check('find: web_search vositasi qo\'shiladi (max_uses 2) va ko\'rsatma', !!ws && ws.max_uses === 2 && fcalls[0].system.some(b => /web_search/.test(b.text)), JSON.stringify(ws));
+  check('find: web_search vositasi qo\'shiladi (max_uses 1 — tejash) va ko\'rsatma', !!ws && ws.max_uses === 1 && fcalls[0].system.some(b => /web_search/.test(b.text)), JSON.stringify(ws));
   const pl = fj.cards.find(c => c.type === 'links');
   check('find: pause_turn davom ettiriladi, links kartasida 2 ta toza havola, vosita nomi', fr.status === 200 && fcalls.length === 3 && fj.tools.join() === 'product_links' && !!pl && pl.links.length === 2 && pl.links.every(l => /^https:\/\//.test(l.url)) && pl.links[0].host === 'amazon.com' && !fj.cards.some(c => c.type === 'cart'), JSON.stringify(fj.cards).slice(0, 200));
   check('find: web_search statik vositalardan KEYIN (statik prefiks keshda qoladi)', fcalls[0].tools.findIndex(t => t.type === 'web_search_20260209') === fcalls[0].tools.length - 1);
@@ -254,7 +254,10 @@ check('check_banned: topilmasa "ruxsat degani emas"', /ruxsat degani emas/.test(
 check('find_store: domen bo\'yicha', runTool('find_store', { query: 'trendyol.com' }, tctx).stores[0].id === 'trendyol');
 check('noma\'lum vosita — xato, tashlamaydi', !!runTool('yoq', {}, tctx).error);
 const sys = buildSystem();
-check('tizim ko\'rsatmasi: qoidalar, me\'yor, kuryer va do\'kon indeksi', /HECH QACHON o'zing/.test(sys) && /"freeUsd":200/.test(sys) && /MYMEEST/.test(sys) && /"name":"Taobao"/.test(sys) && /Giyohvandlik/.test(sys), sys.length + ' belgi');
+check('tizim ko\'rsatmasi: qoidalar, me\'yor, kuryer va do\'kon nomlari', /HECH QACHON o'zing/.test(sys) && /"freeUsd":200/.test(sys) && /MYMEEST/.test(sys) && /Xitoy: Taobao, /.test(sys) && /Tezkor savol/.test(sys), sys.length + ' belgi');
+/* Xarajat: JSON indekslar promptda yo'q (har so'rovda ketardi) — taqiq,
+   kategoriya, qo'llanma, davlatlar vositalardan keladi. */
+check('tizim ko\'rsatmasida JSON indeks yo\'q (taqiq, kategoriya, qo\'llanma)', !/Giyohvandlik/.test(sys) && !/"kgPerItem"/.test(sys) && !/\[\{"name":/.test(sys) && !/"id":"taobao"/.test(sys));
 check('tizim ko\'rsatmasida kalit yo\'q', !/sk-/.test(sys));
 /* Indeks: og'ir matn maydonlari promptga tushmaydi — ular vositalardan
    keladi (find_store, check_banned, courier_quotes). Bu tekshiruv
@@ -264,9 +267,21 @@ check('tizim ko\'rsatmasi indeks: og\'ir maydonlar promptda yo\'q',
 /* 24 000: qoidalar qisqartirildi (takror va ziddiyatlar olib tashlandi,
    o'lcham jadvali va veb-qidiruv ko'rsatmasi vositaga/dinamik blokka
    ko'chdi) — 26 700 dan 22 600 ga. Oshirishdan oldin: buni vosita bera oladimi? */
-check('tizim ko\'rsatmasi byudjeti: 24 000 belgidan kichik', sys.length < 24000, sys.length + ' belgi');
+/* 13 000: JSON indekslar nomlar ro'yxatiga, buyurtma bo'limi JIT blokka
+   ko'chdi — 23 700 dan ~11 400 ga (kesh yozish ham, o'qish ham arzonlashdi). */
+check('tizim ko\'rsatmasi byudjeti: 13 000 belgidan kichik', sys.length < 13000, sys.length + ' belgi');
+check('buyurtma bo\'limi asosiy ko\'rsatmada yo\'q (faqat mavzuga)', !/## Qanday buyurtma qilaman/.test(sys) && /## Ilova funksiyalari/.test(sys));
+check('orderRules: buyurtma savoli va davomi — bor; boshqa savol — yo\'q',
+  /## Qanday buyurtma qilaman/.test(orderRules('Qanday buyurtma qilaman?', [])) && /Buy for me/.test(orderRules('Как заказать?', [])) &&
+  !!orderRules('3-qadamni tushuntiring', [{ role: 'user', text: 'Men Taobao dan buyurtma qilmoqchiman' }]) && orderRules('krossovka qancha tushadi', []) === '');
+check('landed_cost: kategoriya ogohlantirishi natijada (promptdan ko\'chdi)', /Litiy batareya/.test(runTool('landed_cost', { priceUsd: 100, country: 'Xitoy', category: 'elektronika' }, tctx).caution || ''));
+check('landed_cost: kategoriya id lari vosita tavsifida', /elektronika/.test(TOOLS.find(t => t.name === 'landed_cost').input_schema.properties.category.description));
+/* Narx: Sonnet $2/$10, Haiku $1/$5; keshdan o'qish 0,1×, yozish 1,25×; qidiruv $0.01. */
+check('costUsd: Sonnet — 1000 kirish + 10 000 keshdan + 100 chiqish = $0.005', Math.abs(costUsd('claude-sonnet-5', { input_tokens: 1000, cache_read_input_tokens: 10000, output_tokens: 100 }) - 0.005) < 1e-9);
+check('costUsd: Haiku yarim narx, keshga yozish 1,25×, qidiruv $0.01', Math.abs(costUsd('claude-haiku-4-5-20251001', { cache_creation_input_tokens: 8000 }) - 0.01) < 1e-9 && Math.abs(costUsd('x', { server_tool_use: { web_search_requests: 2 } }) - 0.02) < 1e-9);
 check('tizim ko\'rsatmasi keshlanadi (bir kunda bir marta tuziladi)', buildSystem() === sys);
-check('kuryerlar indeksida "Buy for me" (buy) — haqi bilan, yo\'q bo\'lsa maydon yo\'q', /"name":"BOXETTE"[^}]*"buy":"Mavjud, 10% \(min \$5\)"/.test(sys) && !/"name":"D2D"[^}]*"buy"/.test(sys), (sys.match(/"name":"BOXETTE"[^}]*}/) || [''])[0]);
+{ const buyLine = (sys.match(/"Buy for me"[^\n]*/) || [''])[0];
+  check('"Buy for me" ro\'yxati — haqi bilan, xizmati yo\'q kuryer yo\'q', /BOXETTE \(Mavjud, 10% \(min \$5\)\)/.test(buyLine) && !/D2D/.test(buyLine), buyLine.slice(0, 160)); }
 check('qoidalarda o\'lcham jadvali va web_search tafsiloti yo\'q (JIT)', !/EU 40 = US 7/.test(sys) && !/Amazon, AliExpress, eBay/.test(sys));
 /* Kesilgan maydonlar vositalarda bor — indeks ularni yo'qotmadi. */
 const tDet = runTool('find_store', { query: 'taobao' }, tctx).stores[0];
@@ -565,6 +580,37 @@ check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit(
       return html('<span id="productTitle">Echo Dot (5th Gen)</span><span class="a-price priceToPay"><span class="a-offscreen">$49.99</span></span>'); }, '4.4.4.13')).json();
   check('link: Amazon havolasi toza /dp/ASIN bilan ochiladi, narx va belgilar javobda', j13.via === 'amazon' && j13.shot.found && j13.shot.priceUsd === 49.99 && seen13[0] === 'https://www.amazon.com/dp/B09B8V1LZ3' && j13.page.amazon && j13.page.amazon.priceToPay === true, JSON.stringify({ via: j13.via, seen13, a: j13.page && j13.page.amazon }));
   check('parseAiBody: faqat link — to\'g\'ri; buzuq link — bo\'sh', parseAiBody(JSON.stringify({ link: 'https://a.com/x' })).link === 'https://a.com/x' && typeof parseAiBody(JSON.stringify({ link: 'javascript:alert(1)' })) === 'string');
+}
+
+/* --- Xarajat nazorati: sarf yoziladi, kunlik $ byudjeti, "Qayerdan topaman"
+   IP chegarasi (oshsa qidiruvsiz javob), buyurtma bo'limi faqat mavzuga. --- */
+{
+  const cB = new Counter({ storage: { sql: fakeSql() } }, { ALLOW_ORIGIN: 'https://x' });
+  const envB = { ...env, COUNTER: { idFromName: () => 'main', get: () => ({ fetch: (u, i) => cB.fetch(new Request(u, i)) }) } };
+  const calls = [];
+  const costly = async (u, i) => { calls.push(JSON.parse(i.body));
+    return new Response(JSON.stringify({ model: 'claude-sonnet-5', stop_reason: 'end_turn', content: [{ type: 'text', text: 'ok' }],
+      usage: { input_tokens: 1000, output_tokens: 500, cache_read_input_tokens: 0, cache_creation_input_tokens: 4000 } }), { status: 200 }); };
+  const askB = (q, extra = {}, body = {}, ip = '9.9.9.1') => worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': ip },
+    body: JSON.stringify({ q, lang: 'uz', usdRate: 12650, ...body }) }), { ...envB, ANTHROPIC_API_KEY: 'sk-test', AI_DAILY_PER_IP: '50', AI_DAILY_TOTAL: '100', AI_FETCH: costly, ...extra }, ctx);
+  const j1 = await (await askB('Qanday buyurtma qilaman?', { AI_DAILY_USD: '0.02' })).json();
+  /* 1000×2 + 4000×1,25×2 = 12 000 → $0.012; 500×10 → $0.005; jami $0.017. */
+  check('usage: keshga yozish va taxminiy $ javobda', j1.usage.cacheWrite === 4000 && Math.abs(j1.usage.usd - 0.017) < 1e-9, JSON.stringify(j1.usage));
+  check('buyurtma savoli — buyurtma bo\'limi keshdan keyingi blokda', calls[0].system.length >= 3 && !/## Qanday buyurtma/.test(calls[0].system[0].text) && calls[0].system.slice(1).some(b => /## Qanday buyurtma qilaman/.test(b.text)));
+  const stB = await (await cB.fetch(new Request('https://counter/stats?days=1'))).json();
+  check('sarf yoziladi: ai_usd (mikro-$, tur bo\'yicha), ai_tok, kun bo\'yicha $', stB.byName.ai_usd.chat === 17000 && stB.byName.ai_tok.cache_write === 4000 && stB.usdByDay[today] === 17000, JSON.stringify({ u: stB.byName.ai_usd, d: stB.usdByDay }));
+  await askB('krossovka qancha tushadi', { AI_DAILY_USD: '0.02' }, {}, '9.9.9.2');
+  check('oddiy savol — buyurtma bo\'limi qo\'shilmaydi', !calls[1].system.some(b => /## Qanday buyurtma qilaman/.test(b.text)));
+  const over = await askB('yana savol', { AI_DAILY_USD: '0.02' }, {}, '9.9.9.3');
+  const overJ = await over.json();
+  check('kunlik $ byudjeti tugasa — 429 (limit, budget), Claude chaqirilmaydi', over.status === 429 && overJ.code === 'limit' && overJ.scope === 'budget' && calls.length === 2, JSON.stringify(overJ));
+  const n0 = calls.length;
+  await askB('krossovka qayerdan', { AI_DAILY_FIND_PER_IP: '1' }, { find: true }, '9.9.9.4');
+  await askB('krossovka qayerdan', { AI_DAILY_FIND_PER_IP: '1' }, { find: true }, '9.9.9.4');
+  const hasWs = b => b.tools.some(t => t.type === 'web_search_20260209');
+  check('"Qayerdan topaman" IP chegarasi: birinchisi qidiruv bilan, oshgani qidiruvsiz (rad emas)', calls.length === n0 + 2 && hasWs(calls[n0]) && !hasWs(calls[n0 + 1]));
+  const stB2 = await (await cB.fetch(new Request('https://counter/stats?days=1'))).json();
+  check('hisobotda ichki IP sanoqlari yo\'q, find_limit bor', !stB2.byName.ai_ipf && !stB2.byName.ai_ip && stB2.byName.ai.find_limit === 1);
 }
 
 console.log(fails ? `\n${fails} ta tekshiruv o'tmadi.` : '\nWorker testlari o\'tdi.');

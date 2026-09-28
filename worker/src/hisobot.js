@@ -21,7 +21,10 @@ const LABEL = {
   ai: { ok: 'Javob berildi', limit: 'Chegara (rad etildi)', err: 'Claude API xatosi', no_key: 'Kalit yo\'q', q: 'So\'rovlar (jami)',
     'tool:customs_duty': 'Vosita: boj hisobi', 'tool:courier_quotes': 'Vosita: kuryer summasi', 'tool:landed_cost': 'Vosita: jami narx',
     'tool:check_banned': 'Vosita: taqiq tekshiruvi', 'tool:find_store': 'Vosita: do\'kon qidiruvi', 'tool:suggest_stores': 'Vosita: do\'kon tavsiyasi',
-    shot: 'Skrinshot o\'qildi', shot_empty: 'Skrinshotda narx yo\'q', shot_err: 'Skrinshot xatosi' },
+    shot: 'Skrinshot o\'qildi', shot_empty: 'Skrinshotda narx yo\'q', shot_err: 'Skrinshot xatosi',
+    find_limit: '"Qayerdan topaman" chegarasi (qidiruvsiz javob)', search: 'Veb-qidiruv' },
+  ai_usd: { chat: 'Chat savoli', find: '"Qayerdan topaman" (veb-qidiruv)', shot: 'Skrinshot', link: 'Havola' },
+  ai_tok: { input: 'Kirish (keshsiz)', output: 'Chiqish (javob + fikrlash)', cache_read: 'Keshdan o\'qish (0,1×)', cache_write: 'Keshga yozish (1,25×)' },
   ai_question: { '-': 'Savol yuborildi' },
   quick: { landed: 'Jami narx', stores: 'Do\'konlar', couriers: 'Kuryerlar', banned: 'Taqiqni tekshirish', guides: 'Qo\'llanmalar', ai: 'Pochtam AI',
     'ai:calc': 'AI javobidan → kalkulyator', 'ai:cour': 'AI javobidan → kuryerlar', 'ai:ban': 'AI javobidan → taqiqlar', 'ai:store': 'AI javobidan → do\'kon' },
@@ -39,6 +42,8 @@ const SECTIONS = [
   ['wizard', 'Reja', 'Reja tuzish yakuniga yetgan'],
   ['hamkor', 'Hamkorlik', 'Kuryer hamkorlik so\'rovi'],
   ['ai', 'Pochtam AI', 'Server tomonida: javoblar, chegara, xato, ishlatilgan vositalar'],
+  ['ai_usd', 'AI xarajati (taxminiy)', 'So\'rov turi bo\'yicha, $ — aniq summa: console.anthropic.com → Usage'],
+  ['ai_tok', 'AI tokenlari', 'Keshga yozish ko\'p bo\'lsa — so\'rovlar orasi 5 daqiqadan uzun'],
   ['ai_question', 'AI savollari (ilova)', 'Ilovada savol yuborilgan'],
   ['quick', 'Tez o\'tish', 'Bosh sahifadagi tez tugmalar'],
   ['hero', 'Universal maydon', 'Havola yoki so\'z kiritildi'],
@@ -61,7 +66,7 @@ main{max-width:720px;margin:0 auto;padding:20px 16px 48px}h1{font-size:22px;marg
 button,input{font:inherit}input{flex:1;min-width:200px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
 button{padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);cursor:pointer}
 button.on{background:var(--bar);border-color:var(--bar);color:#fff}
-.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
 .tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
 .tile b{display:block;font-size:26px;line-height:1.1}.tile span{color:var(--mute);font-size:13px}
 section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
@@ -90,6 +95,8 @@ let days=7;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const label=(n,k)=>(LABEL[n]&&LABEL[n][k])||k;
 const fmt=n=>n.toLocaleString('ru-RU');
+const usd=n=>'$'+(n/1e6).toFixed(n>=1e7?2:3);
+const FMT={ai_usd:usd};
 function ui(){$('#auth').classList.toggle('hid',!!token);$('#days').classList.toggle('hid',!token);$('#out').classList.toggle('hid',!token);}
 async function load(){
   ui(); if(!token){$('#range').textContent='Parolni kiriting.';$('#out-body').innerHTML='';return;}
@@ -105,13 +112,15 @@ function render(st){
   const screens=Object.values(st.byDay).reduce((a,b)=>a+b,0);
   const sum=n=>Object.values(st.byName[n]||{}).reduce((a,b)=>a+b,0);
   const clicks=sum('store')+sum('courier'), asks=sum('svcAsk')+sum('hamkor');
-  let h='<div class="tiles"><div class="tile"><b>'+fmt(screens)+'</b><span>ekran ochildi</span></div><div class="tile"><b>'+fmt(clicks)+'</b><span>do\\'kon/kuryerga o\\'tish</span></div><div class="tile"><b>'+fmt(asks)+'</b><span>murojaat</span></div></div>';
-  if(st.days>1){const ds=Object.keys(st.byDay).sort();if(ds.length){const mx=Math.max(...ds.map(d=>st.byDay[d]));h+='<section><h2>Kunlar bo\\'yicha</h2><p>Har kuni ochilgan ekranlar</p>'+ds.map(d=>row(d,st.byDay[d],mx)).join('')+'</section>';}}
+  const cost=Object.values(st.usdByDay||{}).reduce((a,b)=>a+b,0), aiN=(st.byName.ai||{}).ok||0;
+  let h='<div class="tiles"><div class="tile"><b>'+fmt(screens)+'</b><span>ekran ochildi</span></div><div class="tile"><b>'+fmt(clicks)+'</b><span>do\\'kon/kuryerga o\\'tish</span></div><div class="tile"><b>'+fmt(asks)+'</b><span>murojaat</span></div><div class="tile"><b>'+usd(cost)+'</b><span>AI xarajati'+(aiN?' · '+usd(cost/aiN)+' / javob':'')+'</span></div></div>';
+  if(st.days>1){const ds=Object.keys(st.byDay).sort();if(ds.length){const mx=Math.max(...ds.map(d=>st.byDay[d]));h+='<section><h2>Kunlar bo\\'yicha</h2><p>Har kuni ochilgan ekranlar</p>'+ds.map(d=>row(d,st.byDay[d],mx)).join('')+'</section>';}
+    const us=Object.keys(st.usdByDay||{}).sort();if(us.length){const mx=Math.max(...us.map(d=>st.usdByDay[d]));h+='<section><h2>AI xarajati kunlar bo\\'yicha</h2><p>Taxminiy, $</p>'+us.map(d=>row(d,st.usdByDay[d],mx,usd)).join('')+'</section>';}}
   for(const [n,t,s] of SECTIONS){const o=st.byName[n]||{};const ks=Object.keys(o);h+='<section><h2>'+esc(t)+'</h2><p>'+esc(s)+'</p>';
-    if(!ks.length)h+='<div class="empty">Hali yo\\'q</div>';else{const mx=Math.max(...ks.map(k=>o[k]));h+=ks.map(k=>row(label(n,k),o[k],mx)).join('');}h+='</section>';}
+    if(!ks.length)h+='<div class="empty">Hali yo\\'q</div>';else{const mx=Math.max(...ks.map(k=>o[k]));h+=ks.map(k=>row(label(n,k),o[k],mx,FMT[n])).join('');}h+='</section>';}
   $('#out-body').innerHTML=h;
 }
-const row=(k,n,mx)=>'<div class="r"><span class="k">'+esc(k)+'</span><span class="n">'+fmt(n)+'</span><span class="b"><i style="width:'+Math.max(2,Math.round(100*n/mx))+'%"></i></span></div>';
+const row=(k,n,mx,f)=>'<div class="r"><span class="k">'+esc(k)+'</span><span class="n">'+(f||fmt)(n)+'</span><span class="b"><i style="width:'+Math.max(2,Math.round(100*n/mx))+'%"></i></span></div>';
 $('#go').onclick=()=>{token=$('#tok').value.trim();if(!token)return;try{localStorage.setItem('pochtam_tok',token)}catch(e){}load();};
 $('#tok').addEventListener('keydown',e=>{if(e.key==='Enter')$('#go').click();});
 $('#out').onclick=()=>{token='';try{localStorage.removeItem('pochtam_tok')}catch(e){}$('#tok').value='';load();};
