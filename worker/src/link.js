@@ -195,19 +195,9 @@ export function extractProduct(html) {
     return { name: unescapeHtml(String(p.name || '')).trim().slice(0, 120), price: off.price, currency: off.currency,
       weightKg: w, store: '', brand: String(brand || '').trim().slice(0, 40), category: String(p.category || '').slice(0, 60), source: 'jsonld' };
   }
-  /* Amazon: JSON-LD yo'q, narx asosiy narx blokida (corePrice…) — birinchi
-     a-offscreen shu blok ichidan olinadi (reklama bloklaridagi narx emas). */
-  const ci = h.search(/id="(corePrice[A-Za-z_]*|apex_[A-Za-z_]*|priceblock_[A-Za-z_]*|tp_price_block[A-Za-z_]*)"/);
-  const at = /id="(?:productTitle|title)"[^>]*>(?:\s*<span[^>]*>)?([^<]{3,})</.exec(h)
-    || (/amazon\./i.test((/<link rel="canonical" href="([^"]+)"/.exec(h) || [])[1] || '') ? /<title[^>]*>(?:Amazon\.[a-z.]+:\s*)?([^<]{3,})<\/title>/i.exec(h) : null);
-  if (ci >= 0 && at) {
-    const pm = /class="a-offscreen">\s*([^<]{1,24})</.exec(h.slice(ci, ci + 30000));
-    const raw = pm ? unescapeHtml(pm[1]).trim() : '';
-    const sym = { '$': 'USD', '£': 'GBP', '€': 'EUR', '¥': 'JPY', '₺': 'TRY', 'AED': 'AED' };
-    const cur = (Object.keys(sym).find(k => raw.startsWith(k) || raw.endsWith(k)) || '');
-    const pr = parsePrice(raw);
-    if (pr > 0 && cur) return { name: unescapeHtml(at[1]).replace(/\s+/g, ' ').trim().slice(0, 120), price: pr, currency: sym[cur], weightKg: 0, store: 'Amazon', brand: '', category: '', source: 'amazon' };
-  }
+  /* Amazon: JSON-LD yo'q — narx bir necha joyda turadi (extractAmazon). */
+  const az = extractAmazon(h);
+  if (az) return az;
   const meta = metaMap(h);
   const price = parsePrice(meta['product:price:amount'] || meta['og:price:amount'] || meta['price'] || meta['twitter:data1']);
   const cur = String(meta['product:price:currency'] || meta['og:price:currency'] || meta['pricecurrency'] || '').toUpperCase();
@@ -217,6 +207,66 @@ export function extractProduct(html) {
       weightKg: 0, store: meta['og:site_name'] || '', brand: '', category: '', source: 'meta' };
   }
   return null;
+}
+
+/* Amazon mahsulot sahifasi. Narx bir nechta joyda — birinchi topilgani:
+   1) "priceToPay" bloki (asosiy narx), 2) corePrice… / apex_… bloki ichidagi
+   birinchi a-offscreen (reklama bloklaridagi narx emas), 3) yashirin
+   attach-base-product-price, 4) sahifa JSON'idagi priceAmount /
+   displayPrice, 5) eski priceblock_* id'lari, 6) a-price-whole + fraction.
+   Nom — productTitle yoki <title>. Valyuta belgisi bo'lmasa bo'sh
+   (readLink domendan oladi: amazon.de → EUR). */
+const AZ_SYM = [['US$', 'USD'], ['$', 'USD'], ['£', 'GBP'], ['€', 'EUR'], ['¥', 'JPY'], ['₺', 'TRY'], ['AED', 'AED'], ['TL', 'TRY'], ['CAD', 'CAD']];
+const azCur = raw => { const r = String(raw || '').trim(); const f = AZ_SYM.find(([k]) => r.startsWith(k) || r.endsWith(k)); return f ? f[1] : ''; };
+export function isAmazonPage(h) {
+  return /id="productTitle"|<link rel="canonical" href="https?:\/\/(www\.)?amazon\.|"marketplaceId"|id="nav-logo-sprites"/.test(String(h || '').slice(0, 400000));
+}
+export function extractAmazon(html) {
+  const h = String(html || '');
+  if (!isAmazonPage(h)) return null;
+  const tm = /id="productTitle"[^>]*>([\s\S]{3,400}?)<\/span>/.exec(h) || /<title[^>]*>(?:Amazon\.[a-z.]+\s*:\s*)?([^<]{3,})<\/title>/i.exec(h);
+  const name = tm ? unescapeHtml(tm[1].replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').replace(/\s*:\s*Amazon\.[a-z.]+.*$/i, '').trim().slice(0, 120) : '';
+  const tries = [];
+  const pay = /class="a-price[^"]*priceToPay[^"]*"[^>]*>\s*<span class="a-offscreen">\s*([^<]{1,24})</.exec(h);
+  if (pay) tries.push(pay[1]);
+  const ci = h.search(/id="(corePrice[A-Za-z_]*|apex_[A-Za-z_]*|tp_price_block[A-Za-z_]*)"/);
+  if (ci >= 0) { const m = /class="a-offscreen">\s*([^<]{1,24})</.exec(h.slice(ci, ci + 30000)); if (m) tries.push(m[1]); }
+  const at = /id="attach-base-product-price"[^>]*value="([\d.,]+)"/.exec(h);
+  if (at) { const sy = /id="attach-base-product-currency-symbol"[^>]*value="([^"]*)"/.exec(h); tries.push((sy ? unescapeHtml(sy[1]) : '') + at[1]); }
+  const pa = /"priceAmount"\s*:\s*([\d.]+)/.exec(h);
+  if (pa) { const sy = /"currencySymbol"\s*:\s*"([^"]+)"/.exec(h); tries.push((sy ? sy[1] : '') + pa[1]); }
+  const dp = /"displayPrice"\s*:\s*"([^"]{1,24})"/.exec(h);
+  if (dp) tries.push(dp[1]);
+  const pb = /id="priceblock_(?:ourprice|dealprice|saleprice)"[^>]*>\s*([^<]{1,24})</.exec(h);
+  if (pb) tries.push(pb[1]);
+  if (ci >= 0) {
+    const blk = h.slice(ci, ci + 30000);
+    const w = /class="a-price-symbol">([^<]*)<[\s\S]{0,200}?class="a-price-whole">([\d.,]+)[\s\S]{0,120}?class="a-price-fraction">(\d+)</.exec(blk);
+    if (w) tries.push(w[1] + w[2].replace(/[.,]$/, '') + '.' + w[3]);
+  }
+  for (const t of tries) {
+    const raw = unescapeHtml(t).replace(/ /g, ' ').trim();
+    const pr = parsePrice(raw);
+    if (pr > 0) return { name, price: pr, currency: azCur(raw), weightKg: 0, store: 'Amazon', brand: '', category: '', source: 'amazon' };
+  }
+  return null;
+}
+/* Amazon havolasi: https://www.amazon.X/<nom>/dp/ASIN/ref=…?… →
+   https://www.amazon.X/dp/ASIN — sahifa bir xil, ortiqcha yo'naltirish va
+   kuzatuv yo'q. Boshqa havola o'zgarmaydi. */
+export function amazonClean(href) {
+  let x; try { x = new URL(href); } catch (e) { return href; }
+  if (!/(^|\.)amazon\.[a-z.]+$/i.test(x.hostname)) return href;
+  const m = /\/(?:dp|gp\/product|gp\/aw\/d|exec\/obidos\/ASIN)\/([A-Z0-9]{10})(?:[/?]|$)/i.exec(x.pathname + '/');
+  return m ? x.origin + '/dp/' + m[1].toUpperCase() : href;
+}
+/* Jonli tekshiruv uchun: Amazon sahifasida qaysi narx belgilari bor. */
+export function amazonMarkers(html) {
+  const h = String(html || '');
+  if (!isAmazonPage(h)) return null;
+  return { title: /id="productTitle"/.test(h), priceToPay: /priceToPay/.test(h), core: /id="(corePrice|apex_)/.test(h), attach: /attach-base-product-price/.test(h),
+    priceAmount: /"priceAmount"/.test(h), offscreen: (h.match(/class="a-offscreen"/g) || []).length,
+    unavailable: /currently unavailable|out of stock|mavjud emas/i.test(h), location: /glow-ingress|deliver to/i.test(h) };
 }
 
 /* Arzon modelga beriladigan sahifa matni: sarlavha, tavsif va ko'rinadigan

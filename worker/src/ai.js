@@ -31,7 +31,7 @@ import '../../core/customs.js';
 import '../../core/tariffs.js';
 import '../../core/landed.js';
 import * as KB from './kb.generated.js';
-import { safeLink, fetchPage, extractProduct, pageText, tldCountry, tldCurrency, looksBlocked } from './link.js';
+import { safeLink, fetchPage, extractProduct, pageText, tldCountry, tldCurrency, looksBlocked, amazonMarkers, amazonClean } from './link.js';
 
 const Core = globalThis.PochtamCore;
 export const AI_LIMITS = { q: 600, hist: 6, histText: 800, body: 1500000, rounds: 4 };
@@ -963,8 +963,10 @@ const parseJsonLoose = text => {
   return null;
 };
 export async function readLink({ url, usdRate, env, fetchFn }) {
-  const u = safeLink(url);
-  if (!u) return { out: { found: false }, via: 'bad' };
+  const u0 = safeLink(url);
+  if (!u0) return { out: { found: false }, via: 'bad' };
+  /* Amazon havolasi toza ko'rinishga: /dp/ASIN (kuzatuv parametrlarisiz). */
+  const u = safeLink(amazonClean(u0.href)) || u0;
   const page = await fetchPage(u.href, fetchFn);
   /* Qisqa havola (a.co, m.tb.cn, ty.gl, a.aliexpress.com…) yo'naltiradi:
      do'kon va davlat oxirgi manzildan aniqlanadi (u ham ochiq manzil bo'lsa). */
@@ -981,7 +983,7 @@ export async function readLink({ url, usdRate, env, fetchFn }) {
   };
   const blocked = !page.ok || looksBlocked(page.html);
   /* Jonli tekshiruv uchun: sahifa nima qaytardi (maxfiy narsa yo'q). */
-  const pinfo = { status: page.status, kb: Math.round(page.html.length / 1024), blocked };
+  const pinfo = { status: page.status, kb: Math.round(page.html.length / 1024), blocked, amazon: amazonMarkers(page.html) };
   if (page.ok) {
     const p = extractProduct(page.html);
     if (p && p.price > 0) return { out: fill({ name: p.name, price: p.price, currency: p.currency, weightKg: p.weightKg, store: p.store || p.brand }, 0.95), via: p.source, page: pinfo };

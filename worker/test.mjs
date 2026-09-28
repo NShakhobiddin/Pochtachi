@@ -554,6 +554,16 @@ check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit(
   const j12r = await linkAsk('https://shop.example.de/k3', async (u, i) => { if (/anthropic/.test(u)) return new Response(JSON.stringify({ error: { type: 'overloaded_error', message: 'Overloaded' } }), { status: 529 }); return html(long); }, '4.4.4.12');
   const j12 = await j12r.json();
   check('link: ikkala AI yo\'li yiqilsa — 200, found=false ("narx o\'qilmadi", skrinshot taklifi)', j12r.status === 200 && j12.shot.found === false, JSON.stringify({ s: j12r.status, shot: j12.shot }));
+  check('amazonClean: /Nom/dp/ASIN/ref=…?… → /dp/ASIN; boshqa sayt o\'zgarmaydi', L.amazonClean('https://www.amazon.com/Echo-Dot/dp/B09B8V1LZ3/ref=sr_1_1?crid=X') === 'https://www.amazon.com/dp/B09B8V1LZ3' && L.amazonClean('https://www.amazon.de/gp/product/B08KTZ8249?th=1') === 'https://www.amazon.de/dp/B08KTZ8249' && L.amazonClean('https://nike.com/x?y=1') === 'https://nike.com/x?y=1');
+  const azPay = L.extractAmazon('<span id="productTitle"> Echo Dot </span><span class="a-offscreen">$9.99</span><span class="a-price priceToPay"><span class="a-offscreen">$49.99</span></span>');
+  const azAttach = L.extractAmazon('<span id="productTitle">Kindle</span><input type="hidden" id="attach-base-product-price" value="139.99"><input type="hidden" id="attach-base-product-currency-symbol" value="$">');
+  const azJson = L.extractAmazon('<span id="productTitle">Buch</span><script>{"priceAmount":24.95,"currencySymbol":"€"}</script>');
+  check('extractAmazon: priceToPay, attach-base-product-price, priceAmount JSON', azPay.price === 49.99 && azAttach.price === 139.99 && azAttach.currency === 'USD' && azJson.price === 24.95 && azJson.currency === 'EUR', JSON.stringify([azPay, azAttach, azJson].map(x => x && x.price)));
+  check('extractAmazon: Amazon bo\'lmagan sahifa — null', L.extractAmazon('<span class="a-price priceToPay"><span class="a-offscreen">$5</span></span>') === null);
+  const seen13 = [];
+  const j13 = await (await linkAsk('https://www.amazon.com/Echo-Dot/dp/B09B8V1LZ3/ref=sr_1_1?crid=X&keywords=echo', async (u) => { seen13.push(String(u)); if (/anthropic/.test(u)) return claudeText('x');
+      return html('<span id="productTitle">Echo Dot (5th Gen)</span><span class="a-price priceToPay"><span class="a-offscreen">$49.99</span></span>'); }, '4.4.4.13')).json();
+  check('link: Amazon havolasi toza /dp/ASIN bilan ochiladi, narx va belgilar javobda', j13.via === 'amazon' && j13.shot.found && j13.shot.priceUsd === 49.99 && seen13[0] === 'https://www.amazon.com/dp/B09B8V1LZ3' && j13.page.amazon && j13.page.amazon.priceToPay === true, JSON.stringify({ via: j13.via, seen13, a: j13.page && j13.page.amazon }));
   check('parseAiBody: faqat link — to\'g\'ri; buzuq link — bo\'sh', parseAiBody(JSON.stringify({ link: 'https://a.com/x' })).link === 'https://a.com/x' && typeof parseAiBody(JSON.stringify({ link: 'javascript:alert(1)' })) === 'string');
 }
 
