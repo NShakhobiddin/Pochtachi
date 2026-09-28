@@ -777,7 +777,7 @@ async function runAi({ parsed, env, count, fetchImpl, emit }) {
     if (rs.err) {
       console.log('ai shot upstream', rs.err.status, rs.err.type || '', rs.err.error);
       count('shot_err');
-      return json({ error: 'AI vaqtincha mavjud emas', code: rs.err.status === 401 || rs.err.status === 403 ? 'key' : /credit balance|billing/i.test(rs.err.error || '') ? 'billing' : 'upstream' }, 503);
+      return json({ error: 'AI vaqtincha mavjud emas', code: rs.err.status === 401 || rs.err.status === 403 ? 'key' : /credit balance|billing|usage limit/i.test(rs.err.error || '') ? 'billing' : 'upstream' }, 503);
     }
     if (rs.usage) { usage.input += rs.usage.input; usage.output += rs.usage.output; }
     shot = rs.unreadable ? { found: false } : rs.out;
@@ -841,7 +841,7 @@ async function runAi({ parsed, env, count, fetchImpl, emit }) {
       count('err');
       /* Hisobda kredit tugasa Anthropic 400 qaytaradi — alohida kod, jonli
          tekshiruvda sabab darrov ko'rinsin. */
-      const code = r.status === 401 || r.status === 403 ? 'key' : /credit balance|billing/i.test(r.error || '') ? 'billing' : r.status === 400 ? 'bad_request' : 'upstream';
+      const code = r.status === 401 || r.status === 403 ? 'key' : /credit balance|billing|usage limit/i.test(r.error || '') ? 'billing' : r.status === 400 ? 'bad_request' : 'upstream';
       return json({ error: 'AI vaqtincha mavjud emas', code }, 503);
     }
     const msg = r.data || {};

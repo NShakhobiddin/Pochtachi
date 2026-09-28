@@ -133,6 +133,7 @@ jobs:
             MSG=$(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/msg','utf8'));const e=j.error||{};process.stdout.write(String(e.type||'')+': '+String(e.message||'').slice(0,240))}catch(e){process.stdout.write('?')}")
             echo "::error::Anthropic so'rovni rad etdi ($code): $MSG"
             case "$MSG" in
+              *"usage limit"*) echo "::error::Hisobda o'zingiz qo'ygan oylik sarf chegarasiga yetildi. console.anthropic.com → Settings → Limits → chegarani oshiring (yoki ko'rsatilgan sanani kuting), keyin workflow'ni qayta ishga tushiring.";;
               *credit*|*billing*) echo "::error::Anthropic hisobida kredit tugagan. console.anthropic.com → Settings → Billing → kredit qo'shing, keyin workflow'ni qayta ishga tushiring.";;
             esac
             exit 1
