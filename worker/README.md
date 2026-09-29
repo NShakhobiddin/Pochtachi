@@ -176,6 +176,12 @@ saqlanmaydi; eski kun javoblari purge'da o'chadi. `AI_ANSWER_CACHE = "0"`
 — o'chiq. Ko'rsatma keshi muddati `AI_CACHE_TTL`: `5m` (standart) yoki
 `1h`.
 
+Sifat sinovi: `tests/ai.mjs` (23 savol, `tests/ai-eval.json`) —
+workflow'ni `eval: true` bilan ishga tushirilganda joylashdan keyin
+yuradi. So'rovda `x-pochtam-eval: <READ_TOKEN>` sarlavhasi: tayyor javob
+ishlatilmaydi va IP chegarasi yo'q (umumiy va $ byudjeti amal qiladi);
+oxirida taxminiy xarajat chiqadi.
+
 Qoidalar `data/ai-rules.md` da, bilimlar bazasi `src/kb.generated.js`
 (`node tools/ai-kb.mjs` tuzadi — qo'lda o'zgartirilmaydi), hisob-kitob
 `core/` vositalari orqali. Sozlamalar `wrangler.toml`: `AI_MODEL`,

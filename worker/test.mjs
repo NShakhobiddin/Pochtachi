@@ -20,6 +20,7 @@ check('kalitsiz hodisa "-" bo\'ladi', get('courier', '-') === 1);
 check('til va versiya sanaladi', get('lang', 'uz') === 1 && get('ver', 'v1.0.0 · 19.08.2026') === 1);
 check('hamma qator bugungi kun', rows.every(r => r.day === '2026-09-09'));
 check('buzuq JSON — bo\'sh', parseBeacon('{oops', '2026-09-09').length === 0);
+check('beacon ichki sanoqqa yoza olmaydi (ai, ai_usd, ai_ip — byudjet va chegara)', parseBeacon(JSON.stringify({ e: [{ n: 'ai_usd', k: 'chat' }, { n: 'ai', k: 'q' }, { n: 'ai_ip', k: 'x' }, { n: 'ai_ipf', k: 'x' }, { n: 'ai_tok', k: 'input' }] }), '2026-09-09').length === 0);
 check('hodisasiz beacon — bo\'sh', parseBeacon(JSON.stringify({ v: 'x', l: 'ru', e: [] }), '2026-09-09').length === 0);
 const many = JSON.stringify({ e: Array.from({ length: 200 }, (_, i) => ({ n: 'screen', k: 'k' + i })) });
 check('60 tadan ortiq hodisa olinmaydi', parseBeacon(many, '2026-09-09').filter(r => r.name === 'screen').length === 60);
@@ -74,7 +75,7 @@ check('/hisobot yorliqlar to\'liq', ['Do\'konga o\'tish', 'Pullik xizmat', 'Boj 
 check('/hisobot indekslanmaydi', hs.headers.get('x-robots-tag') === 'noindex');
 
 /* --- Pochtam AI (/ai): soxta Claude API (env.AI_FETCH), haqiqiy vositalar --- */
-const { runTool, buildSystem, TOOLS, parseAiBody, buildCards, mergeCart, toolAsk, parseCart, parseUrl, plainText, orderRules, costUsd } = await import('./src/ai.js');
+const { runTool, buildSystem, TOOLS, parseAiBody, buildCards, mergeCart, toolAsk, parseCart, parseUrl, plainText, orderRules, costUsd, answerKey } = await import('./src/ai.js');
 check('plainText: markdown belgilari olib tashlanadi, raqamli qadamlar qoladi', plainText('**Nike.com** — rasmiy.\n## Sarlavha\n- birinchi\n1. Qadam *muhim* `kod`') === 'Nike.com — rasmiy.\nSarlavha\n— birinchi\n1. Qadam muhim kod', JSON.stringify(plainText('**Nike.com** — rasmiy.\n## Sarlavha\n- birinchi\n1. Qadam *muhim* `kod`')));
 import '../core/customs.js';
 const Core = globalThis.PochtamCore;
@@ -273,7 +274,8 @@ check('tizim ko\'rsatmasi byudjeti: 13 000 belgidan kichik', sys.length < 13000,
 check('buyurtma bo\'limi asosiy ko\'rsatmada yo\'q (faqat mavzuga)', !/## Qanday buyurtma qilaman/.test(sys) && /## Ilova funksiyalari/.test(sys));
 check('orderRules: buyurtma savoli va davomi — bor; boshqa savol — yo\'q',
   /## Qanday buyurtma qilaman/.test(orderRules('Qanday buyurtma qilaman?', [])) && /Buy for me/.test(orderRules('Как заказать?', [])) &&
-  !!orderRules('3-qadamni tushuntiring', [{ role: 'user', text: 'Men Taobao dan buyurtma qilmoqchiman' }]) && orderRules('krossovka qancha tushadi', []) === '');
+  !!orderRules('3-qadamni tushuntiring', [{ role: 'user', text: 'Men Taobao dan buyurtma qilmoqchiman' }]) && orderRules('krossovka qancha tushadi', []) === '' &&
+  orderRules('boj to\'lovi qancha', []) === '' && !!orderRules('Uzcard kartasi o\'tadimi', []));
 check('landed_cost: kategoriya ogohlantirishi natijada (promptdan ko\'chdi)', /Litiy batareya/.test(runTool('landed_cost', { priceUsd: 100, country: 'Xitoy', category: 'elektronika' }, tctx).caution || ''));
 check('landed_cost: kategoriya id lari vosita tavsifida', /elektronika/.test(TOOLS.find(t => t.name === 'landed_cost').input_schema.properties.category.description));
 /* Narx: Sonnet $2/$10, Haiku $1/$5; keshdan o'qish 0,1×, yozish 1,25×; qidiruv $0.01. */
@@ -625,7 +627,7 @@ check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit(
   const ctxC = { waitUntil: p => { waits.push(p); return p; } };
   let n = 0, stopNext = 'end_turn';
   const fake = async () => { n++; return new Response(JSON.stringify({ model: 'claude-sonnet-5', stop_reason: stopNext, content: [{ type: 'text', text: 'Javob ' + n }], usage: { input_tokens: 100, output_tokens: 50 } }), { status: 200 }); };
-  const askC = async (q, body = {}, extra = {}) => { const r = await worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': '8.8.8.' + (n % 200) },
+  const askC = async (q, body = {}, extra = {}, ip) => { const r = await worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': ip || '8.8.8.' + (n % 200) },
     body: JSON.stringify({ q, lang: 'uz', usdRate: 12650, ...body }) }), { ...envC, ANTHROPIC_API_KEY: 'sk-test', AI_DAILY_PER_IP: '50', AI_DAILY_TOTAL: '100', AI_FETCH: fake, ...extra }, ctxC); await Promise.all(waits.splice(0)); return r; };
   const a1 = await (await askC('iPhone 15 qancha tushadi?')).json();
   const a2 = await (await askC('iphone 15  QANCHA tushadi')).json();
@@ -635,16 +637,38 @@ check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit(
   await askC('iphone 15 qancha tushadi', { history: [{ role: 'user', text: 'salom' }, { role: 'assistant', text: 'salom' }] });
   await askC('iphone 15 qancha tushadi', { cart: { name: 'iPhone', price: 700, cur: 'USD', country: 'AQSh' } });
   check('javob keshi: boshqa til, rejim, tarix yoki joriy xarid — yangidan so\'raladi', n === 5, 'n=' + n);
-  await askC('iphone 15 qancha tushadi', { stream: true });
-  check('javob keshi: oqim so\'rovi ham keshdan (oddiy JSON)', n === 5);
+  const sr = await askC('iphone 15 qancha tushadi', { stream: true });
+  const sl = (await sr.text()).trim().split('\n').map(l => JSON.parse(l));
+  check('javob keshi: oqim so\'rovi ham keshdan — NDJSON, bitta "done" qatori', n === 5 && /ndjson/.test(sr.headers.get('content-type')) && sl.length === 1 && sl[0].t === 'done' && sl[0].text === a1.text && sl[0].usage.cached, JSON.stringify(sl).slice(0, 120));
   stopNext = 'max_tokens';
   await askC('uzun savol'); await askC('uzun savol');
   check('javob keshi: kesilgan javob saqlanmaydi', n === 7, 'n=' + n);
   stopNext = 'end_turn';
   await askC('yoqilmagan kesh', {}, { AI_ANSWER_CACHE: '0' }); await askC('yoqilmagan kesh', {}, { AI_ANSWER_CACHE: '0' });
   check('AI_ANSWER_CACHE=0 — kesh yo\'q', n === 9, 'n=' + n);
+  let emptyNext = true;
+  const fakeEmpty = async () => { n++; const e = emptyNext; emptyNext = false; return new Response(JSON.stringify({ model: 'claude-sonnet-5', stop_reason: 'end_turn', content: e ? [] : [{ type: 'text', text: 'Javob ' + n }], usage: { input_tokens: 1, output_tokens: 1 } }), { status: 200 }); };
+  const e1 = await (await askC('bo\'sh javob', {}, { AI_FETCH: fakeEmpty })).json();
+  const e2 = await (await askC('bo\'sh javob', {}, { AI_FETCH: fakeEmpty })).json();
+  check('javob keshi: bo\'sh javob (zaxira matn) saqlanmaydi — keyingisi AI dan', e1.fallback === true && !e2.usage.cached && /^Javob \d+$/.test(e2.text), JSON.stringify([e1.text, e2.text]));
+  const n1 = n;
+  await askC('qidiruvli savol', { find: true }, { AI_DAILY_FIND_PER_IP: '1' }, '7.7.7.7');
+  await askC('qidiruvli savol 2', { find: true }, { AI_DAILY_FIND_PER_IP: '1' }, '7.7.7.7');
+  await askC('qidiruvli savol 2', { find: true }, { AI_DAILY_FIND_PER_IP: '1' }, '7.7.7.7');
+  check('javob keshi: chegara tufayli qidiruvsiz javob qidiruv kalitida saqlanmaydi', n === n1 + 3, 'n=' + (n - n1));
+  const k1 = await answerKey({ q: 'x', history: [], lang: 'uz', usdRate: 12650 }, '2026-09-29', 'a');
+  const k2 = await answerKey({ q: 'x', history: [], lang: 'uz', usdRate: 12650 }, '2026-09-29', 'b');
+  check('answerKey: model/ko\'rsatma o\'zgarsa boshqa kalit', k1 && k2 && k1 !== k2);
+  /* Sifat sinovi: to'g'ri parol — keshsiz va IP chegarasisiz; noto'g'ri — oddiy. */
+  const evalAsk = (tok, ip = '6.6.6.6') => worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': ip, 'x-pochtam-eval': tok },
+    body: JSON.stringify({ q: 'iphone 15 qancha tushadi', lang: 'uz', usdRate: 12650 }) }), { ...envC, ANTHROPIC_API_KEY: 'sk-test', AI_DAILY_PER_IP: '1', AI_DAILY_TOTAL: '100', AI_FETCH: fake }, ctxC);
+  const ne = n;
+  const ev1 = await (await evalAsk('sir')).json(), ev2 = await evalAsk('sir');
+  check('eval paroli: tayyor javob ishlatilmaydi, IP chegarasi yo\'q', n === ne + 2 && !ev1.usage.cached && ev2.status === 200, 'n=' + (n - ne));
+  const bad = await (await evalAsk('notogri', '6.6.6.7')).json();
+  check('noto\'g\'ri eval paroli — oddiy so\'rov (tayyor javob)', bad.usage && bad.usage.cached === true && n === ne + 2);
   const stC = await (await cC.fetch(new Request('https://counter/stats?days=1'))).json();
-  check('hisobotda cache_hit sanaladi', stC.byName.ai.cache_hit === 2, JSON.stringify(stC.byName.ai));
+  check('hisobotda cache_hit sanaladi', stC.byName.ai.cache_hit === 3, JSON.stringify(stC.byName.ai));
   kv.set('a:eski', { day: '2020-01-01', body: { text: 'x' } });
   await cC.fetch(new Request('https://counter/purge', { method: 'DELETE' }));
   check('purge: eski kunning tayyor javoblari o\'chadi, bugungisi qoladi', !kv.has('a:eski') && [...kv.keys()].some(k => k.startsWith('a:')));

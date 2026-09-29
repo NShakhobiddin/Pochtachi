@@ -31,6 +31,7 @@ import '../../core/customs.js';
 import '../../core/tariffs.js';
 import '../../core/landed.js';
 import * as KB from './kb.generated.js';
+import { same } from './track.js';
 import { safeLink, fetchPage, extractProduct, pageText, tldCountry, tldCurrency, looksBlocked, amazonMarkers, amazonClean } from './link.js';
 
 const Core = globalThis.PochtamCore;
@@ -86,7 +87,7 @@ function splitRules() {
 const RULES_SPLIT = splitRules();
 /* Buyurtma mavzusi: savolda yoki oxirgi ikki xabarda (davomi savollar
    uchun) — buyurtma, to'lov, "buy for me". */
-const ORDER_RE = /buyurtma|буюртма|заказ|order|buy for me|to['‘’ʻ`]?lov|тўлов|оплат/i;
+const ORDER_RE = /buyurtma|буюртма|заказ|\border\b|buy for me|qanday to['‘’ʻ`]?la|karta(si|dan| bilan)|қандай тўла|карт[аоы]|оплат/i;
 export function orderRules(q, history) {
   const hay = [q, ...(history || []).slice(-2).map(h => h.text)].join(' ');
   return ORDER_RE.test(hay) ? RULES_SPLIT.order : '';
@@ -684,11 +685,11 @@ async function gate({ request, env, ctx, origin, originOk, cors, counter, maxBod
      (veb-qidiruv — eng qimmat so'rov) IP uchun AI_DAILY_FIND_PER_IP tadan
      oshsa rad etilmaydi: qidiruvsiz javob beriladi (do'kon + qidiruv
      havolasi). */
-  const limit = async parsed => {
+  const limit = async (parsed, noIp) => {
     if (!counter) return null;
     const key = await ipKey(request, env, isoDay());
-    const perIp = +env.AI_DAILY_PER_IP || 20, total = +env.AI_DAILY_TOTAL || 300;
-    const budget = Math.round((+env.AI_DAILY_USD || 0) * 1e6), maxFind = +env.AI_DAILY_FIND_PER_IP || 5;
+    const perIp = noIp ? 0 : +env.AI_DAILY_PER_IP || 20, total = +env.AI_DAILY_TOTAL || 300;
+    const budget = Math.round((+env.AI_DAILY_USD || 0) * 1e6), maxFind = noIp ? 0 : +env.AI_DAILY_FIND_PER_IP || 5;
     const find = !!(parsed && parsed.find);
     let lim = { ok: true };
     try { lim = await (await counter.fetch('https://counter/limit', { method: 'POST', body: JSON.stringify({ key, max: perIp, total, budget, find, maxFind }) })).json(); } catch (e) { lim = { ok: true }; }
@@ -760,10 +761,12 @@ export function mergeCart(cart, shot) {
    joriy xarid — kirish bir xil bo'lsagina bir xil javob, sifat
    o'zgarmaydi. Kun almashsa (me'yor, kurs, narxlar) yangidan so'raladi.
    AI_ANSWER_CACHE = "0" — o'chiq. */
-export async function answerKey(parsed, day) {
+export async function answerKey(parsed, day, ver = '') {
   if (!parsed || !parsed.q || parsed.history.length || parsed.shot || parsed.url || parsed.link) return '';
   const q = parsed.q.toLowerCase().replace(/[‘’`ʻʼ]/g, "'").replace(/[\s]+/g, ' ').replace(/[\s?!.,;:]+$/, '').trim();
-  const src = JSON.stringify([day, parsed.lang, parsed.find ? 1 : 0, Math.round(parsed.usdRate || 0), q, parsed.cart || null]);
+  /* ver — model va ko'rsatma: kun o'rtasida yangi Worker joylansa eski
+     javoblar ishlatilmaydi. */
+  const src = JSON.stringify([day, ver, parsed.lang, parsed.find ? 1 : 0, Math.round(parsed.usdRate || 0), q, parsed.cart || null]);
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(src));
   return [...new Uint8Array(buf)].slice(0, 16).map(b => b.toString(16).padStart(2, '0')).join('');
 }
@@ -772,23 +775,39 @@ const CACHE_STOP_BAD = ['max_tokens', 'refusal', 'rounds', 'pause_turn'];
 export async function handleAi({ request, env, ctx, origin, originOk, cors, counter, fetchImpl }) {
   const g = await gate({ request, env, ctx, origin, originOk, cors, counter, maxBody: AI_LIMITS.body });
   if (g.res) return g.res;
+  /* Sifat sinovi (tests/ai.mjs, workflow "eval"): x-pochtam-eval = READ_TOKEN
+     bo'lsa tayyor javob ishlatilmaydi (har savolga haqiqiy javob) va IP
+     chegarasi yo'q; umumiy va $ byudjeti amal qiladi. */
+  const evalTok = request.headers.get('x-pochtam-eval') || '';
+  const isEval = !!(env.READ_TOKEN && evalTok && same(evalTok, env.READ_TOKEN));
   const { json, count, spend } = g;
   const parsed = parseAiBody(g.text);
   if (typeof parsed === 'string') return json({ error: parsed, code: 'bad_input' }, 400);
   /* Tayyor javob bo'lsa — chegara ham, xarajat ham yo'q. */
-  const akey = counter && String(env.AI_ANSWER_CACHE || '1') !== '0' ? await answerKey(parsed, isoDay()) : '';
+  const akey = counter && !isEval && String(env.AI_ANSWER_CACHE || '1') !== '0'
+    ? await answerKey(parsed, isoDay(), (env.AI_MODEL || DEFAULT_MODEL) + '|' + buildSystem().length + '|' + JSON.stringify(TOOLS).length) : '';
+  const findAsked = parsed.find;
   if (akey) {
     let hit = null;
     try { const r = await counter.fetch('https://counter/answer/get', { method: 'POST', body: JSON.stringify({ key: akey }) }); if (r.status === 200) hit = await r.json(); } catch (e) { hit = null; }
-    if (hit && hit.text) { count('cache_hit'); count('ok'); return json({ ...hit, usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, usd: 0, cached: true } }); }
+    if (hit && hit.text) {
+      count('cache_hit'); count('ok');
+      const body = { ...hit, usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, usd: 0, cached: true } };
+      /* Oqim so'ralgan bo'lsa — oqim shaklida (bitta "done" qatori). */
+      if (!parsed.stream) return json(body);
+      return new Response(JSON.stringify({ t: 'done', ...body }) + '\n', { status: 200, headers: cors(env, { 'content-type': 'application/x-ndjson; charset=utf-8', 'cache-control': 'no-store' }, origin) });
+    }
   }
   const remember = out => {
     const b = out.body;
-    if (!akey || out.status !== 200 || !b || !b.text || CACHE_STOP_BAD.includes(b.stop) || !ctx) return;
+    /* Saqlanmaydi: xato, kesilgan yoki bo'sh (zaxira matn) javob, va
+       "Qayerdan topaman" chegarasi tufayli qidiruvsiz berilgan javob —
+       u qidiruvli javob kalitida turib qolardi. */
+    if (!akey || out.status !== 200 || !b || !b.text || b.fallback || CACHE_STOP_BAD.includes(b.stop) || parsed.find !== findAsked || !ctx) return;
     const { usage, ...keep } = b;
     ctx.waitUntil(counter.fetch('https://counter/answer/put', { method: 'POST', body: JSON.stringify({ key: akey, body: keep }) }).catch(() => {}));
   };
-  const limited = await g.limit(parsed); if (limited) return limited;
+  const limited = await g.limit(parsed, isEval); if (limited) return limited;
   const kind = parsed.link && !parsed.q && !parsed.shot ? 'link' : parsed.find ? 'find' : parsed.q || parsed.url ? 'chat' : 'shot';
   if (!parsed.stream) {
     const out = await runAi({ parsed, env, count, fetchImpl, emit: null });
@@ -963,9 +982,10 @@ async function runAi({ parsed, env, count, fetchImpl, emit }) {
   if (stop === 'refusal') textOut = textOut || 'Bu savolga javob bera olmayman. Bojxona, kuryer yoki do\'kon haqida so\'rang.';
   /* Chegaraga urilib kesilgan javob yarim gapda tugamasin. */
   if (stop === 'max_tokens' && textOut) textOut += '\n' + 'Javob uzun bo\'lgani uchun qisqartirildi — savolni aniqroq bering.';
-  if (!textOut) textOut = 'Javob tayyorlab bo\'lmadi. Savolni boshqacha yozib ko\'ring yoki ilovadagi "Jami narx" kalkulyatoridan foydalaning.';
+  const fallback = !textOut;
+  if (fallback) textOut = 'Javob tayyorlab bo\'lmadi. Savolni boshqacha yozib ko\'ring yoki ilovadagi "Jami narx" kalkulyatoridan foydalaning.';
   count('ok');
-  return json({ text: textOut, cards: buildCards({ shot, used, cart }), cart, shot, tools: used.map(t => t.name), model, usage, stop });
+  return json({ text: textOut, cards: buildCards({ shot, used, cart }), cart, shot, tools: used.map(t => t.name), model, usage, stop, ...(fallback ? { fallback: true } : {}) });
 }
 
 /* --- Skrinshot → mahsulot ma'lumoti. Rasm base64 (JPEG/PNG/WebP, ≤ ~1 MB —

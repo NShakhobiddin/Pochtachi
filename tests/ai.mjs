@@ -12,6 +12,10 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const URL_ = process.env.AI_URL || '';
 const ORIGIN = process.env.AI_ORIGIN || 'https://pochtam.uz';
+/* EVAL_TOKEN (= READ_TOKEN): tayyor javob keshi va IP chegarasisiz — har
+   savolga haqiqiy javob. Bo'lmasa oddiy foydalanuvchi kabi. */
+const EVAL = process.env.EVAL_TOKEN || '';
+let usd = 0;
 if (!URL_) { console.log('AI_URL berilmagan — AI sinovi o\'tkazib yuborildi.'); process.exit(0); }
 
 const { cases } = JSON.parse(readFileSync(join(ROOT, 'tests', 'ai-eval.json'), 'utf8'));
@@ -25,12 +29,13 @@ for (const c of cases) {
   n++;
   let j, status;
   try {
-    const r = await fetch(URL_, { method: 'POST', headers: { 'content-type': 'text/plain;charset=UTF-8', origin: ORIGIN },
+    const r = await fetch(URL_, { method: 'POST', headers: { 'content-type': 'text/plain;charset=UTF-8', origin: ORIGIN, ...(EVAL ? { 'x-pochtam-eval': EVAL } : {}) },
       body: JSON.stringify({ q: c.q, lang: c.lang === 'ru' ? 'ru' : 'uz', usdRate: 12650,
         ...(c.cart ? { cart: c.cart } : {}), ...(c.url ? { url: c.url } : {}), ...(c.find ? { find: true } : {}) }) });
     status = r.status; j = await r.json();
   } catch (e) { check(c.q, false, 'so\'rov xatosi: ' + e.message); continue; }
   if (status !== 200 || !j || !j.text) { check(c.q, false, `HTTP ${status} ${JSON.stringify(j).slice(0, 120)}`); continue; }
+  usd += (j.usage && +j.usage.usd) || 0;
   const text = String(j.text), tools = (j.tools || []).map(t => typeof t === 'string' ? t : t.name);
   const cards = (j.cards || []).map(x => x.type);
   const problems = [];
@@ -46,4 +51,5 @@ for (const c of cases) {
   check(c.q, problems.length === 0, problems.join('; ') || (text.replace(/\s+/g, ' ').slice(0, 90) + ` · ${cards.join(',') || 'kartasiz'} · ${j.usage ? j.usage.input + '/' + j.usage.output : ''}`));
 }
 console.log(fails ? `\n${fails}/${n} savol o'tmadi.` : `\nAI sinovi o'tdi: ${n} savol.`);
+console.log(`Taxminiy xarajat: $${usd.toFixed(3)} (${n ? '$' + (usd / n).toFixed(4) + ' / savol' : ''})`);
 process.exit(fails ? 1 : 0);

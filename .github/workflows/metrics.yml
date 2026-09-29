@@ -14,6 +14,11 @@ name: O'lchovni yoqish (Cloudflare Worker)
 
 on:
   workflow_dispatch:
+    inputs:
+      eval:
+        description: "AI sifat sinovi (tests/ai-eval.json, 23 savol, ~$0.5–1)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -284,7 +289,7 @@ jobs:
             code3=$(curl -s -m 120 -o /tmp/ai3 -w '%{http_code}' -X POST "${URL}ai" -H 'origin: https://nshakhobiddin.github.io' -H 'content-type: text/plain' \
               -d '{"q":"Poyabzal va krossovka qidiryapman (Nike Air Max 90, 42 razmer). Faqat original. Byudjet $150 gacha. Qaysi do'"'"'kondan topaman?","lang":"uz","usdRate":12650,"find":true}')
             echo "[$code3] $(head -c 500 /tmp/ai3)"
-            FIND=$(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/ai3','utf8'));const pl=(j.cards||[]).find(c=>c.type==='links');process.stdout.write('qidiruvlar='+((j.usage&&j.usage.search)||0)+' havolalar='+(pl?pl.links.length:0)+(pl?' ('+pl.links.map(l=>l.host).join(', ')+')':'')+' kesh='+((j.usage&&j.usage.cacheRead)||0)+' tashqi='+(((j.cards||[]).find(c=>c.type==='stores_ext')||{stores:[]}).stores.map(x=>x.host).join(',')||'yo\\'q'))}catch(e){}")
+            FIND=$(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/ai3','utf8'));const pl=(j.cards||[]).find(c=>c.type==='links');process.stdout.write('qidiruvlar='+((j.usage&&j.usage.search)||0)+' havolalar='+(pl?pl.links.length:0)+(pl?' ('+pl.links.map(l=>l.host).join(', ')+')':'')+' kesh='+((j.usage&&j.usage.cacheRead)||0)+(j.usage&&j.usage.cached?' (tayyor javob — AI chaqirilmadi)':'')+' tashqi='+(((j.cards||[]).find(c=>c.type==='stores_ext')||{stores:[]}).stores.map(x=>x.host).join(',')||'yo\\'q'))}catch(e){}")
             [ -n "$FIND" ] || FIND='?'
             if [ "$code3" = "200" ]; then echo "::notice::Veb-qidiruv: $FIND"; else echo "::warning::find so'rovi $code3 qaytardi — $(head -c 200 /tmp/ai3)"; fi
             # Havoladan jami narx (link): sahifa o'qiladi (JSON-LD → matn → web_fetch).
@@ -312,6 +317,17 @@ jobs:
               *) echo "::warning::Kalitsiz kutilgani 503 edi, keldi: $code";;
             esac
           fi
+
+      - name: AI sifat sinovi (ixtiyoriy — eval)
+        if: ${{ inputs.eval && steps.aikey.outputs.set == '1' }}
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+          R: ${{ secrets.METRICS_READ_TOKEN }}
+        run: |
+          # Har savolga haqiqiy javob (tayyor javob keshi va IP chegarasisiz).
+          # Xulosa — ogohlantirish: sifat pasaygan savollar ro'yxati ko'rinadi.
+          AI_URL="${URL}ai" AI_ORIGIN="https://nshakhobiddin.github.io" EVAL_TOKEN="$R" node tests/ai.mjs | tee /tmp/eval.log
+          echo "::notice::AI sifat sinovi: $(tail -2 /tmp/eval.log | tr '\n' ' ')"
 
       - name: Ilovaga manzilni yozish va qurish
         env:
