@@ -30,6 +30,11 @@ AI_DAILY_USD = "2"
 # "Qayerdan topaman" (veb-qidiruv) bitta IP uchun kuniga; oshsa qidiruvsiz
 # javob (do'konlar + qidiruv havolasi), rad etilmaydi.
 AI_DAILY_FIND_PER_IP = "5"
+# Bir xil savolga shu kuni tayyor javob (AI chaqirilmaydi): "0" — o'chiq.
+AI_ANSWER_CACHE = "1"
+# Ko'rsatma keshi muddati: "5m" (standart) yoki "1h" — hisobotda keshga
+# yozish o'qishdan ko'p bo'lsa va soatiga 2+ savol bo'lsa "1h" arzonroq.
+AI_CACHE_TTL = "5m"
 # Javob uzunligi (token) va fikrlash darajasi (bo'sh — API standarti).
 # Tezlik uchun oddiy savolga "low" (hisobni vositalar qiladi, model faqat
 # yo'naltiradi); veb-qidiruv va havola o'qishda to'g'ri mahsulotni tanlash

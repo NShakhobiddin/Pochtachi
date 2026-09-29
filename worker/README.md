@@ -168,6 +168,14 @@ qoidalar va nomlar (~11 400 belgi); "Qanday buyurtma qilaman" bo'limi
 faqat shu mavzudagi savolga keshdan keyingi blok bo'lib qo'shiladi
 (`orderRules`).
 
+Tayyor javob keshi (`answerKey`): tarixsiz, rasmsiz, havolasiz savol shu
+kuni aynan qayta so'ralsa (til, rejim, kurs, joriy xarid ham bir xil)
+javob Counter omboridan beriladi — AI chaqirilmaydi, chegara va xarajat
+yo'q (`ai/cache_hit`, `usage.cached`). Kesilgan (`max_tokens`) javob
+saqlanmaydi; eski kun javoblari purge'da o'chadi. `AI_ANSWER_CACHE = "0"`
+— o'chiq. Ko'rsatma keshi muddati `AI_CACHE_TTL`: `5m` (standart) yoki
+`1h`.
+
 Qoidalar `data/ai-rules.md` da, bilimlar bazasi `src/kb.generated.js`
 (`node tools/ai-kb.mjs` tuzadi — qo'lda o'zgartirilmaydi), hisob-kitob
 `core/` vositalari orqali. Sozlamalar `wrangler.toml`: `AI_MODEL`,

@@ -278,6 +278,7 @@ check('landed_cost: kategoriya ogohlantirishi natijada (promptdan ko\'chdi)', /L
 check('landed_cost: kategoriya id lari vosita tavsifida', /elektronika/.test(TOOLS.find(t => t.name === 'landed_cost').input_schema.properties.category.description));
 /* Narx: Sonnet $2/$10, Haiku $1/$5; keshdan o'qish 0,1×, yozish 1,25×; qidiruv $0.01. */
 check('costUsd: Sonnet — 1000 kirish + 10 000 keshdan + 100 chiqish = $0.005', Math.abs(costUsd('claude-sonnet-5', { input_tokens: 1000, cache_read_input_tokens: 10000, output_tokens: 100 }) - 0.005) < 1e-9);
+check('costUsd: 1 soatlik kesh yozuvi 2× (Sonnet: 1000 → $0.004)', Math.abs(costUsd('claude-sonnet-5', { cache_creation_input_tokens: 1000, cache_creation: { ephemeral_1h_input_tokens: 1000 } }) - 0.004) < 1e-9);
 check('costUsd: Haiku yarim narx, keshga yozish 1,25×, qidiruv $0.01', Math.abs(costUsd('claude-haiku-4-5-20251001', { cache_creation_input_tokens: 8000 }) - 0.01) < 1e-9 && Math.abs(costUsd('x', { server_tool_use: { web_search_requests: 2 } }) - 0.02) < 1e-9);
 check('tizim ko\'rsatmasi keshlanadi (bir kunda bir marta tuziladi)', buildSystem() === sys);
 { const buyLine = (sys.match(/"Buy for me"[^\n]*/) || [''])[0];
@@ -595,6 +596,7 @@ check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit(
     body: JSON.stringify({ q, lang: 'uz', usdRate: 12650, ...body }) }), { ...envB, ANTHROPIC_API_KEY: 'sk-test', AI_DAILY_PER_IP: '50', AI_DAILY_TOTAL: '100', AI_FETCH: costly, ...extra }, ctx);
   const j1 = await (await askB('Qanday buyurtma qilaman?', { AI_DAILY_USD: '0.02' })).json();
   /* 1000×2 + 4000×1,25×2 = 12 000 → $0.012; 500×10 → $0.005; jami $0.017. */
+  check('kesh muddati standart 5 daqiqa (ttl yo\'q)', calls[0].system[0].cache_control.type === 'ephemeral' && !calls[0].system[0].cache_control.ttl && !calls[0].tools.find(t => t.cache_control).cache_control.ttl);
   check('usage: keshga yozish va taxminiy $ javobda', j1.usage.cacheWrite === 4000 && Math.abs(j1.usage.usd - 0.017) < 1e-9, JSON.stringify(j1.usage));
   check('buyurtma savoli — buyurtma bo\'limi keshdan keyingi blokda', calls[0].system.length >= 3 && !/## Qanday buyurtma/.test(calls[0].system[0].text) && calls[0].system.slice(1).some(b => /## Qanday buyurtma qilaman/.test(b.text)));
   const stB = await (await cB.fetch(new Request('https://counter/stats?days=1'))).json();
@@ -611,6 +613,41 @@ check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit(
   check('"Qayerdan topaman" IP chegarasi: birinchisi qidiruv bilan, oshgani qidiruvsiz (rad emas)', calls.length === n0 + 2 && hasWs(calls[n0]) && !hasWs(calls[n0 + 1]));
   const stB2 = await (await cB.fetch(new Request('https://counter/stats?days=1'))).json();
   check('hisobotda ichki IP sanoqlari yo\'q, find_limit bor', !stB2.byName.ai_ipf && !stB2.byName.ai_ip && stB2.byName.ai.find_limit === 1);
+}
+
+/* --- Tayyor javob keshi: bir xil savol shu kuni — AI chaqirilmaydi. --- */
+{
+  const kv = new Map();
+  const fakeKv = { get: async k => kv.get(k), put: async (k, v) => { kv.set(k, JSON.parse(JSON.stringify(v))); }, delete: async ks => { for (const k of [].concat(ks)) kv.delete(k); }, list: async ({ prefix }) => new Map([...kv].filter(([k]) => k.startsWith(prefix))) };
+  const cC = new Counter({ storage: { sql: fakeSql(), ...fakeKv } }, { ALLOW_ORIGIN: 'https://x' });
+  const envC = { ...env, COUNTER: { idFromName: () => 'main', get: () => ({ fetch: (u, i) => cC.fetch(new Request(u, i)) }) } };
+  const waits = [];
+  const ctxC = { waitUntil: p => { waits.push(p); return p; } };
+  let n = 0, stopNext = 'end_turn';
+  const fake = async () => { n++; return new Response(JSON.stringify({ model: 'claude-sonnet-5', stop_reason: stopNext, content: [{ type: 'text', text: 'Javob ' + n }], usage: { input_tokens: 100, output_tokens: 50 } }), { status: 200 }); };
+  const askC = async (q, body = {}, extra = {}) => { const r = await worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': '8.8.8.' + (n % 200) },
+    body: JSON.stringify({ q, lang: 'uz', usdRate: 12650, ...body }) }), { ...envC, ANTHROPIC_API_KEY: 'sk-test', AI_DAILY_PER_IP: '50', AI_DAILY_TOTAL: '100', AI_FETCH: fake, ...extra }, ctxC); await Promise.all(waits.splice(0)); return r; };
+  const a1 = await (await askC('iPhone 15 qancha tushadi?')).json();
+  const a2 = await (await askC('iphone 15  QANCHA tushadi')).json();
+  check('javob keshi: bir xil savol (harf, bo\'shliq, ? farqi) — AI chaqirilmaydi, $0', n === 1 && a2.text === a1.text && a2.usage.cached === true && a2.usage.usd === 0, JSON.stringify({ n, a1: a1.text, a2: a2.text }));
+  await askC('iphone 15 qancha tushadi', { lang: 'ru' });
+  await askC('iphone 15 qancha tushadi', { find: true });
+  await askC('iphone 15 qancha tushadi', { history: [{ role: 'user', text: 'salom' }, { role: 'assistant', text: 'salom' }] });
+  await askC('iphone 15 qancha tushadi', { cart: { name: 'iPhone', price: 700, cur: 'USD', country: 'AQSh' } });
+  check('javob keshi: boshqa til, rejim, tarix yoki joriy xarid — yangidan so\'raladi', n === 5, 'n=' + n);
+  await askC('iphone 15 qancha tushadi', { stream: true });
+  check('javob keshi: oqim so\'rovi ham keshdan (oddiy JSON)', n === 5);
+  stopNext = 'max_tokens';
+  await askC('uzun savol'); await askC('uzun savol');
+  check('javob keshi: kesilgan javob saqlanmaydi', n === 7, 'n=' + n);
+  stopNext = 'end_turn';
+  await askC('yoqilmagan kesh', {}, { AI_ANSWER_CACHE: '0' }); await askC('yoqilmagan kesh', {}, { AI_ANSWER_CACHE: '0' });
+  check('AI_ANSWER_CACHE=0 — kesh yo\'q', n === 9, 'n=' + n);
+  const stC = await (await cC.fetch(new Request('https://counter/stats?days=1'))).json();
+  check('hisobotda cache_hit sanaladi', stC.byName.ai.cache_hit === 2, JSON.stringify(stC.byName.ai));
+  kv.set('a:eski', { day: '2020-01-01', body: { text: 'x' } });
+  await cC.fetch(new Request('https://counter/purge', { method: 'DELETE' }));
+  check('purge: eski kunning tayyor javoblari o\'chadi, bugungisi qoladi', !kv.has('a:eski') && [...kv.keys()].some(k => k.startsWith('a:')));
 }
 
 console.log(fails ? `\n${fails} ta tekshiruv o'tmadi.` : '\nWorker testlari o\'tdi.');

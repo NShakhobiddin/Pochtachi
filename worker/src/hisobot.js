@@ -22,7 +22,7 @@ const LABEL = {
     'tool:customs_duty': 'Vosita: boj hisobi', 'tool:courier_quotes': 'Vosita: kuryer summasi', 'tool:landed_cost': 'Vosita: jami narx',
     'tool:check_banned': 'Vosita: taqiq tekshiruvi', 'tool:find_store': 'Vosita: do\'kon qidiruvi', 'tool:suggest_stores': 'Vosita: do\'kon tavsiyasi',
     shot: 'Skrinshot o\'qildi', shot_empty: 'Skrinshotda narx yo\'q', shot_err: 'Skrinshot xatosi',
-    find_limit: '"Qayerdan topaman" chegarasi (qidiruvsiz javob)', search: 'Veb-qidiruv' },
+    find_limit: '"Qayerdan topaman" chegarasi (qidiruvsiz javob)', search: 'Veb-qidiruv', cache_hit: 'Tayyor javob (AI chaqirilmadi, bepul)' },
   ai_usd: { chat: 'Chat savoli', find: '"Qayerdan topaman" (veb-qidiruv)', shot: 'Skrinshot', link: 'Havola' },
   ai_tok: { input: 'Kirish (keshsiz)', output: 'Chiqish (javob + fikrlash)', cache_read: 'Keshdan o\'qish (0,1×)', cache_write: 'Keshga yozish (1,25×)' },
   ai_question: { '-': 'Savol yuborildi' },

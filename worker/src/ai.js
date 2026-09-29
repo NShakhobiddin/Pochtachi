@@ -46,7 +46,10 @@ const PRICE = [[/haiku/i, 1, 5], [/./, 2, 10]];
 export function costUsd(model, u) {
   if (!u) return 0;
   const [, pin, pout] = PRICE.find(p => p[0].test(String(model || '')));
-  const tok = (u.input_tokens || 0) + 0.1 * (u.cache_read_input_tokens || 0) + 1.25 * (u.cache_creation_input_tokens || 0);
+  /* 1 soatlik kesh yozuvi 2× (AI_CACHE_TTL = "1h"), 5 daqiqalik 1,25×. */
+  const cc = u.cache_creation || {}, w1h = +cc.ephemeral_1h_input_tokens || 0;
+  const write = 2 * w1h + 1.25 * Math.max(0, (u.cache_creation_input_tokens || 0) - w1h);
+  const tok = (u.input_tokens || 0) + 0.1 * (u.cache_read_input_tokens || 0) + write;
   const ws = +(u.server_tool_use && u.server_tool_use.web_search_requests) || 0;
   return (tok * pin + (u.output_tokens || 0) * pout) / 1e6 + ws * 0.01;
 }
@@ -749,17 +752,47 @@ export function mergeCart(cart, shot) {
   return c;
 }
 
+/* Tayyor javob keshi: bir xil savol shu kuni qayta so'ralsa AI umuman
+   chaqirilmaydi — javob Counter omboridan (bepul). Faqat tarixsiz,
+   rasmsiz va havolasiz savol (suhbat boshi, bosh sahifadagi mahsulot
+   nomi — ko'p odam bir xil narsani qidiradi). Kalit: kun, til, rejim,
+   kurs, savol (kichik harf, bo'shliq va tinish belgisi tekislangan) va
+   joriy xarid — kirish bir xil bo'lsagina bir xil javob, sifat
+   o'zgarmaydi. Kun almashsa (me'yor, kurs, narxlar) yangidan so'raladi.
+   AI_ANSWER_CACHE = "0" — o'chiq. */
+export async function answerKey(parsed, day) {
+  if (!parsed || !parsed.q || parsed.history.length || parsed.shot || parsed.url || parsed.link) return '';
+  const q = parsed.q.toLowerCase().replace(/[‘’`ʻʼ]/g, "'").replace(/[\s]+/g, ' ').replace(/[\s?!.,;:]+$/, '').trim();
+  const src = JSON.stringify([day, parsed.lang, parsed.find ? 1 : 0, Math.round(parsed.usdRate || 0), q, parsed.cart || null]);
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(src));
+  return [...new Uint8Array(buf)].slice(0, 16).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+const CACHE_STOP_BAD = ['max_tokens', 'refusal', 'rounds', 'pause_turn'];
+
 export async function handleAi({ request, env, ctx, origin, originOk, cors, counter, fetchImpl }) {
   const g = await gate({ request, env, ctx, origin, originOk, cors, counter, maxBody: AI_LIMITS.body });
   if (g.res) return g.res;
   const { json, count, spend } = g;
   const parsed = parseAiBody(g.text);
   if (typeof parsed === 'string') return json({ error: parsed, code: 'bad_input' }, 400);
+  /* Tayyor javob bo'lsa — chegara ham, xarajat ham yo'q. */
+  const akey = counter && String(env.AI_ANSWER_CACHE || '1') !== '0' ? await answerKey(parsed, isoDay()) : '';
+  if (akey) {
+    let hit = null;
+    try { const r = await counter.fetch('https://counter/answer/get', { method: 'POST', body: JSON.stringify({ key: akey }) }); if (r.status === 200) hit = await r.json(); } catch (e) { hit = null; }
+    if (hit && hit.text) { count('cache_hit'); count('ok'); return json({ ...hit, usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, usd: 0, cached: true } }); }
+  }
+  const remember = out => {
+    const b = out.body;
+    if (!akey || out.status !== 200 || !b || !b.text || CACHE_STOP_BAD.includes(b.stop) || !ctx) return;
+    const { usage, ...keep } = b;
+    ctx.waitUntil(counter.fetch('https://counter/answer/put', { method: 'POST', body: JSON.stringify({ key: akey, body: keep }) }).catch(() => {}));
+  };
   const limited = await g.limit(parsed); if (limited) return limited;
   const kind = parsed.link && !parsed.q && !parsed.shot ? 'link' : parsed.find ? 'find' : parsed.q || parsed.url ? 'chat' : 'shot';
   if (!parsed.stream) {
     const out = await runAi({ parsed, env, count, fetchImpl, emit: null });
-    spend(kind, out.body.usage);
+    spend(kind, out.body.usage); remember(out);
     return json(out.body, out.status);
   }
   /* Oqim (stream: true): javob NDJSON qatorlari bilan keladi — ilova
@@ -775,7 +808,7 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
   const job = (async () => {
     try {
       const out = await runAi({ parsed, env, count, fetchImpl, emit });
-      spend(kind, out.body.usage);
+      spend(kind, out.body.usage); remember(out);
       if (out.status === 200) emit({ t: 'done', ...out.body });
       else emit({ t: 'error', status: out.status, ...out.body });
     } catch (e) {
@@ -843,8 +876,13 @@ async function runAi({ parsed, env, count, fetchImpl, emit }) {
     return json({ text: '', cards: buildCards({ shot, used: [], cart }), cart, shot, tools: [], model: '', usage, stop: 'shot' });
   }
 
+  /* Kesh muddati: standart 5 daqiqa (yozish 1,25×). So'rovlar orasi
+     ko'pincha 5 daqiqadan uzun, lekin soatiga 2+ ta bo'lsa "1h" arzonroq
+     (yozish 2×, lekin kamroq) — /hisobot "AI tokenlari" dagi keshga
+     yozish / o'qish nisbatiga qarab AI_CACHE_TTL bilan tanlanadi. */
+  const cacheCtl = env.AI_CACHE_TTL === '1h' ? { type: 'ephemeral', ttl: '1h' } : { type: 'ephemeral' };
   const system = [
-    { type: 'text', text: buildSystem(), cache_control: { type: 'ephemeral' } },
+    { type: 'text', text: buildSystem(), cache_control: cacheCtl },
     { type: 'text', text: 'Bugun: ' + today + '. Foydalanuvchi tili: ' + LANG_NAME[parsed.lang] + '. Kurs: 1 USD = ' + usdRate + ' so\'m' + (parsed.usdRate ? '' : ' (taxminiy, ilova kursni yubormadi)') + '.' }
   ];
   const cl = cartLine(cart);
@@ -863,7 +901,7 @@ async function runAi({ parsed, env, count, fetchImpl, emit }) {
   const webOn = parsed.find && String(env.AI_WEB_SEARCH || '1') !== '0';
   /* Statik vositalar oldinda, oxirgisida kesh nuqtasi; server vositalari
      undan keyin — ular o'zgarsa ham statik prefiks keshda qoladi. */
-  const tools = TOOLS.map((t, i) => i === TOOLS.length - 1 ? { ...t, cache_control: { type: 'ephemeral' } } : t);
+  const tools = TOOLS.map((t, i) => i === TOOLS.length - 1 ? { ...t, cache_control: cacheCtl } : t);
   if (webOn) tools.push({ ...WEB_SEARCH_TOOL, max_uses: Math.max(1, Math.min(3, +env.AI_WEB_SEARCH_USES || 1)) });
   /* Havola berilgan bo'lsa sahifani o'qish: qo'shimcha to'lovsiz, faqat
      o'qilgan matn tokeni. */

@@ -152,9 +152,29 @@ export class Counter {
       }
       return json(this.env, { from, to: isoDay(), days, byDay, usdByDay, byName });
     }
+    /* Tayyor AI javoblari (ai.js answerKey): kalit — xesh, faqat shu kun
+       uchun; eskisi o'qilmaydi va purge'da o'chadi. Javobda shaxsiy narsa
+       yo'q (savol matni ham kalitda xesh bo'lib turadi). */
+    if (request.method === 'POST' && url.pathname === '/answer/get') {
+      const { key } = await request.json();
+      const v = key ? await this.state.storage.get('a:' + key) : null;
+      if (!v || v.day !== isoDay()) return new Response(null, { status: 404 });
+      return json(this.env, v.body);
+    }
+    if (request.method === 'POST' && url.pathname === '/answer/put') {
+      const { key, body } = await request.json();
+      const txt = JSON.stringify(body || null);
+      if (key && body && txt.length < 60000) await this.state.storage.put('a:' + key, { day: isoDay(), body });
+      return new Response(null, { status: 204 });
+    }
     if (request.method === 'DELETE' && url.pathname === '/purge') {
-      /* Saqlash muddati: MAX_DAYS dan eski qatorlar o'chiriladi. */
+      /* Saqlash muddati: MAX_DAYS dan eski qatorlar o'chiriladi; tayyor
+         AI javoblari — bugungidan eskisi. */
       this.sql.exec(`DELETE FROM counts WHERE day < ?`, daysBack(MAX_DAYS));
+      if (this.state.storage.list) {
+        const old = [...(await this.state.storage.list({ prefix: 'a:' })).entries()].filter(([, v]) => !v || v.day !== isoDay()).map(([k]) => k);
+        for (let i = 0; i < old.length; i += 128) await this.state.storage.delete(old.slice(i, i + 128));
+      }
       return new Response(null, { status: 204 });
     }
     return new Response('not found', { status: 404 });
