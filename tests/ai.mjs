@@ -21,7 +21,11 @@ if (!URL_) { console.log('AI_URL berilmagan — AI sinovi o\'tkazib yuborildi.')
 const { cases } = JSON.parse(readFileSync(join(ROOT, 'tests', 'ai-eval.json'), 'utf8'));
 const only = process.argv.slice(2).join(' ');
 let fails = 0, n = 0;
-const check = (name, ok, info = '') => { console.log(`${ok ? '  ok  ' : ' XATO '} ${name}${info ? ' — ' + info : ''}`); if (!ok) fails++; };
+let soft = 0;
+const check = (name, ok, info = '', warnOnly = false) => {
+  console.log(`${ok ? '  ok  ' : warnOnly ? ' OGOH ' : ' XATO '} ${name}${info ? ' — ' + info : ''}`);
+  if (!ok) { if (warnOnly) soft++; else fails++; }
+};
 const cyr = s => (s.match(/[Ѐ-ӿ]/g) || []).length, lat = s => (s.match(/[A-Za-z]/g) || []).length;
 
 for (const c of cases) {
@@ -40,7 +44,8 @@ for (const c of cases) {
   const cards = (j.cards || []).map(x => x.type);
   const problems = [];
   if (c.card && !cards.includes(c.card)) problems.push(`karta ${c.card} yo'q (${cards.join(',') || 'kartasiz'})`);
-  if (c.tool && !tools.includes(c.tool)) problems.push(`vosita ${c.tool} chaqirilmadi (${tools.join(',') || 'hech biri'})`);
+  const want = [].concat(c.tool || []);
+  if (want.length && !want.some(t => tools.includes(t))) problems.push(`vosita ${want.join(' yoki ')} chaqirilmadi (${tools.join(',') || 'hech biri'})`);
   if (c.noTool && tools.length) problems.push('vosita chaqirilmasligi kerak edi: ' + tools.join(','));
   if (c.must && !new RegExp(c.must, 'i').test(text)) problems.push(`kutilgan ifoda yo'q: /${c.must}/`);
   if (c.mustNot && new RegExp(c.mustNot, 'i').test(text)) problems.push(`taqiqlangan ifoda bor: /${c.mustNot}/`);
@@ -48,8 +53,12 @@ for (const c of cases) {
   if (c.lang === 'ru' && cyr(text) < lat(text)) problems.push('javob ruscha emas');
   if (c.lang === 'uz' && cyr(text) > lat(text)) problems.push('javob o\'zbekcha (lotin) emas');
   if (/[#*]{2,}|^\s*#/m.test(text)) problems.push('markdown belgilari');
-  check(c.q, problems.length === 0, problems.join('; ') || (text.replace(/\s+/g, ' ').slice(0, 90) + ` · ${cards.join(',') || 'kartasiz'} · ${j.usage ? j.usage.input + '/' + j.usage.output : ''}`));
+  /* Yiqilganda AI javobining o'zi ham chiqadi — sabab (AI xatosimi yoki
+     mezon eskirganmi) logdan ko'rinsin. */
+  const short = text.replace(/\s+/g, ' ');
+  check(c.q, problems.length === 0, problems.length ? problems.join('; ') + ' | javob: ' + short.slice(0, 260) + ` · ${cards.join(',') || 'kartasiz'} · ${tools.join(',') || 'vositasiz'}`
+    : short.slice(0, 90) + ` · ${cards.join(',') || 'kartasiz'} · ${j.usage ? j.usage.input + '/' + j.usage.output : ''}`, !!c.soft);
 }
-console.log(fails ? `\n${fails}/${n} savol o'tmadi.` : `\nAI sinovi o'tdi: ${n} savol.`);
+console.log((fails ? `\n${fails}/${n} savol o'tmadi.` : `\nAI sinovi o'tdi: ${n} savol.`) + (soft ? ` Ogohlantirish: ${soft} (internetga bog'liq).` : ''));
 console.log(`Taxminiy xarajat: $${usd.toFixed(3)} (${n ? '$' + (usd / n).toFixed(4) + ' / savol' : ''})`);
 process.exit(fails ? 1 : 0);

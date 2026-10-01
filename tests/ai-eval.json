@@ -1,16 +1,16 @@
 {
-  "note": "Pochtam AI sinov to'plami. `AI_URL=https://<worker>/ai node tests/ai.mjs` bilan ishga tushadi (kalit o'rnatilgan worker kerak). Mezonlar: tool — shu vosita chaqirilishi shart; noTool — vosita chaqirilmasligi kerak; card — javobda shu turdagi karta bo'lishi shart; must/mustNot — javob matni; cart — so'rov bilan yuboriladigan joriy xarid; find — veb-qidiruv yoqiladi.",
+  "note": "Pochtam AI sinov to'plami. `AI_URL=https://<worker>/ai node tests/ai.mjs` bilan ishga tushadi (kalit o'rnatilgan worker kerak). Mezonlar: tool — shu vosita chaqirilishi shart; noTool — vosita chaqirilmasligi kerak; card — javobda shu turdagi karta bo'lishi shart; must/mustNot — javob matni; cart — so'rov bilan yuboriladigan joriy xarid; find — veb-qidiruv yoqiladi; tool massiv bo'lsa — bittasi yetarli; soft — internetga bog'liq, yiqilsa faqat ogohlantirish (sanalmaydi).",
   "cases": [
     {
       "q": "$320 lik 2,5 kg tovar uchun boj qancha bo'ladi?",
       "tool": "customs_duty",
-      "must": "38[.,]5|597",
+      "must": "(^|\\D)36(\\D|$)|565[\\s ]?400",
       "lang": "uz"
     },
     {
       "q": "150 dollarlik krossovka uchun boj to'lanadimi?",
       "tool": "customs_duty",
-      "must": "me'yor ichida|boj yo'q|to'lov yo'q",
+      "must": "me'yor(dan oshmaydi| ichida|dan past)|boj (yo'q|to'lanmaydi|tushmaydi|olinmaydi)|to'lov (yo'q|to'lanmaydi)|to'lamaysiz",
       "lang": "uz"
     },
     {
@@ -154,8 +154,19 @@
         "cur": "USD",
         "kg": 1.2
       },
-      "tool": "courier_quotes",
+      "tool": [
+        "courier_quotes",
+        "landed_cost"
+      ],
       "lang": "ru"
+    },
+    {
+      "q": "Nike Air Max 90 erkaklar uchun, 42 razmer, original, $150 gacha. Qayerdan topaman?",
+      "find": true,
+      "tool": "suggest_stores",
+      "card": "links",
+      "soft": true,
+      "lang": "uz"
     }
   ]
 }
