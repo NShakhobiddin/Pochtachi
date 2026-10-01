@@ -19,6 +19,13 @@ let usd = 0;
 if (!URL_) { console.log('AI_URL berilmagan — AI sinovi o\'tkazib yuborildi.'); process.exit(0); }
 
 const { cases } = JSON.parse(readFileSync(join(ROOT, 'tests', 'ai-eval.json'), 'utf8'));
+/* Me'yorning o'zi (bojsiz $200, $3/kg, 30%, qat'iy yig'im) — qoidadagi fakt,
+   hisob emas: "vositasiz raqam" tekshiruvida hisobga olinmaydi. */
+const { NORMS } = await import('../worker/src/kb.generated.js');
+const NOW = NORMS.filter(n => n.from <= new Date().toISOString().slice(0, 10)).pop() || NORMS[NORMS.length - 1];
+const FEE = Math.round(NOW.bhm * NOW.feeShare);
+const normFacts = t => t.replace(new RegExp('\\$\\s?(' + NOW.freeUsd + '|' + NOW.minPerKg + ')(?!\\d)', 'g'), '')
+  .replace(new RegExp(String(FEE).replace(/\B(?=(\d{3})+$)/g, '[\\s\u00a0]?') + '\\s?(so\'m|сум)', 'g'), '');
 const only = process.argv.slice(2).join(' ');
 let fails = 0, n = 0;
 let soft = 0;
@@ -49,7 +56,7 @@ for (const c of cases) {
   if (c.noTool && tools.length) problems.push('vosita chaqirilmasligi kerak edi: ' + tools.join(','));
   if (c.must && !new RegExp(c.must, 'i').test(text)) problems.push(`kutilgan ifoda yo'q: /${c.must}/`);
   if (c.mustNot && new RegExp(c.mustNot, 'i').test(text)) problems.push(`taqiqlangan ifoda bor: /${c.mustNot}/`);
-  if (!tools.length && /\$\s?\d|\d[\d\s]{3,}\s?(so'm|сум)/i.test(text)) problems.push('vositasiz raqamli javob');
+  if (!tools.length && /\$\s?\d|\d[\d\s]{3,}\s?(so'm|сум)/i.test(normFacts(text))) problems.push('vositasiz raqamli javob');
   if (c.lang === 'ru' && cyr(text) < lat(text)) problems.push('javob ruscha emas');
   if (c.lang === 'uz' && cyr(text) > lat(text)) problems.push('javob o\'zbekcha (lotin) emas');
   if (/[#*]{2,}|^\s*#/m.test(text)) problems.push('markdown belgilari');
