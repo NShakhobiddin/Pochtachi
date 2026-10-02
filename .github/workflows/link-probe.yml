@@ -61,8 +61,10 @@ jobs:
             echo "og:title: $(grep -oiE 'property="og:title"[^>]{0,160}' /tmp/p.html | head -1)"
             echo "bloklash belgilari: $(grep -oiE 'captcha|punish|x5sec|slide to verify|access denied|cf-chl|datadome|robot' /tmp/p.html | sort | uniq -c | tr '\n' ' ')"
             echo "holat o'zgaruvchilari: $(grep -oE '__[A-Z_]{6,60}__|window\.[a-zA-Z_]{4,40} *=|_init_data_|runParams' /tmp/p.html | sort | uniq -c | sort -rn | head -12 | tr '\n' ' ')"
-            for K in sellingPrice discountedPrice originalPrice '"price"' salePrice formatedActivityPrice formatedPrice salePriceString minAmount '"subject"' priceCurrency '"currency"'; do
+            for K in sellingPrice discountedPrice originalPrice '"price"' salePrice formatedActivityPrice formatedPrice salePriceString minAmount '"subject"' priceCurrency '"currency"' skuAmount skuActivityAmount discountPrice minPrice maxPrice actSkuCalPrice formattedPrice 'US \$' 'og:description' 'og:price' 'product:price' '"amount"'; do
               C=$(grep -oE ".{0,90}$K.{0,170}" /tmp/p.html | head -2 || true)
-              [ -n "$C" ] && { echo "--- $K"; echo "$C" | cut -c1-280; }
+              if [ -n "$C" ]; then echo "--- $K"; echo "$C" | cut -c1-280; fi
             done
+            echo "skript manbalari: $(grep -oE '<script[^>]+src="[^"]{0,120}' /tmp/p.html | head -8 | tr '\n' ' ')"
           done
+          true
