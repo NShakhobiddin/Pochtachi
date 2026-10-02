@@ -335,6 +335,12 @@ export const looksBlocked = html => /captcha|are you a (human|robot)|robot check
    sarflanmaydi, nom bilan "narx o'qilmadi" qaytadi. */
 export const JS_PRICE = /(^|\.)aliexpress\.(com|us|ru)$/i;
 
+/* Serverlarga captcha ko'rsatadigan do'konlar: Trendyol (Cloudflare,
+   sahifa ham, API ham 403). web_fetch (Anthropic serveri) ham o'tolmadi —
+   2026-10-02 jonli sinovi: 13 s, ~$0.035, narx yo'q. Bularda web_fetch
+   chaqirilmaydi: nom havoladan, narx ulashish matni yoki skrinshotdan. */
+export const BOT_WALL = /(^|\.)trendyol\.com$/i;
+
 /* Sahifa nomi: og:title yoki <title>, oxiridagi " - AliExpress 2017…",
    " | Trendyol" kabi do'kon dumisiz. */
 export function pageName(html) {

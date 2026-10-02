@@ -604,8 +604,12 @@ check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit(
   const j15 = await (await linkAskH('https://www.aliexpress.com/item/3256810572293986.html', 'US $5.89 | Li-Ning RED HARE 9 https://a.aliexpress.com/_x', async (u) => { if (/anthropic/.test(u)) { ai15++; return claudeText('x'); } return html(ae); }, '4.4.4.15')).json();
   check('link: ulashish matnidagi narx — bepul (via share), nom sahifadan', j15.via === 'share' && j15.shot.found && j15.shot.price === 5.89 && j15.shot.currency === 'USD' && j15.shot.name === 'Li-Ning RED HARE 9' && ai15 === 0, JSON.stringify({ via: j15.via, shot: j15.shot }));
   const cf = '<!DOCTYPE html><title>Attention Required! | Cloudflare</title><p>captcha</p>';
-  const j16 = await (await linkAskH('https://www.trendyol.com/derimod/erkek-sneaker-p-741953629', '', async (u) => /anthropic/.test(u) ? claudeText('Sahifa ochilmadi.') : html(cf, 'text/html', 403), '4.4.4.16')).json();
-  check('link: Trendyol captcha (403) — narx yo\'q, nom havoladan, do\'kon Trendyol, TRY', j16.shot.found === false && j16.shot.name === 'Derimod Erkek Sneaker' && j16.shot.store === 'Trendyol' && j16.shot.country === 'Turkiya' && j16.shot.currency === 'TRY' && j16.page.blocked === true, JSON.stringify({ via: j16.via, shot: j16.shot }));
+  let ai16 = 0;
+  const j16 = await (await linkAskH('https://www.trendyol.com/derimod/erkek-sneaker-p-741953629', '', async (u) => { if (/anthropic/.test(u)) { ai16++; return claudeText('Sahifa ochilmadi.'); } return html(cf, 'text/html', 403); }, '4.4.4.16')).json();
+  check('link: Trendyol captcha (403) — web_fetch yo\'q (via wall), nom havoladan, do\'kon Trendyol, TRY', j16.via === 'wall' && ai16 === 0 && j16.shot.found === false && j16.shot.name === 'Derimod Erkek Sneaker' && j16.shot.store === 'Trendyol' && j16.shot.country === 'Turkiya' && j16.shot.currency === 'TRY' && j16.page.blocked === true, JSON.stringify({ via: j16.via, shot: j16.shot }));
+  let ai17 = 0;
+  const j17 = await (await linkAskH('https://www.trendyol.com/derimod/erkek-sneaker-p-741953629', '1.199,99 TL Derimod Erkek Sneaker https://ty.gl/x', async (u) => { if (/anthropic/.test(u)) { ai17++; return claudeText('x'); } return html(cf, 'text/html', 403); }, '4.4.4.17')).json();
+  check('link: Trendyol + ulashish matnida narx — topildi (via share, TRY), AI yo\'q', j17.via === 'share' && j17.shot.found && j17.shot.price === 1199.99 && j17.shot.currency === 'TRY' && j17.shot.store === 'Trendyol' && ai17 === 0, JSON.stringify({ via: j17.via, shot: j17.shot }));
   check('parseAiBody: hint faqat link bilan, 600 belgigacha', parseAiBody(JSON.stringify({ link: 'https://a.com/x', hint: 'a'.repeat(900) })).hint.length === 600 && parseAiBody(JSON.stringify({ q: 'salom', hint: 'x' })).hint === '');
 }
 

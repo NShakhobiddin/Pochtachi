@@ -817,7 +817,8 @@ try {
       await page.locator('main button', { hasText: "Qo'lda hisoblash" }).first().click(); await page.waitForTimeout(700);
       const vals = await page.evaluate(() => [...document.querySelectorAll('main input')].map(i => i.value));
       const mt = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
-      check('"Qo\'lda hisoblash" — nom, Trendyol va TRY to\'ldirilgan, narx bo\'sh', vals.includes('Derimod Erkek Sneaker') && /Trendyol/.test(mt) && /TRY/.test(mt), JSON.stringify(vals).slice(0, 160) + ' · ' + mt.slice(0, 160)); }
+      const on = await page.evaluate(() => [...document.querySelectorAll('main button[aria-pressed="true"]')].map(b => b.innerText.trim()));
+      check('"Qo\'lda hisoblash" — nom, do\'kon Trendyol, Turkiya, ₺ to\'ldirilgan, narx bo\'sh', vals[0] === 'Derimod Erkek Sneaker' && vals[1] === '' && /Do'kon: Trendyol/.test(mt) && on.includes('₺') && on.includes('Turkiya'), JSON.stringify(vals).slice(0, 80) + ' · ' + on.join('|') + ' · ' + (/Do'kon: \S+/.exec(mt) || ['—'])[0]); }
     /* Ovoz: brauzer tanisa — aytib bo'lingach o'zi qidiradi; tanimasa —
        klaviatura mikrofoni haqida maslahat va maydonga fokus. */
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);

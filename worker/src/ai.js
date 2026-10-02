@@ -32,7 +32,7 @@ import '../../core/tariffs.js';
 import '../../core/landed.js';
 import * as KB from './kb.generated.js';
 import { same } from './track.js';
-import { safeLink, fetchPage, extractProduct, pageText, tldCountry, tldCurrency, looksBlocked, amazonMarkers, amazonClean, shareHint, slugName, pageName, JS_PRICE } from './link.js';
+import { safeLink, fetchPage, extractProduct, pageText, tldCountry, tldCurrency, looksBlocked, amazonMarkers, amazonClean, shareHint, slugName, pageName, JS_PRICE, BOT_WALL } from './link.js';
 
 const Core = globalThis.PochtamCore;
 export const AI_LIMITS = { q: 600, hist: 6, histText: 800, body: 1500000, rounds: 4 };
@@ -1074,7 +1074,7 @@ export async function readShot({ image, mime, usdRate, env, fetchFn }) {
       (Anthropic serveri ochadi), faqat shu domen. Qisqa narxsiz sahifada
       (bosh sahifa) bu qadam yo'q.
    Javob: { out, via, model, usage } yoki { err }. via: jsonld | meta |
-   share | text | fetch | amazon | jsprice | bad | none. Narx topilmasa
+   share | text | fetch | amazon | jsprice | wall | bad | none. Narx topilmasa
    ham out'da nom, do'kon, davlat bo'ladi (found: false); page — sahifa holati (jonli tekshiruv). --- */
 const LINK_PROMPT = 'Bu do\'kon sahifasining matni. Faqat matnda yozilgan ma\'lumotni ber: mahsulot nomi, joriy narx (chegirmali, eski narx emas), valyuta kodi, do\'kon nomi, kategoriya (ro\'yxatdan bittasi), do\'kon qaysi davlatdan yuborishi (domen, til, valyutadan; aniq bo\'lmasa bo\'sh), og\'irlik yozilgan bo\'lsa kilogrammda (bo\'lmasa 0). Taxmin qilma: narx topilmasa price 0, confidence 0. Javob faqat JSON.';
 const parseJsonLoose = text => {
@@ -1120,6 +1120,8 @@ export async function readLink({ url, hint, usdRate, env, fetchFn }) {
   if (share.price > 0) return { out: fill({ name: nameGuess || share.name, price: share.price, currency: share.currency }, 0.75), via: 'share', page: pinfo };
   /* Narx JavaScript bilan yuklanadigan do'kon (AliExpress) — AI ham topmaydi. */
   if (page.ok && JS_PRICE.test(host)) return { out: partial(), via: 'jsprice', page: pinfo };
+  /* Captcha devori (Trendyol) — web_fetch ham o'tolmaydi, vaqt va pul ketmasin. */
+  if (blocked && BOT_WALL.test(host)) return { out: partial(), via: 'wall', page: pinfo };
   const usageOf = (m, model) => ({ input: (m.usage && m.usage.input_tokens) || 0, output: (m.usage && m.usage.output_tokens) || 0, usd: costUsd(m.model || model, m.usage) });
   const text = page.ok && !looksBlocked(page.html) ? pageText(page.html) : '';
   let textUsage = { input: 0, output: 0, usd: 0 };
