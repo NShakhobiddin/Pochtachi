@@ -1,0 +1,50 @@
+name: Havola tahlili (do'kon sahifasi tuzilishi)
+
+# Havoladan narx o'qilmasa — sahifa robotga nima qaytarayotganini ko'rish:
+# holat kodi, oxirgi manzil, hajm, bloklash belgilari, JSON-LD, og: meta va
+# narx turgan joylar (kontekst bilan). Worker'ni joylamaydi, AI ishlatmaydi.
+# Havola berilmasa Trendyol va AliExpress'dan namuna mahsulot o'zi topiladi.
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: "Tekshiriladigan havolalar (bo'sh joy bilan ajratib). Bo'sh — Trendyol va AliExpress namunasi."
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sahifalarni ochish va tahlil
+        env:
+          URLS: ${{ inputs.urls }}
+        run: |
+          UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36 PochtamLinkReader/1.0'
+          fetch() { curl -sS -L --max-redirs 5 -m 25 -A "$UA" -H 'accept-language: en-US,en;q=0.8,ru;q=0.6' -H 'accept: text/html,application/xhtml+xml' -o /tmp/p.html -w '%{http_code} %{size_download} %{url_effective}' "$1" 2>&1; }
+          if [ -z "$URLS" ]; then
+            fetch 'https://www.trendyol.com/sr?q=tisort' >/dev/null || true
+            T=$(grep -oE '/[a-z0-9-]+/[a-z0-9-]+-p-[0-9]+' /tmp/p.html | head -1)
+            [ -n "$T" ] && URLS="https://www.trendyol.com$T"
+            fetch 'https://www.aliexpress.com/' >/dev/null || true
+            A=$(grep -oE '(https:)?//[a-z.]*aliexpress\.(com|us|ru)/item/[0-9]{10,20}\.html' /tmp/p.html | head -1)
+            [ -z "$A" ] && A=$(grep -oE '/item/[0-9]{10,20}\.html' /tmp/p.html | head -1 | sed 's#^#https://www.aliexpress.com#')
+            [ -n "$A" ] && URLS="$URLS ${A/#\/\//https://}"
+            echo "Topilgan namunalar: $URLS"
+          fi
+          for U in $URLS; do
+            echo; echo "================ $U"
+            echo "holat / hajm / oxirgi manzil: $(fetch "$U")"
+            echo "title: $(grep -oiE '<title[^>]*>[^<]{0,140}' /tmp/p.html | head -1)"
+            echo "JSON-LD bloklari: $(grep -oic 'application/ld+json' /tmp/p.html) · Product: $(grep -oE '"@type" *: *"Product"' /tmp/p.html | wc -l)"
+            echo "og:title: $(grep -oiE 'property="og:title"[^>]{0,160}' /tmp/p.html | head -1)"
+            echo "bloklash belgilari: $(grep -oiE 'captcha|punish|x5sec|slide to verify|access denied|cf-chl|datadome|robot' /tmp/p.html | sort | uniq -c | tr '\n' ' ')"
+            echo "holat o'zgaruvchilari: $(grep -oE '__[A-Z_]{6,60}__|window\.[a-zA-Z_]{4,40} *=|_init_data_|runParams' /tmp/p.html | sort | uniq -c | sort -rn | head -12 | tr '\n' ' ')"
+            for K in sellingPrice discountedPrice originalPrice '"price"' salePrice formatedActivityPrice formatedPrice salePriceString minAmount '"subject"' priceCurrency '"currency"'; do
+              C=$(grep -oE ".{0,90}$K.{0,170}" /tmp/p.html | head -2)
+              [ -n "$C" ] && { echo "--- $K"; echo "$C" | cut -c1-280; }
+            done
+          done
