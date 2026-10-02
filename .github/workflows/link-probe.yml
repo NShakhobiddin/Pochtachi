@@ -24,13 +24,27 @@ jobs:
           URLS: ${{ inputs.urls }}
         run: |
           UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36 PochtamLinkReader/1.0'
-          fetch() { curl -sS -L --max-redirs 5 -m 25 -A "$UA" -H 'accept-language: en-US,en;q=0.8,ru;q=0.6' -H 'accept: text/html,application/xhtml+xml' -o /tmp/p.html -w '%{http_code} %{size_download} %{url_effective}' "$1" 2>&1; }
+          # Cookie bilan: AliExpress avval login.aliexpress.com ga cookie uchun
+          # yo'naltiradi — cookie'siz yo'naltirish aylanib qoladi.
+          fetch() { curl -sS -L --max-redirs 8 -m 25 -c /tmp/cj -b /tmp/cj -A "$UA" -H 'accept-language: en-US,en;q=0.8,ru;q=0.6' -H 'accept: text/html,application/xhtml+xml' -o /tmp/p.html -w '%{http_code} %{size_download} %{url_effective}' "$1" 2>&1; }
+          # Trendyol sahifalari Cloudflare captcha bilan yopiq — ochiq API'lar:
+          for API in 'https://public.trendyol.com/discovery-web-productgw-service/api/productDetail/758373486' \
+                     'https://apigw.trendyol.com/discovery-web-productgw-service/api/productDetail/758373486?storefrontId=1&culture=tr-TR' \
+                     'https://public-mdc.trendyol.com/discovery-web-searchgw-service/v2/api/infinite-scroll/sr?q=tisort&pi=1' \
+                     'https://apigw.trendyol.com/discovery-web-searchgw-service/v2/api/infinite-scroll/sr?q=tisort&pi=1&culture=tr-TR&storefrontId=1'; do
+            R=$(curl -sS -m 20 -A "$UA" -H 'accept: application/json' -o /tmp/api.json -w '%{http_code} %{size_download}' "$API" 2>&1)
+            echo "API: $API → $R · $(head -c 260 /tmp/api.json | tr '\n' ' ')"
+            P=$(grep -oE '"url":"/[a-z0-9-]+/[a-z0-9-]+-p-[0-9]+' /tmp/api.json | head -1 | sed 's/"url":"//')
+            [ -n "$P" ] && [ -z "$TYP" ] && TYP="$P"
+          done
+          [ -n "$TYP" ] && echo "API dan topilgan mahsulot: $TYP"
           if [ -z "$URLS" ]; then
             for SRC in 'https://www.trendyol.com/sr?q=tisort' 'https://www.trendyol.com/' 'https://www.trendyol.com/erkek-t-shirt-x-g2-c73'; do
               echo "qidiruv: $SRC → $(fetch "$SRC") · bloklash: $(grep -oiE 'captcha|access denied|cf-chl|attention required|just a moment' /tmp/p.html | sort -u | tr '\n' ' ')"
               T=$(grep -oE '/[a-z0-9-]+/[a-z0-9-]+-p-[0-9]+' /tmp/p.html | head -1)
               [ -n "$T" ] && { URLS="https://www.trendyol.com$T"; break; }
             done
+            [ -z "$URLS" ] && [ -n "$TYP" ] && URLS="https://www.trendyol.com$TYP"
             echo "aliexpress bosh sahifa: $(fetch 'https://www.aliexpress.com/') · bloklash: $(grep -oiE 'captcha|punish|x5sec|slide to verify' /tmp/p.html | sort -u | tr '\n' ' ')"
             A=$(grep -oE '(https:)?//[a-z.]*aliexpress\.(com|us|ru)/item/[0-9]{10,20}\.html' /tmp/p.html | head -1)
             [ -z "$A" ] && A=$(grep -oE '/item/[0-9]{10,20}\.html' /tmp/p.html | head -1 | sed 's#^#https://www.aliexpress.com#')
