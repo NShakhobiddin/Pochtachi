@@ -672,6 +672,11 @@ try {
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
     await page.locator('nav button', { hasText: 'Xaridlarim' }).first().click(); await page.waitForTimeout(500);
     await page.locator('main button').filter({ hasText: 'Sinov mahsulot' }).first().click(); await page.waitForTimeout(500);
+    /* Xarid ekranida xaridning o'z raqami — ilgari sehrgarning "keyingi"
+       raqami (bir xil kalit) uni bosib ketardi. */
+    const ownNum = await page.evaluate(() => ((JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || []).find(p => p.name === 'Sinov mahsulot') || {}).num || '');
+    const planMain = await page.locator('main').innerText();
+    check('xarid ekrani: xaridning o\'z raqami ko\'rinadi', !!ownNum && new RegExp(ownNum.replace(/[-]/g, '\\-') + '(?!-)').test(planMain), ownNum);
     await page.locator('main button').filter({ hasText: "Xaridni o'chirish" }).first().click(); await page.waitForTimeout(400);
     const plansGone = await page.evaluate(() => (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || []).length);
     const monthLeft = await page.evaluate(id => (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').monthly || []).filter(m => m.plan === id).length, planSaved.id);
@@ -1069,6 +1074,10 @@ try {
     await ccCard.getByRole('button', { name: 'Hammasi', exact: true }).click(); await page.waitForTimeout(300);
     const tarifSub = await page.evaluate(() => [...document.querySelectorAll('main button')].filter(b => /eng arzon tarif/.test(b.innerText)).length);
     check('kuryerlar: "Hammasi" — har kuryerning eng arzon tarifi, 20 ta', tarifSub >= 5 && /^20 /.test((await page.locator('main [data-cc-count]').innerText()).trim()), tarifSub + ' ta');
+    /* Narx va muddat bitta tarifdan: D2D eng arzon tarifi avto $5.50 — 20–25 kun
+       (ilgari yonida avia muddati "4–7 kun" turardi). */
+    const d2dCard = await page.evaluate(() => { const b = [...document.querySelectorAll('main button')].find(x => /^D2D$/m.test(x.innerText) && /eng arzon tarif/.test(x.innerText)); return b ? b.innerText.replace(/\s+/g, ' ') : ''; });
+    check('kuryerlar: eng arzon tarif narxi va muddati bitta tarifdan (D2D $5.50 — 20–25 kun)', /\$5\.50/.test(d2dCard) && /20–25 kun/.test(d2dCard) && !/4–7 kun/.test(d2dCard), d2dCard.slice(0, 120));
     await ccCard.getByRole('button', { name: 'Xitoy', exact: true }).click(); await page.waitForTimeout(200);
     /* Taqqoslash: 2 ta kuryer belgilanadi, jadvalda "Hisob · 2 kg · Xitoy" qatori. */
     await page.locator('main button').filter({ hasText: 'Taqqoslash' }).first().click(); await page.waitForTimeout(300);
