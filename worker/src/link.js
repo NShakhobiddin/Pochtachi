@@ -48,14 +48,33 @@ export function charsetOf(ct, head) {
   const m = /charset\s*=\s*["']?([\w-]+)/i.exec(String(ct || '')) || /<meta[^>]+charset\s*=\s*["']?([\w-]+)/i.exec(String(head || ''));
   return m ? m[1].toLowerCase() : 'utf-8';
 }
+/* Cookie: ba'zi do'konlar (AliExpress) avval cookie o'rnatish sahifasiga
+   yo'naltirib, keyin qaytaradi — cookie'siz yo'naltirish aylanib qoladi.
+   Cookie faqat shu so'rov davomida va faqat o'zi kelgan domen (oxirgi ikki
+   bo'lagi: aliexpress.com, aliexpress.us) manzillariga yuboriladi — bir
+   saytning cookie'si boshqasiga o'tmaydi. */
+const siteOf = h => String(h || '').toLowerCase().split('.').slice(-2).join('.');
+const setCookies = res => {
+  const hd = res.headers;
+  if (!hd) return [];
+  if (typeof hd.getSetCookie === 'function') return hd.getSetCookie();
+  const v = hd.get && hd.get('set-cookie');
+  return v ? [v] : [];
+};
 export async function fetchPage(url, fetchFn, ms = LINK_TIMEOUT_MS) {
   const deadline = Date.now() + ms;
   let cur = url;
-  for (let hop = 0; hop <= 5; hop++) {
-    const init = { method: 'GET', redirect: 'manual', headers: HEADERS };
+  const jar = new Map();
+  for (let hop = 0; hop <= 8; hop++) {
+    const site = siteOf(new URL(cur).hostname), ck = jar.get(site);
+    const init = { method: 'GET', redirect: 'manual', headers: ck && ck.size ? { ...HEADERS, cookie: [...ck].map(([k, v]) => k + '=' + v).join('; ') } : HEADERS };
     if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) init.signal = AbortSignal.timeout(Math.max(500, deadline - Date.now()));
     let res;
     try { res = await fetchFn(cur, init); } catch (e) { return { ok: false, status: 0, html: '', url: cur }; }
+    for (const c of setCookies(res)) {
+      const m = /^\s*([^=;\s]+)=([^;]*)/.exec(c);
+      if (m) { if (!jar.has(site)) jar.set(site, new Map()); jar.get(site).set(m[1], m[2]); }
+    }
     const loc = res.headers && res.headers.get && res.headers.get('location');
     if (res.status >= 300 && res.status < 400 && loc) {
       await cancel(res);
