@@ -22,7 +22,9 @@ jobs:
       - name: Sahifalarni ochish va tahlil
         env:
           URLS: ${{ inputs.urls }}
+        shell: bash
         run: |
+          set +e
           UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36 PochtamLinkReader/1.0'
           # Cookie bilan: AliExpress avval login.aliexpress.com ga cookie uchun
           # yo'naltiradi — cookie'siz yo'naltirish aylanib qoladi.
@@ -60,7 +62,7 @@ jobs:
             echo "bloklash belgilari: $(grep -oiE 'captcha|punish|x5sec|slide to verify|access denied|cf-chl|datadome|robot' /tmp/p.html | sort | uniq -c | tr '\n' ' ')"
             echo "holat o'zgaruvchilari: $(grep -oE '__[A-Z_]{6,60}__|window\.[a-zA-Z_]{4,40} *=|_init_data_|runParams' /tmp/p.html | sort | uniq -c | sort -rn | head -12 | tr '\n' ' ')"
             for K in sellingPrice discountedPrice originalPrice '"price"' salePrice formatedActivityPrice formatedPrice salePriceString minAmount '"subject"' priceCurrency '"currency"'; do
-              C=$(grep -oE ".{0,90}$K.{0,170}" /tmp/p.html | head -2)
+              C=$(grep -oE ".{0,90}$K.{0,170}" /tmp/p.html | head -2 || true)
               [ -n "$C" ] && { echo "--- $K"; echo "$C" | cut -c1-280; }
             done
           done
