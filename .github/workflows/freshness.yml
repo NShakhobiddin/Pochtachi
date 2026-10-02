@@ -1,0 +1,53 @@
+name: Oylik ma'lumot tekshiruvi
+
+# Har oyning 1-kuni: kuryer tariflari, bojxona me'yorlari, kuryer va do'kon
+# kartalari necha kun oldin tekshirilgani va havolalar holati bitta GitHub
+# issue'da. Ochiq "Oylik tekshiruv" issue bo'lsa — unga izoh qo'shiladi,
+# bo'lmasa yangisi ochiladi. Hech narsani o'zi o'zgartirmaydi: tekshirish
+# va yangilash qo'lda (issue ichidagi ro'yxat bo'yicha).
+on:
+  schedule:
+    # Har oyning 1-kuni 05:00 UTC (Toshkent vaqti bilan 10:00)
+    - cron: '0 5 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  freshness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
+      - name: Ma'lumot sanalari va havolalar
+        run: |
+          node tools/freshness.mjs > /tmp/report.md
+          {
+            echo ''
+            echo '**Havolalar**'
+            echo ''
+            echo '```'
+            node tools/check-links.mjs 2>&1 | tail -n 25 || true
+            echo '```'
+          } >> /tmp/report.md
+          cat /tmp/report.md
+
+      - name: Issue ochish yoki izoh qo'shish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="Oylik tekshiruv: tariflar, me'yorlar, havolalar"
+          N=$(gh issue list --state open --search "in:title Oylik tekshiruv" --json number,title \
+            --jq '[.[] | select(.title | startswith("Oylik tekshiruv"))][0].number // empty')
+          if [ -n "$N" ]; then
+            gh issue comment "$N" --body-file /tmp/report.md
+            echo "Izoh qo'shildi: #$N"
+          else
+            gh issue create --title "$TITLE" --body-file /tmp/report.md
+          fi

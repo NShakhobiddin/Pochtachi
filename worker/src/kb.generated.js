@@ -1190,7 +1190,7 @@ export const COURIERS = [
   "updated": "15.08.2026",
   "limits": [],
   "svc": [
-   "Buy for me: Buyout xizmati mavjud",
+   "Buy for me: Sotib olib berish xizmati bor",
    "Door delivery UZ: Viloyatlarga ham yetkazish",
    "Tracking: Mavjud",
    "Marketplace mosligi: Xorijiy internet-do'konlari"
@@ -1346,7 +1346,7 @@ export const COURIERS = [
   "countries": "Rossiya, Turkiya, Xitoy, Koreya, BAA, Malayziya",
   "tracking": false,
   "trusted": false,
-  "note": "Tekshiruvda sayt 502 xatolik qaytardi. Qidiruvda yumecs.pro domeni ham uchradi, biroq u ham ochilmadi.",
+  "note": "Rasmiy sayt yumecs.uz (02.10.2026 tasdiqlandi). Tarif va muddatni sayt yoki Telegram orqali aniqlang.",
   "updated": "15.08.2026",
   "limits": [],
   "svc": []

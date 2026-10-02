@@ -1077,7 +1077,8 @@ try {
     /* Narx va muddat bitta tarifdan: D2D eng arzon tarifi avto $5.50 — 20–25 kun
        (ilgari yonida avia muddati "4–7 kun" turardi). */
     const d2dCard = await page.evaluate(() => { const b = [...document.querySelectorAll('main button')].find(x => /^D2D$/m.test(x.innerText) && /eng arzon tarif/.test(x.innerText)); return b ? b.innerText.replace(/\s+/g, ' ') : ''; });
-    check('kuryerlar: eng arzon tarif narxi va muddati bitta tarifdan (D2D $5.50 — 20–25 kun)', /\$5\.50/.test(d2dCard) && /20–25 kun/.test(d2dCard) && !/4–7 kun/.test(d2dCard), d2dCard.slice(0, 120));
+    /* Ikkinchi tarif alohida qatorda: "Tezroq (avia): $9.49 · 4–7 kun". */
+    check('kuryerlar: eng arzon tarif narxi va muddati bitta tarifdan (D2D $5.50 — 20–25 kun), ikkinchi tarif (avia) alohida', /\$5\.50 eng arzon tarif Tezroq \(avia\): \$9\.49 · 4–7 kun 20–25 kun/.test(d2dCard), d2dCard.slice(0, 140));
     await ccCard.getByRole('button', { name: 'Xitoy', exact: true }).click(); await page.waitForTimeout(200);
     /* Taqqoslash: 2 ta kuryer belgilanadi, jadvalda "Hisob · 2 kg · Xitoy" qatori. */
     await page.locator('main button').filter({ hasText: 'Taqqoslash' }).first().click(); await page.waitForTimeout(300);
@@ -1972,6 +1973,10 @@ try {
     kuz.trek === 'RB1234CN' && kuz.holat === 'Buyurtma' && /Omborga yetib keldi/.test(kuz.tugma) && /^\d{4}-\d\d-\d\d$/.test(kuz.saqlandi), JSON.stringify({ ...kuz, tugma: kuz.tugma.replace(/\s+/g, ' ').slice(0, 120) }));
   /* Batafsil ekranda ham o'sha holat va 6 bosqichli ro'yxat ("Bojxonada" bilan). */
   await page.locator('main [data-buy] button').first().click(); await page.waitForTimeout(500);
+  /* "Batafsil holat" yig'ilgan: sarlavhada joriy qadam, bosilsa 6 bosqich. */
+  const batHead = (await page.locator('main button[aria-expanded]').filter({ hasText: 'Batafsil holat' }).innerText()).replace(/\s+/g, ' ');
+  check('xarid ekrani: "Batafsil holat" yig\'ilgan, sarlavhada joriy qadam', /Batafsil holat 2 \/ 6 · Buyurtma qilindi/.test(batHead) && !(await page.locator('main').innerText()).includes('Bojxonadan chiqdi'), batHead);
+  await page.locator('main button[aria-expanded]').filter({ hasText: 'Batafsil holat' }).click(); await page.waitForTimeout(300);
   const bat = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
   check('xarid ekrani: holat chizig\'i, raqam maydoni, "Batafsil holat" (Bojxonada bilan)', /Topish Narx Buyurtma Yo'lda Keldi/.test(bat) && (await page.locator('main input[aria-label="Jo\'natma raqami"]').inputValue()) === 'RB1234CN' && /Batafsil holat/.test(bat) && /Bojxonada/.test(bat) && /Omborga yetib keldi/.test(bat), bat.slice(0, 160));
 

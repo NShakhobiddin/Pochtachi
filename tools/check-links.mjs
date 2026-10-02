@@ -25,7 +25,18 @@ const SKIP = [/^https?:\/\/(www\.)?instagram\.com/, /^https?:\/\/t\.me/, /^https
   /* O'z Worker'imiz — uni "O'lchovni yoqish" workflow'i yo'llari bilan tekshiradi. */
   /\.workers\.dev\//,
   /* Koddagi shablonlar, haqiqiy manzil emas: "…domain=" + domen, "…?campid=…". */
-  /[…{]|=$/];
+  /[…{]|=$/,
+  /* Izohdagi misollar (ulashish matni namunasi). */
+  /^https:\/\/a\.co\/d\/x$/, /^https:\/\/m\.tb\.cn\/h\.X$/];
+
+/* Qo'lda tasdiqlangan saytlar: brauzerda ochiladi, lekin GitHub serverlaridan
+   ulanib bo'lmaydi (.uz saytlar chet el IP manzilini yoki to'liq bo'lmagan
+   SSL zanjirini rad etadi). Ulanish xatosi bo'lsa — ogohlantirish; domen
+   umuman topilmasa (ENOTFOUND) — baribir xato. Sana — oxirgi qo'lda tekshiruv. */
+const VERIFIED = {
+  'https://yumecs.uz/': '02.10.2026',
+  'https://www.spaceexpress.uz': '02.10.2026'
+};
 
 function collectUrls() {
   const files = ['Xarid Yordamchisi v2.dc.html',
@@ -57,7 +68,10 @@ async function head(url) {
     }
     return { url, status: res.status };
   } catch (e) {
-    return { url, status: 0, error: String(e.message || e).slice(0, 60) };
+    /* "fetch failed" o'zi sababni aytmaydi — ichidagi kod (ENOTFOUND, TLS,
+       ulanish vaqti) logda ko'rinsin. */
+    const code = e && e.cause && (e.cause.code || e.cause.message);
+    return { url, status: 0, error: String(e.message || e).slice(0, 60) + (code ? ' (' + String(code).slice(0, 60) + ')' : ''), code: code ? String(code) : '' };
   } finally {
     clearTimeout(timer);
   }
@@ -86,6 +100,7 @@ await Promise.all(Array.from({ length: CONCURRENCY }, async () => {
     done++;
     if (r.status && r.status < 400) continue;
     if (SOFT.has(r.status) || softErr(r)) { warn.push(r); continue; }
+    if (VERIFIED[url] && !r.status && !/ENOTFOUND/.test(r.code || '')) { warn.push({ ...r, error: r.error + ' — qo\'lda tasdiqlangan ' + VERIFIED[url] }); continue; }
     dead.push(r);
     console.log(` XATO  ${r.status || r.error}  ${r.url}`);
   }
@@ -93,11 +108,11 @@ await Promise.all(Array.from({ length: CONCURRENCY }, async () => {
 
 console.log(`\nTekshirildi: ${done} · ishlamaydigan: ${dead.length} · tekshirib bo'lmadi: ${warn.length}`);
 if (warn.length) {
-  console.log('\nTekshirib bo\'lmadi (bot himoyasi yoki avtorizatsiya):');
+  console.log('\nTekshirib bo\'lmadi (bot himoyasi, avtorizatsiya yoki robotga yopiq sayt):');
   for (const w of warn) console.log(`  ${w.status || w.error}  ${w.url}`);
 }
 if (dead.length) {
-  console.error('\nIshlamaydigan havolalar:');
-  for (const d of dead) console.error(`  ${d.status || d.error}  ${d.url}`);
+  console.log('\nIshlamaydigan havolalar:');
+  for (const d of dead) console.log(`  ${d.status || d.error}  ${d.url}`);
   process.exit(1);
 }
