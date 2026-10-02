@@ -32,7 +32,7 @@ export function safeLink(u) {
 }
 
 /* Sahifani yuklaydi: vaqt (hammasi uchun bitta) va hajm chegarasi bilan.
-   Yo'naltirishlar qo'lda, 5 tagacha: har keyingi manzil ham safeLink dan
+   Yo'naltirishlar qo'lda, 8 tagacha: har keyingi manzil ham safeLink dan
    o'tadi — ochiq manzil ichki yoki IP manzilga yo'naltira olmaydi.
    Kodlash: sarlavhadagi yoki <meta charset> dagi (GBK, Shift_JIS…), bilmasa
    UTF-8. Javob: { ok, status, html, url } — ok faqat 2xx va HTML bo'lsa. */
@@ -328,3 +328,67 @@ export function tldCurrency(host) {
 
 /* Sayt o'zi "odam emasmisiz?" sahifasini qaytardimi (Amazon, Cloudflare). */
 export const looksBlocked = html => /captcha|are you a (human|robot)|robot check|access denied|cf-chl-|attention required|continue shopping|automated access|api-services-support@amazon|characters you see|verify you are human|px-captcha|datadome/i.test(String(html || '').slice(0, 30000));
+
+/* Narxi sahifaga keyin JavaScript bilan yuklanadigan do'konlar. AliExpress
+   HTML'ida faqat nom (og:title) bor — narx yo'q (2026-10-02 tekshiruvi).
+   Bunday sahifada AI matn o'qish ham, web_fetch ham narx topmaydi: pul
+   sarflanmaydi, nom bilan "narx o'qilmadi" qaytadi. */
+export const JS_PRICE = /(^|\.)aliexpress\.(com|us|ru)$/i;
+
+/* Sahifa nomi: og:title yoki <title>, oxiridagi " - AliExpress 2017…",
+   " | Trendyol" kabi do'kon dumisiz. */
+export function pageName(html) {
+  const h = String(html || '');
+  const meta = metaMap(h);
+  const t = meta['og:title'] || (/<title[^>]*>([\s\S]*?)<\/title>/i.exec(h) || [])[1] || '';
+  return unescapeHtml(t).replace(/\s+/g, ' ')
+    .replace(/\s*[-|–—:]\s*(AliExpress|Trendyol|Amazon(\.[a-z.]+)?|eBay|Temu|SHEIN)\b.*$/i, '').trim().slice(0, 120);
+}
+
+/* Havoladagi nom: trendyol.com/<brend>/<nom>-p-<id> — sahifa to'silganda
+   (Trendyol serverlarga captcha ko'rsatadi) nom shu yerdan. Boshqa
+   do'konlarda — eng uzun "so'z-so'z-so'z" bo'lagi. */
+const titleWords = s => s.split('-').filter(Boolean).slice(0, 14)
+  .map(w => /^\d/.test(w) ? w : w[0].toUpperCase() + w.slice(1)).join(' ');
+export function slugName(href) {
+  let x;
+  try { x = new URL(String(href || '')); } catch (e) { return ''; }
+  const segs = x.pathname.split('/').filter(Boolean).map(s => { try { return decodeURIComponent(s); } catch (e) { return s; } });
+  const TY = /^(.+?)-p-\d+$/i;
+  const i = segs.findIndex(s => TY.test(s));
+  if (i >= 0) {
+    const words = segs[i].replace(TY, '$1'), brand = i > 0 ? segs[i - 1] : '';
+    return titleWords((brand && !words.toLowerCase().startsWith(brand.toLowerCase()) ? brand + '-' : '') + words).slice(0, 120);
+  }
+  const c = segs.filter(s => /^[\p{L}\d]+(-[\p{L}\d]+){2,}$/u.test(s) && /\p{L}{3}/u.test(s)).sort((a, b) => b.length - a.length)[0];
+  return c ? titleWords(c).slice(0, 120) : '';
+}
+
+/* Ulashish matni (do'kon ilovasidagi "Ulashish" tugmasi):
+   "US $5.89 | Erkaklar krossovkasi https://a.aliexpress.com/_x",
+   "1.299,90 TL Ceket https://ty.gl/…". Havola olib tashlanadi; narx —
+   valyuta belgisi yonidagi son; nom — qolgan matn, reklama iboralarisiz.
+   Javob: { name, price, currency } (topilmasa '' / 0). */
+const SH_CUR = [['US $', 'USD'], ['US$', 'USD'], ['USD', 'USD'], ['$', 'USD'], ['₺', 'TRY'], ['TL', 'TRY'], ['TRY', 'TRY'],
+  ['€', 'EUR'], ['EUR', 'EUR'], ['£', 'GBP'], ['GBP', 'GBP'], ['руб.', 'RUB'], ['руб', 'RUB'], ['₽', 'RUB'], ['RUB', 'RUB'],
+  ['¥', 'CNY'], ['CNY', 'CNY'], ['元', 'CNY'], ['₩', 'KRW'], ['KRW', 'KRW'], ['AED', 'AED'], ["so'm", 'UZS'], ['сум', 'UZS'], ['UZS', 'UZS']];
+const reEsc = k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const SH_SYM = SH_CUR.map(([k]) => reEsc(k)).join('|');
+const SH_NUM = '\\d{1,3}(?:[\\s.,]\\d{3})+(?:[.,]\\d{1,2})?|\\d+(?:[.,]\\d{1,2})?';
+const SH_RE = new RegExp('(?<![\\p{L}\\d])(?:(' + SH_SYM + ')\\s?(' + SH_NUM + ')|(' + SH_NUM + ')\\s?(' + SH_SYM + '))(?![\\p{L}\\d])', 'iu');
+const SH_ADS = /check out this (product|item)[^:!.]*[:!.]?|look what i found[^:!.]*[:!.]?|i found this[^:!.]*[:!.]?|smarter shopping,? better living!?|aliexpress'?te bu ürün[^:!.]*[:!.]?|bu ürünü trendyol'?da[^:!.]*[:!.]?|trendyol'?da bu ürüne[^:!.]*[:!.]?|посмотри(те)?[^:!.]*aliexpress[^:!.]*[:!.]?|смотрите, что я нашел[^:!.]*[:!.]?/giu;
+export function shareHint(text) {
+  let s = String(text || '').slice(0, 600).replace(/https?:\/\/\S+/gi, ' ');
+  let price = 0, currency = '';
+  const m = SH_RE.exec(s);
+  if (m) {
+    const sym = (m[1] || m[4] || '').toLowerCase();
+    const f = SH_CUR.find(([k]) => k.toLowerCase() === sym);
+    price = parsePrice(m[2] || m[3]);
+    currency = f ? f[1] : '';
+    if (currency === 'UZS') price = 0;
+    s = s.replace(m[0], ' ');
+  }
+  const name = s.replace(SH_ADS, ' ').replace(/\s+/g, ' ').replace(/^[\s|:–—·•\-!.,]+|[\s|:–—·•\-!.,]+$/g, '').trim();
+  return { name: /\p{L}{3}/u.test(name) ? name.slice(0, 120) : '', price: currency && price > 0 ? price : 0, currency: price > 0 ? currency : '' };
+}

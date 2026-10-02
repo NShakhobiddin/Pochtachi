@@ -294,11 +294,16 @@ jobs:
             if [ "$code3" = "200" ]; then echo "::notice::Veb-qidiruv: $FIND"; else echo "::warning::find so'rovi $code3 qaytardi — $(head -c 200 /tmp/ai3)"; fi
             # Havoladan jami narx (link): sahifa o'qiladi (JSON-LD → matn → web_fetch).
             echo "== POST /ai (link — havoladan jami narx)"
-            for LU in "https://www.allbirds.com/products/mens-tree-runners" "https://www.amazon.com/Amazon-vibrant-helpful-routines-Charcoal/dp/B09B8V1LZ3/ref=sr_1_1?crid=2X&keywords=echo+dot"; do
+            # Trendyol — serverlarga captcha (nom havoladan), AliExpress — narx
+            # JavaScript bilan (nom sahifadan; narx ulashish matnidan — hint).
+            for LU in "https://www.allbirds.com/products/mens-tree-runners" "https://www.amazon.com/Amazon-vibrant-helpful-routines-Charcoal/dp/B09B8V1LZ3/ref=sr_1_1?crid=2X&keywords=echo+dot" \
+                      "https://www.trendyol.com/derimod/erkek-sneaker-p-741953629" "https://www.aliexpress.com/item/3256810572293986.html" \
+                      "https://www.aliexpress.com/item/3256810572293986.html#hint"; do
               t0=$(date +%s)
-              code5=$(curl -s -m 90 -o /tmp/ai5 -w '%{http_code}' -X POST "${URL}ai" -H 'origin: https://nshakhobiddin.github.io' -H 'content-type: text/plain' -d "{\"link\":\"$LU\",\"lang\":\"uz\",\"usdRate\":12650}")
-              LINK=$(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/ai5','utf8'));const s=j.shot||{};const p=j.page||{};process.stdout.write('via='+(j.via||'?')+' topildi='+(s.found?'ha '+s.price+' '+s.currency+' '+String(s.name||'').slice(0,40):'yo_q')+' sahifa='+(p.status||0)+'/'+(p.kb||0)+'KB'+(p.blocked?'/tosildi':'')+(p.amazon?' az='+Object.entries(p.amazon).filter(e=>e[1]).map(e=>e[0]+(e[1]===true?'':':'+e[1])).join(','):''))}catch(e){process.stdout.write('xato')}")
-              echo "::notice::Havola ($code5, $(( $(date +%s) - t0 )) s): $LU — $LINK"
+              HINT=''; case "$LU" in *'#hint') LU="${LU%#hint}"; HINT='US $41.99 | Li-Ning RED HARE 9 Running Shoes';; esac
+              code5=$(curl -s -m 90 -o /tmp/ai5 -w '%{http_code}' -X POST "${URL}ai" -H 'origin: https://nshakhobiddin.github.io' -H 'content-type: text/plain' -d "{\"link\":\"$LU\",\"hint\":\"$HINT\",\"lang\":\"uz\",\"usdRate\":12650}")
+              LINK=$(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/ai5','utf8'));const s=j.shot||{};const p=j.page||{};process.stdout.write('via='+(j.via||'?')+' topildi='+(s.found?'ha '+s.price+' '+s.currency+' '+String(s.name||'').slice(0,40):'yo_q nom='+String(s.name||'-').slice(0,40)+' do_kon='+(s.store||'-')+' '+(s.currency||''))+' usd='+((j.usage&&j.usage.usd)||0).toFixed(4)+' sahifa='+(p.status||0)+'/'+(p.kb||0)+'KB'+(p.blocked?'/tosildi':'')+(p.amazon?' az='+Object.entries(p.amazon).filter(e=>e[1]).map(e=>e[0]+(e[1]===true?'':':'+e[1])).join(','):''))}catch(e){process.stdout.write('xato')}")
+              echo "::notice::Havola ($code5, $(( $(date +%s) - t0 )) s): $LU${HINT:+ (ulashish matni bilan)} — $LINK"
             done
             # Yagona kirish: joriy xarid (cart) bilan savol — AI qayta
             # so'ramasligi va kartalar qaytishi tekshiriladi.

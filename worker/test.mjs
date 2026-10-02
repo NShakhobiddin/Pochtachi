@@ -583,6 +583,30 @@ check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit(
       return html('<span id="productTitle">Echo Dot (5th Gen)</span><span class="a-price priceToPay"><span class="a-offscreen">$49.99</span></span>'); }, '4.4.4.13')).json();
   check('link: Amazon havolasi toza /dp/ASIN bilan ochiladi, narx va belgilar javobda', j13.via === 'amazon' && j13.shot.found && j13.shot.priceUsd === 49.99 && seen13[0] === 'https://www.amazon.com/dp/B09B8V1LZ3' && j13.page.amazon && j13.page.amazon.priceToPay === true, JSON.stringify({ via: j13.via, seen13, a: j13.page && j13.page.amazon }));
   check('parseAiBody: faqat link — to\'g\'ri; buzuq link — bo\'sh', parseAiBody(JSON.stringify({ link: 'https://a.com/x' })).link === 'https://a.com/x' && typeof parseAiBody(JSON.stringify({ link: 'javascript:alert(1)' })) === 'string');
+
+  /* Trendyol (captcha) va AliExpress (narx JavaScript bilan) — 2026-10-02. */
+  const sh1 = L.shareHint('US $5.89 | Li-Ning RED HARE 9 Running Shoes https://a.aliexpress.com/_mKx1');
+  const sh2 = L.shareHint('1.299,90 TL Derimod Erkek Sneaker https://ty.gl/abc');
+  const sh3 = L.shareHint("Bu ürünü Trendyol'da gördüm, beğeneceğini düşündüm! https://ty.gl/x");
+  const sh4 = L.shareHint('79,99руб. | Кроссовки мужские https://a.aliexpress.ru/_x');
+  check('shareHint: "US $5.89 | nom", "1.299,90 TL nom", rubl; reklama iborasi nom emas', sh1.price === 5.89 && sh1.currency === 'USD' && sh1.name === 'Li-Ning RED HARE 9 Running Shoes'
+    && sh2.price === 1299.9 && sh2.currency === 'TRY' && sh2.name === 'Derimod Erkek Sneaker' && sh3.price === 0 && sh3.name === '' && sh4.price === 79.99 && sh4.currency === 'RUB' && L.shareHint('https://x.com/a').price === 0, JSON.stringify([sh1, sh2, sh3, sh4]));
+  check('slugName: trendyol /brend/nom-p-id; brend takrorlanmaydi; id\'li havola — bo\'sh', L.slugName('https://www.trendyol.com/derimod/erkek-sneaker-p-741953629') === 'Derimod Erkek Sneaker'
+    && L.slugName('https://www.trendyol.com/adidas/adidas-erkek-sneaker-p-838684653?x=1') === 'Adidas Erkek Sneaker' && L.slugName('https://www.aliexpress.com/item/3256810572293986.html') === '');
+  check('pageName: " - AliExpress 2017…" dumi olinadi', L.pageName('<meta property="og:title" content="Li-Ning Men&#39;s RED HARE 9 - AliExpress 201768104">') === "Li-Ning Men's RED HARE 9");
+  const linkAskH = (link, hint, fetchFn, ip) => worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': ip },
+    body: JSON.stringify({ link, hint, lang: 'uz', usdRate: 12650 }) }), aiEnv({ AI_FETCH: fetchFn }), ctx);
+  const ae = '<html><head><meta property="og:title" content="Li-Ning RED HARE 9 - AliExpress 201768104"><script>window.runParams = {};</script></head><body>' + 'x '.repeat(400) + '</body></html>';
+  let ai14 = 0;
+  const j14 = await (await linkAskH('https://www.aliexpress.com/item/3256810572293986.html', '', async (u) => { if (/anthropic/.test(u)) { ai14++; return claudeText('x'); } return html(ae); }, '4.4.4.14')).json();
+  check('link: AliExpress (narx JS bilan) — AI chaqirilmaydi, nom va do\'kon bilan found=false', j14.via === 'jsprice' && j14.shot.found === false && j14.shot.name === 'Li-Ning RED HARE 9' && j14.shot.store === 'AliExpress' && j14.shot.country === 'Xitoy' && ai14 === 0, JSON.stringify({ via: j14.via, shot: j14.shot, ai14 }));
+  let ai15 = 0;
+  const j15 = await (await linkAskH('https://www.aliexpress.com/item/3256810572293986.html', 'US $5.89 | Li-Ning RED HARE 9 https://a.aliexpress.com/_x', async (u) => { if (/anthropic/.test(u)) { ai15++; return claudeText('x'); } return html(ae); }, '4.4.4.15')).json();
+  check('link: ulashish matnidagi narx — bepul (via share), nom sahifadan', j15.via === 'share' && j15.shot.found && j15.shot.price === 5.89 && j15.shot.currency === 'USD' && j15.shot.name === 'Li-Ning RED HARE 9' && ai15 === 0, JSON.stringify({ via: j15.via, shot: j15.shot }));
+  const cf = '<!DOCTYPE html><title>Attention Required! | Cloudflare</title><p>captcha</p>';
+  const j16 = await (await linkAskH('https://www.trendyol.com/derimod/erkek-sneaker-p-741953629', '', async (u) => /anthropic/.test(u) ? claudeText('Sahifa ochilmadi.') : html(cf, 'text/html', 403), '4.4.4.16')).json();
+  check('link: Trendyol captcha (403) — narx yo\'q, nom havoladan, do\'kon Trendyol, TRY', j16.shot.found === false && j16.shot.name === 'Derimod Erkek Sneaker' && j16.shot.store === 'Trendyol' && j16.shot.country === 'Turkiya' && j16.shot.currency === 'TRY' && j16.page.blocked === true, JSON.stringify({ via: j16.via, shot: j16.shot }));
+  check('parseAiBody: hint faqat link bilan, 600 belgigacha', parseAiBody(JSON.stringify({ link: 'https://a.com/x', hint: 'a'.repeat(900) })).hint.length === 600 && parseAiBody(JSON.stringify({ q: 'salom', hint: 'x' })).hint === '');
 }
 
 /* --- Xarajat nazorati: sarf yoziladi, kunlik $ byudjeti, "Qayerdan topaman"

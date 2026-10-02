@@ -2813,7 +2813,11 @@
         <div style="background:#FDF3E3;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:12px">
           <span style="font-size:17px;font-weight:700;color:#B45309">{{ rsNoneT }}</span>
           <sc-if value="{{ rsIsLink }}" hint-placeholder-val="{{ false }}">
-            <span style="font-size:15px;font-weight:500;color:#282944;line-height:1.5">Sayt narxni yashirgan yoki sahifa faqat ilovada ochiladi. Sahifani skrinshot qilib yuklang — narx o'zi o'qiladi.</span>
+            <sc-if value="{{ rsNoneHasName }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:15px;font-weight:700;color:#131429;line-height:1.5">{{ rsNoneName }}</span>
+            </sc-if>
+            <span style="font-size:15px;font-weight:500;color:#282944;line-height:1.5">Sayt narxni robotlarga ko'rsatmaydi yoki uni sahifa ochilgandan keyin yuklaydi. Skrinshot yuklang yoki narxni o'zingiz yozing — qolganini ilova hisoblaydi.</span>
+            <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5">Maslahat: do'kon ilovasidagi «Ulashish» matnini butunligicha tashlang — unda narx bo'lsa, o'zi o'qiladi.</span>
           </sc-if>
           <sc-if value="{{ rsIsShot }}" hint-placeholder-val="{{ true }}">
           <div style="display:flex;flex-direction:column;gap:8px">
@@ -3513,7 +3517,9 @@ const RU = {
   "Havolani o'qiyapman":'Читаю ссылку', 'Sahifani ochyapman':'Открываю страницу',
   "{0} · odatda 3–15 soniya. Jami narx va uning tarkibi shu yerda chiqadi.":'{0} · обычно 3–15 секунд. Итоговая цена и её состав появятся здесь.',
   "Havoladan narx o'qilmadi":'Не удалось прочитать цену по ссылке', "Pochtam AI'dan so'rash":'Спросить Pochtam AI',
-  "Sayt narxni yashirgan yoki sahifa faqat ilovada ochiladi. Sahifani skrinshot qilib yuklang — narx o'zi o'qiladi.":'Сайт скрывает цену или страница открывается только в приложении. Сделайте скриншот страницы и загрузите — цена прочитается сама.',
+  "Sayt narxni robotlarga ko'rsatmaydi yoki uni sahifa ochilgandan keyin yuklaydi. Skrinshot yuklang yoki narxni o'zingiz yozing — qolganini ilova hisoblaydi.":'Сайт не показывает цену роботам или подгружает её после открытия страницы. Загрузите скриншот или введите цену сами — остальное посчитает приложение.',
+  "Maslahat: do'kon ilovasidagi «Ulashish» matnini butunligicha tashlang — unda narx bo'lsa, o'zi o'qiladi.":'Совет: вставьте текст из кнопки «Поделиться» в приложении магазина целиком — если в нём есть цена, она прочитается сама.',
+  "«{0}» — nom va do'kon topildi, faqat narx yetishmayapti.":'«{0}» — название и магазин найдены, не хватает только цены.',
   "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. Narx do'kon sahifasidan o'qildi, hisob ilovaniki.":'Расчёт примерный — итоговую сумму определят таможня и курьер. Цена прочитана со страницы магазина, расчёт — приложения.',
   'Sahifani ochish':'Открыть страницу',
   'Qayerdan':'Откуда', 'Arzonroq':'Дешевле', 'Tezroq':'Быстрее',
@@ -6302,7 +6308,7 @@ class Component extends DCLogic {
         .then(() => clearTimeout(timer));
     }).catch(() => done({ state: 'err', code: 'img' }));
   }
-  linkRead(url) {
+  linkRead(url, hint) {
     const st = this.state;
     if (!url || (st.shotRes && st.shotRes.state === 'busy')) return;
     let host = '';
@@ -6320,7 +6326,7 @@ class Component extends DCLogic {
     const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
     const timer = setTimeout(() => { if (ctrl) ctrl.abort(); }, 60000);
     fetch(METRICS_URL + 'ai', { method: 'POST', headers: { 'content-type': 'text/plain;charset=UTF-8' },
-      body: JSON.stringify({ link: url, lang: st.lang, usdRate: USD_RATE, cart: this.cartForAi() }), signal: ctrl ? ctrl.signal : undefined })
+      body: JSON.stringify({ link: url, hint: String(hint || '').slice(0, 600), lang: st.lang, usdRate: USD_RATE, cart: this.cartForAi() }), signal: ctrl ? ctrl.signal : undefined })
       .then(async r => {
         const j = await r.json().catch(() => null);
         if (!r.ok || !j) { const e = new Error('link'); e.code = (j && j.code) || (r.status === 429 ? 'limit' : 'upstream'); throw e; }
@@ -6328,7 +6334,11 @@ class Component extends DCLogic {
       })
       .then(j => {
         const sh = j.shot;
-        if (!sh || !sh.found) { done({ state: 'none' }); return; }
+        if (!sh || !sh.found) {
+          const part = sh && (sh.name || sh.store) ? this.shotToLc({ ...sh, price: 0, qty: 1, confidence: 1 }) : null;
+          done({ state: 'none', name: (sh && sh.name) || '', storeName: part ? part.storeName : '', lc: part ? { ...part.lc, name: (sh && sh.name) || '', price: '', url } : null });
+          return;
+        }
         const conv = this.shotToLc(sh);
         const ok = { ...conv, lc: { ...conv.lc, url }, state: 'ok', src: 'link', host, url, at: Date.now() };
         done(ok);
@@ -6457,7 +6467,7 @@ class Component extends DCLogic {
       if (st.aiOn && productLink) {
         metrics.hit('hero', 'link:' + (link.store ? link.store.id : '?'));
         if (link.store) this.warmGuide(link.store.id);
-        this.linkRead(href);
+        this.linkRead(href, t !== href ? t : '');
         return;
       }
       if (st.aiOn && link && link.store) {
@@ -6542,6 +6552,7 @@ class Component extends DCLogic {
       rsHelper: () => { metrics.hit('quick', 'ai:where'); this.setState({ where: { ...(st.where || {}), find: true } }); this.go('home'); },
       rsIsLink: isLink, rsIsShot: !isLink, rsHost: r.host || '',
       rsNoneT: L_(isLink ? "Havoladan narx o'qilmadi" : "Rasmdan narx o'qilmadi"),
+      rsNoneHasName: isLink && !!r.name, rsNoneName: r.name ? tx(lang, "«{0}» — nom va do'kon topildi, faqat narx yetishmayapti.", String(r.name).slice(0, 90)) : '',
       rsRetryT: L_(isLink ? 'Skrinshot yuklash' : 'Qayta yuklash'),
       rsHelperT: L_(isLink ? "Pochtam AI'dan so'rash" : 'Qayerdan topaman?'),
       rsHelperGo: isLink ? askAi : () => { metrics.hit('quick', 'ai:where'); this.setState({ where: { ...(st.where || {}), find: true } }); this.go('home'); },

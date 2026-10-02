@@ -32,7 +32,7 @@ import '../../core/tariffs.js';
 import '../../core/landed.js';
 import * as KB from './kb.generated.js';
 import { same } from './track.js';
-import { safeLink, fetchPage, extractProduct, pageText, tldCountry, tldCurrency, looksBlocked, amazonMarkers, amazonClean } from './link.js';
+import { safeLink, fetchPage, extractProduct, pageText, tldCountry, tldCurrency, looksBlocked, amazonMarkers, amazonClean, shareHint, slugName, pageName, JS_PRICE } from './link.js';
 
 const Core = globalThis.PochtamCore;
 export const AI_LIMITS = { q: 600, hist: 6, histText: 800, body: 1500000, rounds: 4 };
@@ -493,6 +493,9 @@ export function parseAiBody(text) {
   const url = parseUrl(d.url, 2000);
   /* link — "havoladan jami narx": sahifa o'qiladi, javob skrinshot bilan bir xil (shot). */
   const link = parseUrl(d.link, 2000);
+  /* hint — havola bilan ulashilgan matn ("US $5.89 | nom https://…"):
+     sahifa narxni bermasa, narx va nom shu yerdan. */
+  const hint = link ? String(d.hint == null ? '' : d.hint).replace(/[\x00-\x08\x0b-\x1f]/g, ' ').trim().slice(0, 600) : '';
   if (!q && !shot && !url && !link) return 'savol bo\'sh';
   if (q.length > AI_LIMITS.q) return 'savol ' + AI_LIMITS.q + ' belgidan uzun';
   const lang = ['uz', 'uzc', 'ru'].includes(d.lang) ? d.lang : 'uz';
@@ -508,7 +511,7 @@ export function parseAiBody(text) {
   while (hist.length && hist[0].role !== 'user') hist.shift();
   if (hist.length && hist[hist.length - 1].role === 'user') hist.pop();
   const usdRate = num(d.usdRate);
-  return { q, shot, url, link, cart: parseCart(d.cart), lang, history: hist,
+  return { q, shot, url, link, hint, cart: parseCart(d.cart), lang, history: hist,
     usdRate: usdRate >= 5000 && usdRate <= 50000 ? usdRate : 0, find: d.find === true, stream: d.stream === true };
 }
 
@@ -857,7 +860,7 @@ async function runAi({ parsed, env, count, fetchImpl, emit }) {
      chaqirilmaydi, hisobni ilova qiladi (skrinshot kabi). */
   if (parsed.link && !parsed.q && !parsed.shot) {
     say({ t: 'status', s: 'link' });
-    const rl = await readLink({ url: parsed.link, usdRate, env, fetchFn: fetchFn0 });
+    const rl = await readLink({ url: parsed.link, hint: parsed.hint, usdRate, env, fetchFn: fetchFn0 });
     if (rl.usage) { usage.input += rl.usage.input; usage.output += rl.usage.output; usage.usd += rl.usage.usd || 0; }
     if (rl.err) {
       console.log('ai link upstream', rl.err.status, rl.err.type || '', rl.err.error);
@@ -1063,19 +1066,25 @@ export async function readShot({ image, mime, usdRate, env, fetchFn }) {
 /* --- Havola → mahsulot ma'lumoti (skrinshot bilan bir xil shakl).
    1) Sahifani Worker o'zi ochadi: JSON-LD / meta'dagi narx — AI'siz, bepul.
    2) Tuzilgan ma'lumot yo'q, lekin matn bor — arzon model (AI_SHOT_MODEL)
-      matndan o'qiydi (~4 ming token).
+      matndan o'qiydi (~4 ming token). Undan oldin (bepul): ulashish
+      matnidagi narx (hint); narxi JavaScript bilan keladigan do'kon
+      (AliExpress) — AI chaqirilmaydi.
    3) Sayt Worker'ni to'sdi (captcha, 403, Amazon oraliq sahifasi) yoki
       uzun matndan narx topilmadi — asosiy model web_fetch bilan o'qiydi
       (Anthropic serveri ochadi), faqat shu domen. Qisqa narxsiz sahifada
       (bosh sahifa) bu qadam yo'q.
    Javob: { out, via, model, usage } yoki { err }. via: jsonld | meta |
-   text | fetch | amazon | bad | none; page — sahifa holati (jonli tekshiruv). --- */
+   share | text | fetch | amazon | jsprice | bad | none. Narx topilmasa
+   ham out'da nom, do'kon, davlat bo'ladi (found: false); page — sahifa holati (jonli tekshiruv). --- */
 const LINK_PROMPT = 'Bu do\'kon sahifasining matni. Faqat matnda yozilgan ma\'lumotni ber: mahsulot nomi, joriy narx (chegirmali, eski narx emas), valyuta kodi, do\'kon nomi, kategoriya (ro\'yxatdan bittasi), do\'kon qaysi davlatdan yuborishi (domen, til, valyutadan; aniq bo\'lmasa bo\'sh), og\'irlik yozilgan bo\'lsa kilogrammda (bo\'lmasa 0). Taxmin qilma: narx topilmasa price 0, confidence 0. Javob faqat JSON.';
 const parseJsonLoose = text => {
   try { return JSON.parse(text); } catch (e) { const m = /\{[\s\S]*\}/.exec(String(text || '')); if (m) { try { return JSON.parse(m[0]); } catch (e2) {} } }
   return null;
 };
-export async function readLink({ url, usdRate, env, fetchFn }) {
+/* Narx o'qilmaganda qo'lda hisoblash uchun valyuta: do'kon davlatidan
+   (Xitoy do'konlari ko'pincha dollarda ko'rsatadi — bo'sh, ilova USD oladi). */
+const CUR_OF_COUNTRY = { Turkiya: 'TRY', Koreya: 'KRW', Angliya: 'GBP', BAA: 'AED', AQSh: 'USD', Germaniya: 'EUR', Yaponiya: 'JPY' };
+export async function readLink({ url, hint, usdRate, env, fetchFn }) {
   const u0 = safeLink(url);
   if (!u0) return { out: { found: false }, via: 'bad' };
   /* Amazon havolasi toza ko'rinishga: /dp/ASIN (kuzatuv parametrlarisiz). */
@@ -1101,6 +1110,16 @@ export async function readLink({ url, usdRate, env, fetchFn }) {
     const p = extractProduct(page.html);
     if (p && p.price > 0) return { out: fill({ name: p.name, price: p.price, currency: p.currency, weightKg: p.weightKg, store: p.store || p.brand }, 0.95), via: p.source, page: pinfo };
   }
+  /* Narx o'qilmasa ham nom, do'kon va davlat ilovaga beriladi — qo'lda
+     hisoblash oldindan to'ldiriladi (faqat narxni yozish qoladi). Nom:
+     sahifa sarlavhasi → ulashish matni → havoladagi so'zlar. */
+  const share = shareHint(hint);
+  const nameGuess = (page.ok && !looksBlocked(page.html) ? pageName(page.html) : '') || share.name || slugName(fin.href);
+  const partial = () => ({ found: false, url: u.href, host, name: nameGuess, store: known.store || '', country: known.country || '', currency: tldCurrency(host) || CUR_OF_COUNTRY[known.country] || '' });
+  /* 1b) Ulashish matnida narx bor — AI'siz, bepul. */
+  if (share.price > 0) return { out: fill({ name: nameGuess || share.name, price: share.price, currency: share.currency }, 0.75), via: 'share', page: pinfo };
+  /* Narx JavaScript bilan yuklanadigan do'kon (AliExpress) — AI ham topmaydi. */
+  if (page.ok && JS_PRICE.test(host)) return { out: partial(), via: 'jsprice', page: pinfo };
   const usageOf = (m, model) => ({ input: (m.usage && m.usage.input_tokens) || 0, output: (m.usage && m.usage.output_tokens) || 0, usd: costUsd(m.model || model, m.usage) });
   const text = page.ok && !looksBlocked(page.html) ? pageText(page.html) : '';
   let textUsage = { input: 0, output: 0, usd: 0 };
@@ -1120,7 +1139,7 @@ export async function readLink({ url, usdRate, env, fetchFn }) {
     }
   }
   /* Qisqa sahifa (narxsiz bosh sahifa va h.k.) — web_fetch ham yordam bermaydi. */
-  if (!blocked && text.length < 300) return { out: { found: false, url: u.href, host }, via: 'none', page: pinfo };
+  if (!blocked && text.length < 300) return { out: partial(), via: 'none', page: pinfo };
   /* 3) web_fetch: sahifani Anthropic ochadi. Fikrlash past, bitta o'qish. */
   const body = { model: env.AI_MODEL || DEFAULT_MODEL, max_tokens: 1500,
     tools: [{ type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 1, max_content_tokens: 8000, allowed_domains: hosts }],
@@ -1140,5 +1159,5 @@ export async function readLink({ url, usdRate, env, fetchFn }) {
   }
   const raw = msg ? parseJsonLoose((Array.isArray(msg.content) ? msg.content : []).filter(b => b.type === 'text').map(b => b.text).join('\n')) : null;
   if (raw && pos(raw.price) > 0) return { out: fill(raw, num(raw.confidence) || 0.7), via: 'fetch', model: msg.model || body.model, usage, page: pinfo };
-  return { out: { found: false, url: u.href, host }, via: 'none', model: (msg && msg.model) || body.model, usage, page: pinfo };
+  return { out: partial(), via: 'none', model: (msg && msg.model) || body.model, usage, page: pinfo };
 }
