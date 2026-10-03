@@ -1094,7 +1094,7 @@ export async function readShot({ image, mime, usdRate, env, fetchFn }) {
       (Anthropic serveri ochadi), faqat shu domen. Qisqa narxsiz sahifada
       (bosh sahifa) bu qadam yo'q.
    Javob: { out, via, model, usage } yoki { err }. via: jsonld | meta |
-   share | text | fetch | amazon | jsprice | wall | bad | none. Narx topilmasa
+   share | text | fetch | amazon | jsprice | wall | blocked | bad | none. Narx topilmasa
    ham out'da nom, do'kon, davlat bo'ladi (found: false); page — sahifa holati (jonli tekshiruv). --- */
 const LINK_PROMPT = 'Bu do\'kon sahifasining matni. Faqat matnda yozilgan ma\'lumotni ber: mahsulot nomi, joriy narx (chegirmali, eski narx emas), valyuta kodi, do\'kon nomi, kategoriya (ro\'yxatdan bittasi), do\'kon qaysi davlatdan yuborishi (domen, til, valyutadan; aniq bo\'lmasa bo\'sh), og\'irlik yozilgan bo\'lsa kilogrammda (bo\'lmasa 0). Taxmin qilma: narx topilmasa price 0, confidence 0. Javob faqat JSON.';
 const parseJsonLoose = text => {
@@ -1162,6 +1162,10 @@ export async function readLink({ url, hint, usdRate, env, fetchFn }) {
   }
   /* Qisqa sahifa (narxsiz bosh sahifa va h.k.) — web_fetch ham yordam bermaydi. */
   if (!blocked && text.length < 300) return { out: partial(), via: 'none', page: pinfo };
+  /* web_fetch (asosiy model, ~$0.03 va 10+ s) standart o'chiq: jonli
+     sinovda to'silgan saytlarda (Trendyol, captcha) u ham o'tolmadi.
+     Ilova darrov skrinshot yoki narxni so'raydi. AI_LINK_FETCH="1" — yoqish. */
+  if (String(env.AI_LINK_FETCH || '0') !== '1') return { out: partial(), via: blocked ? 'blocked' : 'none', model: textUsage.usd ? (env.AI_SHOT_MODEL || 'claude-haiku-4-5') : '', usage: textUsage.usd ? textUsage : undefined, page: pinfo };
   /* 3) web_fetch: sahifani Anthropic ochadi. Fikrlash past, bitta o'qish. */
   const body = { model: env.AI_MODEL || DEFAULT_MODEL, max_tokens: 1500,
     tools: [{ type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 1, max_content_tokens: 8000, allowed_domains: hosts }],

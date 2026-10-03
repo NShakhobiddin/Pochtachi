@@ -52,7 +52,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== CACHE && k !== LOGO_CACHE).map(k => caches.delete(k))))
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE && k !== LOGO_CACHE && k !== SHARE_CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -83,8 +83,32 @@ const isStoreLogo = url =>
    tekshirish shart emas. */
 const isImmutable = url => /\.(webp|png|woff2|css)$/.test(url.pathname) || /\/vendor\//.test(url.pathname);
 
+/* «Ulashish → Pochtam» (manifest share_target): Android do'kon ilovasidan
+   ulashilgan matn (title, text, url) va rasm (shot) shu yerga POST bo'lib
+   keladi. Hech qayerga yuborilmaydi — vaqtinchalik keshga yoziladi va
+   ilova ./?share=1 bilan ochiladi; ilova o'qigach keshni o'chiradi. */
+const SHARE_CACHE = 'pochtam-share';
+async function takeShare(req) {
+  const home = new URL('./?share=1', self.registration.scope).href;
+  try {
+    const fd = await req.formData();
+    /* Sarlavha ko'pincha matn ichida takrorlanadi — bo'lsa qo'shilmaydi. */
+    const [title, body, link] = ['title', 'text', 'url'].map(k => String(fd.get(k) || '').trim());
+    const text = [title && !body.includes(title) ? title : '', body, link && !body.includes(link) ? link : '']
+      .filter(Boolean).join(' ').slice(0, 1500);
+    const file = fd.get('shot');
+    const c = await caches.open(SHARE_CACHE);
+    await c.delete('share-text'); await c.delete('share-file');
+    if (text) await c.put('share-text', new Response(text, { headers: { 'content-type': 'text/plain; charset=utf-8' } }));
+    if (file && typeof file === 'object' && file.size > 0 && file.size <= 15 * 1024 * 1024 && /^image\//.test(file.type || ''))
+      await c.put('share-file', new Response(file, { headers: { 'content-type': file.type } }));
+  } catch (e) { /* buzuq so'rov — ilova oddiy ochiladi */ }
+  return Response.redirect(home, 303);
+}
+
 self.addEventListener('fetch', event => {
   const req = event.request;
+  if (req.method === 'POST' && new URL(req.url).pathname.endsWith('/share')) { event.respondWith(takeShare(req)); return; }
   if (req.method !== 'GET') return;
 
   const url = new URL(req.url);

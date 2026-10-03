@@ -1,3 +1,4 @@
+import '../../core/share.js';
 /* Mahsulot havolasini o'qish (2026-09-27).
  *
  * Havola tashlansa ilova skrinshotdagi kabi "Jami narx" ekranini ochadi.
@@ -351,50 +352,7 @@ export function pageName(html) {
     .replace(/\s*[-|–—:]\s*(AliExpress|Trendyol|Amazon(\.[a-z.]+)?|eBay|Temu|SHEIN)\b.*$/i, '').trim().slice(0, 120);
 }
 
-/* Havoladagi nom: trendyol.com/<brend>/<nom>-p-<id> — sahifa to'silganda
-   (Trendyol serverlarga captcha ko'rsatadi) nom shu yerdan. Boshqa
-   do'konlarda — eng uzun "so'z-so'z-so'z" bo'lagi. */
-const titleWords = s => s.split('-').filter(Boolean).slice(0, 14)
-  .map(w => /^\d/.test(w) ? w : w[0].toUpperCase() + w.slice(1)).join(' ');
-export function slugName(href) {
-  let x;
-  try { x = new URL(String(href || '')); } catch (e) { return ''; }
-  const segs = x.pathname.split('/').filter(Boolean).map(s => { try { return decodeURIComponent(s); } catch (e) { return s; } });
-  const TY = /^(.+?)-p-\d+$/i;
-  const i = segs.findIndex(s => TY.test(s));
-  if (i >= 0) {
-    const words = segs[i].replace(TY, '$1'), brand = i > 0 ? segs[i - 1] : '';
-    return titleWords((brand && !words.toLowerCase().startsWith(brand.toLowerCase()) ? brand + '-' : '') + words).slice(0, 120);
-  }
-  const c = segs.filter(s => /^[\p{L}\d]+(-[\p{L}\d]+){2,}$/u.test(s) && /\p{L}{3}/u.test(s)).sort((a, b) => b.length - a.length)[0];
-  return c ? titleWords(c).slice(0, 120) : '';
-}
-
-/* Ulashish matni (do'kon ilovasidagi "Ulashish" tugmasi):
-   "US $5.89 | Erkaklar krossovkasi https://a.aliexpress.com/_x",
-   "1.299,90 TL Ceket https://ty.gl/…". Havola olib tashlanadi; narx —
-   valyuta belgisi yonidagi son; nom — qolgan matn, reklama iboralarisiz.
-   Javob: { name, price, currency } (topilmasa '' / 0). */
-const SH_CUR = [['US $', 'USD'], ['US$', 'USD'], ['USD', 'USD'], ['$', 'USD'], ['₺', 'TRY'], ['TL', 'TRY'], ['TRY', 'TRY'],
-  ['€', 'EUR'], ['EUR', 'EUR'], ['£', 'GBP'], ['GBP', 'GBP'], ['руб.', 'RUB'], ['руб', 'RUB'], ['₽', 'RUB'], ['RUB', 'RUB'],
-  ['¥', 'CNY'], ['CNY', 'CNY'], ['元', 'CNY'], ['₩', 'KRW'], ['KRW', 'KRW'], ['AED', 'AED'], ["so'm", 'UZS'], ['сум', 'UZS'], ['UZS', 'UZS']];
-const reEsc = k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-const SH_SYM = SH_CUR.map(([k]) => reEsc(k)).join('|');
-const SH_NUM = '\\d{1,3}(?:[\\s.,]\\d{3})+(?:[.,]\\d{1,2})?|\\d+(?:[.,]\\d{1,2})?';
-const SH_RE = new RegExp('(?<![\\p{L}\\d])(?:(' + SH_SYM + ')\\s?(' + SH_NUM + ')|(' + SH_NUM + ')\\s?(' + SH_SYM + '))(?![\\p{L}\\d])', 'iu');
-const SH_ADS = /check out this (product|item)[^:!.]*[:!.]?|look what i found[^:!.]*[:!.]?|i found this[^:!.]*[:!.]?|smarter shopping,? better living!?|aliexpress'?te bu ürün[^:!.]*[:!.]?|bu ürünü trendyol'?da[^:!.]*[:!.]?|trendyol'?da bu ürüne[^:!.]*[:!.]?|посмотри(те)?[^:!.]*aliexpress[^:!.]*[:!.]?|смотрите, что я нашел[^:!.]*[:!.]?/giu;
-export function shareHint(text) {
-  let s = String(text || '').slice(0, 600).replace(/https?:\/\/\S+/gi, ' ');
-  let price = 0, currency = '';
-  const m = SH_RE.exec(s);
-  if (m) {
-    const sym = (m[1] || m[4] || '').toLowerCase();
-    const f = SH_CUR.find(([k]) => k.toLowerCase() === sym);
-    price = parsePrice(m[2] || m[3]);
-    currency = f ? f[1] : '';
-    if (currency === 'UZS') price = 0;
-    s = s.replace(m[0], ' ');
-  }
-  const name = s.replace(SH_ADS, ' ').replace(/\s+/g, ' ').replace(/^[\s|:–—·•\-!.,]+|[\s|:–—·•\-!.,]+$/g, '').trim();
-  return { name: /\p{L}{3}/u.test(name) ? name.slice(0, 120) : '', price: currency && price > 0 ? price : 0, currency: price > 0 ? currency : '' };
-}
+/* Havoladagi nom va ulashish matni — core/share.js (ilova ham shuni
+   ishlatadi, natija ikki joyda bir xil). */
+export const slugName = href => globalThis.PochtamCore.slugName(href);
+export const shareHint = text => globalThis.PochtamCore.shareHint(text);

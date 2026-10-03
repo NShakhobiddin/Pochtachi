@@ -100,6 +100,7 @@
 <script src="core/customs.js"></script>
 <script src="core/tariffs.js"></script>
 <script src="core/landed.js"></script>
+<script src="core/share.js"></script>
 <script>
   (function () {
     try { if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) {}
@@ -4086,7 +4087,7 @@ const RU = {
   // Bosh sahifa: qo'llanma va ovoz (2026-09-26)
   "Havola yoki tovar nomini yozing":"Ссылка или название товара",
   "Tovar nomini yozing yoki ayting — AI mos do'konlar va aniq mahsulot havolalarini topadi.":"Напишите или скажите название товара — ИИ найдёт подходящие магазины и точные ссылки на товар.",
-  "Mahsulot havolasini tashlang — narx, kuryer, boj va jami summa hisoblanadi.":"Вставьте ссылку на товар — посчитаем цену, курьера, пошлину и итог.",
+  "Do'kon ilovasidagi «Ulashish» matnini yoki havolani tashlang — narx bo'lsa, darrov hisoblanadi; bo'lmasa skrinshot yuklang.":"Вставьте текст из кнопки «Поделиться» в приложении магазина или ссылку — если там есть цена, посчитаем сразу; если нет, загрузите скриншот.",
   "Topgach, narx ko'ringan ekranni suratga olib yuklang — hisob shu tovar bo'yicha.":"Нашли — сделайте скриншот экрана с ценой и загрузите: посчитаем именно этот товар.",
   "Do'kon, kuryer yoki tovar turini yozing — ro'yxatdan topiladi.":"Напишите магазин, курьера или вид товара — найдём в списке.",
   "Do'kon havolasini tashlasangiz — o'sha do'kon sahifasi ochiladi.":"Вставьте ссылку на магазин — откроется его страница.",
@@ -5568,6 +5569,7 @@ class Component extends DCLogic {
 
   componentDidMount() {
     this.applyLang();
+    this.takeShare();
     this.loadNorms();
     this.loadTariffs();
     this.loadStoreLogos();
@@ -6348,6 +6350,52 @@ class Component extends DCLogic {
       .catch(e => done({ state: 'err', code: (e && e.code) || 'net' }))
       .then(() => clearTimeout(timer));
   }
+  async takeShare() {
+    let q = '';
+    try { q = location.search; } catch (e) { return; }
+    if (!/[?&]share=1(&|$)/.test(q) || typeof caches === 'undefined') return;
+    try { history.replaceState(history.state, '', location.pathname); } catch (e) {}
+    let text = '', file = null;
+    try {
+      const c = await caches.open('pochtam-share');
+      const t = await c.match('share-text');
+      if (t) text = String(await t.text()).trim();
+      const f = await c.match('share-file');
+      if (f) {
+        const b = await f.blob();
+        if (b && b.size && /^image\//.test(b.type || '')) file = new File([b], 'ulashilgan.' + (b.type.split('/')[1] || 'png'), { type: b.type });
+      }
+      await caches.delete('pochtam-share');
+    } catch (e) {}
+    metrics.hit('share', file ? 'image' : text ? 'text' : 'empty');
+    if (!file && !text) return;
+    if (!this.state.onboarded) this.setState({ onboarded: true });
+    if (file) { this.aiShot(file); return; }
+    if (this.cur() !== 'home') this.go('home');
+    this.setState({ where: { ...(this.state.where || {}), text: text.slice(0, 1500) } });
+    let n = 0;
+    const go = () => {
+      if (this._heroRun && this.cur() === 'home') this._heroRun(text);
+      else if (n++ < 30) setTimeout(go, 100);
+    };
+    setTimeout(go, 0);
+  }
+  linkLocal(url, hint, link) {
+    const C = typeof PochtamCore !== 'undefined' ? PochtamCore : null;
+    const sh = C && C.shareHint ? C.shareHint(hint) : null;
+    if (!sh || !(sh.price > 0)) return false;
+    let host = '';
+    try { host = new URL(url).hostname.replace(/^www\./, ''); } catch (e) { return false; }
+    const store = link && link.store;
+    const conv = this.shotToLc({ found: true, name: sh.name || (C.slugName ? C.slugName(url) : ''), price: sh.price, currency: sh.currency,
+      qty: 1, store: store ? store.name : '', country: store ? store.country : '', category: '', weightKg: 0, confidence: 0.75 });
+    const ok = { ...conv, lc: { ...conv.lc, url }, state: 'ok', src: 'link', host, url, at: Date.now() };
+    metrics.hit('ai_question', 'link:local');
+    this.setState({ shotRes: ok, lastRes: ok });
+    try { localStorage.setItem('xy_last', JSON.stringify(ok)); } catch (e) {}
+    if (this.cur() !== 'result') this.push('result');
+    return true;
+  }
   shotToLc(j) {
     const raw = String(j.currency || '').toUpperCase();
     const cur = raw && (lcFxOf(raw) > 0 || raw === 'USD') ? raw : 'USD';
@@ -6467,7 +6515,9 @@ class Component extends DCLogic {
       if (st.aiOn && productLink) {
         metrics.hit('hero', 'link:' + (link.store ? link.store.id : '?'));
         if (link.store) this.warmGuide(link.store.id);
-        this.linkRead(href, t !== href ? t : '');
+        const hint = t !== href ? t : '';
+        if (hint && this.linkLocal(href, hint, link)) return;
+        this.linkRead(href, hint);
         return;
       }
       if (st.aiOn && link && link.store) {
@@ -6505,9 +6555,10 @@ class Component extends DCLogic {
       this.setState({ homeQuery: link ? link.word : t });
       this.push('search');
     };
+    this._heroRun = run;
     const G = st.aiOn
       ? ["Tovar nomini yozing yoki ayting — AI mos do'konlar va aniq mahsulot havolalarini topadi.",
-         "Mahsulot havolasini tashlang — narx, kuryer, boj va jami summa hisoblanadi.",
+         "Do'kon ilovasidagi «Ulashish» matnini yoki havolani tashlang — narx bo'lsa, darrov hisoblanadi; bo'lmasa skrinshot yuklang.",
          "Topgach, narx ko'ringan ekranni suratga olib yuklang — hisob shu tovar bo'yicha."]
       : ["Do'kon, kuryer yoki tovar turini yozing — ro'yxatdan topiladi.",
          "Do'kon havolasini tashlasangiz — o'sha do'kon sahifasi ochiladi.",

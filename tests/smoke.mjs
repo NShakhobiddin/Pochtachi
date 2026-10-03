@@ -761,7 +761,7 @@ try {
     const whField = page.locator('main input[aria-label="Mahsulot nomi"]');
     check('bosh sahifa: savol, maydon, qo\'llanma, skrinshot va qo\'lda narx ("Hali topmadim"siz)', /Nima mahsulot qidiryapsiz\?/.test(wh1) && (await whField.count()) === 1 && (await whField.getAttribute('placeholder')) === 'Havola yoki tovar nomini yozing' && await camBtn.count() === 1 && /Narxni o'zim yozaman/.test(wh1) && !/Hali topmadim|Qanaqasi\?/.test(wh1) && (await page.locator('main [data-tour="where"]').count()) === 0, wh1.slice(0, 120));
     const guide = (await page.locator('main [data-guide]').first().innerText().catch(() => '')).replace(/\s+/g, ' ');
-    check('maydon ostida kichik qo\'llanma: 3 qadam (nom yoki ovoz → AI, havola → hisob, skrinshot)', /^Qanday ishlaydi 1 Tovar nomini yozing yoki ayting — AI mos do'konlar va aniq mahsulot havolalarini topadi\. 2 Mahsulot havolasini tashlang — narx, kuryer, boj va jami summa hisoblanadi\. 3 Topgach, narx ko'ringan ekranni suratga olib yuklang/.test(guide), guide);
+    check('maydon ostida kichik qo\'llanma: 3 qadam (nom yoki ovoz → AI, havola → hisob, skrinshot)', /^Qanday ishlaydi 1 Tovar nomini yozing yoki ayting — AI mos do'konlar va aniq mahsulot havolalarini topadi\. 2 Do'kon ilovasidagi «Ulashish» matnini yoki havolani tashlang — narx bo'lsa, darrov hisoblanadi; bo'lmasa skrinshot yuklang\. 3 Topgach, narx ko'ringan ekranni suratga olib yuklang/.test(guide), guide);
     check('ovoz tugmasi doim bor', (await page.locator('main form button[aria-label="Ovoz bilan aytish"]').count()) === 1);
     /* Bo'sh maydonda Enter — maslahat va fokus, AI ga so'rov ketmaydi. */
     await whField.fill(''); await whField.press('Enter'); await page.waitForTimeout(300);
@@ -798,6 +798,13 @@ try {
     await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(900);
     { const lb = aiBodies[aiBodies.length - 1] || {};
       check('ulashish matnidagi havola ajratib olinadi → "Jami narx" (link); butun matn hint bo\'lib ketadi', lb.link === 'https://item.taobao.com/item.htm?id=2&spm=a1z10' && !lb.q && /Qishki kurtka/.test(lb.hint || '') && /Jami narx/.test(await page.locator('header').innerText()), JSON.stringify(lb).slice(0, 140)); }
+    /* Ulashish matnida narx bor — natija serversiz (AI so'rovi yo'q). */
+    await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
+    { const nAi = aiBodies.length;
+      await heroField.fill('US $41.99 | Li-Ning RED HARE 9 Running Shoes https://www.aliexpress.com/item/3256810572293986.html'); await page.waitForTimeout(200);
+      await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(900);
+      const lt = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
+      check('ulashish matnida narx — darrov "Jami narx", AI so\'rovi yo\'q, nom va $41.99', aiBodies.length === nAi && /Jami narx/.test(await page.locator('header').innerText()) && /Li-Ning RED HARE 9 Running Shoes/.test(lt) && /41[.,]99 USD/.test(lt) && /AliExpress/.test(lt), lt.slice(0, 200)); }
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
     await heroField.fill('https://shop.example.com/nonprice/item'); await page.waitForTimeout(200);
     await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(900);
@@ -2742,6 +2749,25 @@ try {
   const tarmoqRasm = hits.filter(h => /\.(webp|png|woff2)$/.test(h));
   check('takroriy ochilishda rasm va shrift tarmoqdan so\'ralmaydi',
     tarmoqRasm.length === 0, tarmoqRasm.slice(0, 4).join(', '));
+
+  /* «Ulashish → Pochtam»: service worker POST ./share ni ushlaydi, matnni
+     vaqtinchalik keshga yozib ./?share=1 ga yo'naltiradi; ilova narxni
+     ulashish matnidan o'zi o'qiydi (AI'siz) va keshni o'chiradi. */
+  const shr = await page.evaluate(async () => {
+    const fd = new FormData();
+    fd.append('title', 'Li-Ning RED HARE 9 Running Shoes');
+    fd.append('text', 'US $41.99 | Li-Ning RED HARE 9 Running Shoes');
+    fd.append('url', 'https://www.aliexpress.com/item/3256810572293986.html');
+    try { const r = await fetch('./share', { method: 'POST', body: fd }); return { ok: r.ok, url: r.url, kesh: (await (await caches.open('pochtam-share')).keys()).length }; }
+    catch (e) { return { err: String(e) }; }
+  });
+  check('ulashish: service worker POST ./share ni qabul qilib ./?share=1 ga yo\'naltiradi', shr.ok && /\?share=1$/.test(shr.url) && shr.kesh === 1, JSON.stringify(shr));
+  await page.goto(new URL('./?share=1', page.url()).href, { waitUntil: 'load' });
+  await page.waitForTimeout(1800);
+  { const ht = await page.locator('header').innerText().catch(() => '');
+    const mt = (await page.locator('main').innerText().catch(() => '')).replace(/\s+/g, ' ');
+    const after = await page.evaluate(async () => ({ q: location.search, kesh: (await caches.keys()).includes('pochtam-share') }));
+    check('ulashish: ilova matnni oladi — "Jami narx", $41.99, nom; kesh va ?share=1 tozalanadi', /Jami narx/.test(ht) && /41[.,]99 USD/.test(mt) && /Li-Ning RED HARE 9 Running Shoes/.test(mt) && !/Li-Ning RED HARE 9 Running Shoes \| Li-Ning/.test(mt) && after.q === '' && !after.kesh, ht.slice(0, 40) + ' · ' + mt.slice(0, 160) + ' · ' + JSON.stringify(after)); }
 
   /* Oflayn: ilova ochiladi, do'kon logotiplari va taqiq belgilari keshdan keladi. */
   await context.setOffline(true);

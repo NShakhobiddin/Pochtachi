@@ -84,7 +84,7 @@ function build(src) {
 const SHELL_ICONS = ['icons/brand.webp', 'icons/brand-full.webp', 'icons/stores-3d.webp', 'icons/courier-3d.webp',
   'icons/customs-3d.webp', 'icons/guides-3d.webp', 'icons/mutaxassis-3d.webp', 'icons/icon-192.png', 'icons/apple-touch-icon.png'];
 function precacheList() {
-  const files = ['./', 'support.js', 'manifest.webmanifest', 'data/norms.json', 'core/customs.js', 'core/tariffs.js', 'core/landed.js', 'data/tariffs.json',
+  const files = ['./', 'support.js', 'manifest.webmanifest', 'data/norms.json', 'core/customs.js', 'core/tariffs.js', 'core/landed.js', 'core/share.js', 'data/tariffs.json',
     'vendor/react.production.min.js', 'vendor/react-dom.production.min.js'];
   const later = ['guides/guide-base.css', 'guides/guide-common.css', 'guides/guide-engine.js', 'guides/guide-motion.js', 'guides/guide.js',
     /* Pochtam Core'ning qolgan modullari va ma'lumotlari: universal

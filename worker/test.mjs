@@ -79,7 +79,8 @@ const { runTool, buildSystem, TOOLS, parseAiBody, buildCards, mergeCart, toolAsk
 check('plainText: markdown belgilari olib tashlanadi, raqamli qadamlar qoladi', plainText('**Nike.com** — rasmiy.\n## Sarlavha\n- birinchi\n1. Qadam *muhim* `kod`') === 'Nike.com — rasmiy.\nSarlavha\n— birinchi\n1. Qadam muhim kod', JSON.stringify(plainText('**Nike.com** — rasmiy.\n## Sarlavha\n- birinchi\n1. Qadam *muhim* `kod`')));
 import '../core/customs.js';
 const Core = globalThis.PochtamCore;
-const aiEnv = (extra = {}) => ({ ...env, ANTHROPIC_API_KEY: 'sk-test', AI_DAILY_PER_IP: '3', AI_DAILY_TOTAL: '100', ...extra });
+/* AI_LINK_FETCH: havola testlari web_fetch zaxirasini ham tekshiradi (ishlab chiqarishda standart o'chiq — alohida test). */
+const aiEnv = (extra = {}) => ({ ...env, ANTHROPIC_API_KEY: 'sk-test', AI_DAILY_PER_IP: '3', AI_DAILY_TOTAL: '100', AI_LINK_FETCH: '1', ...extra });
 const ask = (q, extra = {}, init = {}) => worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': '1.2.3.4', ...(init.headers || {}) }, body: JSON.stringify({ q, lang: 'uz', usdRate: 12650, ...(init.body || {}) }) }), aiEnv(extra), ctx);
 const claudeText = text => new Response(JSON.stringify({ model: 'claude-test', stop_reason: 'end_turn', content: [{ type: 'text', text }], usage: { input_tokens: 10, output_tokens: 5 } }), { status: 200 });
 
@@ -610,6 +611,11 @@ check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit(
   let ai17 = 0;
   const j17 = await (await linkAskH('https://www.trendyol.com/derimod/erkek-sneaker-p-741953629', '1.199,99 TL Derimod Erkek Sneaker https://ty.gl/x', async (u) => { if (/anthropic/.test(u)) { ai17++; return claudeText('x'); } return html(cf, 'text/html', 403); }, '4.4.4.17')).json();
   check('link: Trendyol + ulashish matnida narx — topildi (via share, TRY), AI yo\'q', j17.via === 'share' && j17.shot.found && j17.shot.price === 1199.99 && j17.shot.currency === 'TRY' && j17.shot.store === 'Trendyol' && ai17 === 0, JSON.stringify({ via: j17.via, shot: j17.shot }));
+  /* Standart (AI_LINK_FETCH yo'q): to'silgan sahifada web_fetch chaqirilmaydi. */
+  const calls18 = [];
+  const j18 = await (await worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': '4.4.4.18' },
+    body: JSON.stringify({ link: 'https://www.amazon.com/dp/B0TEST18', lang: 'uz', usdRate: 12650 }) }), aiEnv({ AI_LINK_FETCH: undefined, AI_FETCH: async (u, i) => { if (/anthropic/.test(u)) { calls18.push(1); return claudeText('x'); } return html('<title>Robot Check</title><p>Enter the characters you see below</p>', 'text/html', 503); } }), ctx)).json();
+  check('link: standart — to\'silgan sahifada web_fetch yo\'q (via blocked, $0)', j18.via === 'blocked' && j18.shot.found === false && j18.shot.store === 'Amazon' && calls18.length === 0, JSON.stringify({ via: j18.via, shot: j18.shot, calls18 }));
   check('parseAiBody: hint faqat link bilan, 600 belgigacha', parseAiBody(JSON.stringify({ link: 'https://a.com/x', hint: 'a'.repeat(900) })).hint.length === 600 && parseAiBody(JSON.stringify({ q: 'salom', hint: 'x' })).hint === '');
 }
 
