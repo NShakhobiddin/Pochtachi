@@ -665,6 +665,12 @@ export async function readSse(stream, onEvent) {
    Kunlik chegara `limit()` bilan — chaqiruvchi kirishni tekshirgach chaqiradi,
    shunda noto'g'ri so'rov kvotani yemaydi. */
 async function gate({ request, env, ctx, origin, originOk, cors, counter, maxBody }) {
+  /* Sifat sinovi (tests/ai.mjs): x-pochtam-eval = READ_TOKEN. Sinov sarfi
+     alohida (ai_usd_eval) yoziladi va foydalanuvchilarning kunlik
+     byudjetini (AI_DAILY_USD) yemaydi; o'zining chegarasi bor
+     (AI_EVAL_DAILY_USD, standart $5). */
+  const evalTok = request.headers.get('x-pochtam-eval') || '';
+  const isEval = !!(env.READ_TOKEN && evalTok && same(evalTok, env.READ_TOKEN));
   const json = (obj, status = 200) => new Response(JSON.stringify(obj), { status, headers: cors(env, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }, origin) });
   const add = rows => { if (counter && ctx) ctx.waitUntil(counter.fetch('https://counter/add', { method: 'POST', body: JSON.stringify(rows) }).catch(() => {})); };
   const count = key => add([{ day: isoDay(), name: 'ai', key, n: 1 }]);
@@ -673,8 +679,8 @@ async function gate({ request, env, ctx, origin, originOk, cors, counter, maxBod
   const spend = (kind, u) => {
     if (!u) return;
     const day = isoDay(), rows = [];
-    if (u.usd > 0) rows.push({ day, name: 'ai_usd', key: kind, n: Math.round(u.usd * 1e6) });
-    for (const [k, v] of [['input', u.input], ['output', u.output], ['cache_read', u.cacheRead], ['cache_write', u.cacheWrite]]) if (v > 0) rows.push({ day, name: 'ai_tok', key: k, n: v });
+    if (u.usd > 0) rows.push({ day, name: isEval ? 'ai_usd_eval' : 'ai_usd', key: kind, n: Math.round(u.usd * 1e6) });
+    if (!isEval) for (const [k, v] of [['input', u.input], ['output', u.output], ['cache_read', u.cacheRead], ['cache_write', u.cacheWrite]]) if (v > 0) rows.push({ day, name: 'ai_tok', key: k, n: v });
     if (rows.length) add(rows);
   };
   if (!originOk) return { res: json({ error: 'ruxsat yo\'q' }, 403) };
@@ -688,20 +694,20 @@ async function gate({ request, env, ctx, origin, originOk, cors, counter, maxBod
      (veb-qidiruv — eng qimmat so'rov) IP uchun AI_DAILY_FIND_PER_IP tadan
      oshsa rad etilmaydi: qidiruvsiz javob beriladi (do'kon + qidiruv
      havolasi). */
-  const limit = async (parsed, noIp) => {
+  const limit = async parsed => {
     if (!counter) return null;
     const key = await ipKey(request, env, isoDay());
-    const perIp = noIp ? 0 : +env.AI_DAILY_PER_IP || 20, total = +env.AI_DAILY_TOTAL || 300;
-    const budget = Math.round((+env.AI_DAILY_USD || 0) * 1e6), maxFind = noIp ? 0 : +env.AI_DAILY_FIND_PER_IP || 5;
+    const perIp = isEval ? 0 : +env.AI_DAILY_PER_IP || 20, total = +env.AI_DAILY_TOTAL || 300;
+    const budget = Math.round((isEval ? (+env.AI_EVAL_DAILY_USD || 5) : (+env.AI_DAILY_USD || 0)) * 1e6), maxFind = isEval ? 0 : +env.AI_DAILY_FIND_PER_IP || 5;
     const find = !!(parsed && parsed.find);
     let lim = { ok: true };
-    try { lim = await (await counter.fetch('https://counter/limit', { method: 'POST', body: JSON.stringify({ key, max: perIp, total, budget, find, maxFind }) })).json(); } catch (e) { lim = { ok: true }; }
+    try { lim = await (await counter.fetch('https://counter/limit', { method: 'POST', body: JSON.stringify({ key, max: perIp, total, budget, find, maxFind, eval: isEval }) })).json(); } catch (e) { lim = { ok: true }; }
     if (lim.noFind && parsed) { parsed.find = false; count('find_limit'); }
     if (lim.ok) return null;
     count('limit');
     return json({ error: 'Bugungi savollar chegarasi tugadi. Ertaga yana urinib ko\'ring yoki ilovadagi kalkulyatordan foydalaning.', code: 'limit', scope: lim.scope || 'ip' }, 429);
   };
-  return { text, json, count, spend, limit };
+  return { text, json, count, spend, limit, isEval };
 }
 
 /* Javob har doim bitta shaklda: qisqa matn + kartalar. Ilova FAQAT shu
@@ -779,11 +785,12 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
   const g = await gate({ request, env, ctx, origin, originOk, cors, counter, maxBody: AI_LIMITS.body });
   if (g.res) return g.res;
   /* Sifat sinovi (tests/ai.mjs, workflow "eval"): x-pochtam-eval = READ_TOKEN
-     bo'lsa tayyor javob ishlatilmaydi (har savolga haqiqiy javob) va IP
-     chegarasi yo'q; umumiy va $ byudjeti amal qiladi. */
-  const evalTok = request.headers.get('x-pochtam-eval') || '';
-  const isEval = !!(env.READ_TOKEN && evalTok && same(evalTok, env.READ_TOKEN));
-  const { json, count, spend } = g;
+     bo'lsa tayyor javob ishlatilmaydi (har savolga haqiqiy javob), IP va
+     umumiy chegara yo'q, sarf alohida byudjetda (gate). */
+  const { json, count, spend, isEval } = g;
+  /* Sinovda model va fikrlash rejimini almashtirib solishtirish mumkin
+     (faqat ruxsat etilgan qiymatlar): x-pochtam-model, x-pochtam-thinking. */
+  const cfg = isEval ? evalCfg(request) : {};
   const parsed = parseAiBody(g.text);
   if (typeof parsed === 'string') return json({ error: parsed, code: 'bad_input' }, 400);
   /* Tayyor javob bo'lsa — chegara ham, xarajat ham yo'q. */
@@ -810,10 +817,10 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
     const { usage, ...keep } = b;
     ctx.waitUntil(counter.fetch('https://counter/answer/put', { method: 'POST', body: JSON.stringify({ key: akey, body: keep }) }).catch(() => {}));
   };
-  const limited = await g.limit(parsed, isEval); if (limited) return limited;
+  const limited = await g.limit(parsed); if (limited) return limited;
   const kind = parsed.link && !parsed.q && !parsed.shot ? 'link' : parsed.find ? 'find' : parsed.q || parsed.url ? 'chat' : 'shot';
   if (!parsed.stream) {
-    const out = await runAi({ parsed, env, count, fetchImpl, emit: null });
+    const out = await runAi({ parsed, env, count, fetchImpl, emit: null, cfg });
     spend(kind, out.body.usage); remember(out);
     return json(out.body, out.status);
   }
@@ -829,7 +836,7 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
   const emit = obj => { writer.write(enc.encode(JSON.stringify(obj) + '\n')).catch(() => {}); };
   const job = (async () => {
     try {
-      const out = await runAi({ parsed, env, count, fetchImpl, emit });
+      const out = await runAi({ parsed, env, count, fetchImpl, emit, cfg });
       spend(kind, out.body.usage); remember(out);
       if (out.status === 200) emit({ t: 'done', ...out.body });
       else emit({ t: 'error', status: out.status, ...out.body });
@@ -846,7 +853,16 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
 
 /* Asosiy ish: rasm (bo'lsa) → Claude + vositalar tsikli. emit berilsa
    holat va matn bo'laklari oqimga yoziladi. Natija: { status, body }. */
-async function runAi({ parsed, env, count, fetchImpl, emit }) {
+/* Sinov uchun almashtiriladigan sozlamalar — ro'yxatdan tashqari qiymat
+   e'tiborsiz qoladi (sinov kaliti bilan ham ixtiyoriy model chaqirib
+   bo'lmaydi). */
+export const EVAL_MODELS = ['claude-sonnet-5', 'claude-sonnet-5-5'];
+export const THINKING_TYPES = ['adaptive', 'between_tools'];
+export function evalCfg(request) {
+  const m = String(request.headers.get('x-pochtam-model') || '').trim(), t = String(request.headers.get('x-pochtam-thinking') || '').trim();
+  return { model: EVAL_MODELS.includes(m) ? m : '', thinking: THINKING_TYPES.includes(t) ? t : '' };
+}
+async function runAi({ parsed, env, count, fetchImpl, emit, cfg = {} }) {
   const json = (body, status = 200) => ({ body, status });
   const say = emit || (() => {});
   const today = isoDay();
@@ -930,7 +946,11 @@ async function runAi({ parsed, env, count, fetchImpl, emit }) {
   /* Host ajratilmasa (g'alati manzil) — vosita qo'shilmaydi: bo'sh domen API'da 400 berardi. */
   const urlHost = parsed.url ? hostOf(parsed.url) : '';
   if (urlHost) tools.push({ type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 2, max_content_tokens: 6000, allowed_domains: [urlHost] });
-  const body = { model: env.AI_MODEL || DEFAULT_MODEL, max_tokens: +env.AI_MAX_TOKENS || 2048, system, tools, messages };
+  const body = { model: cfg.model || env.AI_MODEL || DEFAULT_MODEL, max_tokens: +env.AI_MAX_TOKENS || 2048, system, tools, messages };
+  /* Fikrlash rejimi (AI_THINKING): bo'sh — API standarti (adaptiv);
+     "between_tools" — oldindan fikrlashsiz (Sonnet 5.5, effort high gacha). */
+  const thinking = cfg.thinking || String(env.AI_THINKING || '');
+  if (THINKING_TYPES.includes(thinking)) body.thinking = { type: thinking };
   /* Veb-qidiruv ko'rsatmasi faqat shu yerda (qoidalar faylida yo'q):
      vosita bo'lmaganda model uni o'qimasin. */
   if (webOn) system.push({ type: 'text', text: 'Bu "Qayerdan topaman" so\'rovi: suggest_stores dan keyin BITTA web_search bilan (aniq inglizcha so\'rov: brend, model, o\'lcham) indekslanadigan do\'konlarda (Amazon, AliExpress, eBay, Trendyol, SHEIN, brend saytlari) ANIQ mahsulot sahifalarini top va product_links vositasiga ber: nom, https havola, do\'kon, narx, valyuta. Qidiruv natijalari sahifasini berma; Taobao, Pinduoduo, Poizon uchun qidirma — ularga qidiruv havolasi yetadi; topilmasa vositani chaqirma. Ro\'yxatimizda mos do\'kon bo\'lmasa, qidiruvda topgan eng mos do\'konni other_stores bilan rasmiy havolasi bilan ber.' });

@@ -19,6 +19,10 @@ on:
         description: "AI sifat sinovi (tests/ai-eval.json, 23 savol, ~$0.5–1)"
         type: boolean
         default: false
+      compare:
+        description: "Modellarni solishtirish: Sonnet 5, Sonnet 5.5, Sonnet 5.5 between_tools (har biri eval + oqim, jami ~$2–3)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -333,6 +337,41 @@ jobs:
           # Xulosa — ogohlantirish: sifat pasaygan savollar ro'yxati ko'rinadi.
           AI_URL="${URL}ai" AI_ORIGIN="https://nshakhobiddin.github.io" EVAL_TOKEN="$R" node tests/ai.mjs | tee /tmp/eval.log
           echo "::notice::AI sifat sinovi: $(tail -2 /tmp/eval.log | tr '\n' ' ')"
+
+      - name: Modellarni solishtirish (ixtiyoriy — compare)
+        if: ${{ inputs.compare && steps.aikey.outputs.set == '1' }}
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+          R: ${{ secrets.METRICS_READ_TOKEN }}
+        run: |
+          # Bir xil 23 savol har sozlamada: o'tgan savollar, $/savol, vaqt.
+          # Oqim: vosita chaqiradigan savolda birinchi so'z va matn kelishi
+          # (Sonnet 5.5 vositalar orasidagi matnni thinking blokida beradi).
+          # Sinov sarfi foydalanuvchilar byudjetiga qo'shilmaydi (ai_usd_eval).
+          set +e
+          for CFG in "claude-sonnet-5:" "claude-sonnet-5-5:" "claude-sonnet-5-5:between_tools"; do
+            M="${CFG%%:*}"; T="${CFG#*:}"
+            echo "================ $M ${T:-standart}"
+            AI_URL="${URL}ai" AI_ORIGIN="https://nshakhobiddin.github.io" EVAL_TOKEN="$R" EVAL_MODEL="$M" EVAL_THINKING="$T" node tests/ai.mjs > /tmp/cmp.log 2>&1
+            grep -E 'XATO|OGOH' /tmp/cmp.log | cut -c1-400
+            RES=$(grep '^NATIJA' /tmp/cmp.log | tail -1)
+            STREAM=$(URL="$URL" R="$R" M="$M" T="$T" node -e '
+              const t0 = Date.now(); let first = 0, texts = 0, chars = 0, last = null;
+              (async () => {
+                const h = { origin: "https://nshakhobiddin.github.io", "content-type": "text/plain", "x-pochtam-eval": process.env.R, "x-pochtam-model": process.env.M };
+                if (process.env.T) h["x-pochtam-thinking"] = process.env.T;
+                const r = await fetch(process.env.URL + "ai", { method: "POST", headers: h,
+                  body: JSON.stringify({ q: "Turkiyadan 2 kg kiyim, 250 dollar. Qaysi kuryer arzon va boj qancha?", lang: "uz", usdRate: 12650, stream: true }) });
+                const rd = r.body.getReader(), dec = new TextDecoder(); let buf = "";
+                for (;;) { const { value, done } = await rd.read(); if (done) break; buf += dec.decode(value, { stream: true });
+                  let i; while ((i = buf.indexOf("\n")) >= 0) { const l = buf.slice(0, i).trim(); buf = buf.slice(i + 1); if (!l) continue;
+                    const e = JSON.parse(l); if (e.t === "text") { texts++; chars += (e.d || "").length; if (!first) first = Date.now(); } last = e; } }
+                const s = x => ((x - t0) / 1000).toFixed(1) + "s";
+                const fin = last && last.t === "done" ? last : null;
+                console.log((fin && fin.text ? "ok" : "xato") + " birinchi_soz=" + (first ? s(first) : "—") + " jami=" + s(Date.now()) + " bolaklar=" + texts + " oqim_belgi=" + chars + " yakuniy_belgi=" + (fin ? fin.text.length : 0) + " vositalar=" + (fin ? (fin.tools || []).map(x => x.name || x).join(",") : "—"));
+              })().catch(e => console.log("xato " + e.message));' 2>&1)
+            echo "::notice::$M ${T:-standart} — ${RES:-natija yo'q} | oqim: $STREAM"
+          done
 
       - name: Ilovaga manzilni yozish va qurish
         env:

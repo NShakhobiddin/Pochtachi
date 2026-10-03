@@ -42,6 +42,13 @@ AI_CACHE_TTL = "5m"
 AI_MAX_TOKENS = "2048"
 AI_EFFORT = "low"
 AI_EFFORT_FIND = "medium"
+# Fikrlash rejimi: bo'sh — API standarti (adaptiv). "between_tools" —
+# oldindan fikrlashsiz (faqat Sonnet 5.5; effort high gacha) — tezroq va
+# arzonroq, sifati sinov (workflow compare) bilan tanlanadi.
+AI_THINKING = ""
+# Sifat sinovi (eval) uchun alohida kunlik chegara, $ — foydalanuvchilar
+# byudjetiga (AI_DAILY_USD) qo'shilmaydi.
+AI_EVAL_DAILY_USD = "5"
 # "Qayerdan topaman" so'rovlarida veb-qidiruv (aniq mahsulot havolalari):
 # "0" — o'chiq. Har qidiruv $0.01, bitta so'rovda ko'pi bilan AI_WEB_SEARCH_USES ta.
 AI_WEB_SEARCH = "1"

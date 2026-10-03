@@ -636,6 +636,22 @@ check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit(
   const over = await askB('yana savol', { AI_DAILY_USD: '0.02' }, {}, '9.9.9.3');
   const overJ = await over.json();
   check('kunlik $ byudjeti tugasa — 429 (limit, budget), Claude chaqirilmaydi', over.status === 429 && overJ.code === 'limit' && overJ.scope === 'budget' && calls.length === 2, JSON.stringify(overJ));
+  /* Sifat sinovi: byudjet tugagan kunda ham ishlaydi (o'z byudjeti), sarfi
+     ai_usd_eval da; model va fikrlash rejimi sarlavhadan (ro'yxatdagisi). */
+  const evB = (hdr, extra = {}) => worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': '9.9.9.9', ...hdr },
+    body: JSON.stringify({ q: 'sinov savoli', lang: 'uz', usdRate: 12650 }) }), { ...envB, ANTHROPIC_API_KEY: 'sk-test', AI_DAILY_PER_IP: '50', AI_DAILY_TOTAL: '100', AI_DAILY_USD: '0.02', AI_FETCH: costly, ...extra }, ctx);
+  const e0 = calls.length;
+  const evr = await evB({ 'x-pochtam-eval': 'sir', 'x-pochtam-model': 'claude-sonnet-5-5', 'x-pochtam-thinking': 'between_tools' });
+  check('eval: foydalanuvchi byudjeti tugagan bo\'lsa ham 200; model va between_tools so\'rovda', evr.status === 200 && calls.length === e0 + 1 && calls[e0].model === 'claude-sonnet-5-5' && calls[e0].thinking && calls[e0].thinking.type === 'between_tools', JSON.stringify({ s: evr.status, m: calls[e0] && calls[e0].model, t: calls[e0] && calls[e0].thinking }));
+  await evB({ 'x-pochtam-eval': 'sir', 'x-pochtam-model': 'claude-fable-5-1', 'x-pochtam-thinking': 'enabled' });
+  check('eval: ro\'yxatdan tashqari model/rejim e\'tiborsiz — standart model, thinking yo\'q', calls[e0 + 1].model === 'claude-sonnet-5' && !calls[e0 + 1].thinking, JSON.stringify({ m: calls[e0 + 1].model, t: calls[e0 + 1].thinking }));
+  const noEv = await evB({ 'x-pochtam-eval': 'notogri', 'x-pochtam-model': 'claude-sonnet-5-5' });
+  check('eval parolisiz model sarlavhasi ishlamaydi (byudjet tugagan — 429)', noEv.status === 429 && calls.length === e0 + 2);
+  await evB({}, { AI_DAILY_USD: '5', AI_THINKING: 'between_tools', AI_MODEL: 'claude-sonnet-5-5' });
+  check('AI_THINKING=between_tools va AI_MODEL — oddiy so\'rovda ham', calls[e0 + 2].model === 'claude-sonnet-5-5' && calls[e0 + 2].thinking.type === 'between_tools');
+  await new Promise(r => setTimeout(r, 30));
+  const stE = await (await cB.fetch(new Request('https://counter/stats?days=1'))).json();
+  check('eval sarfi ai_usd_eval da, foydalanuvchi kunlik $ (usdByDay) ga qo\'shilmaydi', stE.byName.ai_usd_eval && stE.byName.ai_usd_eval.chat === 34000 && stE.usdByDay[today] === 17000 * 2 + 17000, JSON.stringify({ e: stE.byName.ai_usd_eval, d: stE.usdByDay }));
   const n0 = calls.length;
   await askB('krossovka qayerdan', { AI_DAILY_FIND_PER_IP: '1' }, { find: true }, '9.9.9.4');
   await askB('krossovka qayerdan', { AI_DAILY_FIND_PER_IP: '1' }, { find: true }, '9.9.9.4');

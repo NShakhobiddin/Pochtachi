@@ -179,15 +179,24 @@ saqlanmaydi; eski kun javoblari purge'da o'chadi. `AI_ANSWER_CACHE = "0"`
 Sifat sinovi: `tests/ai.mjs` (23 savol, `tests/ai-eval.json`) —
 workflow'ni `eval: true` bilan ishga tushirilganda joylashdan keyin
 yuradi. So'rovda `x-pochtam-eval: <READ_TOKEN>` sarlavhasi: tayyor javob
-ishlatilmaydi va IP chegarasi yo'q (umumiy va $ byudjeti amal qiladi);
-oxirida taxminiy xarajat chiqadi.
+ishlatilmaydi, IP va umumiy chegara yo'q; sarf alohida (`ai_usd_eval`,
+chegarasi `AI_EVAL_DAILY_USD`, standart $5) — foydalanuvchilarning
+`AI_DAILY_USD` byudjetini yemaydi. Oxirida taxminiy xarajat va bitta
+`NATIJA …` qatori (o'tgan savollar, $/savol, vaqt/savol) chiqadi.
+Modellarni solishtirish: workflow `compare: true` — bir xil savollar
+Sonnet 5, Sonnet 5.5 va Sonnet 5.5 `between_tools` da, har biriga oqim
+sinovi. Sinovda model `x-pochtam-model` (faqat `claude-sonnet-5`,
+`claude-sonnet-5-5`) va `x-pochtam-thinking` (`adaptive`,
+`between_tools`) sarlavhalari bilan almashtiriladi — faqat eval paroli
+bilan.
 
 Qoidalar `data/ai-rules.md` da, bilimlar bazasi `src/kb.generated.js`
 (`node tools/ai-kb.mjs` tuzadi — qo'lda o'zgartirilmaydi), hisob-kitob
 `core/` vositalari orqali. Sozlamalar `wrangler.toml`: `AI_MODEL`,
 `AI_SHOT_MODEL`, `AI_DAILY_PER_IP`, `AI_DAILY_TOTAL`, `AI_DAILY_USD`,
 `AI_DAILY_FIND_PER_IP`, `AI_MAX_TOKENS`,
-`AI_EFFORT`, `AI_WEB_SEARCH` ("0" — o'chiq), `AI_WEB_SEARCH_USES`.
+`AI_EFFORT`, `AI_THINKING` (bo'sh — adaptiv; `between_tools` — oldindan
+fikrlashsiz, Sonnet 5.5), `AI_EVAL_DAILY_USD`, `AI_WEB_SEARCH` ("0" — o'chiq), `AI_WEB_SEARCH_USES`.
 
 Qo'riqlov kodda: javob matnidan markdown belgilari (`**`, `#`, `` ` ``,
 "- ") olib tashlanadi (`plainText`) — qoidaga ishonib emas, ilovada

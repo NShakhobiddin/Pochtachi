@@ -115,10 +115,12 @@ export class Counter {
       /* budget — kunlik xarajat chegarasi, mikro-dollar (ai_usd yig'indisi,
          0 — yo'q). find — "Qayerdan topaman" so'rovi: ai_ipf sanog'i
          maxFind dan oshsa noFind (rad emas — qidiruvsiz javob). */
-      const { key, max, total, budget, find, maxFind } = await request.json();
+      const { key, max, total, budget, find, maxFind, eval: ev } = await request.json();
       const day = isoDay(), k0 = String(key || '-');
-      const bump = [['ai_ip', k0], ['ai', 'q']];
-      if (find) bump.push(['ai_ipf', k0]);
+      /* Sifat sinovi (eval): foydalanuvchi sanoqlariga qo'shilmaydi, byudjeti
+         alohida — faqat sinov sarfi (ai_usd_eval) bilan solishtiriladi. */
+      const bump = ev ? [] : [['ai_ip', k0], ['ai', 'q']];
+      if (find && !ev) bump.push(['ai_ipf', k0]);
       for (const [name, k] of bump) {
         this.sql.exec(`INSERT INTO counts (day, name, key, n) VALUES (?, ?, ?, ?)
           ON CONFLICT(day, name, key) DO UPDATE SET n = n + excluded.n`, day, name, k, 1);
@@ -129,9 +131,9 @@ export class Counter {
         if (r.name === 'ai_ip' && r.key === k0) n = r.n;
         if (r.name === 'ai_ipf' && r.key === k0) nf = r.n;
         if (r.name === 'ai' && r.key === 'q') t = r.n;
-        if (r.name === 'ai_usd') spent += r.n;
+        if (r.name === (ev ? 'ai_usd_eval' : 'ai_usd')) spent += r.n;
       }
-      const overTotal = total > 0 && t > total, overIp = max > 0 && n > max, overBudget = budget > 0 && spent >= budget;
+      const overTotal = !ev && total > 0 && t > total, overIp = max > 0 && n > max, overBudget = budget > 0 && spent >= budget;
       const noFind = !!find && maxFind > 0 && nf > maxFind;
       return json(this.env, { ok: !overTotal && !overIp && !overBudget, n, t, spent, noFind, scope: overBudget ? 'budget' : overTotal ? 'total' : 'ip' });
     }
