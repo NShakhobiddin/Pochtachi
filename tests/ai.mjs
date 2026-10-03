@@ -60,7 +60,8 @@ for (const c of cases) {
   const text = String(j.text), tools = (j.tools || []).map(t => typeof t === 'string' ? t : t.name);
   const cards = (j.cards || []).map(x => x.type);
   const problems = [];
-  if (c.card && !cards.includes(c.card)) problems.push(`karta ${c.card} yo'q (${cards.join(',') || 'kartasiz'})`);
+  /* card — bitta tur yoki ro'yxat (qaysi biri bo'lsa ham to'g'ri). */
+  if (c.card && ![].concat(c.card).some(k => cards.includes(k))) problems.push(`karta ${[].concat(c.card).join(' yoki ')} yo'q (${cards.join(',') || 'kartasiz'})`);
   const want = [].concat(c.tool || []);
   if (want.length && !want.some(t => tools.includes(t))) problems.push(`vosita ${want.join(' yoki ')} chaqirilmadi (${tools.join(',') || 'hech biri'})`);
   if (c.noTool && tools.length) problems.push('vosita chaqirilmasligi kerak edi: ' + tools.join(','));

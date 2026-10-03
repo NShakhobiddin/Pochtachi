@@ -10,7 +10,7 @@
     {
       "q": "150 dollarlik krossovka uchun boj to'lanadimi?",
       "tool": "customs_duty",
-      "must": "me'yor(dan oshmaydi| ichida|dan past)|boj (yo'q|to'lanmaydi|tushmaydi|olinmaydi)|to'lov (yo'q|to'lanmaydi)|to'lamaysiz",
+      "must": "me'yor(dan oshmaydi| ichida|dan past)|chegara(dan past| ichida)|boj (yo'q|to'lanmaydi|tushmaydi|olinmaydi)|to'lov (yo'q|to'lanmaydi)|to'lamaysiz|yo'q, to'lanmaydi",
       "lang": "uz"
     },
     {
@@ -142,7 +142,10 @@
     },
     {
       "q": "Krossovka olmoqchiman",
-      "card": "ask",
+      "card": [
+        "ask",
+        "stores"
+      ],
       "lang": "uz"
     },
     {

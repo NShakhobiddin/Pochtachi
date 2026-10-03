@@ -190,6 +190,14 @@ sinovi. Sinovda model `x-pochtam-model` (faqat `claude-sonnet-5`,
 `between_tools`) sarlavhalari bilan almashtiriladi — faqat eval paroli
 bilan.
 
+Oxirgi solishtirish (2026-10-03, 24 savol, effort `low`): Sonnet 5 —
+23/24, $0.0117/savol, 363 chiqish tokeni; Sonnet 5.5 — 23/24,
+$0.0149/savol (+27%), 474 token; Sonnet 5.5 `between_tools` — 21/24,
+$0.0158/savol, javoblari uzunroq, bir savolda vositani chaqirmadi. Sifat
+teng, Sonnet 5.5 qimmatroq — `AI_MODEL` Sonnet 5 da qoldi. (Ikki mezon
+to'g'ri javobni rad etgani uchun tuzatildi; natijalar tuzatilgan mezon
+bo'yicha.)
+
 Qoidalar `data/ai-rules.md` da, bilimlar bazasi `src/kb.generated.js`
 (`node tools/ai-kb.mjs` tuzadi — qo'lda o'zgartirilmaydi), hisob-kitob
 `core/` vositalari orqali. Sozlamalar `wrangler.toml`: `AI_MODEL`,
