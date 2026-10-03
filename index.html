@@ -2817,7 +2817,7 @@
             <sc-if value="{{ rsNoneHasName }}" hint-placeholder-val="{{ false }}">
               <span style="font-size:15px;font-weight:700;color:#131429;line-height:1.5">{{ rsNoneName }}</span>
             </sc-if>
-            <span style="font-size:15px;font-weight:500;color:#282944;line-height:1.5">Sayt narxni robotlarga ko'rsatmaydi yoki uni sahifa ochilgandan keyin yuklaydi. Skrinshot yuklang yoki narxni o'zingiz yozing — qolganini ilova hisoblaydi.</span>
+            <span style="font-size:15px;font-weight:500;color:#282944;line-height:1.5">Havolani o'qimaymiz: ko'p do'konlar narxni robotlardan yashiradi. Do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang yoki narxni o'zingiz yozing — qolganini ilova hisoblaydi.</span>
             <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5">Maslahat: do'kon ilovasidagi «Ulashish» matnini butunligicha tashlang — unda narx bo'lsa, o'zi o'qiladi.</span>
           </sc-if>
           <sc-if value="{{ rsIsShot }}" hint-placeholder-val="{{ true }}">
@@ -3517,8 +3517,8 @@ const toCyr = s => {
 const RU = {
   "Havolani o'qiyapman":'Читаю ссылку', 'Sahifani ochyapman':'Открываю страницу',
   "{0} · odatda 3–15 soniya. Jami narx va uning tarkibi shu yerda chiqadi.":'{0} · обычно 3–15 секунд. Итоговая цена и её состав появятся здесь.',
-  "Havoladan narx o'qilmadi":'Не удалось прочитать цену по ссылке', "Pochtam AI'dan so'rash":'Спросить Pochtam AI',
-  "Sayt narxni robotlarga ko'rsatmaydi yoki uni sahifa ochilgandan keyin yuklaydi. Skrinshot yuklang yoki narxni o'zingiz yozing — qolganini ilova hisoblaydi.":'Сайт не показывает цену роботам или подгружает её после открытия страницы. Загрузите скриншот или введите цену сами — остальное посчитает приложение.',
+  "Havoladan narx o'qilmadi":'Не удалось прочитать цену по ссылке', "Narx ko'ringan sahifani skrinshot qiling":'Сделайте скриншот страницы с ценой', "Boshqa do'kondan topish":'Найти в другом магазине', 'Rasmdagi tovar: {0}':'Товар на фото: {0}', "Pochtam AI'dan so'rash":'Спросить Pochtam AI',
+  "Havolani o'qimaymiz: ko'p do'konlar narxni robotlardan yashiradi. Do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang yoki narxni o'zingiz yozing — qolganini ilova hisoblaydi.":'Ссылки мы не читаем: многие магазины скрывают цену от роботов. Сделайте скриншот места с ценой в приложении магазина или введите цену сами — остальное посчитает приложение.',
   "Maslahat: do'kon ilovasidagi «Ulashish» matnini butunligicha tashlang — unda narx bo'lsa, o'zi o'qiladi.":'Совет: вставьте текст из кнопки «Поделиться» в приложении магазина целиком — если в нём есть цена, она прочитается сама.',
   "«{0}» — nom va do'kon topildi, faqat narx yetishmayapti.":'«{0}» — название и магазин найдены, не хватает только цены.',
   "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. Narx do'kon sahifasidan o'qildi, hisob ilovaniki.":'Расчёт примерный — итоговую сумму определят таможня и курьер. Цена прочитана со страницы магазина, расчёт — приложения.',
@@ -4085,10 +4085,10 @@ const RU = {
   "Javobni tayyorlayapman":"Готовлю ответ",
   "Javob yozilyapti":"Пишу ответ",
   // Bosh sahifa: qo'llanma va ovoz (2026-09-26)
-  "Havola yoki tovar nomini yozing":"Ссылка или название товара",
-  "Tovar nomini yozing yoki ayting — AI mos do'konlar va aniq mahsulot havolalarini topadi.":"Напишите или скажите название товара — ИИ найдёт подходящие магазины и точные ссылки на товар.",
-  "Do'kon ilovasidagi «Ulashish» matnini yoki havolani tashlang — narx bo'lsa, darrov hisoblanadi; bo'lmasa skrinshot yuklang.":"Вставьте текст из кнопки «Поделиться» в приложении магазина или ссылку — если там есть цена, посчитаем сразу; если нет, загрузите скриншот.",
-  "Topgach, narx ko'ringan ekranni suratga olib yuklang — hisob shu tovar bo'yicha.":"Нашли — сделайте скриншот экрана с ценой и загрузите: посчитаем именно этот товар.",
+  "Tovar nomini yozing yoki rasmini yuklang":"Название товара или его фото",
+  "Tovar nomini yozing, ayting yoki rasmini yuklang — AI uni taniydi va mos do'konlardan aniq mahsulotni topadi.":"Напишите, скажите название товара или загрузите его фото — ИИ узнает товар и найдёт его в подходящих магазинах.",
+  "Topgach, do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang — kuryer, boj va jami summa hisoblanadi.":"Нашли — сделайте скриншот места с ценой в приложении магазина и загрузите: посчитаем курьера, пошлину и итог.",
+  "Narxni bilsangiz — «Narxni o'zim yozaman»: hisob AI'siz, bir zumda.":"Знаете цену — «Введу цену сам»: расчёт без ИИ, мгновенно.",
   "Do'kon, kuryer yoki tovar turini yozing — ro'yxatdan topiladi.":"Напишите магазин, курьера или вид товара — найдём в списке.",
   "Do'kon havolasini tashlasangiz — o'sha do'kon sahifasi ochiladi.":"Вставьте ссылку на магазин — откроется его страница.",
   "Narxni bilsangiz — \"Narxni o'zim yozaman\": kuryer, boj va jami summa.":"Знаете цену — «Введу цену сам»: курьер, пошлина и итог.",
@@ -6300,6 +6300,7 @@ class Component extends DCLogic {
         })
         .then(j => {
           const sh = j.shot;
+          if (sh && !sh.found && sh.kind === 'product' && (sh.name || sh.query)) { clearInterval(this._shotTick); if (prev) URL.revokeObjectURL(prev); this.photoFind(sh); return; }
           if (!sh || !sh.found) { done({ state: 'none' }); return; }
           const ok = { state: 'ok', ...this.shotToLc(sh), at: Date.now() };
           done(ok);
@@ -6311,44 +6312,31 @@ class Component extends DCLogic {
     }).catch(() => done({ state: 'err', code: 'img' }));
   }
   linkRead(url, hint) {
-    const st = this.state;
-    if (!url || (st.shotRes && st.shotRes.state === 'busy')) return;
     let host = '';
     try { host = new URL(url).hostname.replace(/^www\./, ''); } catch (e) { return; }
-    this.setState({ shotRes: { state: 'busy', src: 'link', host, url, t0: Date.now() } });
+    const C = typeof PochtamCore !== 'undefined' ? PochtamCore : {};
+    const sh = C.shareHint ? C.shareHint(hint || '') : { name: '' };
+    const name = sh.name || (C.slugName ? C.slugName(url) : '');
+    const link = this.linkStore(url);
+    const store = link && link.store;
+    const curOf = { Turkiya: 'TRY', Koreya: 'KRW', Angliya: 'GBP', BAA: 'AED', Germaniya: 'EUR' };
+    const part = name || store ? this.shotToLc({ found: false, name, price: 0, currency: store ? curOf[store.country] || '' : '', qty: 1,
+      store: store ? store.name : '', country: store ? store.country : '', category: '', weightKg: 0, confidence: 1 }) : null;
+    metrics.hit('ai_question', 'link:shot');
+    this.setState({ shotRes: { state: 'none', src: 'link', host, url, name, storeName: part ? part.storeName : '', lc: part ? { ...part.lc, name, price: '', url } : null } });
     if (this.cur() !== 'result') this.push('result');
-    metrics.hit('ai_question', 'link');
-    clearInterval(this._shotTick);
-    this._shotTick = setInterval(() => {
-      const r = this.state.shotRes;
-      if (r && r.state === 'busy') this.setState({ shotRes: { ...r } }); else clearInterval(this._shotTick);
-    }, 500);
-    const done = r => { clearInterval(this._shotTick); this.setState({ shotRes: { src: 'link', host, url, ...r } }); };
-    if (!METRICS_URL) { done({ state: 'err', code: 'no_key' }); return; }
-    const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    const timer = setTimeout(() => { if (ctrl) ctrl.abort(); }, 60000);
-    fetch(METRICS_URL + 'ai', { method: 'POST', headers: { 'content-type': 'text/plain;charset=UTF-8' },
-      body: JSON.stringify({ link: url, hint: String(hint || '').slice(0, 600), lang: st.lang, usdRate: USD_RATE, cart: this.cartForAi() }), signal: ctrl ? ctrl.signal : undefined })
-      .then(async r => {
-        const j = await r.json().catch(() => null);
-        if (!r.ok || !j) { const e = new Error('link'); e.code = (j && j.code) || (r.status === 429 ? 'limit' : 'upstream'); throw e; }
-        return j;
-      })
-      .then(j => {
-        const sh = j.shot;
-        if (!sh || !sh.found) {
-          const part = sh && (sh.name || sh.store) ? this.shotToLc({ ...sh, price: 0, qty: 1, confidence: 1 }) : null;
-          done({ state: 'none', name: (sh && sh.name) || '', storeName: part ? part.storeName : '', lc: part ? { ...part.lc, name: (sh && sh.name) || '', price: '', url } : null });
-          return;
-        }
-        const conv = this.shotToLc(sh);
-        const ok = { ...conv, lc: { ...conv.lc, url }, state: 'ok', src: 'link', host, url, at: Date.now() };
-        done(ok);
-        try { localStorage.setItem('xy_last', JSON.stringify(ok)); } catch (e) {}
-        this.setState({ lastRes: ok });
-      })
-      .catch(e => done({ state: 'err', code: (e && e.code) || 'net' }))
-      .then(() => clearTimeout(timer));
+  }
+  photoFind(sh) {
+    const st = this.state, lang = st.lang;
+    const nm = String(sh.name || sh.query || '').trim().slice(0, 80);
+    if (!nm) return;
+    metrics.hit('ai_question', 'photo');
+    this.addFind(nm);
+    this.setState({ shotRes: null, aiMsgs: [], aiDone: {} });
+    if (this.cur() === 'result') this.popScreen();
+    this.push('ai');
+    const q = tx(lang, 'Rasmdagi tovar: {0}', nm) + (sh.query && sh.query !== nm ? ' (' + sh.query + ')' : '') + '. ' + tr(lang, "Qaysi do'kondan topaman?");
+    setTimeout(() => this.aiAsk(q, { find: true }), 0);
   }
   async takeShare() {
     let q = '';
@@ -6527,15 +6515,10 @@ class Component extends DCLogic {
         this.push('store');
         return;
       }
+      if (st.aiOn && link) { metrics.hit('hero', 'link:?'); this.linkRead(urlIn(t) || (/^https?:\/\//i.test(t) ? t : 'https://' + t), t); return; }
       if (st.aiOn) {
         this.setState({ aiMsgs: [], aiDone: {} });
         this.push('ai');
-        if (link) {
-          metrics.hit('hero', 'link:' + (link.store ? link.store.id : '?'));
-          if (link.store) this.warmGuide(link.store.id);
-          this.aiAsk(L('Bu mahsulot menga qanchaga tushadi?'), { url: /^https?:\/\//i.test(t) ? t : 'https://' + t });
-          return;
-        }
         const plain = t.replace(/[\u2018\u2019`\u02BB\u02BC]/g, "'");
         const asks = /\?\s*$/.test(plain) || /^(qancha|qanday|qaysi|nima|necha|nega|bo'ladimi|mumkinmi|kerakmi|қанча|қандай|қайси|нима|неча|сколько|как|какой|какая|можно|что|почему|нужно)\b/i.test(plain);
         if (asks) { metrics.hit('hero', 'ai'); this.aiAsk(t); return; }
@@ -6557,14 +6540,14 @@ class Component extends DCLogic {
     };
     this._heroRun = run;
     const G = st.aiOn
-      ? ["Tovar nomini yozing yoki ayting — AI mos do'konlar va aniq mahsulot havolalarini topadi.",
-         "Do'kon ilovasidagi «Ulashish» matnini yoki havolani tashlang — narx bo'lsa, darrov hisoblanadi; bo'lmasa skrinshot yuklang.",
-         "Topgach, narx ko'ringan ekranni suratga olib yuklang — hisob shu tovar bo'yicha."]
+      ? ["Tovar nomini yozing, ayting yoki rasmini yuklang — AI uni taniydi va mos do'konlardan aniq mahsulotni topadi.",
+         "Topgach, do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang — kuryer, boj va jami summa hisoblanadi.",
+         "Narxni bilsangiz — «Narxni o'zim yozaman»: hisob AI'siz, bir zumda."]
       : ["Do'kon, kuryer yoki tovar turini yozing — ro'yxatdan topiladi.",
          "Do'kon havolasini tashlasangiz — o'sha do'kon sahifasi ochiladi.",
          "Narxni bilsangiz — \"Narxni o'zim yozaman\": kuryer, boj va jami summa."];
     return {
-      whText: w.text, whPh: L('Havola yoki tovar nomini yozing'),
+      whText: w.text, whPh: L('Tovar nomini yozing yoki rasmini yuklang'),
       onWhText: e => set({ text: String(e.target.value || '').slice(0, 1500) }),
       whGuide: G.map((t, i) => ({ n: String(i + 1), t: L(t) })),
       whMicOn: true, whMicBusy: !!st.micBusy,
@@ -6596,17 +6579,17 @@ class Component extends DCLogic {
     const lang = st.lang, L_ = k => tr(lang, k);
     const r = st.shotRes || { state: 'none' };
     const isLink = r.src === 'link';
-    const askAi = () => { metrics.hit('quick', 'link:ai'); this.setState({ aiMsgs: [], aiDone: {} }); this.push('ai'); this.aiAsk(L_('Bu mahsulot menga qanchaga tushadi?'), { url: r.url }); };
+    const findIt = () => { metrics.hit('quick', 'link:find'); this.addFind(r.name); this.setState({ aiMsgs: [], aiDone: {} }); this.push('ai'); this.aiAsk(tx(lang, '{0} qidiryapman', r.name) + '. ' + L_("Qaysi do'kondan topaman?"), { find: true }); };
     const base = { rsBusy: r.state === 'busy', rsOk: r.state === 'ok', rsNone: r.state === 'none', rsErr: r.state === 'err',
       rsErrT: L_(r.code === 'limit' ? (isLink ? 'Bugungi savollar chegarasi tugadi' : 'Bugungi skrinshot chegarasi tugadi') : "Hozir o'qiy olmadim"),
       rsRetry: () => this.shotPick(), rsManual: () => this.openLanded(r.lc ? { ...r.lc } : {}),
       rsHelper: () => { metrics.hit('quick', 'ai:where'); this.setState({ where: { ...(st.where || {}), find: true } }); this.go('home'); },
       rsIsLink: isLink, rsIsShot: !isLink, rsHost: r.host || '',
-      rsNoneT: L_(isLink ? "Havoladan narx o'qilmadi" : "Rasmdan narx o'qilmadi"),
+      rsNoneT: L_(isLink ? "Narx ko'ringan sahifani skrinshot qiling" : "Rasmdan narx o'qilmadi"),
       rsNoneHasName: isLink && !!r.name, rsNoneName: r.name ? tx(lang, "«{0}» — nom va do'kon topildi, faqat narx yetishmayapti.", String(r.name).slice(0, 90)) : '',
       rsRetryT: L_(isLink ? 'Skrinshot yuklash' : 'Qayta yuklash'),
-      rsHelperT: L_(isLink ? "Pochtam AI'dan so'rash" : 'Qayerdan topaman?'),
-      rsHelperGo: isLink ? askAi : () => { metrics.hit('quick', 'ai:where'); this.setState({ where: { ...(st.where || {}), find: true } }); this.go('home'); },
+      rsHelperT: L_(isLink && r.name ? "Boshqa do'kondan topish" : 'Qayerdan topaman?'),
+      rsHelperGo: isLink && r.name ? findIt : () => { metrics.hit('quick', 'ai:where'); this.setState({ where: { ...(st.where || {}), find: true } }); this.go('home'); },
       rsFoot: L_(isLink ? "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. Narx do'kon sahifasidan o'qildi, hisob ilovaniki." : "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. AI faqat rasmni o'qidi, hisob ilovaniki."),
       rsHasUrl: !!(r.url || (r.lc && r.lc.url)), rsUrl: r.url || (r.lc && r.lc.url) || '' };
     if (r.state === 'busy') {

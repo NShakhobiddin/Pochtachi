@@ -46,10 +46,6 @@ AI_EFFORT_FIND = "medium"
 # oldindan fikrlashsiz (faqat Sonnet 5.5; effort high gacha) — tezroq va
 # arzonroq, sifati sinov (workflow compare) bilan tanlanadi.
 AI_THINKING = ""
-# Havoladan narx: sahifa to'silsa yoki matndan narx chiqmasa asosiy model
-# web_fetch bilan o'qishi (~$0.03, 10+ s). "0" — o'chiq (standart): jonli
-# sinovda to'silgan saytlarda u ham o'tolmadi; ilova skrinshot so'raydi.
-AI_LINK_FETCH = "0"
 # Sifat sinovi (eval) uchun alohida kunlik chegara, $ — foydalanuvchilar
 # byudjetiga (AI_DAILY_USD) qo'shilmaydi.
 AI_EVAL_DAILY_USD = "5"

@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs';
 import '../core/customs.js';
 import '../core/tariffs.js';
 import '../core/landed.js';
+import '../core/share.js';
 const core = globalThis.PochtamCore;
 const normsFile = JSON.parse(readFileSync(new URL('../data/norms.json', import.meta.url), 'utf8'));
 
@@ -153,6 +154,22 @@ check('har bir do\'kon kuryer tarifi bor davlatlardan yuboradi', yomon.length ==
 check('"Global" davlat qolmadi', !KB.STORES.some(s => s.country === 'Global' || (s.from || []).includes('Global')));
 const kopDavlat = KB.STORES.filter(s => (s.from || []).length > 1).length;
 check('ko\'p davlatdan yuboradigan do\'konlar belgilangan', kopDavlat >= 10, kopDavlat + ' ta do\'kon');
+
+/* ---- Ulashish matni (core/share.js) — ilova serversiz o'qiydi ---- */
+{
+  const sh1 = core.shareHint('US $5.89 | Li-Ning RED HARE 9 Running Shoes https://a.aliexpress.com/_mKx1');
+  const sh2 = core.shareHint('1.299,90 TL Derimod Erkek Sneaker https://ty.gl/abc');
+  const sh3 = core.shareHint("Bu ürünü Trendyol'da gördüm, beğeneceğini düşündüm! https://ty.gl/x");
+  const sh4 = core.shareHint('79,99руб. | Кроссовки мужские https://a.aliexpress.ru/_x');
+  check('shareHint: "US $5.89 | nom", "1.299,90 TL nom", rubl; reklama iborasi nom emas',
+    sh1.price === 5.89 && sh1.currency === 'USD' && sh1.name === 'Li-Ning RED HARE 9 Running Shoes'
+    && sh2.price === 1299.9 && sh2.currency === 'TRY' && sh2.name === 'Derimod Erkek Sneaker'
+    && sh3.price === 0 && sh3.name === '' && sh4.price === 79.99 && sh4.currency === 'RUB'
+    && core.shareHint('https://x.com/a').price === 0 && core.shareHint('500 000 so\'m kurtka').price === 0, JSON.stringify([sh1, sh2, sh3, sh4]));
+  check('slugName: trendyol /brend/nom-p-id; id\'li havola — bo\'sh',
+    core.slugName('https://www.trendyol.com/derimod/erkek-sneaker-p-741953629') === 'Derimod Erkek Sneaker'
+    && core.slugName('https://www.aliexpress.com/item/3256810572293986.html') === '');
+}
 
 console.log(fails ? `\n${fails} ta tekshiruv o'tmadi.` : '\nCore testlari o\'tdi.');
 process.exit(fails ? 1 : 0);

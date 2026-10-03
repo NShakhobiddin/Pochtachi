@@ -712,7 +712,7 @@ try {
        javob ostidagi tugma kalkulyatorni to'ldirib ochadi; xato holatida
        "vaqtincha mavjud emas"; bosh sahifadagi savol AI ga boradi. Mobil
        pastki menyu 5 ta qoladi. */
-    const aiBodies = []; const shotBodies = []; let aiMode = 'ok', shotDelay = 0;
+    const aiBodies = []; const shotBodies = []; let aiMode = 'ok', shotDelay = 0, shotNext = null;
     /* Savollar (rasmsiz so'rovlar) — sanoq shular bo'yicha. */
     const qBodies = () => aiBodies.filter(b => b && b.q);
     /* Skrinshot javoblari: 1 — CNY Nike, 2 va 4 — topilmadi, 3 — KRW. */
@@ -723,16 +723,10 @@ try {
     await context.route(METRICS_URL + 'ai', async r => {
       const body = JSON.parse(r.request().postData() || '{}');
       aiBodies.push(body);
-      /* Havola (link): sahifa o'qiladi, javob skrinshot shaklida (shot). */
-      if (body.link) {
-        const sh = /trendyol\.com.*nonprice/.test(body.link) ? { found: false, url: body.link, host: 'trendyol.com', name: 'Derimod Erkek Sneaker', store: 'Trendyol', country: 'Turkiya', currency: 'TRY' }
-          : /nonprice/.test(body.link) ? { found: false, url: body.link, host: 'shop.example.com' }
-          : { found: true, name: 'Taobao kurtka', price: 299, currency: 'CNY', priceUsd: 41.87, fxApprox: true, qty: 1, store: 'Taobao', category: 'kiyim', country: 'Xitoy', weightKg: 0.9, confidence: 0.95, url: body.link, host: 'item.taobao.com' };
-        if (shotDelay) await new Promise(z => setTimeout(z, shotDelay));
-        return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: '', shot: sh, cart: cartOf(sh), cards: sh.found ? [{ type: 'product', ...sh }] : [], tools: [], model: '', usage: {}, stop: 'link', via: 'jsonld' }) });
-      }
       /* Yagona manzil: rasm kelsa skrinshot javobi (savolsiz — kartalar). */
       if (body.image) {
+        /* Bir martalik javob (tovar fotosi sinovi) — sanoqqa kirmaydi. */
+        if (shotNext) { const sh = shotNext; shotNext = null; return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: '', shot: sh, cart: null, cards: [], tools: [], model: 'm', usage: {}, stop: 'shot' }) }); }
         shotBodies.push(body);
         const sh = shotOf(shotBodies.length);
         if (shotDelay) await new Promise(z => setTimeout(z, shotDelay));
@@ -780,24 +774,14 @@ try {
     const heroField = page.locator('main input[aria-label="Mahsulot nomi"]');
     check('yagona kirish: maydon ichida mikrofon, yuborish yonida (rasm — pastdagi katta tugma)',
       (await page.locator('main form').first().locator('button[aria-label="Rasm biriktirish"]').count()) === 0 && (await page.locator('main form button[aria-label="Ovoz bilan aytish"]').count()) === 1);
-    /* Havola → skrinshotdagi kabi "Jami narx" ekrani: kutishda "Havolani
-       o'qiyapman" va "Sahifani ochyapman", keyin jami va tarkib, sahifaga
-       havola. So'rovda link (savolsiz). */
-    shotDelay = 1500;
-    await heroField.fill('https://item.taobao.com/item.htm?id=1'); await page.waitForTimeout(200);
-    await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(500);
-    const linkBusy = (await page.locator('main [data-shot-busy]').innerText().catch(() => '')).replace(/\s+/g, ' ');
-    await page.waitForTimeout(1500); shotDelay = 0;
-    { const lb = aiBodies[aiBodies.length - 1] || {};
-      const lt = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
-      check('yagona kirish: havola → "Jami narx" (link, savolsiz), kutishda "Havolani o\'qiyapman · Sahifani ochyapman"', /Jami narx/.test(await page.locator('header').innerText()) && lb.link === 'https://item.taobao.com/item.htm?id=1' && !lb.q && /^Havolani o'qiyapman item\.taobao\.com · odatda/.test(linkBusy) && /Sahifani ochyapman/.test(linkBusy), linkBusy.slice(0, 120) + ' · ' + JSON.stringify(lb).slice(0, 100));
-      check('havola natijasi: jami, narx tarkibi, "Sahifani ochish" havolasi, izoh "sahifadan o\'qildi"', /^SIZGA JAMI TUSHADI Taxminiy \$\d/.test(lt) && /Taobao kurtka/.test(lt) && /299 CNY ≈ \$/.test(lt) && (await page.locator('main a[data-rs-url]').getAttribute('href')) === 'https://item.taobao.com/item.htm?id=1' && /Narx do'kon sahifasidan o'qildi/.test(lt), lt.slice(0, 160)); }
-    /* Ulashish matni: havola atrofida nom va boshqa so'zlar — havola ajratib olinadi. */
-    await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
-    await heroField.fill("【淘宝】Qishki kurtka https://item.taobao.com/item.htm?id=2&spm=a1z10, CZ0001 「kurtka」 zo'r"); await page.waitForTimeout(200);
-    await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(900);
-    { const lb = aiBodies[aiBodies.length - 1] || {};
-      check('ulashish matnidagi havola ajratib olinadi → "Jami narx" (link); butun matn hint bo\'lib ketadi', lb.link === 'https://item.taobao.com/item.htm?id=2&spm=a1z10' && !lb.q && /Qishki kurtka/.test(lb.hint || '') && /Jami narx/.test(await page.locator('header').innerText()), JSON.stringify(lb).slice(0, 140)); }
+    /* Havola o'qilmaydi (2026-10-03): havola tashlansa Worker'ga so'rov
+       yo'q — "Narx ko'ringan sahifani skrinshot qiling" kartasi. */
+    { const nAi = aiBodies.length;
+      await heroField.fill('https://item.taobao.com/item.htm?id=1'); await page.waitForTimeout(200);
+      await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(700);
+      const nt = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
+      const nb = await page.evaluate(() => [...document.querySelectorAll('main button')].map(b => b.innerText.trim()));
+      check('havola: AI so\'rovi yo\'q, "Narx ko\'ringan sahifani skrinshot qiling", "Skrinshot yuklash", "Qo\'lda hisoblash"', aiBodies.length === nAi && /Narx ko'ringan sahifani skrinshot qiling/.test(nt) && /Havolani o'qimaymiz/.test(nt) && ['Skrinshot yuklash', "Qo'lda hisoblash"].every(t => nb.includes(t)), nt.slice(0, 160) + ' · ' + nb.join('|')); }
     /* Ulashish matnida narx bor — natija serversiz (AI so'rovi yo'q). */
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
     { const nAi = aiBodies.length;
@@ -805,27 +789,23 @@ try {
       await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(900);
       const lt = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
       check('ulashish matnida narx — darrov "Jami narx", AI so\'rovi yo\'q, nom va $41.99', aiBodies.length === nAi && /Jami narx/.test(await page.locator('header').innerText()) && /Li-Ning RED HARE 9 Running Shoes/.test(lt) && /41[.,]99 USD/.test(lt) && /AliExpress/.test(lt), lt.slice(0, 200)); }
+    /* Trendyol havolasi: nom havoladan — "Qo'lda hisoblash" to'ldirilgan,
+       "Boshqa do'kondan topish" — shu nom bilan AI qidiruvi. */
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
-    await heroField.fill('https://shop.example.com/nonprice/item'); await page.waitForTimeout(200);
-    await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(900);
+    await heroField.fill('https://www.trendyol.com/derimod/erkek-sneaker-p-741953629'); await page.waitForTimeout(200);
+    await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(700);
     { const nt = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
-      const nb = await page.evaluate(() => [...document.querySelectorAll('main button')].map(b => b.innerText.trim()));
-      check('havoladan narx o\'qilmasa: sabab, "Skrinshot yuklash", "Qo\'lda hisoblash", "Pochtam AI\'dan so\'rash"', /Havoladan narx o'qilmadi/.test(nt) && /Skrinshot yuklang yoki narxni o'zingiz yozing/.test(nt) && /«Ulashish» matnini/.test(nt) && !/nom va do'kon topildi/.test(nt) && ['Skrinshot yuklash', "Qo'lda hisoblash", "Pochtam AI'dan so'rash"].every(t => nb.includes(t)), nt.slice(0, 120) + ' · ' + nb.join('|'));
-      await page.locator('main button', { hasText: "Pochtam AI'dan so'rash" }).first().click(); await page.waitForTimeout(700);
-      const ab = aiBodies[aiBodies.length - 1] || {};
-      check('"Pochtam AI\'dan so\'rash" — AI sahifani url bilan o\'qiydi', /Pochtam AI/.test(await page.locator('header').innerText()) && ab.url === 'https://shop.example.com/nonprice/item' && ab.q === 'Bu mahsulot menga qanchaga tushadi?', JSON.stringify(ab).slice(0, 120)); }
-    /* Trendyol (captcha) / AliExpress: narx yo'q, nom va do'kon bor —
-       "Qo'lda hisoblash" shular bilan to'ldirilgan holda ochiladi. */
-    await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
-    await heroField.fill('https://www.trendyol.com/derimod/erkek-sneaker-p-741953629?nonprice=1'); await page.waitForTimeout(200);
-    await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(900);
-    { const nt = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
-      check('havola: narxsiz, lekin nom bor — "«Derimod Erkek Sneaker» — nom va do\'kon topildi"', /«Derimod Erkek Sneaker» — nom va do'kon topildi/.test(nt), nt.slice(0, 200));
+      check('havola: nom havoladan — "«Derimod Erkek Sneaker» — nom va do\'kon topildi"', /«Derimod Erkek Sneaker» — nom va do'kon topildi/.test(nt), nt.slice(0, 200));
       await page.locator('main button', { hasText: "Qo'lda hisoblash" }).first().click(); await page.waitForTimeout(700);
       const vals = await page.evaluate(() => [...document.querySelectorAll('main input')].map(i => i.value));
       const mt = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
       const on = await page.evaluate(() => [...document.querySelectorAll('main button[aria-pressed="true"]')].map(b => b.innerText.trim()));
-      check('"Qo\'lda hisoblash" — nom, do\'kon Trendyol, Turkiya, ₺ to\'ldirilgan, narx bo\'sh', vals[0] === 'Derimod Erkek Sneaker' && vals[1] === '' && /Do'kon: Trendyol/.test(mt) && on.includes('₺') && on.includes('Turkiya'), JSON.stringify(vals).slice(0, 80) + ' · ' + on.join('|') + ' · ' + (/Do'kon: \S+/.exec(mt) || ['—'])[0]); }
+      check('"Qo\'lda hisoblash" — nom, do\'kon Trendyol, Turkiya, ₺ to\'ldirilgan, narx bo\'sh', vals[0] === 'Derimod Erkek Sneaker' && vals[1] === '' && /Do'kon: Trendyol/.test(mt) && on.includes('₺') && on.includes('Turkiya'), JSON.stringify(vals).slice(0, 80) + ' · ' + on.join('|') + ' · ' + (/Do'kon: \S+/.exec(mt) || ['—'])[0]);
+      await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(500);
+      const fb = page.locator('main button', { hasText: "Boshqa do'kondan topish" }).first();
+      if (await fb.count()) { await fb.click(); await page.waitForTimeout(700); }
+      const ab = aiBodies[aiBodies.length - 1] || {};
+      check('"Boshqa do\'kondan topish" — AI qidiruvi (find) shu nom bilan, url yo\'q', ab.find === true && /^Derimod Erkek Sneaker qidiryapman/.test(ab.q || '') && !ab.url && !ab.link, JSON.stringify(ab).slice(0, 140)); }
     /* Ovoz: brauzer tanisa — aytib bo'lingach o'zi qidiradi; tanimasa —
        klaviatura mikrofoni haqida maslahat va maydonga fokus. */
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
@@ -1003,6 +983,16 @@ try {
     await page.locator('main button').filter({ hasText: /^Qo'lda hisoblash$/ }).first().click(); await page.waitForTimeout(500);
     const noneCalc = await page.evaluate(() => ({ h: document.querySelector('header').innerText.replace(/\s+/g, ' '), price: document.querySelector('input[aria-label="Mahsulot narxi"]')?.value, banner: !!document.querySelector('main [role="status"]') }));
     check('Qo\'lda hisoblash → bo\'sh kalkulyator (bannersiz)', /Jami narx/.test(noneCalc.h) && noneCalc.price === '' && !noneCalc.banner, JSON.stringify(noneCalc));
+    await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(400);
+    /* Tovar fotosi (narxsiz): AI nima ekanini aytadi — "Topish" o'zi
+       boshlanadi (Pochtam AI, find: true), Xaridlarimda "Topish" kartasi. */
+    await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
+    shotNext = { found: false, kind: 'product', name: 'Oq krossovka Nike Air Force 1', brand: 'Nike', query: 'Nike Air Force 1 white sneakers', price: 0, currency: '', qty: 1, store: '', category: 'poyabzal', country: '', weightKg: 0, confidence: 0 };
+    await page.locator('input[type="file"][data-shot]').first().setInputFiles({ name: 'foto.png', mimeType: 'image/png', buffer: PNG }); await page.waitForTimeout(1200);
+    { const ab = aiBodies[aiBodies.length - 1] || {};
+      const hh = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
+      const plansHas = await page.evaluate(() => { try { return (JSON.parse(localStorage.getItem('xy_state') || '{}').plans || []).length; } catch (e) { return -1; } });
+      check('tovar fotosi → Pochtam AI qidiruvi: "Rasmdagi tovar: …", inglizcha so\'rov, find', /Pochtam AI/.test(hh) && ab.find === true && /^Rasmdagi tovar: Oq krossovka Nike Air Force 1 \(Nike Air Force 1 white sneakers\)\. Qaysi do'kondan topaman\?$/.test(ab.q || '') && !ab.image, JSON.stringify(ab).slice(0, 160) + ' · ' + hh + ' · ' + plansHas); }
     await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(400);
     /* KRW natijasi kalkulyatorda o'z belgisi bilan (oxirgi hisob orqali). */
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);

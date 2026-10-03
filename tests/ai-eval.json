@@ -170,6 +170,18 @@
       "card": "links",
       "soft": true,
       "lang": "uz"
+    },
+    {
+      "q": "Rasmdagi tovar: Oq teri krossovka, Nike Air Force 1 (Nike Air Force 1 white leather sneakers). Qaysi do'kondan topaman?",
+      "find": true,
+      "card": "stores",
+      "must": "Nike|Air Force",
+      "lang": "uz"
+    },
+    {
+      "q": "https://www.trendyol.com/derimod/erkek-sneaker-p-741953629 shu qancha tushadi?",
+      "must": "skrinshot|screenshot|rasm",
+      "lang": "uz"
     }
   ]
 }

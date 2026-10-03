@@ -179,8 +179,6 @@ check('/ai javobida markdown yo\'q (kodda qo\'riqlov)', (await md.json()).text =
   check('parseAiBody: bo\'sh so\'rov rad etiladi', parseAiBody(JSON.stringify({ lang: 'uz' })) === 'savol bo\'sh');
   const onlyImg = parseAiBody(JSON.stringify({ image: 'data:image/png;base64,iVBORw0KGgo=', lang: 'uz' }));
   check('parseAiBody: faqat rasm ham yetadi', typeof onlyImg === 'object' && onlyImg.q === '' && onlyImg.shot.mime === 'image/png');
-  const onlyUrl = parseAiBody(JSON.stringify({ url: 'https://www.amazon.com/dp/B0X', lang: 'uz' }));
-  check('parseAiBody: faqat havola ham yetadi', typeof onlyUrl === 'object' && onlyUrl.url === 'https://www.amazon.com/dp/B0X');
   check('parseUrl: faqat http(s)', parseUrl('javascript:alert(1)') === '' && parseUrl('https://x.com/a') === 'https://x.com/a');
   const c = parseCart({ name: 'Nike Air Max', price: '699', cur: 'cny', kg: 99, qty: 0, junk: 'x' });
   check('parseCart: tozalanadi (vazn 50 kg gacha, valyuta katta harf, miqdor ≥1)', c.name === 'Nike Air Max' && c.price === 699 && c.cur === 'CNY' && c.kg === 50 && c.qty === 1 && !('junk' in c), JSON.stringify(c));
@@ -227,12 +225,11 @@ check('/ai javobida markdown yo\'q (kodda qo\'riqlov)', (await md.json()).text =
   const sys = (seen2[1].system || []).map(b => b.text).join(' ');
   check('rasm + savol: rasm arzon modelda, savol asosiyda, xarid holati ko\'rsatmada', r2.status === 200 && seen2.length === 2 && seen2[0].model === 'claude-haiku-4-5' && seen2[1].model === 'claude-sonnet-5' && /Joriy xarid/.test(sys) && /Nike Air Max 90/.test(sys) && /699 CNY/.test(sys), sys.slice(-200));
   check('rasm + savol: rasm asosiy modelga ko\'rsatilmaydi', !JSON.stringify(seen2[1].messages).includes('image'));
-  /* Havola: web_fetch faqat o'sha domenga ruxsat bilan qo'shiladi. */
+  /* Havola o'qilmaydi: savol bilan kelgan url e'tiborsiz, web_fetch yo'q. */
   const seen3 = [];
   const r3 = await ask('Bu qancha turadi?', { AI_FETCH: async (u, i) => { seen3.push(JSON.parse(i.body)); return claudeText('ok'); } },
     { headers: { 'cf-connecting-ip': '2.2.2.11' }, body: { url: 'https://www.amazon.com/dp/B0X' } });
-  const wf = (seen3[0].tools || []).find(t => t.type === 'web_fetch_20260209');
-  check('havola: web_fetch qo\'shiladi va faqat o\'sha domenga', r3.status === 200 && !!wf && wf.allowed_domains.join() === 'amazon.com' && /amazon\.com\/dp\/B0X/.test(JSON.stringify(seen3[0].messages)), JSON.stringify(wf));
+  check('url e\'tiborsiz: web_fetch yo\'q, xabarda havola yo\'q', r3.status === 200 && !(seen3[0].tools || []).some(t => /web_fetch/.test(t.type)) && !/amazon\.com\/dp/.test(JSON.stringify(seen3[0].messages)));
 }
 
 /* /stats: AI sanog'i bor, IP xeshlari yo'q. */
@@ -333,6 +330,14 @@ const sr3 = await (await shot({ image: PNG1, mime: 'image/png' }, { AI_FETCH: ()
 check('shot: JSON topilmasa shot.found=false, kartasiz, stop shot', sr3.shot.found === false && sr3.cards.length === 0 && sr3.stop === 'shot');
 const sr4 = await shot({ image: PNG1, mime: 'image/png' }, { AI_FETCH: () => new Response('{}', { status: 529 }) }, '3.3.3.6');
 check('shot: Claude yiqilsa 503', sr4.status === 503);
+/* Tovar fotosi (narxsiz): kind product, nom va inglizcha so'rov — ilova
+   "Topish"ni shu so'rov bilan boshlaydi. Sxemada kind/query/brand. */
+const photo = async () => new Response(JSON.stringify({ model: 'claude-haiku-4-5', stop_reason: 'end_turn', usage: { input_tokens: 1400, output_tokens: 70 },
+  content: [{ type: 'text', text: JSON.stringify({ kind: 'product', name: 'Oq teri krossovka, Nike Air Force 1', brand: 'Nike', query: 'Nike Air Force 1 white sneakers', price: 0, currency: '', qty: 1, store: '', category: 'poyabzal', country: '', weightKg: 0, confidence: 0 }) }] }), { status: 200 });
+const sp = await (await shot({ image: PNG1, mime: 'image/png', usdRate: 12650 }, { AI_FETCH: photo }, '3.3.3.7')).json();
+check('shot: tovar fotosi — found=false, kind product, nom, brend, query, kartasiz', sp.shot.found === false && sp.shot.kind === 'product' && sp.shot.query === 'Nike Air Force 1 white sneakers' && sp.shot.brand === 'Nike' && sp.shot.category === 'poyabzal' && sp.cards.length === 0 && sp.stop === 'shot', JSON.stringify(sp.shot));
+check('shot: sxemada kind (enum), query, brand', shotReq.output_config.format.schema.properties.kind.enum.join() === 'price,product,other' && ['kind', 'query', 'brand'].every(k => shotReq.output_config.format.schema.required.includes(k)));
+check('normalizeShot: narx bo\'lsa kind price; nomsiz product — other', normalizeShot({ kind: 'product', price: 10, currency: 'USD' }, 12650).kind === 'price' && normalizeShot({ kind: 'product', name: '' }, 12650).kind === 'other');
 /* suggest_stores */
 const sg = runTool('suggest_stores', { category: 'poyabzal', original: true, budgetUsd: 100, query: 'men sneakers size 41' }, tctx);
 check('suggest_stores: original poyabzal $100 — brend poyabzal do\'konlari birinchi, havola bilan', sg.found && sg.stores.length === 5 && sg.stores.slice(0, 3).every(x => x.cat === 'poyabzal' && /Yuqori/.test(x.original)) && sg.stores.every(x => /^https:\/\//.test(x.searchUrl)) && sg.stores.some(x => /men\+sneakers/.test(x.searchUrl)), sg.stores.map(x => x.id).join(','));
@@ -477,147 +482,9 @@ check('purge: 90 kun yangilanmagan holat o\'chadi (200 dan ortiq ham), yangisi q
 check('TRACKS ulanmagan bo\'lsa /partner/status 503, /track bo\'sh', (await hit('/partner/status', { method: 'POST', headers: { authorization: 'Bearer sir' }, body: '{}' })).status === 503
   && JSON.stringify(await (await hit('/track', { method: 'POST', headers: { origin: 'https://x' }, body: '{"q":[{"c":"d2d","n":"RB123456789CN"}]}' })).json()) === '{"r":[]}');
 
-/* --- Havola orqali o'qish (link): sahifa → skrinshot bilan bir xil shot. --- */
-{
-  const L = await import('./src/link.js');
-  check('safeLink: https do\'kon — ha; IP, localhost, port, login — yo\'q', !!L.safeLink('https://www.trendyol.com/x-p-1') && !L.safeLink('http://127.0.0.1/x') && !L.safeLink('https://localhost/x') && !L.safeLink('https://shop.com:8080/x') && !L.safeLink('https://a:b@shop.com/x') && !L.safeLink('ftp://shop.com/x') && !L.safeLink('https://printer.local/x'));
-  check('parsePrice: 1,299.00 · 1.299,00 · 129,99 · 1 299 · 12.345.678', L.parsePrice('1,299.00') === 1299 && L.parsePrice('1.299,00') === 1299 && L.parsePrice('129,99') === 129.99 && L.parsePrice('1 299') === 1299 && L.parsePrice('12.345.678') === 12345678 && L.parsePrice('') === 0);
-  check('toKg: 800 g, 2 lb, KGM', L.toKg(800, 'GRM') === 0.8 && Math.abs(L.toKg(2, 'lb') - 0.907) < 0.01 && L.toKg('1.5', 'KGM') === 1.5);
-  const ld = '<html><head><title>X</title><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList"},{"@type":"Product","name":"Nike Air Max 90 &amp; Co","brand":{"name":"Nike"},"weight":{"value":"850","unitCode":"GRM"},"offers":[{"@type":"Offer","price":"2.499,90","priceCurrency":"try"}]}]}</script></head></html>';
-  const p1 = L.extractProduct(ld);
-  check('extractProduct: JSON-LD @graph → nom, narx (1.234,56 shakli), valyuta, vazn', p1 && p1.source === 'jsonld' && p1.name === 'Nike Air Max 90 & Co' && p1.price === 2499.9 && p1.currency === 'TRY' && p1.weightKg === 0.85, JSON.stringify(p1));
-  const agg = L.extractProduct('<script type="application/ld+json">[{"@type":["Product"],"name":"Kurtka","offers":{"@type":"AggregateOffer","lowPrice":39.5,"priceCurrency":"USD"}}]</script>');
-  check('extractProduct: AggregateOffer lowPrice', agg && agg.price === 39.5 && agg.currency === 'USD');
-  const mt = L.extractProduct('<meta property="og:title" content="Krem 50 ml"><meta property="og:site_name" content="Olive Young"><meta property="product:price:amount" content="25,000"><meta property="product:price:currency" content="KRW">');
-  check('extractProduct: meta (og/product:price) zaxira', mt && mt.source === 'meta' && mt.price === 25000 && mt.currency === 'KRW' && mt.name === 'Krem 50 ml' && mt.store === 'Olive Young', JSON.stringify(mt));
-  check('extractProduct: narxsiz sahifa — null', L.extractProduct('<title>Bosh sahifa</title><p>Salom</p>') === null);
-  check('pageText: skript va uslubsiz, sarlavha bilan', /^Sarlavha: Kurtka/.test(L.pageText('<title>Kurtka</title><style>.a{}</style><script>var x=1</script><p>Narx: $49.99</p>')) && !/var x/.test(L.pageText('<script>var x=1</script>')));
-  check('tldCountry: .co.uk, .com.tr, .cn; .com — noma\'lum', L.tldCountry('shop.co.uk') === 'Angliya' && L.tldCountry('trendyol.com.tr') === 'Turkiya' && L.tldCountry('jd.cn') === 'Xitoy' && L.tldCountry('nike.com') === '');
-
-  const html = (body, ct = 'text/html; charset=utf-8', status = 200) => new Response(body, { status, headers: { 'content-type': ct } });
-  const linkAsk = (link, fetchFn, ip) => worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': ip },
-    body: JSON.stringify({ link, lang: 'uz', usdRate: 12650 }) }), aiEnv({ AI_FETCH: fetchFn }), ctx);
-  /* 1) JSON-LD: Claude umuman chaqirilmaydi. */
-  const calls1 = [];
-  const r1 = await linkAsk('https://www.trendyol.com/nike/air-max-p-123', async (u, i) => { calls1.push(String(u)); return /anthropic/.test(u) ? claudeText('x') : html(ld); }, '4.4.4.1');
-  const j1 = await r1.json();
-  check('link: JSON-LD → shot (TRY, vazn, do\'kon bazadan), Claude chaqirilmaydi, stop link', r1.status === 200 && j1.stop === 'link' && j1.via === 'jsonld' && j1.shot.found && j1.shot.currency === 'TRY' && j1.shot.weightKg === 0.85 && j1.shot.store === 'Trendyol' && j1.shot.country === 'Turkiya' && j1.shot.url === 'https://www.trendyol.com/nike/air-max-p-123' && calls1.length === 1 && !calls1.some(u => /anthropic/.test(u)) && j1.cards[0].type === 'product', JSON.stringify(j1).slice(0, 200));
-  /* 2) Tuzilgan ma'lumot yo'q — sahifa matni arzon modelga. */
-  const calls2 = [];
-  const txt = '<title>Winter jacket</title><body>' + 'Warm winter jacket for men. '.repeat(20) + ' Price: £59.99 </body>';
-  const r2 = await linkAsk('https://shop.example.co.uk/jacket', async (u, i) => { calls2.push(i && i.body ? JSON.parse(i.body) : String(u));
-    if (/anthropic/.test(u)) return new Response(JSON.stringify({ model: 'claude-haiku-4-5', stop_reason: 'end_turn', usage: { input_tokens: 3000, output_tokens: 50 },
-      content: [{ type: 'text', text: JSON.stringify({ name: 'Winter jacket', price: 59.99, currency: 'GBP', qty: 1, store: 'Example', category: 'kiyim', country: '', weightKg: 0, confidence: 0.85 }) }] }), { status: 200 });
-    return html(txt); }, '4.4.4.2');
-  const j2 = await r2.json();
-  const cl2 = calls2.find(x => x && x.model);
-  check('link: matn → arzon model (sxema bilan, sahifa matni ichida), GBP, davlat domendan', r2.status === 200 && j2.via === 'text' && j2.shot.found && j2.shot.currency === 'GBP' && j2.shot.country === 'Angliya' && cl2 && cl2.model === 'claude-haiku-4-5' && cl2.output_config.format.type === 'json_schema' && /Price: £59\.99/.test(cl2.messages[0].content) && !cl2.tools, JSON.stringify(j2).slice(0, 200));
-  /* 3) Sayt to'sdi (403) — asosiy model web_fetch bilan, faqat shu domen. */
-  const calls3 = [];
-  const r3 = await linkAsk('https://www.amazon.com/dp/B0TEST', async (u, i) => { if (/anthropic/.test(u)) { calls3.push(JSON.parse(i.body));
-      return new Response(JSON.stringify({ model: 'claude-sonnet-5', stop_reason: 'end_turn', usage: { input_tokens: 5000, output_tokens: 80 },
-        content: [{ type: 'server_tool_use', id: 's1', name: 'web_fetch', input: { url: 'https://www.amazon.com/dp/B0TEST' } }, { type: 'text', text: 'Natija: {"name":"Echo Dot","price":49.99,"currency":"USD","store":"Amazon","category":"elektronika","country":"AQSh","weightKg":0.3,"confidence":0.9}' }] }), { status: 200 }); }
-    return html('<html>Robot Check — enter the characters</html>'); }, '4.4.4.3');
-  const j3 = await r3.json();
-  check('link: to\'silgan sayt → web_fetch (faqat amazon.com), USD, do\'kon bazadan', r3.status === 200 && j3.via === 'fetch' && j3.shot.found && j3.shot.priceUsd === 49.99 && j3.shot.store === 'Amazon' && calls3.length === 1 && calls3[0].tools[0].type === 'web_fetch_20260209' && calls3[0].tools[0].allowed_domains[0] === 'amazon.com' && calls3[0].output_config.effort === 'low', JSON.stringify(j3).slice(0, 200));
-  /* 4) Xavfli manzil — sahifa ham, Claude ham chaqirilmaydi. */
-  let calls4 = 0;
-  const j4 = await (await linkAsk('https://192.168.1.1/admin', async () => { calls4++; return html(''); }, '4.4.4.4')).json();
-  check('link: IP-manzil — ochilmaydi, found=false', j4.stop === 'link' && j4.via === 'bad' && j4.shot.found === false && calls4 === 0 && j4.cards.length === 0);
-  /* 5) Sahifa ochildi, lekin narx yo'q (qisqa) — found=false, Claude'siz. */
-  let calls5 = 0;
-  const j5 = await (await linkAsk('https://nike.com/', async (u) => { if (/anthropic/.test(u)) calls5++; return html('<title>Nike</title><p>Just do it</p>'); }, '4.4.4.5')).json();
-  check('link: narxsiz qisqa sahifa — found=false, AI chaqirilmaydi', j5.via === 'none' && j5.shot.found === false && calls5 === 0, JSON.stringify(j5).slice(0, 120));
-  const amz = L.extractProduct('<span id="productTitle" class="a-size-large"> Echo Dot (5th Gen) </span><div class="a-section"><span class="a-offscreen">$9.99</span></div><div id="corePrice_feature_div"><span class="a-price"><span class="a-offscreen">$49.99</span></span></div>');
-  check('extractProduct: Amazon — asosiy narx bloki (reklama narxi emas), nom', amz && amz.source === 'amazon' && amz.price === 49.99 && amz.currency === 'USD' && amz.name === 'Echo Dot (5th Gen)', JSON.stringify(amz));
-  const amz2 = L.extractProduct('<link rel="canonical" href="https://www.amazon.com/dp/B0X"><title>Amazon.com: Kindle Paperwhite</title><div id="apex_desktop_newAccordionRow"><span class="a-price"><span class="a-offscreen">$149.99</span></span></div>');
-  check('extractProduct: Amazon — apex_* bloki, nom <title> dan (productTitle yo\'q)', amz2 && amz2.price === 149.99 && amz2.name === 'Kindle Paperwhite', JSON.stringify(amz2));
-  check('pageText: mahsulot qismidan boshlanadi (menyu tashlanadi)', /^Sarlavha: X\nKurtka narxi/.test(L.pageText('<title>X</title><nav>Menyu Menyu</nav><main><p>Kurtka narxi $5</p></main>')));
-  check('looksBlocked: Amazon "continue shopping" oraliq sahifasi', L.looksBlocked('<p>Click the button below to continue shopping</p>') && !L.looksBlocked('<p>Echo Dot</p>'));
-  /* Uzun matndan narx topilmasa — web_fetch ham sinab ko'riladi. */
-  const calls6 = [];
-  const long = '<title>Kurtka</title><body>' + 'Chiroyli kurtka, sifatli mato. '.repeat(30) + '</body>';
-  const j6 = await (await linkAsk('https://shop.example.de/kurtka', async (u, i) => { if (/anthropic/.test(u)) { const b = JSON.parse(i.body); calls6.push(b.model + (b.tools ? ':tools' : ''));
-      if (!b.tools) return new Response(JSON.stringify({ model: b.model, stop_reason: 'end_turn', usage: { input_tokens: 2000, output_tokens: 20 }, content: [{ type: 'text', text: '{"name":"","price":0,"currency":"","qty":1,"store":"","category":"universal","country":"","weightKg":0,"confidence":0}' }] }), { status: 200 });
-      return new Response(JSON.stringify({ model: b.model, stop_reason: 'end_turn', usage: { input_tokens: 4000, output_tokens: 60 }, content: [{ type: 'text', text: '{"name":"Kurtka","price":79.9,"currency":"EUR","store":"Example","country":"Germaniya","weightKg":1.1,"confidence":0.8}' }] }), { status: 200 }); }
-    return html(long); }, '4.4.4.6')).json();
-  check('link: matndan narx chiqmasa web_fetch sinaladi (arzon → asosiy), EUR, sahifa holati javobda', j6.via === 'fetch' && j6.shot.found && j6.shot.currency === 'EUR' && calls6.join(',') === 'claude-haiku-4-5,claude-sonnet-5:tools' && j6.page && j6.page.status === 200 && j6.page.blocked === false && j6.usage.input === 6000, JSON.stringify({ via: j6.via, calls6, page: j6.page, u: j6.usage }));
-  /* Qisqa havola yo'naltiradi — do'kon oxirgi manzildan, web_fetch ikkala domenga. */
-  const redirs7 = [];
-  const j7 = await (await linkAsk('https://a.co/d/abc123', async (u, i) => { if (/anthropic/.test(u)) return claudeText('x'); redirs7.push(String(u) + ':' + (i && i.redirect));
-      if (/a\.co\//.test(u)) return new Response('', { status: 301, headers: { location: 'https://www.amazon.com/dp/B0TEST' } });
-      return html(ld); }, '4.4.4.7')).json();
-  check('link: yo\'naltirish qo\'lda (redirect: manual), har qadam tekshiriladi', redirs7.length === 2 && redirs7.every(x => /:manual$/.test(x)), redirs7.join(' | '));
-  check('link: qisqa havola (a.co) → oxirgi manzil amazon.com: do\'kon Amazon, url oxirgisi', j7.shot.found && j7.shot.store === 'Amazon' && j7.shot.url === 'https://www.amazon.com/dp/B0TEST' && j7.shot.host === 'amazon.com', JSON.stringify(j7.shot).slice(0, 160));
-  check('parseAiBody: uzun (2000 gacha) Amazon havolasi qabul qilinadi', parseAiBody(JSON.stringify({ link: 'https://www.amazon.com/dp/B0X?' + 'a=1&'.repeat(200) })).link.length > 400);
-  /* Ochiq manzil ichki manzilga yo'naltirsa — ochilmaydi. */
-  const seen8 = [];
-  const j8 = await (await linkAsk('https://evil.example.com/r', async (u) => { seen8.push(String(u)); if (/anthropic/.test(u)) return claudeText('x');
-      return new Response('', { status: 302, headers: { location: 'http://169.254.169.254/latest/meta-data' } }); }, '4.4.4.8')).json();
-  check('link: ichki/IP manzilga yo\'naltirish — ochilmaydi, found=false', j8.shot.found === false && !seen8.some(u => /169\.254/.test(u)), seen8.join(' | '));
-  /* GBK sahifa to'g'ri o'qiladi (sarlavhadagi charset). */
-  const gbkBytes = Buffer.from([0x3c,0x6d,0x65,0x74,0x61,0x20,0x70,0x72,0x6f,0x70,0x65,0x72,0x74,0x79,0x3d,0x22,0x6f,0x67,0x3a,0x74,0x69,0x74,0x6c,0x65,0x22,0x20,0x63,0x6f,0x6e,0x74,0x65,0x6e,0x74,0x3d,0x22,0xc4,0xd0,0xd0,0xac,0x22,0x3e,0x3c,0x6d,0x65,0x74,0x61,0x20,0x70,0x72,0x6f,0x70,0x65,0x72,0x74,0x79,0x3d,0x22,0x70,0x72,0x6f,0x64,0x75,0x63,0x74,0x3a,0x70,0x72,0x69,0x63,0x65,0x3a,0x61,0x6d,0x6f,0x75,0x6e,0x74,0x22,0x20,0x63,0x6f,0x6e,0x74,0x65,0x6e,0x74,0x3d,0x22,0x39,0x39,0x22,0x3e,0x3c,0x6d,0x65,0x74,0x61,0x20,0x70,0x72,0x6f,0x70,0x65,0x72,0x74,0x79,0x3d,0x22,0x70,0x72,0x6f,0x64,0x75,0x63,0x74,0x3a,0x70,0x72,0x69,0x63,0x65,0x3a,0x63,0x75,0x72,0x72,0x65,0x6e,0x63,0x79,0x22,0x20,0x63,0x6f,0x6e,0x74,0x65,0x6e,0x74,0x3d,0x22,0x43,0x4e,0x59,0x22,0x3e]);
-  const j9 = await (await linkAsk('https://shop.example.cn/p/1', async (u) => /anthropic/.test(u) ? claudeText('x') : new Response(gbkBytes, { status: 200, headers: { 'content-type': 'text/html; charset=gbk' } }), '4.4.4.9')).json();
-  check('link: GBK kodlangan sahifa — nom to\'g\'ri (男鞋), CNY', j9.shot.found && j9.shot.name === '男鞋' && j9.shot.currency === 'CNY', JSON.stringify(j9.shot).slice(0, 120));
-  /* JSON-LD da valyuta yo'q — domendan (.com.tr → TRY). */
-  const j10 = await (await linkAsk('https://www.example.com.tr/p/2', async (u) => /anthropic/.test(u) ? claudeText('x') : html('<script type="application/ld+json">{"@type":"Product","name":"Ceket","offers":{"price":"1499.90"}}</script>'), '4.4.4.10')).json();
-  check('link: valyutasiz narx — domendan TRY (USD emas)', j10.shot.found && j10.shot.currency === 'TRY' && j10.shot.country === 'Turkiya', JSON.stringify(j10.shot).slice(0, 120));
-  /* Arzon model yiqilsa (529) — 503 emas, web_fetch sinaladi. */
-  const calls11 = [];
-  const j11r = await linkAsk('https://shop.example.de/k2', async (u, i) => { if (/anthropic/.test(u)) { const b = JSON.parse(i.body); calls11.push(b.tools ? 'fetch' : 'text');
-      if (!b.tools) return new Response(JSON.stringify({ error: { type: 'overloaded_error', message: 'Overloaded' } }), { status: 529 });
-      return new Response(JSON.stringify({ model: 'm', stop_reason: 'end_turn', usage: {}, content: [{ type: 'text', text: '{"name":"Kurtka","price":50,"currency":"EUR"}' }] }), { status: 200 }); }
-    return html(long); }, '4.4.4.11');
-  const j11 = await j11r.json();
-  check('link: arzon model yiqilsa 503 emas — web_fetch bilan topiladi', j11r.status === 200 && j11.via === 'fetch' && j11.shot.found && calls11.join(',') === 'text,fetch', JSON.stringify({ s: j11r.status, via: j11.via, calls11 }));
-  const j12r = await linkAsk('https://shop.example.de/k3', async (u, i) => { if (/anthropic/.test(u)) return new Response(JSON.stringify({ error: { type: 'overloaded_error', message: 'Overloaded' } }), { status: 529 }); return html(long); }, '4.4.4.12');
-  const j12 = await j12r.json();
-  check('link: ikkala AI yo\'li yiqilsa — 200, found=false ("narx o\'qilmadi", skrinshot taklifi)', j12r.status === 200 && j12.shot.found === false, JSON.stringify({ s: j12r.status, shot: j12.shot }));
-  check('amazonClean: /Nom/dp/ASIN/ref=…?… → /dp/ASIN; boshqa sayt o\'zgarmaydi', L.amazonClean('https://www.amazon.com/Echo-Dot/dp/B09B8V1LZ3/ref=sr_1_1?crid=X') === 'https://www.amazon.com/dp/B09B8V1LZ3' && L.amazonClean('https://www.amazon.de/gp/product/B08KTZ8249?th=1') === 'https://www.amazon.de/dp/B08KTZ8249' && L.amazonClean('https://nike.com/x?y=1') === 'https://nike.com/x?y=1');
-  const azPay = L.extractAmazon('<span id="productTitle"> Echo Dot </span><span class="a-offscreen">$9.99</span><span class="a-price priceToPay"><span class="a-offscreen">$49.99</span></span>');
-  const azAttach = L.extractAmazon('<span id="productTitle">Kindle</span><input type="hidden" id="attach-base-product-price" value="139.99"><input type="hidden" id="attach-base-product-currency-symbol" value="$">');
-  const azJson = L.extractAmazon('<span id="productTitle">Buch</span><script>{"priceAmount":24.95,"currencySymbol":"€"}</script>');
-  check('extractAmazon: priceToPay, attach-base-product-price, priceAmount JSON', azPay.price === 49.99 && azAttach.price === 139.99 && azAttach.currency === 'USD' && azJson.price === 24.95 && azJson.currency === 'EUR', JSON.stringify([azPay, azAttach, azJson].map(x => x && x.price)));
-  check('extractAmazon: Amazon bo\'lmagan sahifa — null', L.extractAmazon('<span class="a-price priceToPay"><span class="a-offscreen">$5</span></span>') === null);
-  const seen13 = [];
-  const j13 = await (await linkAsk('https://www.amazon.com/Echo-Dot/dp/B09B8V1LZ3/ref=sr_1_1?crid=X&keywords=echo', async (u) => { seen13.push(String(u)); if (/anthropic/.test(u)) return claudeText('x');
-      return html('<span id="productTitle">Echo Dot (5th Gen)</span><span class="a-price priceToPay"><span class="a-offscreen">$49.99</span></span>'); }, '4.4.4.13')).json();
-  check('link: Amazon havolasi toza /dp/ASIN bilan ochiladi, narx va belgilar javobda', j13.via === 'amazon' && j13.shot.found && j13.shot.priceUsd === 49.99 && seen13[0] === 'https://www.amazon.com/dp/B09B8V1LZ3' && j13.page.amazon && j13.page.amazon.priceToPay === true, JSON.stringify({ via: j13.via, seen13, a: j13.page && j13.page.amazon }));
-  check('parseAiBody: faqat link — to\'g\'ri; buzuq link — bo\'sh', parseAiBody(JSON.stringify({ link: 'https://a.com/x' })).link === 'https://a.com/x' && typeof parseAiBody(JSON.stringify({ link: 'javascript:alert(1)' })) === 'string');
-
-  /* Trendyol (captcha) va AliExpress (narx JavaScript bilan) — 2026-10-02. */
-  const sh1 = L.shareHint('US $5.89 | Li-Ning RED HARE 9 Running Shoes https://a.aliexpress.com/_mKx1');
-  const sh2 = L.shareHint('1.299,90 TL Derimod Erkek Sneaker https://ty.gl/abc');
-  const sh3 = L.shareHint("Bu ürünü Trendyol'da gördüm, beğeneceğini düşündüm! https://ty.gl/x");
-  const sh4 = L.shareHint('79,99руб. | Кроссовки мужские https://a.aliexpress.ru/_x');
-  check('shareHint: "US $5.89 | nom", "1.299,90 TL nom", rubl; reklama iborasi nom emas', sh1.price === 5.89 && sh1.currency === 'USD' && sh1.name === 'Li-Ning RED HARE 9 Running Shoes'
-    && sh2.price === 1299.9 && sh2.currency === 'TRY' && sh2.name === 'Derimod Erkek Sneaker' && sh3.price === 0 && sh3.name === '' && sh4.price === 79.99 && sh4.currency === 'RUB' && L.shareHint('https://x.com/a').price === 0, JSON.stringify([sh1, sh2, sh3, sh4]));
-  check('slugName: trendyol /brend/nom-p-id; brend takrorlanmaydi; id\'li havola — bo\'sh', L.slugName('https://www.trendyol.com/derimod/erkek-sneaker-p-741953629') === 'Derimod Erkek Sneaker'
-    && L.slugName('https://www.trendyol.com/adidas/adidas-erkek-sneaker-p-838684653?x=1') === 'Adidas Erkek Sneaker' && L.slugName('https://www.aliexpress.com/item/3256810572293986.html') === '');
-  check('pageName: " - AliExpress 2017…" dumi olinadi', L.pageName('<meta property="og:title" content="Li-Ning Men&#39;s RED HARE 9 - AliExpress 201768104">') === "Li-Ning Men's RED HARE 9");
-  const linkAskH = (link, hint, fetchFn, ip) => worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': ip },
-    body: JSON.stringify({ link, hint, lang: 'uz', usdRate: 12650 }) }), aiEnv({ AI_FETCH: fetchFn }), ctx);
-  const ae = '<html><head><meta property="og:title" content="Li-Ning RED HARE 9 - AliExpress 201768104"><script>window.runParams = {};</script></head><body>' + 'x '.repeat(400) + '</body></html>';
-  let ai14 = 0;
-  const j14 = await (await linkAskH('https://www.aliexpress.com/item/3256810572293986.html', '', async (u) => { if (/anthropic/.test(u)) { ai14++; return claudeText('x'); } return html(ae); }, '4.4.4.14')).json();
-  check('link: AliExpress (narx JS bilan) — AI chaqirilmaydi, nom va do\'kon bilan found=false', j14.via === 'jsprice' && j14.shot.found === false && j14.shot.name === 'Li-Ning RED HARE 9' && j14.shot.store === 'AliExpress' && j14.shot.country === 'Xitoy' && ai14 === 0, JSON.stringify({ via: j14.via, shot: j14.shot, ai14 }));
-  let ai15 = 0;
-  const j15 = await (await linkAskH('https://www.aliexpress.com/item/3256810572293986.html', 'US $5.89 | Li-Ning RED HARE 9 https://a.aliexpress.com/_x', async (u) => { if (/anthropic/.test(u)) { ai15++; return claudeText('x'); } return html(ae); }, '4.4.4.15')).json();
-  check('link: ulashish matnidagi narx — bepul (via share), nom sahifadan', j15.via === 'share' && j15.shot.found && j15.shot.price === 5.89 && j15.shot.currency === 'USD' && j15.shot.name === 'Li-Ning RED HARE 9' && ai15 === 0, JSON.stringify({ via: j15.via, shot: j15.shot }));
-  const cf = '<!DOCTYPE html><title>Attention Required! | Cloudflare</title><p>captcha</p>';
-  let ai16 = 0;
-  const j16 = await (await linkAskH('https://www.trendyol.com/derimod/erkek-sneaker-p-741953629', '', async (u) => { if (/anthropic/.test(u)) { ai16++; return claudeText('Sahifa ochilmadi.'); } return html(cf, 'text/html', 403); }, '4.4.4.16')).json();
-  check('link: Trendyol captcha (403) — web_fetch yo\'q (via wall), nom havoladan, do\'kon Trendyol, TRY', j16.via === 'wall' && ai16 === 0 && j16.shot.found === false && j16.shot.name === 'Derimod Erkek Sneaker' && j16.shot.store === 'Trendyol' && j16.shot.country === 'Turkiya' && j16.shot.currency === 'TRY' && j16.page.blocked === true, JSON.stringify({ via: j16.via, shot: j16.shot }));
-  let ai17 = 0;
-  const j17 = await (await linkAskH('https://www.trendyol.com/derimod/erkek-sneaker-p-741953629', '1.199,99 TL Derimod Erkek Sneaker https://ty.gl/x', async (u) => { if (/anthropic/.test(u)) { ai17++; return claudeText('x'); } return html(cf, 'text/html', 403); }, '4.4.4.17')).json();
-  check('link: Trendyol + ulashish matnida narx — topildi (via share, TRY), AI yo\'q', j17.via === 'share' && j17.shot.found && j17.shot.price === 1199.99 && j17.shot.currency === 'TRY' && j17.shot.store === 'Trendyol' && ai17 === 0, JSON.stringify({ via: j17.via, shot: j17.shot }));
-  /* Standart (AI_LINK_FETCH yo'q): to'silgan sahifada web_fetch chaqirilmaydi. */
-  const calls18 = [];
-  const j18 = await (await worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': '4.4.4.18' },
-    body: JSON.stringify({ link: 'https://www.amazon.com/dp/B0TEST18', lang: 'uz', usdRate: 12650 }) }), aiEnv({ AI_LINK_FETCH: undefined, AI_FETCH: async (u, i) => { if (/anthropic/.test(u)) { calls18.push(1); return claudeText('x'); } return html('<title>Robot Check</title><p>Enter the characters you see below</p>', 'text/html', 503); } }), ctx)).json();
-  check('link: standart — to\'silgan sahifada web_fetch yo\'q (via blocked, $0)', j18.via === 'blocked' && j18.shot.found === false && j18.shot.store === 'Amazon' && calls18.length === 0, JSON.stringify({ via: j18.via, shot: j18.shot, calls18 }));
-  check('parseAiBody: hint faqat link bilan, 600 belgigacha', parseAiBody(JSON.stringify({ link: 'https://a.com/x', hint: 'a'.repeat(900) })).hint.length === 600 && parseAiBody(JSON.stringify({ q: 'salom', hint: 'x' })).hint === '');
-}
+/* --- Havola o'qilmaydi (2026-10-03): eski ilova yuborgan link/url — e'tiborsiz. --- */
+check('parseAiBody: faqat link yoki url — savol bo\'sh (400)', typeof parseAiBody(JSON.stringify({ link: 'https://a.com/x' })) === 'string' && typeof parseAiBody(JSON.stringify({ url: 'https://a.com/x' })) === 'string');
+check('parseAiBody: savol + url — url e\'tiborsiz', (() => { const p = parseAiBody(JSON.stringify({ q: 'salom', url: 'https://a.com/x' })); return typeof p === 'object' && !('url' in p) && !('link' in p); })());
 
 /* --- Xarajat nazorati: sarf yoziladi, kunlik $ byudjeti, "Qayerdan topaman"
    IP chegarasi (oshsa qidiruvsiz javob), buyurtma bo'limi faqat mavzuga. --- */

@@ -121,12 +121,14 @@ Kalitsiz `/ai` 503 `{"code":"no_key"}` qaytaradi. Ilova ochilganda
 `false` bo'lsa AI tugmalarini umuman ko'rsatmaydi — foydalanuvchi "AI
 mavjud emas" xabarini ko'rmaydi, savollar oddiy qidiruvga boradi.
 
-So'rov (Origin tekshiriladi, `ALLOW_ORIGIN`) — yagona kirish: savol, rasm
-yoki havoladan kamida bittasi, yoniga joriy xarid va tarix:
+So'rov (Origin tekshiriladi, `ALLOW_ORIGIN`) — yagona kirish: savol yoki
+rasmdan kamida bittasi, yoniga joriy xarid va tarix. Havola o'qilmaydi
+(2026-10-03): AI tovarni topadi va skrinshotdan hisoblaydi; eski ilova
+yuborgan `link`/`url` e'tiborsiz qoladi.
 
 ```json
 { "q": "Shu tovarga boj tushadimi?", "lang": "uz", "usdRate": 12650,
-  "image": "data:image/jpeg;base64,…", "url": "https://…", "find": true,
+  "image": "data:image/jpeg;base64,…", "find": true,
   "cart": { "name": "…", "store": "…", "country": "Xitoy", "price": 699, "cur": "CNY", "kg": 0.8, "courier": "D2D", "totalUsd": 102.2 },
   "history": [{ "role": "user", "text": "…" }, { "role": "assistant", "text": "…" }] }
 ```
@@ -145,12 +147,13 @@ keladigan ko'rsatma), `product_links`, `ask_user`.
 
 Rasm (`image`, ≤ ~1 MB; ilova 1280 px ga kichraytiradi) avval arzon model
 bilan o'qiladi (`readShot`, `AI_SHOT_MODEL`, standart `claude-haiku-4-5`,
-tuzilgan JSON: nom, narx, valyuta, miqdor, do'kon, kategoriya, davlat,
-og'irlik, ishonch) va natija joriy xaridga qo'shiladi (`mergeCart`); savol
-ham, havola ham yo'q bo'lsa asosiy model umuman chaqirilmaydi
-(`stop: "shot"`, ≈ $0.002). Rasm asosiy modelga ko'rsatilmaydi va
-saqlanmaydi. Havola bo'lsa `web_fetch` faqat o'sha domenga ruxsat bilan
-qo'shiladi. `find: true` ("Qayerdan topaman") bo'lsa Claude'ning server
+tuzilgan JSON: rasm turi `kind` — `price` (narx ko'ringan sahifa),
+`product` (tovar fotosi, narxsiz: nom, brend va inglizcha qidiruv so'rovi
+`query` — ilova "Topish"ni shu bilan boshlaydi) yoki `other`; nom, narx,
+valyuta, miqdor, do'kon, kategoriya, davlat, og'irlik, ishonch) va natija
+joriy xaridga qo'shiladi (`mergeCart`); savol bo'lmasa asosiy model
+umuman chaqirilmaydi (`stop: "shot"`, ≈ $0.002). Rasm asosiy modelga
+ko'rsatilmaydi va saqlanmaydi. `find: true` ("Qayerdan topaman") bo'lsa Claude'ning server
 tomonidagi `web_search_20260209` (ko'pi bilan `AI_WEB_SEARCH_USES`, har
 qidiruv $0.01) va tizim ko'rsatmasiga faqat shu holatda qisqa yo'riqnoma
 qo'shiladi; `usage.search` — qidiruvlar soni, `/stats` da `search`.
@@ -160,7 +163,7 @@ Xatolar: 400 (kirish), 403 (begona Origin), 429 (`code: "limit"`, `scope`:
 
 Xarajat nazorati: har javobda `usage` (tokenlar, `cacheWrite`, taxminiy
 `usd`); sarf `/stats` da `ai_usd` (mikro-dollar, so'rov turi: chat, find,
-shot, link), `ai_tok` va `usdByDay` — /hisobot "AI xarajati" bo'limida.
+shot), `ai_tok` va `usdByDay` — /hisobot "AI xarajati" bo'limida.
 `AI_DAILY_USD` — kunlik $ chegarasi (oshsa ertagacha 429 `budget`),
 `AI_DAILY_FIND_PER_IP` — "Qayerdan topaman" IP uchun kuniga (oshsa rad
 emas, veb-qidiruvsiz javob, `ai/find_limit`). Tizim ko'rsatmasida faqat
@@ -213,7 +216,7 @@ chiqsa xato).
 
 Kesh (Claude prompt caching, prefiks tools → system → messages): statik
 vositalarning oxirgisida va tizim ko'rsatmasining katta blokida
-`cache_control`; server vositalari (web_search, web_fetch) ro'yxat
+`cache_control`; server vositasi (web_search) ro'yxat
 OXIRIDA — o'zgarsa ham statik qism keshdan o'qiladi. Tizim ko'rsatmasi
 kunda bir marta tuziladi (`buildSystem` memo). Kun, til, kurs, joriy
 xarid va vaziyat ko'rsatmalari — keshdan keyingi kichik bloklar.
@@ -302,4 +305,4 @@ npx wrangler dev               # http://localhost:8787 da haqiqiy Worker
 Ilova tomonidagi qoida o'zgarmaydi: `METRICS_URL` bo'sh bo'lsa hech qanday
 so'rov ketmaydi (smoke test tekshiradi), to'ldirilsa faqat shu manzilga.
 
-**Havoladan jami narx (`link`).** `POST /ai` ga `{ link, hint?, lang, usdRate }` yuborilsa worker sahifani o'zi ochadi (`src/link.js`): avval JSON-LD / meta'dagi narx (AI'siz), bo'lmasa sahifa matni `AI_SHOT_MODEL` ga. Sayt to'ssa asosiy model `web_fetch` bilan o'qishi (faqat shu domen) faqat `AI_LINK_FETCH="1"` da — standart o'chiq (`via: blocked`, ilova skrinshot so'raydi). Sahifada narx bo'lmasa (AI chaqirilishidan oldin, bepul): `hint` — havola bilan ulashilgan matn ("US $5.89 | nom https://…"), undagi narx va nom olinadi (`via: share`). AliExpress narxni sahifaga JavaScript bilan keyin yuklaydi — AI ham topmaydi, chaqirilmaydi (`via: jsprice`). Trendyol serverlarga Cloudflare captcha ko'rsatadi (403) — web_fetch ham o'tolmaydi, chaqirilmaydi (`via: wall`). Narx topilmasa ham `shot` da nom (sahifa sarlavhasi → ulashish matni → havoladagi `/brend/nom-p-id`), do'kon, davlat va valyuta keladi — ilova qo'lda hisoblashni shular bilan ochadi. Javob skrinshot bilan bir xil: `{ shot, cards, stop: 'link', via }`, `via` — `jsonld | meta | amazon | share | text | fetch | jsprice | wall | blocked | none | bad`. Faqat ochiq internet manzillari (IP, localhost, nostandart port yo'q), 8 s va 3,5 MB chegarasi; yo'naltirishlar 8 tagacha, cookie faqat shu so'rov va shu sayt ichida.
+**Havola o'qilmaydi (2026-10-03).** Ilgari `link` bilan sahifa o'qilardi (JSON-LD, matn, web_fetch). Jonli sinovda ko'p do'konlar narxni robotlardan yashirdi (Trendyol — Cloudflare captcha, AliExpress — narx JavaScript bilan), shuning uchun yo'l olib tashlandi: ilova havola tashlansa skrinshot so'raydi (nom havoladan yoki ulashish matnidan; narx ulashish matnida bo'lsa — `core/share.js` bilan AI'siz).

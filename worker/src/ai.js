@@ -22,7 +22,7 @@
  *
  * Kesh (Claude prompt caching): prefiks tartibi tools → system → messages.
  * Statik vositalar oxirgisida va tizim ko'rsatmasining katta blokida
- * cache_control bor; server vositalari (web_search, web_fetch) faqat
+ * cache_control bor; server vositasi (web_search) faqat
  * kerak bo'lganda va ro'yxat OXIRIDA qo'shiladi — shunda statik qism
  * keshdan o'qiladi. Kun, til, kurs va joriy xarid — keshdan keyingi
  * kichik bloklar. */
@@ -32,7 +32,6 @@ import '../../core/tariffs.js';
 import '../../core/landed.js';
 import * as KB from './kb.generated.js';
 import { same } from './track.js';
-import { safeLink, fetchPage, extractProduct, pageText, tldCountry, tldCurrency, looksBlocked, amazonMarkers, amazonClean, shareHint, slugName, pageName, JS_PRICE, BOT_WALL } from './link.js';
 
 const Core = globalThis.PochtamCore;
 export const AI_LIMITS = { q: 600, hist: 6, histText: 800, body: 1500000, rounds: 4 };
@@ -490,13 +489,9 @@ export function parseAiBody(text) {
   const q = String(d.q == null ? '' : d.q).replace(/[\x00-\x08\x0b-\x1f]/g, '').trim();
   const shot = parseImage(d);
   if (typeof shot === 'string') return shot;
-  const url = parseUrl(d.url, 2000);
-  /* link — "havoladan jami narx": sahifa o'qiladi, javob skrinshot bilan bir xil (shot). */
-  const link = parseUrl(d.link, 2000);
-  /* hint — havola bilan ulashilgan matn ("US $5.89 | nom https://…"):
-     sahifa narxni bermasa, narx va nom shu yerdan. */
-  const hint = link ? String(d.hint == null ? '' : d.hint).replace(/[\x00-\x08\x0b-\x1f]/g, ' ').trim().slice(0, 600) : '';
-  if (!q && !shot && !url && !link) return 'savol bo\'sh';
+  /* Havola o'qilmaydi (2026-10-03): AI tovarni topadi va skrinshotdan
+     hisoblaydi. Eski ilova yuborgan link/url e'tiborsiz qoladi. */
+  if (!q && !shot) return 'savol bo\'sh';
   if (q.length > AI_LIMITS.q) return 'savol ' + AI_LIMITS.q + ' belgidan uzun';
   const lang = ['uz', 'uzc', 'ru'].includes(d.lang) ? d.lang : 'uz';
   const hist = [];
@@ -511,7 +506,7 @@ export function parseAiBody(text) {
   while (hist.length && hist[0].role !== 'user') hist.shift();
   if (hist.length && hist[hist.length - 1].role === 'user') hist.pop();
   const usdRate = num(d.usdRate);
-  return { q, shot, url, link, hint, cart: parseCart(d.cart), lang, history: hist,
+  return { q, shot, cart: parseCart(d.cart), lang, history: hist,
     usdRate: usdRate >= 5000 && usdRate <= 50000 ? usdRate : 0, find: d.find === true, stream: d.stream === true };
 }
 
@@ -771,7 +766,7 @@ export function mergeCart(cart, shot) {
    o'zgarmaydi. Kun almashsa (me'yor, kurs, narxlar) yangidan so'raladi.
    AI_ANSWER_CACHE = "0" — o'chiq. */
 export async function answerKey(parsed, day, ver = '') {
-  if (!parsed || !parsed.q || parsed.history.length || parsed.shot || parsed.url || parsed.link) return '';
+  if (!parsed || !parsed.q || parsed.history.length || parsed.shot) return '';
   const q = parsed.q.toLowerCase().replace(/[‘’`ʻʼ]/g, "'").replace(/[\s]+/g, ' ').replace(/[\s?!.,;:]+$/, '').trim();
   /* ver — model va ko'rsatma: kun o'rtasida yangi Worker joylansa eski
      javoblar ishlatilmaydi. */
@@ -818,7 +813,7 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
     ctx.waitUntil(counter.fetch('https://counter/answer/put', { method: 'POST', body: JSON.stringify({ key: akey, body: keep }) }).catch(() => {}));
   };
   const limited = await g.limit(parsed); if (limited) return limited;
-  const kind = parsed.link && !parsed.q && !parsed.shot ? 'link' : parsed.find ? 'find' : parsed.q || parsed.url ? 'chat' : 'shot';
+  const kind = parsed.find ? 'find' : parsed.q ? 'chat' : 'shot';
   if (!parsed.stream) {
     const out = await runAi({ parsed, env, count, fetchImpl, emit: null, cfg });
     spend(kind, out.body.usage); remember(out);
@@ -872,24 +867,6 @@ async function runAi({ parsed, env, count, fetchImpl, emit, cfg = {} }) {
   const fetchFn0 = fetchImpl || globalThis.fetch;
   const usage = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, usd: 0 };
 
-  /* 0) Havola (link) — sahifadan nom, narx, valyuta; asosiy model
-     chaqirilmaydi, hisobni ilova qiladi (skrinshot kabi). */
-  if (parsed.link && !parsed.q && !parsed.shot) {
-    say({ t: 'status', s: 'link' });
-    const rl = await readLink({ url: parsed.link, hint: parsed.hint, usdRate, env, fetchFn: fetchFn0 });
-    if (rl.usage) { usage.input += rl.usage.input; usage.output += rl.usage.output; usage.usd += rl.usage.usd || 0; }
-    if (rl.err) {
-      console.log('ai link upstream', rl.err.status, rl.err.type || '', rl.err.error);
-      count('link_err');
-      return json({ error: 'AI vaqtincha mavjud emas', code: rl.err.status === 401 || rl.err.status === 403 ? 'key' : 'upstream' }, 503);
-    }
-    const shotL = rl.out;
-    count(shotL.found ? 'link' : 'link_empty'); count('link:' + rl.via);
-    const cartL = mergeCart(parsed.cart, shotL);
-    count('ok');
-    return json({ text: '', cards: buildCards({ shot: shotL, used: [], cart: cartL }), cart: cartL, shot: shotL, tools: [], model: rl.model || '', usage, stop: 'link', via: rl.via, page: rl.page || null });
-  }
-
   /* 1) Rasm bo'lsa — avval arzon model o'qiydi (asosiy modelga rasm
      ko'rsatilmaydi). Natija joriy xaridga qo'shiladi. */
   let shot = null;
@@ -903,13 +880,13 @@ async function runAi({ parsed, env, count, fetchImpl, emit, cfg = {} }) {
     }
     if (rs.usage) { usage.input += rs.usage.input; usage.output += rs.usage.output; usage.usd += rs.usage.usd || 0; }
     shot = rs.unreadable ? { found: false } : rs.out;
-    count(shot.found ? 'shot' : 'shot_empty');
+    count(shot.found ? 'shot' : shot.kind === 'product' ? 'shot_product' : 'shot_empty');
   }
   const cart = mergeCart(parsed.cart, shot);
 
   /* 2) Savol yo'q, faqat rasm — asosiy modelni umuman chaqirmaymiz:
      hisobni ilova o'zi qiladi (core), javob $0.002 da tugaydi. */
-  if (!parsed.q && !parsed.url) {
+  if (!parsed.q) {
     count('ok');
     return json({ text: '', cards: buildCards({ shot, used: [], cart }), cart, shot, tools: [], model: '', usage, stop: 'shot' });
   }
@@ -929,7 +906,7 @@ async function runAi({ parsed, env, count, fetchImpl, emit, cfg = {} }) {
   if (ord) system.push({ type: 'text', text: ord });
   if (shot && shot.found) system.push({ type: 'text', text: 'Foydalanuvchi hozir skrinshot yubordi, undan o\'qildi (yuqoridagi joriy xarid shundan). Jami narxni ilova o\'zi hisoblab ko\'rsatdi — uni takrorlama, savolga javob ber.' });
   const messages = parsed.history.map(h => ({ role: h.role, content: h.text }));
-  messages.push({ role: 'user', content: [parsed.q, parsed.url ? 'Mahsulot havolasi: ' + parsed.url + ' — web_fetch bilan ochib, nom, narx va valyutani o\'qi.' : ''].filter(Boolean).join('\n') });
+  messages.push({ role: 'user', content: parsed.q });
   /* Fikrlash tokenlari ham shu chegaradan yeydi (Sonnet 5 da u sukut
      bo'yicha yoqiq), shuning uchun javobga joy qoladigan qilib olingan.
      Chegara faqat shift — hisob haqiqatda yozilgan tokenlar bo'yicha. */
@@ -941,11 +918,6 @@ async function runAi({ parsed, env, count, fetchImpl, emit, cfg = {} }) {
      undan keyin — ular o'zgarsa ham statik prefiks keshda qoladi. */
   const tools = TOOLS.map((t, i) => i === TOOLS.length - 1 ? { ...t, cache_control: cacheCtl } : t);
   if (webOn) tools.push({ ...WEB_SEARCH_TOOL, max_uses: Math.max(1, Math.min(3, +env.AI_WEB_SEARCH_USES || 1)) });
-  /* Havola berilgan bo'lsa sahifani o'qish: qo'shimcha to'lovsiz, faqat
-     o'qilgan matn tokeni. */
-  /* Host ajratilmasa (g'alati manzil) — vosita qo'shilmaydi: bo'sh domen API'da 400 berardi. */
-  const urlHost = parsed.url ? hostOf(parsed.url) : '';
-  if (urlHost) tools.push({ type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 2, max_content_tokens: 6000, allowed_domains: [urlHost] });
   const body = { model: cfg.model || env.AI_MODEL || DEFAULT_MODEL, max_tokens: +env.AI_MAX_TOKENS || 2048, system, tools, messages };
   /* Fikrlash rejimi (AI_THINKING): bo'sh — API standarti (adaptiv);
      "between_tools" — oldindan fikrlashsiz (Sonnet 5.5, effort high gacha). */
@@ -958,7 +930,7 @@ async function runAi({ parsed, env, count, fetchImpl, emit, cfg = {} }) {
      "low") — vositalar hisoblaydi, model faqat yo'naltiradi. Veb-qidiruv
      yoki havola o'qish (to'g'ri mahsulotni tanlash) — AI_EFFORT_FIND
      ("medium"). Bo'sh bo'lsa API standarti. */
-  const effort = (parsed.find || parsed.url) ? (env.AI_EFFORT_FIND || env.AI_EFFORT) : env.AI_EFFORT;
+  const effort = parsed.find ? (env.AI_EFFORT_FIND || env.AI_EFFORT) : env.AI_EFFORT;
   if (effort) body.output_config = { effort };
 
   const used = []; let textOut = '', model = body.model, stop = '';
@@ -1016,11 +988,14 @@ async function runAi({ parsed, env, count, fetchImpl, emit, cfg = {} }) {
    ko'rsatma: model faqat rasmda ko'ringan nom, narx, valyuta, miqdor,
    do'konni JSON qilib beradi; hisob-kitob ilovada (core/). Model arzon
    (AI_SHOT_MODEL, standart Haiku 4.5). Rasm saqlanmaydi. --- */
-const SHOT_MAX_TOKENS = 300;
+const SHOT_MAX_TOKENS = 400;
 const SHOT_SCHEMA = {
   type: 'object',
   properties: {
-    name: { type: 'string', description: 'Mahsulot nomi rasmda yozilganidek (bo\'lmasa bo\'sh satr)' },
+    kind: { type: 'string', enum: ['price', 'product', 'other'], description: 'price — do\'kon sahifasi, narx ko\'rinadi; product — tovarning o\'zi (foto, ijtimoiy tarmoq, katalog), narx ko\'rinmaydi; other — tovar yo\'q' },
+    name: { type: 'string', description: 'Mahsulot nomi: rasmda yozilgani; product bo\'lsa ko\'ringan tovar (brend, model, turi, rangi); bo\'lmasa bo\'sh' },
+    brand: { type: 'string', description: 'Brend rasmda yozilgan yoki logotipdan aniq tanilsa; aks holda bo\'sh' },
+    query: { type: 'string', description: 'Do\'konda qidirish uchun qisqa inglizcha so\'rov (brend model turi rangi), 2–8 so\'z; tovar bo\'lmasa bo\'sh' },
     price: { type: 'number', description: 'Joriy (chegirmali) narx raqami; topilmasa 0' },
     currency: { type: 'string', description: 'Valyuta kodi: USD, EUR, GBP, CNY, TRY, KRW, AED, RUB, UZS; noma\'lum bo\'lsa bo\'sh' },
     qty: { type: 'integer', description: 'Miqdor, ko\'rinmasa 1' },
@@ -1030,10 +1005,10 @@ const SHOT_SCHEMA = {
     weightKg: { type: 'number', description: 'Sahifada mahsulot og\'irligi ko\'rinsa, kilogrammda (800 g = 0.8); ko\'rinmasa 0' },
     confidence: { type: 'number', description: 'Narx to\'g\'ri o\'qilganiga ishonch 0..1' }
   },
-  required: ['name', 'price', 'currency', 'qty', 'store', 'category', 'country', 'weightKg', 'confidence'],
+  required: ['kind', 'name', 'brand', 'query', 'price', 'currency', 'qty', 'store', 'category', 'country', 'weightKg', 'confidence'],
   additionalProperties: false
 };
-const SHOT_PROMPT = 'Bu do\'kon sahifasining skrinshoti. Faqat rasmda ko\'ringan ma\'lumotni yoz: mahsulot nomi, joriy narx (chegirma bo\'lsa chegirmali narx, eski narx emas), valyuta (belgi yoki kod bo\'yicha: ¥ Xitoy saytida CNY, ₺ TRY, $ USD, € EUR, £ GBP, ₩ KRW, AED, ₽ RUB, so\'m UZS), miqdor, do\'kon nomi, mahsulot kategoriyasi (ro\'yxatdan bittasi), do\'kon qaysi davlatdan yuborishi (domen, til va valyutadan xulosa qil; aniq bo\'lmasa bo\'sh) va sahifada og\'irlik ko\'rinsa kilogrammda (ko\'rinmasa 0). Taxmin qilma: narx ko\'rinmasa price 0 va confidence 0. Javob faqat JSON.';
+const SHOT_PROMPT = 'Rasm ikki xil bo\'ladi. (1) Do\'kon sahifasining skrinshoti, narx ko\'rinadi — kind "price". (2) Tovarning o\'zi: foto, ijtimoiy tarmoq yoki katalog rasmi, narx yo\'q — kind "product": nima ekanini ayt (brend faqat yozuv yoki logotipdan aniq bo\'lsa), kategoriya va do\'konda qidirish uchun inglizcha query; narx 0. Tovar yo\'q — kind "other". Skrinshotda faqat rasmda ko\'ringan ma\'lumotni yoz: mahsulot nomi, joriy narx (chegirma bo\'lsa chegirmali narx, eski narx emas), valyuta (belgi yoki kod bo\'yicha: ¥ Xitoy saytida CNY, ₺ TRY, $ USD, € EUR, £ GBP, ₩ KRW, AED, ₽ RUB, so\'m UZS), miqdor, do\'kon nomi, mahsulot kategoriyasi (ro\'yxatdan bittasi), do\'kon qaysi davlatdan yuborishi (domen, til va valyutadan xulosa qil; aniq bo\'lmasa bo\'sh) va sahifada og\'irlik ko\'rinsa kilogrammda (ko\'rinmasa 0). Taxmin qilma: narx ko\'rinmasa price 0 va confidence 0. Javob faqat JSON.';
 
 /* Modelning JSON javobini tekshirib, ilova uchun tayyor obyektga keltiradi. */
 export function normalizeShot(raw, usdRate) {
@@ -1043,9 +1018,15 @@ export function normalizeShot(raw, usdRate) {
   const fx = KB.TARIFFS.fx || {};
   const rate = cur === 'USD' ? 1 : cur === 'UZS' ? (usdRate > 0 ? 1 / usdRate : 0) : num(fx[cur]);
   const priceUsd = price > 0 && rate > 0 ? r2(price * rate) : 0;
+  const name = String(o.name || '').trim().slice(0, 80);
   return {
     found: price > 0,
-    name: String(o.name || '').trim().slice(0, 80),
+    /* kind: price — hisob; product — tovar fotosi (ilova "Topish" ni
+       query bilan boshlaydi); other — tovar yo'q. */
+    kind: price > 0 ? 'price' : (o.kind === 'product' && name ? 'product' : 'other'),
+    name,
+    brand: String(o.brand || '').trim().slice(0, 40),
+    query: String(o.query || '').replace(/\s+/g, ' ').trim().slice(0, 80),
     price, currency: cur || (price > 0 ? 'USD' : ''),
     priceUsd, fxApprox: !!(cur && cur !== 'USD' && cur !== 'UZS' && cur !== 'EUR' && cur !== 'GBP'),
     qty: Math.max(1, Math.min(99, Math.round(pos(o.qty) || 1))),
@@ -1083,107 +1064,3 @@ export async function readShot({ image, mime, usdRate, env, fetchFn }) {
   return { out: normalizeShot(raw, usdRate), model: msg.model || base.model, usage: { input: u.input_tokens || 0, output: u.output_tokens || 0, usd: costUsd(msg.model || base.model, u) } };
 }
 
-/* --- Havola → mahsulot ma'lumoti (skrinshot bilan bir xil shakl).
-   1) Sahifani Worker o'zi ochadi: JSON-LD / meta'dagi narx — AI'siz, bepul.
-   2) Tuzilgan ma'lumot yo'q, lekin matn bor — arzon model (AI_SHOT_MODEL)
-      matndan o'qiydi (~4 ming token). Undan oldin (bepul): ulashish
-      matnidagi narx (hint); narxi JavaScript bilan keladigan do'kon
-      (AliExpress) — AI chaqirilmaydi.
-   3) Sayt Worker'ni to'sdi (captcha, 403, Amazon oraliq sahifasi) yoki
-      uzun matndan narx topilmadi — asosiy model web_fetch bilan o'qiydi
-      (Anthropic serveri ochadi), faqat shu domen. Qisqa narxsiz sahifada
-      (bosh sahifa) bu qadam yo'q.
-   Javob: { out, via, model, usage } yoki { err }. via: jsonld | meta |
-   share | text | fetch | amazon | jsprice | wall | blocked | bad | none. Narx topilmasa
-   ham out'da nom, do'kon, davlat bo'ladi (found: false); page — sahifa holati (jonli tekshiruv). --- */
-const LINK_PROMPT = 'Bu do\'kon sahifasining matni. Faqat matnda yozilgan ma\'lumotni ber: mahsulot nomi, joriy narx (chegirmali, eski narx emas), valyuta kodi, do\'kon nomi, kategoriya (ro\'yxatdan bittasi), do\'kon qaysi davlatdan yuborishi (domen, til, valyutadan; aniq bo\'lmasa bo\'sh), og\'irlik yozilgan bo\'lsa kilogrammda (bo\'lmasa 0). Taxmin qilma: narx topilmasa price 0, confidence 0. Javob faqat JSON.';
-const parseJsonLoose = text => {
-  try { return JSON.parse(text); } catch (e) { const m = /\{[\s\S]*\}/.exec(String(text || '')); if (m) { try { return JSON.parse(m[0]); } catch (e2) {} } }
-  return null;
-};
-/* Narx o'qilmaganda qo'lda hisoblash uchun valyuta: do'kon davlatidan
-   (Xitoy do'konlari ko'pincha dollarda ko'rsatadi — bo'sh, ilova USD oladi). */
-const CUR_OF_COUNTRY = { Turkiya: 'TRY', Koreya: 'KRW', Angliya: 'GBP', BAA: 'AED', AQSh: 'USD', Germaniya: 'EUR', Yaponiya: 'JPY' };
-export async function readLink({ url, hint, usdRate, env, fetchFn }) {
-  const u0 = safeLink(url);
-  if (!u0) return { out: { found: false }, via: 'bad' };
-  /* Amazon havolasi toza ko'rinishga: /dp/ASIN (kuzatuv parametrlarisiz). */
-  const u = safeLink(amazonClean(u0.href)) || u0;
-  const page = await fetchPage(u.href, fetchFn);
-  /* Qisqa havola (a.co, m.tb.cn, ty.gl, a.aliexpress.com…) yo'naltiradi:
-     do'kon va davlat oxirgi manzildan aniqlanadi (u ham ochiq manzil bo'lsa). */
-  const fin = (page.url && page.url !== u.href && safeLink(page.url)) || u;
-  const host = fin.hostname.toLowerCase().replace(/^www\./, '');
-  const hosts = [...new Set([host, u.hostname.toLowerCase().replace(/^www\./, '')])];
-  const kb = KB.STORES.find(s => s.domain && hosts.some(h => h === s.domain || h.endsWith('.' + s.domain)));
-  const known = { store: kb ? kb.name : '', country: kb ? kb.country : tldCountry(host) };
-  const fill = (raw, conf) => {
-    const o = normalizeShot({ qty: 1, category: '', weightKg: 0, confidence: conf, ...raw,
-      currency: raw.currency || tldCurrency(host),
-      store: known.store || raw.store || host, country: known.country || raw.country || '' }, usdRate);
-    return { ...o, url: fin.href, host };
-  };
-  const blocked = !page.ok || looksBlocked(page.html);
-  /* Jonli tekshiruv uchun: sahifa nima qaytardi (maxfiy narsa yo'q). */
-  const pinfo = { status: page.status, kb: Math.round(page.html.length / 1024), blocked, amazon: amazonMarkers(page.html) };
-  if (page.ok) {
-    const p = extractProduct(page.html);
-    if (p && p.price > 0) return { out: fill({ name: p.name, price: p.price, currency: p.currency, weightKg: p.weightKg, store: p.store || p.brand }, 0.95), via: p.source, page: pinfo };
-  }
-  /* Narx o'qilmasa ham nom, do'kon va davlat ilovaga beriladi — qo'lda
-     hisoblash oldindan to'ldiriladi (faqat narxni yozish qoladi). Nom:
-     sahifa sarlavhasi → ulashish matni → havoladagi so'zlar. */
-  const share = shareHint(hint);
-  const nameGuess = (page.ok && !looksBlocked(page.html) ? pageName(page.html) : '') || share.name || slugName(fin.href);
-  const partial = () => ({ found: false, url: u.href, host, name: nameGuess, store: known.store || '', country: known.country || '', currency: tldCurrency(host) || CUR_OF_COUNTRY[known.country] || '' });
-  /* 1b) Ulashish matnida narx bor — AI'siz, bepul. */
-  if (share.price > 0) return { out: fill({ name: nameGuess || share.name, price: share.price, currency: share.currency }, 0.75), via: 'share', page: pinfo };
-  /* Narx JavaScript bilan yuklanadigan do'kon (AliExpress) — AI ham topmaydi. */
-  if (page.ok && JS_PRICE.test(host)) return { out: partial(), via: 'jsprice', page: pinfo };
-  /* Captcha devori (Trendyol) — web_fetch ham o'tolmaydi, vaqt va pul ketmasin. */
-  if (blocked && BOT_WALL.test(host)) return { out: partial(), via: 'wall', page: pinfo };
-  const usageOf = (m, model) => ({ input: (m.usage && m.usage.input_tokens) || 0, output: (m.usage && m.usage.output_tokens) || 0, usd: costUsd(m.model || model, m.usage) });
-  const text = page.ok && !looksBlocked(page.html) ? pageText(page.html) : '';
-  let textUsage = { input: 0, output: 0, usd: 0 };
-  if (text.length >= 300) {
-    const base = { model: env.AI_SHOT_MODEL || 'claude-haiku-4-5', max_tokens: SHOT_MAX_TOKENS,
-      messages: [{ role: 'user', content: LINK_PROMPT + '\n\nManzil: ' + u.href + '\n\n' + text }] };
-    let r = await callClaude({ ...base, output_config: { format: { type: 'json_schema', schema: SHOT_SCHEMA } } }, env, fetchFn);
-    if (r.error && r.status === 400 && /output_config|format|schema/i.test(r.error)) r = await callClaude(base, env, fetchFn);
-    /* Kalit xatosi — 503 (ilova "AI mavjud emas" deydi); boshqa xato
-       (ortiqcha yuk, tarmoq) — keyingi yo'l sinaladi. */
-    if (r.error && (r.status === 401 || r.status === 403)) return { err: r };
-    if (!r.error) {
-      const msg = r.data || {};
-      const raw = parseJsonLoose((Array.isArray(msg.content) ? msg.content : []).filter(b => b.type === 'text').map(b => b.text).join('\n'));
-      if (raw && pos(raw.price) > 0) return { out: fill(raw, num(raw.confidence) || 0.7), via: 'text', model: msg.model || base.model, usage: usageOf(msg, base.model), page: pinfo };
-      textUsage = usageOf(msg, base.model);
-    }
-  }
-  /* Qisqa sahifa (narxsiz bosh sahifa va h.k.) — web_fetch ham yordam bermaydi. */
-  if (!blocked && text.length < 300) return { out: partial(), via: 'none', page: pinfo };
-  /* web_fetch (asosiy model, ~$0.03 va 10+ s) standart o'chiq: jonli
-     sinovda to'silgan saytlarda (Trendyol, captcha) u ham o'tolmadi.
-     Ilova darrov skrinshot yoki narxni so'raydi. AI_LINK_FETCH="1" — yoqish. */
-  if (String(env.AI_LINK_FETCH || '0') !== '1') return { out: partial(), via: blocked ? 'blocked' : 'none', model: textUsage.usd ? (env.AI_SHOT_MODEL || 'claude-haiku-4-5') : '', usage: textUsage.usd ? textUsage : undefined, page: pinfo };
-  /* 3) web_fetch: sahifani Anthropic ochadi. Fikrlash past, bitta o'qish. */
-  const body = { model: env.AI_MODEL || DEFAULT_MODEL, max_tokens: 1500,
-    tools: [{ type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 1, max_content_tokens: 8000, allowed_domains: hosts }],
-    output_config: { effort: 'low' },
-    messages: [{ role: 'user', content: 'Sahifani web_fetch bilan och: ' + fin.href + '\n' + LINK_PROMPT + ' Kalitlar: name, price, currency, store, category, country, weightKg, confidence.' }] };
-  const messages = body.messages;
-  let msg = null, usage = { ...textUsage };
-  for (let i = 0; i < 3; i++) {
-    const r = await callClaude({ ...body, messages }, env, fetchFn);
-    if (r.error && (r.status === 401 || r.status === 403)) return { err: r };
-    /* Boshqa xato — "narx o'qilmadi" (skrinshot taklif qilinadi), 503 emas. */
-    if (r.error) { console.log('ai link fetch', r.status, r.type || '', r.error); msg = null; break; }
-    msg = r.data || {};
-    const uu = usageOf(msg, body.model); usage.input += uu.input; usage.output += uu.output; usage.usd += uu.usd;
-    if (msg.stop_reason !== 'pause_turn') break;
-    messages.push({ role: 'assistant', content: msg.content });
-  }
-  const raw = msg ? parseJsonLoose((Array.isArray(msg.content) ? msg.content : []).filter(b => b.type === 'text').map(b => b.text).join('\n')) : null;
-  if (raw && pos(raw.price) > 0) return { out: fill(raw, num(raw.confidence) || 0.7), via: 'fetch', model: msg.model || body.model, usage, page: pinfo };
-  return { out: partial(), via: 'none', model: (msg && msg.model) || body.model, usage, page: pinfo };
-}
