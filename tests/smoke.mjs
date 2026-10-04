@@ -755,8 +755,8 @@ try {
     const whField = page.locator('main input[aria-label="Mahsulot nomi"]');
     check('bosh sahifa: savol, maydon, qo\'llanma, skrinshot va qo\'lda narx ("Hali topmadim"siz)', /Nima mahsulot qidiryapsiz\?/.test(wh1) && (await whField.count()) === 1 && (await whField.getAttribute('placeholder')) === 'Tovar nomini yozing yoki rasmini yuklang' && await camBtn.count() === 1 && /Narxni o'zim yozaman/.test(wh1) && !/Hali topmadim|Qanaqasi\?/.test(wh1) && (await page.locator('main [data-tour="where"]').count()) === 0, wh1.slice(0, 120));
     const guide = (await page.locator('main [data-guide]').first().innerText().catch(() => '')).replace(/\s+/g, ' ');
-    check('maydon ostida kichik qo\'llanma: 3 qadam (nom, ovoz yoki foto → AI topadi, skrinshot → hisob, qo\'lda narx)', /^Qanday ishlaydi 1 Tovar nomini yozing, ayting yoki rasmini yuklang — AI uni taniydi va mos do'konlardan aniq mahsulotni topadi\. 2 Topgach, do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang — kuryer, boj va jami summa hisoblanadi\. 3 Narxni bilsangiz — «Narxni o'zim yozaman»: hisob AI'siz, bir zumda\./.test(guide), guide);
-    check('ovoz tugmasi doim bor', (await page.locator('main form button[aria-label="Ovoz bilan aytish"]').count()) === 1);
+    check('maydon ostida kichik qo\'llanma: 3 qadam (nom yoki foto → AI topadi, skrinshot → hisob, qo\'lda narx)', /^Qanday ishlaydi 1 Tovar nomini yozing yoki «Rasm bilan qidirish» bilan fotosini yuklang — AI tovarni taniydi va mos do'konlardan aniq mahsulotni topadi\. 2 Topgach, do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang — kuryer, boj va jami summa hisoblanadi\. 3 Narxni bilsangiz — «Narxni o'zim yozaman»: hisob AI'siz, bir zumda\./.test(guide), guide);
+    check('ovoz tugmasi yo\'q (2026-10-04)', (await page.locator('main form button[aria-label="Ovoz bilan aytish"]').count()) === 0);
     /* Bo'sh maydonda Enter — maslahat va fokus, AI ga so'rov ketmaydi. */
     await whField.fill(''); await whField.press('Enter'); await page.waitForTimeout(300);
     check('bo\'sh maydon — maslahat va maydonga fokus, AI ga so\'rov ketmaydi', qBodies().length === 0 && /Avval nima qidirayotganingizni yozing/.test(await page.locator('body').innerText()) && (await page.evaluate(() => document.activeElement && document.activeElement.getAttribute('aria-label'))) === 'Mahsulot nomi');
@@ -772,8 +772,8 @@ try {
        AI ga boradi — rejim tanlash yo'q. */
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
     const heroField = page.locator('main input[aria-label="Mahsulot nomi"]');
-    check('yagona kirish: maydon ichida mikrofon, yuborish yonida (rasm — pastdagi katta tugma)',
-      (await page.locator('main form').first().locator('button[aria-label="Rasm biriktirish"]').count()) === 0 && (await page.locator('main form button[aria-label="Ovoz bilan aytish"]').count()) === 1);
+    check('yagona kirish: maydon ichida "Rasm bilan qidirish" belgisi, mikrofon yo\'q',
+      (await page.locator('main form button[aria-label="Rasm bilan qidirish"]').count()) === 1 && (await page.locator('main form button[aria-label="Ovoz bilan aytish"]').count()) === 0);
     /* Havola o'qilmaydi (2026-10-03): havola tashlansa Worker'ga so'rov
        yo'q — "Narx ko'ringan sahifani skrinshot qiling" kartasi. */
     { const nAi = aiBodies.length;
@@ -806,44 +806,16 @@ try {
       if (await fb.count()) { await fb.click(); await page.waitForTimeout(700); }
       const ab = aiBodies[aiBodies.length - 1] || {};
       check('"Boshqa do\'kondan topish" — AI qidiruvi (find) shu nom bilan, url yo\'q', ab.find === true && /^Derimod Erkek Sneaker qidiryapman/.test(ab.q || '') && !ab.url && !ab.link, JSON.stringify(ab).slice(0, 140)); }
-    /* Ovoz: brauzer tanisa — aytib bo'lingach o'zi qidiradi; tanimasa —
-       klaviatura mikrofoni haqida maslahat va maydonga fokus. */
+    /* "Rasm bilan qidirish": maydon ichidagi belgi va alohida karta bir
+       xil ish — tovar fotosi tanlanadi; ovozli yozish yo'q. Narx ko'rinsa
+       ham bu rejimda qidiruv (hisob emas). */
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
-    await page.evaluate(() => {
-      window.__srBak = window.SpeechRecognition; window.__wsrBak = window.webkitSpeechRecognition;
-      window.SpeechRecognition = class { start() { setTimeout(() => {
-        const r = [{ transcript: 'nike air max' }]; r.isFinal = true;
-        this.onresult && this.onresult({ results: [r] }); this.onend && this.onend(); }, 60); } stop() {} };
-    });
-    const nAi = aiBodies.length;
-    await page.locator('main form button[aria-label="Ovoz bilan aytish"]').first().click(); await page.waitForTimeout(800);
-    { const vb = aiBodies[nAi] || {};
-      check('ovoz: aytilgan nom o\'zi qidiriladi (Pochtam AI, find)', /Pochtam AI/.test(await page.locator('header').innerText()) && vb.find === true && vb.q === "nike air max qidiryapman. Qaysi do'kondan topaman?", JSON.stringify(vb).slice(0, 160)); }
-    await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
-    await page.evaluate(() => { delete window.SpeechRecognition; window.SpeechRecognition = undefined; window.webkitSpeechRecognition = undefined; });
-    await page.locator('main form button[aria-label="Ovoz bilan aytish"]').first().click(); await page.waitForTimeout(400);
-    check('ovoz tanilmasa — klaviatura mikrofoni maslahati va maydonga fokus', /Klaviaturadagi mikrofon tugmasini bosib ayting/.test(await page.locator('body').innerText()) && (await page.evaluate(() => document.activeElement && document.activeElement.getAttribute('aria-label'))) === 'Mahsulot nomi');
-    /* Ruxsat yo'q (not-allowed): oddiy brauzerda bloklangan bo'lsa —
-       ruxsatni qaytarish yo'li; Telegram ichida — sababi va klaviatura
-       mikrofoni, keyingi bosishda xatosiz to'g'ri klaviaturaga. */
-    await page.evaluate(() => {
-      window.__srStarts = 0;
-      window.SpeechRecognition = class { start() { window.__srStarts++; setTimeout(() => { this.onerror && this.onerror({ error: 'not-allowed' }); this.onend && this.onend(); }, 40); } stop() {} };
-      window.__permBak = navigator.permissions.query;
-      navigator.permissions.query = () => Promise.resolve({ state: 'denied' });
-      document.activeElement && document.activeElement.blur();
-    });
-    await page.locator('main form button[aria-label="Ovoz bilan aytish"]').first().click(); await page.waitForTimeout(400);
-    check('mikrofon bloklangan (brauzer): qulf belgisi → Mikrofon → Ruxsat berish, maydonga fokus', /Mikrofon bloklangan: manzil satridagi qulf belgisini bosing → Mikrofon → Ruxsat berish/.test(await page.locator('body').innerText()) && (await page.evaluate(() => document.activeElement && document.activeElement.getAttribute('aria-label'))) === 'Mahsulot nomi' && (await page.evaluate(() => localStorage.getItem('xy_mic_kb'))) === null);
-    await page.evaluate(() => { window.TelegramWebviewProxy = {}; });
-    await page.locator('main form button[aria-label="Ovoz bilan aytish"]').first().click(); await page.waitForTimeout(400);
-    const tgMic = await page.locator('body').innerText();
-    const st1 = await page.evaluate(() => window.__srStarts);
-    await page.locator('main form button[aria-label="Ovoz bilan aytish"]').first().click(); await page.waitForTimeout(300);
-    const st2 = await page.evaluate(() => window.__srStarts), kbTxt = await page.locator('body').innerText();
-    check('Telegram ichida mikrofon: sababi va klaviatura yo\'li; keyingi bosishda xatosiz klaviaturaga', /Telegram ichida ovozli qidiruv ishlamaydi/.test(tgMic) && st1 === 2 && st2 === 2 && /Klaviaturadagi mikrofon tugmasini bosib ayting/.test(kbTxt) && !/Telegram ichida ovozli/.test(kbTxt), `starts ${st1}/${st2}`);
-    await page.evaluate(() => { delete window.TelegramWebviewProxy; localStorage.removeItem('xy_mic_kb'); navigator.permissions.query = window.__permBak; });
-    await page.evaluate(() => { window.SpeechRecognition = window.__srBak; window.webkitSpeechRecognition = window.__wsrBak; });
+    check('bosh sahifa: ovoz tugmasi yo\'q, "Rasm bilan qidirish" — maydonda va kartada', (await page.locator('main button[aria-label="Ovoz bilan aytish"]').count()) === 0 && (await page.locator('main form button[aria-label="Rasm bilan qidirish"]').count()) === 1 && (await page.locator('main button[data-photo-search]').count()) === 1 && /Rasm bilan qidirish/.test(await page.locator('main button[data-photo-search]').innerText()));
+    shotNext = { found: true, kind: 'price', name: 'Adidas Samba OG', brand: 'Adidas', query: 'Adidas Samba OG white', price: 120, currency: 'USD', qty: 1, store: '', category: 'poyabzal', country: '', weightKg: 0, confidence: 0.9 };
+    { const nAi = aiBodies.length;
+      await page.locator('input[type="file"][data-photo]').first().setInputFiles({ name: 'tovar.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64') }); await page.waitForTimeout(1200);
+      const ab = aiBodies[aiBodies.length - 1] || {};
+      check('"Rasm bilan qidirish": rasm → tovar taniladi → Pochtam AI qidiruvi (narx ko\'rinsa ham hisob emas)', aiBodies.length === nAi + 2 && /Pochtam AI/.test(await page.locator('header').innerText()) && ab.find === true && /^Rasmdagi tovar: Adidas Samba OG \(Adidas Samba OG white\)/.test(ab.q || ''), JSON.stringify(ab).slice(0, 140)); }
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
     await heroField.fill("Boj qancha bo'ladi?"); await page.waitForTimeout(200);
     await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(800);

@@ -720,19 +720,17 @@
            marta savol berilib, bitta ortiqcha bosish bo'layotgan edi. -->
       <div style="display:flex;flex-direction:column;gap:12px">
         <h2 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.1;color:#131429;text-wrap:balance">Nima mahsulot <span style="color:#1A1FB0">qidiryapsiz?</span></h2>
-        <!-- Yagona kirish (2026-09-19): yozish, aytish, havola tashlash va
-             rasm biriktirish — bitta qatorda. Rejim tanlash yo'q: ilova
+        <!-- Yagona kirish (2026-09-19, 2026-10-04): yozish va "Rasm bilan
+             qidirish" — bitta qatorda. Rejim tanlash yo'q: ilova
              kirishning turini o'zi ajratadi va bitta so'rov yuboradi. -->
         <form sc-camel-on-submit="{{ whSubmit }}" style="display:flex;align-items:center;gap:8px">
-          <!-- Mikrofon maydon ichida (2026-09-26): yonida ikki tugma turganda
-               "Tovar nomini yozing yoki rasmini yuklang" kesilib qolardi. Rasm
-               biriktirish shu yerdan olib tashlandi — ostidagi katta
-               "Topdim — qanchaga tushadi?" tugmasi aynan shu ish. -->
+          <!-- Maydon ichida "Rasm bilan qidirish" belgisi (2026-10-04, Google
+               Lens kabi): tovar fotosi → AI taniydi → do'konlardan topadi.
+               Ovozli yozish olib tashlandi. Narx skrinshoti — ostidagi
+               "Topdim — qanchaga tushadi?" tugmasi. -->
           <div style="flex:1;min-width:0;height:52px;display:flex;align-items:center;gap:4px;border-radius:20px;background:#FFFFFF;padding:0 6px 0 16px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
             <input data-hero="1" value="{{ whText }}" sc-camel-on-input="{{ onWhText }}" placeholder="{{ whPh }}" type="text" enterkeyhint="go" aria-label="Mahsulot nomi" style="flex:1;min-width:0;height:100%;border:none;background:transparent;padding:0;outline:none;font-family:inherit;font-size:15px;font-weight:500;color:#131429">
-            <sc-if value="{{ whMicOn }}" hint-placeholder-val="{{ true }}">
-              <button type="button" sc-camel-on-click="{{ whMic }}" aria-label="{{ whMicLabel }}" aria-pressed="{{ whMicBusy }}" style="flex:none;width:40px;height:40px;border-radius:14px;border:none;background:{{ whMicBg }};cursor:pointer;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="{{ whMicFg }}" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0014 0"></path><path d="M12 18v3"></path></svg></button>
-            </sc-if>
+            <button type="button" sc-camel-on-click="{{ whPhoto }}" aria-label="Rasm bilan qidirish" style="flex:none;width:40px;height:40px;border-radius:14px;border:none;background:#E9EAFD;cursor:pointer;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8V6a2 2 0 012-2h2"></path><path d="M16 4h2a2 2 0 012 2v2"></path><path d="M20 16v2a2 2 0 01-2 2h-2"></path><path d="M8 20H6a2 2 0 01-2-2v-2"></path><circle cx="12" cy="12" r="3.5"></circle></svg></button>
           </div>
           <sc-if value="{{ whGoOn }}" hint-placeholder-val="{{ false }}">
             <button type="submit" aria-label="Yuborish" style="flex:none;width:52px;height:52px;border-radius:20px;border:none;background:linear-gradient(155deg,#494FE9,#13189D);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="M12 6l6 6-6 6"></path></svg></button>
@@ -752,6 +750,16 @@
           </sc-for>
         </div>
         <sc-if value="{{ aiOn }}" hint-placeholder-val="{{ true }}">
+          <!-- Rasm bilan qidirish: tovar fotosi (narxsiz) — AI taniydi va
+               mos do'konlardan aniq mahsulotni topadi. -->
+          <button data-photo-search="1" sc-camel-on-click="{{ whPhoto }}" style="display:flex;align-items:center;gap:12px;width:100%;background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="background:#F6F7FB">
+            <span aria-hidden="true" style="width:40px;height:40px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#E9EAFD"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8V6a2 2 0 012-2h2"></path><path d="M16 4h2a2 2 0 012 2v2"></path><path d="M20 16v2a2 2 0 01-2 2h-2"></path><path d="M8 20H6a2 2 0 01-2-2v-2"></path><circle cx="12" cy="12" r="3.5"></circle></svg></span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+              <span style="font-size:15px;font-weight:700;color:#131429">Rasm bilan qidirish</span>
+              <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">Tovar fotosini yuklang — AI taniydi va do'konlardan topadi.</span>
+            </span>
+            <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 6l6 6-6 6"></path></svg>
+          </button>
           <!-- Topgach: qanchaga tushadi (skrinshot). -->
           <button data-tour="camera" sc-camel-on-click="{{ whShot }}" style="display:flex;align-items:center;gap:12px;width:100%;border:none;border-radius:20px;padding:16px;cursor:pointer;text-align:left;font-family:inherit;background:linear-gradient(155deg,#494FE9,#13189D);box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">
             <span aria-hidden="true" style="width:40px;height:40px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#494FE9"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8.5A2.5 2.5 0 016.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0120 8.5V17a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></span>
@@ -782,6 +790,7 @@
           </button>
         </sc-if>
         <input type="file" accept="image/*" data-shot="1" sc-camel-on-change="{{ onShotFile }}" aria-label="Skrinshot tanlash" style="display:none">
+        <input type="file" accept="image/*" data-photo="1" sc-camel-on-change="{{ onPhotoFile }}" aria-label="Tovar rasmini tanlash" style="display:none">
         <!-- Oxirgi hisob: natija saqlanadi, chiqib ketsa ham yo'qolmaydi. -->
         <sc-if value="{{ hasLast }}" hint-placeholder-val="{{ false }}">
           <button sc-camel-on-click="{{ openLast }}" style="display:flex;align-items:center;gap:12px;width:100%;background:#E9EAFD;border:none;border-radius:20px;padding:12px 14px;cursor:pointer;text-align:left;font-family:inherit" style-hover="background:#DCDDFA">
@@ -3152,6 +3161,9 @@
             <span style="font-size:15px;font-weight:500;color:#282944;line-height:1.5">Havolani o'qimaymiz: ko'p do'konlar narxni robotlardan yashiradi. Do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang yoki narxni o'zingiz yozing — qolganini ilova hisoblaydi.</span>
             <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5">Maslahat: do'kon ilovasidagi «Ulashish» matnini butunligicha tashlang — unda narx bo'lsa, o'zi o'qiladi.</span>
           </sc-if>
+          <sc-if value="{{ rsIsPhoto }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:15px;font-weight:500;color:#282944;line-height:1.5">Tovar aniq ko'rinadigan rasm yuklang yoki nomini yozib qidiring.</span>
+          </sc-if>
           <sc-if value="{{ rsIsShot }}" hint-placeholder-val="{{ true }}">
           <div style="display:flex;flex-direction:column;gap:8px">
             <div style="display:flex;gap:8px;align-items:flex-start"><span style="flex:none;width:18px;height:18px;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#B45309">1</span><span style="font-size:15px;font-weight:500;color:#282944;line-height:1.5">Do'konda mahsulot sahifasini oching.</span></div>
@@ -3933,7 +3945,7 @@ const RU = {
   /* Havola orqali o'qish (2026-09-27) */
   "Havolani o'qiyapman":'Читаю ссылку', 'Sahifani ochyapman':'Открываю страницу',
   "{0} · odatda 3–15 soniya. Jami narx va uning tarkibi shu yerda chiqadi.":'{0} · обычно 3–15 секунд. Итоговая цена и её состав появятся здесь.',
-  "Havoladan narx o'qilmadi":'Не удалось прочитать цену по ссылке', "Narx ko'ringan sahifani skrinshot qiling":'Сделайте скриншот страницы с ценой', "Boshqa do'kondan topish":'Найти в другом магазине', 'Rasmdagi tovar: {0}':'Товар на фото: {0}', "Pochtam AI'dan so'rash":'Спросить Pochtam AI',
+  "Havoladan narx o'qilmadi":'Не удалось прочитать цену по ссылке', "Narx ko'ringan sahifani skrinshot qiling":'Сделайте скриншот страницы с ценой', 'Rasmdan tovarni taniy olmadim':'Не удалось узнать товар на фото', 'Boshqa rasm yuklash':'Загрузить другое фото', 'Rasmdagi tovarni taniyapman':'Узнаю товар на фото', 'Tovarni taniyapman':'Узнаю товар', "Do'konlardan qidirishga o'tyapman":'Перехожу к поиску в магазинах', "Odatda 3–6 soniya. Keyin AI mos do'konlardan qidiradi.":'Обычно 3–6 секунд. Затем ИИ поищет в подходящих магазинах.', "Tovar aniq ko'rinadigan rasm yuklang yoki nomini yozib qidiring.":'Загрузите фото, где товар хорошо виден, или найдите по названию.', 'Rasm bilan qidirish':'Поиск по фото', "Tovar fotosini yuklang — AI taniydi va do'konlardan topadi.":'Загрузите фото товара — ИИ узнает его и найдёт в магазинах.', 'Tovar rasmini tanlash':'Выбрать фото товара', "Boshqa do'kondan topish":'Найти в другом магазине', 'Rasmdagi tovar: {0}':'Товар на фото: {0}', "Pochtam AI'dan so'rash":'Спросить Pochtam AI',
   "Havolani o'qimaymiz: ko'p do'konlar narxni robotlardan yashiradi. Do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang yoki narxni o'zingiz yozing — qolganini ilova hisoblaydi.":'Ссылки мы не читаем: многие магазины скрывают цену от роботов. Сделайте скриншот места с ценой в приложении магазина или введите цену сами — остальное посчитает приложение.',
   "Maslahat: do'kon ilovasidagi «Ulashish» matnini butunligicha tashlang — unda narx bo'lsa, o'zi o'qiladi.":'Совет: вставьте текст из кнопки «Поделиться» в приложении магазина целиком — если в нём есть цена, она прочитается сама.',
   "«{0}» — nom va do'kon topildi, faqat narx yetishmayapti.":'«{0}» — название и магазин найдены, не хватает только цены.',
@@ -3943,14 +3955,6 @@ const RU = {
   'Qayerdan':'Откуда', 'Arzonroq':'Дешевле', 'Tezroq':'Быстрее',
   "{0} kg · {1}: kuryer saytidagi tarif bo'yicha taxminiy narx.":'{0} кг · {1}: примерная цена по тарифу на сайте курьера.',
   "Davlatni tanlang — narx og'irlik bo'yicha hisoblanadi.":'Выберите страну — цена рассчитается по весу.',
-  /* Mikrofon ruxsati (2026-09-27) */
-  "Telegram ichida ovozli qidiruv ishlamaydi. Klaviaturadagi mikrofon tugmasini bosib ayting yoki ilovani brauzerda oching.":'Внутри Telegram голосовой поиск не работает. Нажмите микрофон на клавиатуре и скажите — или откройте приложение в браузере.',
-  'Mikrofon':'Микрофон', 'Brauzerda ochish':'Открыть в браузере', 'Klaviatura bilan':'С клавиатуры',
-  "Bu oynada ovozli qidiruv ishlamaydi — klaviaturadagi mikrofon tugmasini bosib ayting.":'В этом окне голосовой поиск не работает — нажмите микрофон на клавиатуре и скажите.',
-  "Qurilmada ovozli yozish o'chirilgan — sozlamalarda diktovkani yoqing yoki klaviaturadagi mikrofon tugmasini bosing.":'Голосовой ввод на устройстве выключен — включите диктовку в настройках или нажмите микрофон на клавиатуре.',
-  "Mikrofon bloklangan: manzil satridagi qulf belgisini bosing → Mikrofon → Ruxsat berish. Hozircha klaviaturadagi mikrofon tugmasini bosib ayting.":'Микрофон заблокирован: нажмите на значок замка в адресной строке → Микрофон → Разрешить. Пока можно нажать микрофон на клавиатуре.',
-  "Mikrofonga ruxsat berilmadi — brauzer so'raganda \"Ruxsat berish\"ni bosing.":'Доступ к микрофону не дан — когда браузер спросит, нажмите «Разрешить».',
-  "Mikrofon topilmadi — qurilmada mikrofon ulanganini tekshiring":'Микрофон не найден — проверьте, что он подключён',
   /* Skrinshot natijasi: jami narx tarkibi va kutish (2026-09-27) */
   "Rasmni o'qiyapman":'Читаю изображение', 'Narx va valyutani topyapman':'Ищу цену и валюту',
   "Do'kon va davlatni aniqlayapman":'Определяю магазин и страну', 'Kuryer, boj va jami narxni hisoblayapman':'Считаю курьера, пошлину и итог',
@@ -4508,7 +4512,7 @@ const RU = {
   'Pochtam AI':'Pochtam AI',
   /* Skrinshot natija ekrani va do'kon tanlash yordamchisi */
   'Qayerdan topaman?':'Где найти?', "Nimani qidirayotganingizni yozing — qaysi do'konda borligini, qanday topish va skrinshot qilishni aytaman. Boj, kuryer, taqiq bo'yicha savol ham mumkin.":'Напишите, что ищете — скажу, в каком магазине есть, как найти и как сделать скриншот. Вопросы о пошлине, курьере, запретах тоже можно.', "Do'kon, davlat, kuryer, boj va jami narx bir necha soniyada.":'Магазин, страна, курьер, пошлина и итоговая цена — через несколько секунд.', 'Eng arzon kuryer':'Самый дешёвый курьер', 'Tezroq:':'Быстрее:', 'Boshqa kuryerlar':'Другие курьеры', 'Qanday buyurtma qilaman?':'Как заказать?', 'Vaznni aniqlashtirish':'Уточнить вес', "Rejaga qo'shish":'В план', "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. AI faqat rasmni o'qidi, hisob ilovaniki.":'Расчёт примерный — итоговую сумму определяют таможня и курьер. ИИ только прочитал картинку, расчёт — приложения.', "Do'konda mahsulot sahifasini oching.":'Откройте страницу товара в магазине.', "Narx, nom va (bo'lsa) og'irlik ko'rinadigan joyni skrinshot qiling.":'Сделайте скриншот там, где видны цена, название и (если есть) вес.', "Qayta yuklang — qolganini o'zim qilaman.":'Загрузите снова — остальное сделаю сам.', 'Qayta yuklash':'Загрузить снова', "Qo'lda hisoblash":'Посчитать вручную', 'Qayta urinish':'Попробовать снова', "Kategoriya bo'yicha eslatma":'Заметка по категории', 'Narxga ishonch past':'Уверенность в цене низкая', "Skrinshotda narx aniq ko'rinmagan — kalkulyatorda tekshiring.":'На скриншоте цена видна нечётко — проверьте в калькуляторе.', "Og'irlik {0} kg (sahifadan)":'Вес {0} кг (со страницы)', "Taxminiy og'irlik {0} kg ({1})":'Примерный вес {0} кг ({1})', "Do'kon aniqlanmadi":'Магазин не определён', 'taxmin':'предположительно', "do'kon":'магазин', 'Men {0} ({1}) dan \"{2}\" ({3}) buyurtma qilmoqchiman{4}. Qanday buyurtma qilaman — qadam-baqadam?':'Хочу заказать \"{2}\" ({3}) из {0} ({1}){4}. Как заказать — по шагам?',
-  "Quti bilan kargo og'irligi oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi.":'С коробкой вес для доставки растёт — многие курьеры предлагают отправку без коробки.', "Litiy batareya va powerbank avia bilan yuborilmaydi; telefon O'zbekistonda IMEI ro'yxatidan o'tkaziladi.":'Литиевые батареи и повербанки авиа не отправляются; телефон в Узбекистане регистрируется по IMEI.', "Aerozol va spirtli atirlar avia jo'natmada cheklanadi — kuryerning ro'yxatini tekshiring.":'Аэрозоли и спиртовые духи ограничены в авиаотправке — проверьте список курьера.', "Qanaqasi?":'Какой именно?', 'Byudjet':'Бюджет', "Farqi yo'q":'Не важно', 'gacha':'до', "Do'konlarni ko'rsat":'Показать магазины', '{0} qidiryapman':'Ищу {0}', "Qaysi do'kondan topaman?":'В каком магазине это найти?', "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi shu davlatdan ham yuboradi.":'Под ваш выбор подходит {0} магазинов, последние {1} отправляют и из этой страны.', "Qaysi davlatdan olib kelamiz":'Из какой страны везём', 'Yevropa omborlari':'Европейские склады', 'Texnika va kosmetika':'Техника и косметика', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', 'Mahsulot':'Товар', 'Mahsulot nomi':'Название товара', "Topdim — qanchaga tushadi?":'Нашёл — во сколько обойдётся?', 'Ovoz bilan aytish':'Сказать голосом', "Tinglashni to'xtatish":'Остановить запись', "Shu yerdan boshlang":'Начните отсюда', 'Kuryer':'Курьер', "{0} dan olib keladigan kuryer yo'q":'Нет курьера, который везёт из {0}', "Jami narxda faqat tovar narxi va boj hisoblandi. Boshqa davlatdan olib kelish yo'lini ko'ring.":'В итоговую цену вошли только стоимость товара и пошлина. Посмотрите доставку из другой страны.', "Narxini kuryerdan so'rash kerak: {0}":'Цену нужно уточнить у курьера: {0}', "Bu yo'nalishda kuryerlar bor, lekin narxi jadvalda yo'q — kuryerdan so'rab, kargoni qo'shing.":'На этом направлении курьеры есть, но цены в таблице нет — уточните у курьера и добавьте доставку.', "{0} dan olib keladigan kuryer yo'q — kargo qatorisiz hisoblandi.":'Нет курьера из {0} — расчёт без строки доставки.', "Bu yo'nalishda kuryer bor, lekin narxi jadvalda yo'q ({0}) — narxini so'rab, kargoni qo'shing.":'На этом направлении курьер есть, но цены в таблице нет ({0}) — уточните и добавьте доставку.', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', "Skrinshot yuklang: kuryer, boj va jami narx.":'Загрузите скриншот: курьер, пошлина и итоговая цена.', "Narxni o'zim yozaman":'Введу цену сам', "Narx, davlat va vazn — kalkulyatorda.":'Цена, страна и вес — в калькуляторе.', 'Oxirgi hisob':'Последний расчёт', "Nima qidirayotganingizni yozing yoki ayting, keyin mahsulot sahifasini suratga olib yuklang — jami narxni o'zim chiqaraman.":'Напишите или продиктуйте, что ищете, затем сфотографируйте страницу товара и загрузите — итоговую цену посчитаю сам.', "Narx, davlat va vaznni o'zingiz yozsangiz ham jami narx chiqadi.":'Итоговая цена появится, даже если ввести цену, страну и вес вручную.', 'taxminan {0}-{1}gacha':'примерно до {0} {1}', 'yanvar':'января', 'fevral':'февраля', 'mart':'марта', 'aprel':'апреля', 'iyun':'июня', 'iyul':'июля', 'avgust':'августа', 'sentabr':'сентября', 'oktabr':'октября', 'noyabr':'ноября', 'dekabr':'декабря', "{0} qo'llanmasi — qadam-baqadam":'Инструкция {0} — по шагам', "Pochtam AI qadam-baqadam tushuntiradi":'Pochtam AI объяснит по шагам', "Topilgan sahifalar · bugun":'Найденные страницы · сегодня', 'Ochish':'Открыть', "Narx va mavjudlik sahifada o'zgarishi mumkin — ochib tekshiring, keyin skrinshot qiling.":'Цена и наличие на странице могут измениться — откройте и проверьте, затем сделайте скриншот.', 'may':'мая', 'Rasm biriktirish':'Прикрепить фото', 'Yuborish':'Отправить', "Bu mahsulot menga qanchaga tushadi?":'Во сколько мне обойдётся этот товар?',
+  "Quti bilan kargo og'irligi oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi.":'С коробкой вес для доставки растёт — многие курьеры предлагают отправку без коробки.', "Litiy batareya va powerbank avia bilan yuborilmaydi; telefon O'zbekistonda IMEI ro'yxatidan o'tkaziladi.":'Литиевые батареи и повербанки авиа не отправляются; телефон в Узбекистане регистрируется по IMEI.', "Aerozol va spirtli atirlar avia jo'natmada cheklanadi — kuryerning ro'yxatini tekshiring.":'Аэрозоли и спиртовые духи ограничены в авиаотправке — проверьте список курьера.', "Qanaqasi?":'Какой именно?', 'Byudjet':'Бюджет', "Farqi yo'q":'Не важно', 'gacha':'до', "Do'konlarni ko'rsat":'Показать магазины', '{0} qidiryapman':'Ищу {0}', "Qaysi do'kondan topaman?":'В каком магазине это найти?', "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi shu davlatdan ham yuboradi.":'Под ваш выбор подходит {0} магазинов, последние {1} отправляют и из этой страны.', "Qaysi davlatdan olib kelamiz":'Из какой страны везём', 'Yevropa omborlari':'Европейские склады', 'Texnika va kosmetika':'Техника и косметика', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', 'Mahsulot':'Товар', 'Mahsulot nomi':'Название товара', "Topdim — qanchaga tushadi?":'Нашёл — во сколько обойдётся?', 'Ovoz bilan aytish':'Сказать голосом', "Tinglashni to'xtatish":'Остановить запись', "Shu yerdan boshlang":'Начните отсюда', 'Kuryer':'Курьер', "{0} dan olib keladigan kuryer yo'q":'Нет курьера, который везёт из {0}', "Jami narxda faqat tovar narxi va boj hisoblandi. Boshqa davlatdan olib kelish yo'lini ko'ring.":'В итоговую цену вошли только стоимость товара и пошлина. Посмотрите доставку из другой страны.', "Narxini kuryerdan so'rash kerak: {0}":'Цену нужно уточнить у курьера: {0}', "Bu yo'nalishda kuryerlar bor, lekin narxi jadvalda yo'q — kuryerdan so'rab, kargoni qo'shing.":'На этом направлении курьеры есть, но цены в таблице нет — уточните у курьера и добавьте доставку.', "{0} dan olib keladigan kuryer yo'q — kargo qatorisiz hisoblandi.":'Нет курьера из {0} — расчёт без строки доставки.', "Bu yo'nalishda kuryer bor, lekin narxi jadvalda yo'q ({0}) — narxini so'rab, kargoni qo'shing.":'На этом направлении курьер есть, но цены в таблице нет ({0}) — уточните и добавьте доставку.', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', "Skrinshot yuklang: kuryer, boj va jami narx.":'Загрузите скриншот: курьер, пошлина и итоговая цена.', "Narxni o'zim yozaman":'Введу цену сам', "Narx, davlat va vazn — kalkulyatorda.":'Цена, страна и вес — в калькуляторе.', 'Oxirgi hisob':'Последний расчёт', "Nima qidirayotganingizni yozing yoki tovar fotosini yuklang; topgach, narx ko'ringan sahifani skrinshot qiling — jami narxni o'zim chiqaraman.":'Напишите, что ищете, или загрузите фото товара; когда найдёте — сделайте скриншот страницы с ценой, итоговую цену посчитаю сам.', "Narx, davlat va vaznni o'zingiz yozsangiz ham jami narx chiqadi.":'Итоговая цена появится, даже если ввести цену, страну и вес вручную.', 'taxminan {0}-{1}gacha':'примерно до {0} {1}', 'yanvar':'января', 'fevral':'февраля', 'mart':'марта', 'aprel':'апреля', 'iyun':'июня', 'iyul':'июля', 'avgust':'августа', 'sentabr':'сентября', 'oktabr':'октября', 'noyabr':'ноября', 'dekabr':'декабря', "{0} qo'llanmasi — qadam-baqadam":'Инструкция {0} — по шагам', "Pochtam AI qadam-baqadam tushuntiradi":'Pochtam AI объяснит по шагам', "Topilgan sahifalar · bugun":'Найденные страницы · сегодня', 'Ochish':'Открыть', "Narx va mavjudlik sahifada o'zgarishi mumkin — ochib tekshiring, keyin skrinshot qiling.":'Цена и наличие на странице могут измениться — откройте и проверьте, затем сделайте скриншот.', 'may':'мая', 'Rasm biriktirish':'Прикрепить фото', 'Yuborish':'Отправить', "Bu mahsulot menga qanchaga tushadi?":'Во сколько мне обойдётся этот товар?',
   'Tushundim:':'Понял:', 'original':'оригинал', '{0} gacha':'до {0}', 'Qidirish':'Искать', 'Yana savol':'Ещё вопрос', "Savol yoki tovar so'rovi":'Вопрос или запрос товара',
   'Bugungi savollar chegarasi tugadi':'Лимит вопросов на сегодня исчерпан', "Ertaga davom etamiz. Hozircha kalkulyator va do'konlar ro'yxati ishlaydi.":'Продолжим завтра. Пока работают калькулятор и список магазинов.',
   'Hozir javob bera olmadim':'Сейчас не смог ответить', "Kalkulyator va do'konlar ro'yxati ishlayveradi.":'Калькулятор и список магазинов работают.',
@@ -4533,17 +4537,14 @@ const RU = {
   "Ma'lumotlarni tekshiryapman":"Проверяю данные",
   "Javobni tayyorlayapman":"Готовлю ответ",
   "Javob yozilyapti":"Пишу ответ",
-  // Bosh sahifa: qo'llanma va ovoz (2026-09-26)
+  // Bosh sahifa: qo'llanma (2026-09-26)
   "Tovar nomini yozing yoki rasmini yuklang":"Название товара или его фото",
-  "Tovar nomini yozing, ayting yoki rasmini yuklang — AI uni taniydi va mos do'konlardan aniq mahsulotni topadi.":"Напишите, скажите название товара или загрузите его фото — ИИ узнает товар и найдёт его в подходящих магазинах.",
+  "Tovar nomini yozing yoki «Rasm bilan qidirish» bilan fotosini yuklang — AI tovarni taniydi va mos do'konlardan aniq mahsulotni topadi.":"Напишите название товара или загрузите фото через «Поиск по фото» — ИИ узнает товар и найдёт его в подходящих магазинах.",
   "Topgach, do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang — kuryer, boj va jami summa hisoblanadi.":"Нашли — сделайте скриншот места с ценой в приложении магазина и загрузите: посчитаем курьера, пошлину и итог.",
   "Narxni bilsangiz — «Narxni o'zim yozaman»: hisob AI'siz, bir zumda.":"Знаете цену — «Введу цену сам»: расчёт без ИИ, мгновенно.",
   "Do'kon, kuryer yoki tovar turini yozing — ro'yxatdan topiladi.":"Напишите магазин, курьера или вид товара — найдём в списке.",
   "Do'kon havolasini tashlasangiz — o'sha do'kon sahifasi ochiladi.":"Вставьте ссылку на магазин — откроется его страница.",
   "Narxni bilsangiz — \"Narxni o'zim yozaman\": kuryer, boj va jami summa.":"Знаете цену — «Введу цену сам»: курьер, пошлина и итог.",
-  "Klaviaturadagi mikrofon tugmasini bosib ayting":"Нажмите микрофон на клавиатуре и скажите",
-  "Ovoz eshitilmadi — yana bir bor ayting":"Голос не услышан — скажите ещё раз",
-  "Ovozni tanib bo'lmadi — klaviaturadagi mikrofon bilan ayting":"Не удалось распознать голос — скажите через микрофон на клавиатуре",
   // Audit (2026-09-26): Reja sehrgari, do'kon papkalari, davlatlar — ruscha tarjimasi yo'q edi
   "Shu yo'nalishda ishlaydigan {0} ta kuryer, arzonidan boshlab.":"Курьеров на этом направлении: {0}, от самого дешёвого.",
   "Yetkazish · {0} ({1} kg × {2})":"Доставка · {0} ({1} кг × {2})",
@@ -5948,8 +5949,6 @@ class Component extends DCLogic {
     /* "Qayerdan topaman?" tanlovi: kategoriya, ixtiyoriy matn, originallik,
        byudjet. Chatga savol shu tanlovlardan tuziladi. */
     where: { cat: '', text: '', orig: '', budget: '', find: false },
-    /* Mikrofon tinglayaptimi (brauzerning nutq tanish moslamasi). */
-    micBusy: false,
     /* AI javobidagi belgilangan qadamlar: "xabar:qadam" → true. */
     aiDone: {},
     /* Joriy xarid — yagona saqlanadigan holat (localStorage xy_last):
@@ -6447,7 +6446,7 @@ class Component extends DCLogic {
   tourSteps() {
     const L = k => tr(this.state.lang, k);
     const all = [
-      { k: 'camera', t: 'Shu yerdan boshlang', x: "Nima qidirayotganingizni yozing yoki ayting, keyin mahsulot sahifasini suratga olib yuklang — jami narxni o'zim chiqaraman.", need: () => !!this.state.aiOn },
+      { k: 'camera', t: 'Shu yerdan boshlang', x: "Nima qidirayotganingizni yozing yoki tovar fotosini yuklang; topgach, narx ko'ringan sahifani skrinshot qiling — jami narxni o'zim chiqaraman.", need: () => !!this.state.aiOn },
       { k: 'find', t: 'Narxni o\'zim yozaman', x: "Narx, davlat va vaznni o'zingiz yozsangiz ham jami narx chiqadi.", need: () => !this.state.aiOn },
       { k: 'nav', t: "Uch bo'lim", x: "Boshlash — shu savol. Xaridlarim — hisob va jo'natmalaringiz. Ma'lumotnoma — do'konlar, kuryerlar, bojxona va qo'llanmalar." }
     ];
@@ -7219,6 +7218,12 @@ class Component extends DCLogic {
     const inp = root && root.querySelector('input[type="file"][data-shot]');
     if (inp) { inp.value = ''; inp.click(); }
   }
+  /* "Rasm bilan qidirish" — tovar fotosi uchun alohida tanlov (bosh sahifa). */
+  photoPick() {
+    const root = this._rootRef.current;
+    const inp = root && root.querySelector('input[type="file"][data-photo]');
+    if (inp) { inp.value = ''; inp.click(); }
+  }
   shotResize(file) {
     const MAX = 1280;
     const url = URL.createObjectURL(file);
@@ -7232,7 +7237,10 @@ class Component extends DCLogic {
       })
       .finally(() => URL.revokeObjectURL(url));
   }
-  aiShot(file) {
+  /* mode 'photo' — "Rasm bilan qidirish": rasmdagi tovar taniladi va
+     "Topish" boshlanadi (narx ko'rinsa ham hisob emas, qidiruv). Oddiy
+     rejimda narxsiz tovar fotosi ham o'zi qidiruvga o'tadi. */
+  aiShot(file, mode) {
     const st = this.state;
     if (!file || (st.shotRes && st.shotRes.state === 'busy')) return;
     if (!/^image\//.test(file.type || '')) { this.toast(tr(st.lang, 'Rasm faylini tanlang')); return; }
@@ -7245,9 +7253,10 @@ class Component extends DCLogic {
        bo'shatiladi. */
     let prev = '';
     try { prev = URL.createObjectURL(file); } catch (e) {}
-    this.setState({ shotRes: { state: 'busy', t0: Date.now(), prev } });
+    const photo = mode === 'photo';
+    this.setState({ shotRes: { state: 'busy', t0: Date.now(), prev, src: photo ? 'photo' : undefined } });
     if (this.cur() !== 'result') this.push('result');
-    metrics.hit('ai_question', 'shot');
+    metrics.hit('ai_question', photo ? 'photo' : 'shot');
     clearInterval(this._shotTick);
     this._shotTick = setInterval(() => {
       const r = this.state.shotRes;
@@ -7270,8 +7279,11 @@ class Component extends DCLogic {
         })
         .then(j => {
           const sh = j.shot;
-          /* Narxsiz tovar fotosi — qidiruvga (tovarni topish). */
-          if (sh && !sh.found && sh.kind === 'product' && (sh.name || sh.query)) { clearInterval(this._shotTick); if (prev) URL.revokeObjectURL(prev); this.photoFind(sh); return; }
+          /* Tovar fotosi — qidiruvga (tovarni topish). "Rasm bilan qidirish"
+             rejimida narx ko'rinsa ham qidiruv; tanilmasa — "taniy olmadim". */
+          const named = sh && (sh.name || sh.query);
+          if (named && (photo || (!sh.found && sh.kind === 'product'))) { clearInterval(this._shotTick); if (prev) URL.revokeObjectURL(prev); this.photoFind(sh); return; }
+          if (photo) { done({ state: 'none', src: 'photo' }); return; }
           if (!sh || !sh.found) { done({ state: 'none' }); return; }
           const ok = { state: 'ok', ...this.shotToLc(sh), at: Date.now() };
           done(ok);
@@ -7400,108 +7412,6 @@ class Component extends DCLogic {
       : '');
     return { shot: j, lc, storeName: store ? store.name : (j.store || ''), storeKnown: !!store, countryGuessed: !store, priceTxt, low: j.confidence < 0.6 };
   }
-  /* Ovozli kiritish — brauzerning o'z nutq tanish moslamasi (Web Speech).
-     Server ham, API ham kerak emas: tanish qurilmada bajariladi, shuning
-     uchun qo'shimcha xarajat nolga teng. Qo'llab-quvvatlanmagan brauzerda
-     mikrofon tugmasi umuman ko'rsatilmaydi. */
-  micOn() {
-    const SR = typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition);
-    let kb = false;
-    try { kb = localStorage.getItem('xy_mic_kb') === '1'; } catch (e) {}
-    return !!SR && !kb;
-  }
-  /* Nutqni tanish ruxsat so'ray olmaydigan joylar: Telegram ilovasi ichidagi
-     brauzer, Android webview va boshqa sahifaga joylangan oyna (iframe).
-     U yerda SpeechRecognition bor ko'rinadi-yu, darhol "not-allowed" beradi —
-     foydalanuvchi hech narsani rad etmagan bo'lsa ham. */
-  micEmbedded() {
-    try {
-      if (tgApp() || typeof window.TelegramWebviewProxy !== 'undefined' || /(^|[?#&])tgWebApp/.test(location.href)) return 'tg';
-      if (window.top !== window.self) return 'frame';
-      if (/; wv\)/.test(navigator.userAgent || '')) return 'wv';
-    } catch (e) { return 'frame'; }
-    return '';
-  }
-  /* Ruxsat yo'q: sababga qarab aniq yo'l. Ichki brauzerda — keyingi safar
-     to'g'ridan-to'g'ri klaviatura mikrofoni (qayta xato ko'rsatmaymiz) va
-     Telegram'da "Brauzerda ochish"; oddiy brauzerda bloklangan bo'lsa —
-     ruxsatni qanday qaytarish. Har holda maydon fokusda (onFail). */
-  micBlocked(code, onFail) {
-    const L = k => tr(this.state.lang, k);
-    const env = this.micEmbedded();
-    const kb = () => { if (typeof onFail === 'function') onFail(); };
-    metrics.hit('quick', 'mic:blocked:' + (env || code));
-    kb();
-    if (env) {
-      try { localStorage.setItem('xy_mic_kb', '1'); } catch (e) {}
-      const tg = tgApp();
-      const msg = L("Telegram ichida ovozli qidiruv ishlamaydi. Klaviaturadagi mikrofon tugmasini bosib ayting yoki ilovani brauzerda oching.");
-      if (env === 'tg' && tg && typeof tg.showPopup === 'function' && typeof tg.openLink === 'function') {
-        try {
-          tg.showPopup({ title: L('Mikrofon'), message: msg, buttons: [{ id: 'open', type: 'default', text: L('Brauzerda ochish') }, { id: 'kb', type: 'default', text: L('Klaviatura bilan') }] },
-            id => { if (id === 'open') { metrics.hit('quick', 'mic:browser'); tg.openLink(location.href.split('#')[0]); } else kb(); });
-          return;
-        } catch (e) {}
-      }
-      this.toast(env === 'tg' ? msg : L("Bu oynada ovozli qidiruv ishlamaydi — klaviaturadagi mikrofon tugmasini bosib ayting."), 6000);
-      return;
-    }
-    if (code === 'service-not-allowed') { this.toast(L("Qurilmada ovozli yozish o'chirilgan — sozlamalarda diktovkani yoqing yoki klaviaturadagi mikrofon tugmasini bosing."), 6000); return; }
-    const denied = () => this.toast(L("Mikrofon bloklangan: manzil satridagi qulf belgisini bosing → Mikrofon → Ruxsat berish. Hozircha klaviaturadagi mikrofon tugmasini bosib ayting."), 8000);
-    try {
-      if (navigator.permissions && typeof navigator.permissions.query === 'function') {
-        navigator.permissions.query({ name: 'microphone' })
-          .then(p => (p && p.state === 'denied' ? denied() : this.toast(L("Mikrofonga ruxsat berilmadi — brauzer so'raganda \"Ruxsat berish\"ni bosing."), 5000)), denied);
-        return;
-      }
-    } catch (e) {}
-    denied();
-  }
-  /* onText — aytilayotgan matn (oraliq), onFinal — gap tugagach bir marta:
-     bosh sahifa shu zahoti qidiradi, "Yuborish" ni bosish shart emas.
-     Qo'lda to'xtatilsa (tugma qayta bosilsa) qidiruv ketmaydi. */
-  micToggle(onText, onFinal, onFail) {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) return;
-    const L = k => tr(this.state.lang, k);
-    if (this._mic) { this._micCancel = true; try { this._mic.stop(); } catch (e) {} this._mic = null; this.setState({ micBusy: false }); return; }
-    let rec;
-    try { rec = new SR(); } catch (e) { return; }
-    rec.lang = this.state.lang === 'ru' ? 'ru-RU' : 'uz-UZ';
-    rec.interimResults = true;
-    rec.maxAlternatives = 1;
-    rec.continuous = false;
-    let said = '', final = false;
-    this._micCancel = false;
-    const stop = () => { this._mic = null; this.setState({ micBusy: false }); };
-    rec.onresult = e => {
-      let t = '';
-      for (let i = 0; i < e.results.length; i++) { t += e.results[i][0].transcript; if (e.results[i].isFinal) final = true; }
-      said = String(t).trim().slice(0, 200);
-      onText(said);
-    };
-    rec.onerror = e => {
-      const code = e && e.error;
-      said = '';
-      stop();
-      /* Tanib bo'lmasa jim qolmaymiz: sababi va boshqa yo'l — klaviatura
-         mikrofoni (u o'zbekchani ham yozadi). */
-      if (code === 'not-allowed' || code === 'service-not-allowed') this.micBlocked(code, onFail);
-      else if (code === 'audio-capture') this.toast(L("Mikrofon topilmadi — qurilmada mikrofon ulanganini tekshiring"));
-      else if (code === 'no-speech') this.toast(L("Ovoz eshitilmadi — yana bir bor ayting"));
-      else if (code === 'aborted') return;
-      else this.toast(L("Ovozni tanib bo'lmadi — klaviaturadagi mikrofon bilan ayting"));
-    };
-    rec.onend = () => {
-      stop();
-      if (!this._micCancel && final && said && typeof onFinal === 'function') { metrics.hit('quick', 'mic:go'); onFinal(said); }
-      if (said) { try { localStorage.removeItem('xy_mic_kb'); } catch (e) {} }
-    };
-    this._mic = rec;
-    this.setState({ micBusy: true });
-    metrics.hit('quick', 'mic');
-    try { rec.start(); } catch (e) { stop(); }
-  }
   /* "Nima mahsulot qidiryapsiz?" — butun oqimning boshi: bitta maydon
      (yozish, aytish, havola), ostida uch qatorli qo'llanma. Nima yozilsa
      ham Pochtam AI ga ketadi; natija — do'kon kartalari, aniq mahsulot
@@ -7574,7 +7484,7 @@ class Component extends DCLogic {
     /* «Ulashish → Pochtam» (takeShare) shu yo'ldan yuradi. */
     this._heroRun = run;
     const G = st.aiOn
-      ? ["Tovar nomini yozing, ayting yoki rasmini yuklang — AI uni taniydi va mos do'konlardan aniq mahsulotni topadi.",
+      ? ["Tovar nomini yozing yoki «Rasm bilan qidirish» bilan fotosini yuklang — AI tovarni taniydi va mos do'konlardan aniq mahsulotni topadi.",
          "Topgach, do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang — kuryer, boj va jami summa hisoblanadi.",
          "Narxni bilsangiz — «Narxni o'zim yozaman»: hisob AI'siz, bir zumda."]
       : ["Do'kon, kuryer yoki tovar turini yozing — ro'yxatdan topiladi.",
@@ -7584,17 +7494,9 @@ class Component extends DCLogic {
       whText: w.text, whPh: L('Tovar nomini yozing yoki rasmini yuklang'),
       onWhText: e => set({ text: String(e.target.value || '').slice(0, 1500) }),
       whGuide: G.map((t, i) => ({ n: String(i + 1), t: L(t) })),
-      /* Ovoz: brauzer nutqni tanisa — tinglaydi va aytib bo'lingach o'zi
-         qidiradi. Tanimasa (Telegram ichidagi brauzer) tugma baribir
-         turadi: maydonni ochib, klaviaturadagi mikrofon bilan aytishni
-         aytadi — telefon klaviaturasi o'zbekchani ham yozib oladi. */
-      whMicOn: true, whMicBusy: !!st.micBusy,
-      whMicLabel: L(st.micBusy ? 'Tinglashni to\'xtatish' : 'Ovoz bilan aytish'),
-      whMicBg: st.micBusy ? '#1A1FB0' : '#E9EAFD', whMicFg: st.micBusy ? '#FFFFFF' : '#1A1FB0',
-      whMic: () => {
-        if (!this.micOn()) { metrics.hit('quick', 'mic:kb'); focusField(); this.toast(L("Klaviaturadagi mikrofon tugmasini bosib ayting")); return; }
-        this.micToggle(t => set({ text: t }), t => { set({ text: t }); run(t); }, focusField);
-      },
+      /* Rasm bilan qidirish (Google Lens, Taobao kabi): tovar fotosi →
+         AI taniydi → "Topish". Skrinshot ("qanchaga tushadi") alohida. */
+      whPhoto: () => { metrics.hit('quick', 'where:photo'); this.photoPick(); },
       /* Skrinshot — "qanchaga tushadi". Savolga yozilgan nom natija
          kartasiga o'tadi. */
       whShot: () => { metrics.hit('quick', 'where:shot'); this.shotPick(); },
@@ -7620,18 +7522,18 @@ class Component extends DCLogic {
     if (cur !== 'result') return {};
     const lang = st.lang, L_ = k => tr(lang, k);
     const r = st.shotRes || { state: 'none' };
-    const isLink = r.src === 'link';
+    const isLink = r.src === 'link', isPhoto = r.src === 'photo';
     /* Havola kartasidan: nom bo'lsa — shu tovarni boshqa do'konlardan topish. */
     const findIt = () => { metrics.hit('quick', 'link:find'); this.addFind(r.name); this.setState({ aiMsgs: [], aiDone: {} }); this.push('ai'); this.aiAsk(tx(lang, '{0} qidiryapman', r.name) + '. ' + L_("Qaysi do'kondan topaman?"), { find: true }); };
     const base = { rsBusy: r.state === 'busy', rsOk: r.state === 'ok', rsNone: r.state === 'none', rsErr: r.state === 'err',
       rsErrT: L_(r.code === 'limit' ? (isLink ? 'Bugungi savollar chegarasi tugadi' : 'Bugungi skrinshot chegarasi tugadi') : "Hozir o'qiy olmadim"),
-      rsRetry: () => this.shotPick(), rsManual: () => this.openLanded(r.lc ? { ...r.lc } : {}),
+      rsRetry: () => (isPhoto ? this.photoPick() : this.shotPick()), rsManual: () => this.openLanded(r.lc ? { ...r.lc } : {}),
       rsHelper: () => { metrics.hit('quick', 'ai:where'); this.setState({ where: { ...(st.where || {}), find: true } }); this.go('home'); },
       /* Havola manbasi: sarlavha, ikonka, "o'qilmadi" kartasi va tugmalar. */
-      rsIsLink: isLink, rsIsShot: !isLink, rsHost: r.host || '',
-      rsNoneT: L_(isLink ? "Narx ko'ringan sahifani skrinshot qiling" : "Rasmdan narx o'qilmadi"),
+      rsIsLink: isLink, rsIsShot: !isLink && !isPhoto, rsIsPhoto: isPhoto, rsHost: r.host || '',
+      rsNoneT: L_(isLink ? "Narx ko'ringan sahifani skrinshot qiling" : isPhoto ? 'Rasmdan tovarni taniy olmadim' : "Rasmdan narx o'qilmadi"),
       rsNoneHasName: isLink && !!r.name, rsNoneName: r.name ? tx(lang, "«{0}» — nom va do'kon topildi, faqat narx yetishmayapti.", String(r.name).slice(0, 90)) : '',
-      rsRetryT: L_(isLink ? 'Skrinshot yuklash' : 'Qayta yuklash'),
+      rsRetryT: L_(isLink ? 'Skrinshot yuklash' : isPhoto ? 'Boshqa rasm yuklash' : 'Qayta yuklash'),
       rsHelperT: L_(isLink && r.name ? "Boshqa do'kondan topish" : 'Qayerdan topaman?'),
       rsHelperGo: isLink && r.name ? findIt : () => { metrics.hit('quick', 'ai:where'); this.setState({ where: { ...(st.where || {}), find: true } }); this.go('home'); },
       rsFoot: L_(isLink ? "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. Narx do'kon sahifasidan o'qildi, hisob ilovaniki." : "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. AI faqat rasmni o'qidi, hisob ilovaniki."),
@@ -7641,15 +7543,16 @@ class Component extends DCLogic {
          bo'yicha: oxirgisi javob kelguncha "hozir" bo'lib turadi. Chiziq
          94% dan oshmaydi — to'lishi javob kelganini bildiradi. */
       const t = Math.max(0, Date.now() - (r.t0 || Date.now()));
-      const STEPS = [isLink ? 'Sahifani ochyapman' : "Rasmni o'qiyapman", 'Narx va valyutani topyapman', "Do'kon va davlatni aniqlayapman", 'Kuryer, boj va jami narxni hisoblayapman'];
+      const STEPS = isPhoto ? ["Rasmni o'qiyapman", 'Tovarni taniyapman', "Do'konlardan qidirishga o'tyapman"]
+        : [isLink ? 'Sahifani ochyapman' : "Rasmni o'qiyapman", 'Narx va valyutani topyapman', "Do'kon va davlatni aniqlayapman", 'Kuryer, boj va jami narxni hisoblayapman'];
       const at = Math.min(STEPS.length - 1, Math.floor(t / 2200));
       return { ...base,
         rsSteps: STEPS.map((x, i) => ({ t: L_(x), done: i < at, now: i === at, idle: i !== at,
           bg: i < at ? '#0F7B3E' : i === at ? '#E9EAFD' : '#F1F1F8', fg: i < at ? '#131429' : '#A6A7BC' })),
         rsProg: Math.min(94, Math.round(100 * (1 - Math.exp(-t / 6000)))) + '%',
         rsNoPrev: !r.prev && !isLink, rsPrevCss: r.prev ? "url('" + r.prev + "')" : 'none',
-        rsBusyT: L_(isLink ? "Havolani o'qiyapman" : "Skrinshotni o'qiyapman"),
-        rsBusySub: isLink ? tx(lang, "{0} · odatda 3–15 soniya. Jami narx va uning tarkibi shu yerda chiqadi.", r.host || '') : L_('Odatda 5–10 soniya. Jami narx va uning tarkibi shu yerda chiqadi.') };
+        rsBusyT: L_(isLink ? "Havolani o'qiyapman" : isPhoto ? 'Rasmdagi tovarni taniyapman' : "Skrinshotni o'qiyapman"),
+        rsBusySub: isPhoto ? L_("Odatda 3–6 soniya. Keyin AI mos do'konlardan qidiradi.") : isLink ? tx(lang, "{0} · odatda 3–15 soniya. Jami narx va uning tarkibi shu yerda chiqadi.", r.host || '') : L_('Odatda 5–10 soniya. Jami narx va uning tarkibi shu yerda chiqadi.') };
     }
     if (r.state !== 'ok') return base;
     const C = this.landedCalc(r.lc, st);
@@ -7885,7 +7788,8 @@ class Component extends DCLogic {
       aiOn: !!st.aiOn,
 
       shotPick: () => { metrics.hit('quick', 'ai:shot'); this.shotPick(); },
-      onShotFile: e => { const f = e.target.files && e.target.files[0]; if (f) this.aiShot(f); }
+      onShotFile: e => { const f = e.target.files && e.target.files[0]; if (f) this.aiShot(f); },
+      onPhotoFile: e => { const f = e.target.files && e.target.files[0]; if (f) this.aiShot(f, 'photo'); }
     };
   }
 
