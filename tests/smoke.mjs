@@ -956,15 +956,6 @@ try {
     const noneCalc = await page.evaluate(() => ({ h: document.querySelector('header').innerText.replace(/\s+/g, ' '), price: document.querySelector('input[aria-label="Mahsulot narxi"]')?.value, banner: !!document.querySelector('main [role="status"]') }));
     check('Qo\'lda hisoblash → bo\'sh kalkulyator (bannersiz)', /Jami narx/.test(noneCalc.h) && noneCalc.price === '' && !noneCalc.banner, JSON.stringify(noneCalc));
     await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(400);
-    /* Savat skrinshoti: bir nechta tovar — bitta jo'natma, ro'yxat va
-       umumiy og'irlik (kategoriyalar bo'yicha taxmin). */
-    await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
-    shotNext = { found: true, kind: 'price', multi: true, name: '2 ta tovar: Krossovka, Futbolka', brand: '', query: '', price: 84.99, currency: 'USD', priceUsd: 84.99, fxApprox: false, qty: 1, store: 'Amazon', category: '', country: 'AQSh', weightKg: 0, confidence: 0.9,
-      items: [{ name: 'Krossovka', price: 59.99, currency: 'USD', qty: 1, priceUsd: 59.99, category: 'poyabzal', weightKg: 0 }, { name: 'Futbolka', price: 12.5, currency: 'USD', qty: 2, priceUsd: 12.5, category: 'kiyim va moda', weightKg: 0 }] };
-    await page.locator('input[type="file"][data-shot]').first().setInputFiles({ name: 'savat.png', mimeType: 'image/png', buffer: PNG }); await page.waitForTimeout(1200);
-    { const mt = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
-      check('savat skrinshoti: "2 ta tovar", ro\'yxat (2 × Futbolka), 84.99 USD, og\'irlik 2 ta tovar bo\'yicha, bitta jo\'natma izohi', /Jami narx/.test(await page.locator('header').innerText()) && /2 ta tovar/.test(mt) && /Skrinshotdagi tovarlar \(2\)/.test(mt) && /Krossovka 59\.99 USD/.test(mt) && /2 × Futbolka 12\.5 USD/.test(mt) && /84\.99 USD/.test(mt) && /Taxminiy og'irlik [\d,]+ kg \(2 ta tovar bo'yicha\)/.test(mt) && /bitta jo'natmada hisoblandi/.test(mt), mt.slice(0, 260)); }
-    await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(400);
     /* Tovar fotosi (narxsiz): AI nima ekanini aytadi — "Topish" o'zi
        boshlanadi (Pochtam AI, find: true), Xaridlarimda "Topish" kartasi. */
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
@@ -981,6 +972,15 @@ try {
     await page.locator('main button').filter({ hasText: /^Vaznni aniqlashtirish$/ }).first().click(); await page.waitForTimeout(600);
     const krwChip = await page.evaluate(() => [...document.querySelectorAll('main button[aria-pressed="true"]')].map(b => b.innerText.trim()));
     check('KRW kalkulyatorda o\'z belgisi bilan chipga qo\'shiladi', krwChip.includes('₩') && krwChip.includes('Koreya'), krwChip.join('|'));
+    /* Savat skrinshoti: bir nechta tovar — bitta jo'natma, ro'yxat va
+       umumiy og'irlik (kategoriyalar bo'yicha taxmin). */
+    await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
+    shotNext = { found: true, kind: 'price', multi: true, name: '2 ta tovar: Krossovka, Futbolka', brand: '', query: '', price: 84.99, currency: 'USD', priceUsd: 84.99, fxApprox: false, qty: 1, store: 'Amazon', category: '', country: 'AQSh', weightKg: 0, confidence: 0.9,
+      items: [{ name: 'Krossovka', price: 59.99, currency: 'USD', qty: 1, priceUsd: 59.99, category: 'poyabzal', weightKg: 0 }, { name: 'Futbolka', price: 12.5, currency: 'USD', qty: 2, priceUsd: 12.5, category: 'kiyim va moda', weightKg: 0 }] };
+    await page.locator('input[type="file"][data-shot]').first().setInputFiles({ name: 'savat.png', mimeType: 'image/png', buffer: PNG }); await page.waitForTimeout(1200);
+    { const mt = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
+      check('savat skrinshoti: "2 ta tovar", ro\'yxat (2 × Futbolka), 84.99 USD, og\'irlik 2 ta tovar bo\'yicha, bitta jo\'natma izohi', /Jami narx/.test(await page.locator('header').innerText()) && /2 ta tovar/.test(mt) && /Skrinshotdagi tovarlar \(2\)/.test(mt) && /Krossovka 59\.99 USD/.test(mt) && /2 × Futbolka 12\.5 USD/.test(mt) && /84\.99 USD/.test(mt) && /Taxminiy og'irlik [\d,]+ kg \(2 ta tovar bo'yicha\)/.test(mt) && /bitta jo'natmada hisoblandi/.test(mt), mt.slice(0, 260)); }
+    await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(400);
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
     /* AI o'chiq (kalit yo'q): savol kartasi yo'q, savol qidiruvga boradi, kompyuter
        menyusida "Pochtam AI" yo'q — foydalanuvchi o'lik tugma ko'rmaydi. */
