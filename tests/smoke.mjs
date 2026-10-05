@@ -712,9 +712,9 @@ try {
        javob ostidagi tugma kalkulyatorni to'ldirib ochadi; xato holatida
        "vaqtincha mavjud emas"; bosh sahifadagi savol AI ga boradi. Mobil
        pastki menyu 5 ta qoladi. */
-    const aiBodies = []; const shotBodies = []; let aiMode = 'ok', shotDelay = 0, shotNext = null;
+    const aiBodies = []; const shotBodies = []; const kwBodies = []; let aiMode = 'ok', shotDelay = 0, shotNext = null;
     /* Savollar (rasmsiz so'rovlar) — sanoq shular bo'yicha. */
-    const qBodies = () => aiBodies.filter(b => b && b.q);
+    const qBodies = () => aiBodies.filter(b => b && b.q && !b.kw);
     /* Skrinshot javoblari: 1 — CNY Nike, 2 va 4 — topilmadi, 3 — KRW. */
     const shotOf = n => n === 2 || n === 4 ? { found: false }
       : n === 3 ? { found: true, name: 'Koreya kremi', price: 46000, currency: 'KRW', priceUsd: 0, fxApprox: true, qty: 1, store: '', confidence: 0.8, category: 'kosmetika', country: 'Koreya', weightKg: 0.3 }
@@ -732,6 +732,15 @@ try {
         if (shotDelay) await new Promise(z => setTimeout(z, shotDelay));
         return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: '', shot: sh, cart: cartOf(sh), cards: sh.found ? [{ type: 'product', ...sh }] : [], tools: [], model: 'm', usage: {}, stop: 'shot' }) });
       }
+      /* "Qidiruv so'zlari": har do'kon tilida so'z (Worker kwStores shakli). */
+      if (body.kw) { kwBodies.push(body);
+        const nm = String(body.q || '').replace(/ \(.*\)$/, '');
+        return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ text: '', cards: [], tools: [], model: 'm', usage: {}, stop: 'kw',
+          kw: { name: nm, category: 'poyabzal', who: body.who || '', style: body.style || '', words: { en: 'sneakers size 41', zh: '运动鞋 41码', tr: 'spor ayakkabı 41' }, tip: "Taobao'da 销量 bo'yicha saralang",
+            stores: [{ id: 'taobao', name: 'Taobao', country: 'Xitoy', lang: 'zh', query: body.who === 'ayol' ? '女 运动鞋 41码' : '运动鞋 41码', url: 'https://s.taobao.com/search?q=%E8%BF%90%E5%8A%A8%E9%9E%8B', copyOnly: false, app: '' },
+              { id: 'pinduoduo', name: 'Pinduoduo', country: 'Xitoy', lang: 'zh', query: '运动鞋 41码', url: '', copyOnly: true, app: 'https://mobile.yangkeduo.com' },
+              { id: 'trendyol', name: 'Trendyol', country: 'Turkiya', lang: 'tr', query: 'spor ayakkabı 41', url: 'https://www.trendyol.com/sr?q=spor+ayakkab%C4%B1+41', copyOnly: false, app: '' },
+              { id: 'amazon', name: 'Amazon', country: 'AQSh', lang: 'en', query: 'sneakers size 41', url: 'https://www.amazon.com/s?k=sneakers+size+41', copyOnly: false, app: '' }] } }) }); }
       if (aiMode === '503') return r.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: 'AI vaqtincha mavjud emas', code: 'no_key' }) });
       if (aiMode === '429') return r.fulfill({ status: 429, contentType: 'application/json', body: JSON.stringify({ error: 'limit', code: 'limit' }) });
       const q = (aiBodies[aiBodies.length - 1] || {}).q || '';
@@ -749,21 +758,40 @@ try {
        ("Havola yoki tovar nomini yozing"), mikrofon, ostida uch qatorli
        qo'llanma; skrinshot va "Narxni o'zim yozaman". "Hali topmadim"
        bosqichi yo'q: nom yozilsa darhol Pochtam AI (find) ga ketadi. */
-    const camBtn = page.locator('main [data-tour="camera"]').filter({ hasText: 'Topdim — qanchaga tushadi?' });
+    const camBtn = page.locator('main [data-tour="camera"]').filter({ hasText: 'Skrinshot yuklang' });
     const whTxt = () => page.locator('main').innerText().then(t => t.replace(/\s+/g, ' '));
     const wh1 = await whTxt();
     const whField = page.locator('main input[aria-label="Mahsulot nomi"]');
-    check('bosh sahifa: savol, maydon, qo\'llanma, skrinshot va qo\'lda narx ("Hali topmadim"siz)', /Nima mahsulot qidiryapsiz\?/.test(wh1) && (await whField.count()) === 1 && (await whField.getAttribute('placeholder')) === 'Tovar nomini yozing yoki rasmini yuklang' && await camBtn.count() === 1 && /Narxni o'zim yozaman/.test(wh1) && !/Hali topmadim|Qanaqasi\?/.test(wh1) && (await page.locator('main [data-tour="where"]').count()) === 0, wh1.slice(0, 120));
+    check('bosh sahifa: skrinshot birinchi (asosiy), yo\'riqnoma, "Tovar qidiryapsizmi?" maydoni, qo\'lda narx', /^Menga qanchaga tushadi\? Skrinshot yuklang/.test(wh1) && /Tovar qidiryapsizmi\?/.test(wh1) && (await whField.count()) === 1 && (await whField.getAttribute('placeholder')) === 'Masalan: termos 1 litr' && await camBtn.count() === 1 && /Narxni o'zim yozaman/.test(wh1) && !/Hali topmadim|Qanaqasi\?/.test(wh1) && (await page.locator('main [data-tour="where"]').count()) === 0, wh1.slice(0, 120));
     const guide = (await page.locator('main [data-guide]').first().innerText().catch(() => '')).replace(/\s+/g, ' ');
-    check('maydon ostida kichik qo\'llanma: 3 qadam (nom yoki foto → AI topadi, skrinshot → hisob, qo\'lda narx)', /^Qanday ishlaydi 1 Tovar nomini yozing yoki «Rasm bilan qidirish» bilan fotosini yuklang — AI tovarni taniydi va mos do'konlardan aniq mahsulotni topadi\. 2 Topgach, do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang — kuryer, boj va jami summa hisoblanadi\. 3 Narxni bilsangiz — «Narxni o'zim yozaman»: hisob AI'siz, bir zumda\./.test(guide), guide);
+    check('skrinshot yo\'riqnomasi: 3 qadam (tovarni ochish, iPhone/Android tugmalari, yuklash)', /^Skrinshot qanday olinadi 1 Do'kon ilovasida tovarni yoki savatni oching\. 2 Narx ko'ringan joyni skrinshot qiling: iPhone — yon tugma \+ ovozni oshirish, Android — quvvat \+ ovozni pasaytirish\. 3 Shu yerga yuklang/.test(guide), guide);
     check('ovoz tugmasi yo\'q (2026-10-04)', (await page.locator('main form button[aria-label="Ovoz bilan aytish"]').count()) === 0);
     /* Bo'sh maydonda Enter — maslahat va fokus, AI ga so'rov ketmaydi. */
     await whField.fill(''); await whField.press('Enter'); await page.waitForTimeout(300);
     check('bo\'sh maydon — maslahat va maydonga fokus, AI ga so\'rov ketmaydi', qBodies().length === 0 && /Avval nima qidirayotganingizni yozing/.test(await page.locator('body').innerText()) && (await page.evaluate(() => document.activeElement && document.activeElement.getAttribute('aria-label'))) === 'Mahsulot nomi');
-    /* Tovar nomi → darhol Pochtam AI, veb-qidiruv bilan (find). */
+    /* Tovar nomi → "Qidiruv so'zlari": har do'kon tilida so'z, Qidirish /
+       Nusxa, Kimga/Qanday tanlovi; "AI bilan batafsil maslahat" — find. */
     await whField.fill('krossovka, 41 razmer'); await whField.press('Enter'); await page.waitForTimeout(800);
+    { const kh = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
+      const kt = await aiMain();
+      const rows = await page.evaluate(() => [...document.querySelectorAll('main [data-kw-row]')].map(r => ({ t: r.innerText.replace(/\s+/g, ' '), b: [...r.querySelectorAll('button')].map(b => b.innerText.trim()) })));
+      check('tovar nomi → "Qidiruv so\'zlari": kw so\'rovi, do\'kon tilida so\'z, Qidirish/Nusxa, ilovadagilar faqat nusxa', /Qidiruv so'zlari/.test(kh) && kwBodies.length === 1 && kwBodies[0].q === 'krossovka, 41 razmer' && kwBodies[0].kw === true && qBodies().length === 0
+        && rows.length === 4 && /^Taobao · Xitoy 中文 运动鞋 41码/.test(rows[0].t) && rows[0].b.join() === 'Nusxa,Qidirish' && rows[1].b.join() === 'Nusxa' && /Faqat ilovada/.test(rows[1].t) && /^Trendyol · Turkiya TR spor ayakkabı 41/.test(rows[2].t)
+        && /Taobao'da 销量/.test(kt) && /kamera belgisi/.test(kt) && /Topdim — skrinshot yuklash/.test(kt), kh + ' · ' + JSON.stringify(rows).slice(0, 300));
+      const opened = [];
+      await page.exposeFunction('__kwOpen', u => opened.push(u)).catch(() => {});
+      await page.evaluate(() => { window.open = u => { window.__kwOpen(String(u)); return {}; }; });
+      await page.locator('main [data-kw-row]').first().locator('button', { hasText: 'Qidirish' }).click(); await page.waitForTimeout(300);
+      await page.locator('main [data-kw-row]').first().locator('button', { hasText: 'Nusxa' }).click(); await page.waitForTimeout(300);
+      check('"Qidirish" — do\'kon qidiruvi ochiladi; "Nusxa" — so\'z nusxalanadi', opened[0] === 'https://s.taobao.com/search?q=%E8%BF%90%E5%8A%A8%E9%9E%8B' && /Qidiruv so'zi nusxalandi/.test(await page.locator('body').innerText()), JSON.stringify(opened));
+      await page.locator('main [data-kw="1"] button', { hasText: /^Ayol$/ }).click(); await page.waitForTimeout(600);
+      const on = await page.evaluate(() => [...document.querySelectorAll('main [data-kw="1"] button[aria-pressed="true"]')].map(b => b.innerText.trim()));
+      check('"Kimga: Ayol" — qayta so\'rov who=ayol, so\'z yangilanadi', kwBodies.length === 2 && kwBodies[1].who === 'ayol' && on.join() === "Ayol,Farqi yo'q" && /女 运动鞋/.test(await aiMain()), on.join() + ' · ' + JSON.stringify(kwBodies[1] || {}));
+      const plans = await page.evaluate(() => { try { return (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || []).filter(p => p.find).map(p => p.name); } catch (e) { return []; } });
+      check('Xaridlarimda "Topish" kartasi (nom bilan)', plans.includes('krossovka, 41 razmer'), JSON.stringify(plans)); }
+    await page.locator('main button', { hasText: 'AI bilan batafsil maslahat' }).click(); await page.waitForTimeout(800);
     const aiHead = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
-    check('tovar nomi → darhol Pochtam AI, find bayrog\'i bilan', /Pochtam AI/.test(aiHead) && qBodies().length === 1 && qBodies()[0].find === true && qBodies()[0].q === "krossovka, 41 razmer qidiryapman. Qaysi do'kondan topaman?", JSON.stringify(aiBodies[0] && aiBodies[0].q));
+    check('"AI bilan batafsil maslahat" → Pochtam AI, find bayrog\'i bilan', /Pochtam AI/.test(aiHead) && qBodies().length === 1 && qBodies()[0].find === true && qBodies()[0].q === "krossovka, 41 razmer qidiryapman. Qaysi do'kondan topaman?", JSON.stringify(qBodies()[0] && qBodies()[0].q));
     const links = await page.evaluate(() => [...document.querySelectorAll('main a[target="_blank"]')].map(a => a.innerText.replace(/\s+/g, ' ').trim() + '→' + a.href));
     const gotTxt = await aiMain();
     check('Pochtam AI: aniq havola kartalari (nom, do\'kon, narx) do\'kon kartalaridan oldin', links.length === 4 && /^Nike Air Max 90 Men/.test(links[0]) && /amazon\.com\/dp\/B0EXAMPLE/.test(links[0]) && /Amazon · \$119\.99$/.test(links[0].split(' Ochish')[0]) && /Ochish/.test(links[0]) && /Topilgan sahifalar/i.test(gotTxt), links.join(' | '));
@@ -810,12 +838,12 @@ try {
        xil ish — tovar fotosi tanlanadi; ovozli yozish yo'q. Narx ko'rinsa
        ham bu rejimda qidiruv (hisob emas). */
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
-    check('bosh sahifa: ovoz tugmasi yo\'q, "Rasm bilan qidirish" — maydonda va kartada', (await page.locator('main button[aria-label="Ovoz bilan aytish"]').count()) === 0 && (await page.locator('main form button[aria-label="Rasm bilan qidirish"]').count()) === 1 && (await page.locator('main button[data-photo-search]').count()) === 1 && /Rasm bilan qidirish/.test(await page.locator('main button[data-photo-search]').innerText()));
+    check('bosh sahifa: ovoz tugmasi yo\'q, "Rasm bilan qidirish" — maydon ichida', (await page.locator('main button[aria-label="Ovoz bilan aytish"]').count()) === 0 && (await page.locator('main form button[aria-label="Rasm bilan qidirish"]').count()) === 1 && (await page.locator('main button[data-photo-search]').count()) === 1);
     shotNext = { found: true, kind: 'price', name: 'Adidas Samba OG', brand: 'Adidas', query: 'Adidas Samba OG white', price: 120, currency: 'USD', qty: 1, store: '', category: 'poyabzal', country: '', weightKg: 0, confidence: 0.9 };
     { const nAi = aiBodies.length;
       await page.locator('input[type="file"][data-photo]').first().setInputFiles({ name: 'tovar.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64') }); await page.waitForTimeout(1200);
       const ab = aiBodies[aiBodies.length - 1] || {};
-      check('"Rasm bilan qidirish": rasm → tovar taniladi → Pochtam AI qidiruvi (narx ko\'rinsa ham hisob emas)', aiBodies.length === nAi + 2 && /Pochtam AI/.test(await page.locator('header').innerText()) && ab.find === true && /^Rasmdagi tovar: Adidas Samba OG \(Adidas Samba OG white\)/.test(ab.q || ''), JSON.stringify(ab).slice(0, 140)); }
+      check('"Rasm bilan qidirish": rasm → tovar taniladi → "Qidiruv so\'zlari" (narx ko\'rinsa ham hisob emas)', aiBodies.length === nAi + 2 && /Qidiruv so'zlari/.test(await page.locator('header').innerText()) && ab.kw === true && ab.q === 'Adidas Samba OG (Adidas Samba OG white)' && /Adidas Samba OG/.test(await aiMain()), JSON.stringify(ab).slice(0, 140)); }
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
     await heroField.fill("Boj qancha bo'ladi?"); await page.waitForTimeout(200);
     await page.locator('main form button[aria-label="Yuborish"]').first().click(); await page.waitForTimeout(800);
@@ -964,7 +992,7 @@ try {
     { const ab = aiBodies[aiBodies.length - 1] || {};
       const hh = (await page.locator('header').innerText()).replace(/\s+/g, ' ');
       const plansHas = await page.evaluate(() => { try { return (JSON.parse(localStorage.getItem('xy_state') || '{}').plans || []).length; } catch (e) { return -1; } });
-      check('tovar fotosi → Pochtam AI qidiruvi: "Rasmdagi tovar: …", inglizcha so\'rov, find', /Pochtam AI/.test(hh) && ab.find === true && /^Rasmdagi tovar: Oq krossovka Nike Air Force 1 \(Nike Air Force 1 white sneakers\)\. Qaysi do'kondan topaman\?$/.test(ab.q || '') && !ab.image, JSON.stringify(ab).slice(0, 160) + ' · ' + hh + ' · ' + plansHas); }
+      check('tovar fotosi → "Qidiruv so\'zlari": nom va inglizcha so\'rov bilan kw', /Qidiruv so'zlari/.test(hh) && ab.kw === true && ab.q === 'Oq krossovka Nike Air Force 1 (Nike Air Force 1 white sneakers)' && !ab.image, JSON.stringify(ab).slice(0, 160) + ' · ' + hh + ' · ' + plansHas); }
     await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(400);
     /* KRW natijasi kalkulyatorda o'z belgisi bilan (oxirgi hisob orqali). */
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
@@ -995,7 +1023,8 @@ try {
       check('AI o\'chiq: tanishtiruv 2 qadam (skrinshot qadami o\'rnida "Narxni o\'zim yozaman"), Escape yopadi', /1 \/ 2/.test(offTour) && (await op.locator('[role="dialog"][aria-labelledby="xy-tour-title"]').count()) === 0, offTour.slice(0, 40));
       const offCam = await op.locator('main [data-tour="camera"], main [data-tour="where"]').count() + (await op.locator('main button').filter({ hasText: /qayerdan olaman|Savol bormi/ }).count());
       const offGuide = (await op.locator('main [data-guide]').first().innerText().catch(() => '')).replace(/\s+/g, ' ');
-      check('AI o\'chiq: qo\'llanma AI\'siz yo\'lni aytadi', /Do'kon, kuryer yoki tovar turini yozing/.test(offGuide) && !/AI/.test(offGuide.replace('Qanday ishlaydi', '')), offGuide);
+      const offPh = await op.locator('main input[aria-label="Mahsulot nomi"]').getAttribute('placeholder');
+      check('AI o\'chiq: skrinshot yo\'riqnomasi va rasm tugmasi yo\'q, maydon do\'kon/kuryer qidiruvi', offGuide === '' && offPh === "Do'kon, kuryer yoki tovar nomi" && (await op.locator('main button[data-photo-search]').count()) === 0, offGuide + ' · ' + offPh);
       const offNav = (await op.locator('nav').innerText()).replace(/\s+/g, ' ');
       const offFind = await op.locator('main [data-tour="find"]').count();
       await op.locator('main [data-tour="find"]').first().click(); await op.waitForTimeout(600);
@@ -1027,7 +1056,7 @@ try {
       await fp.locator('main input[aria-label="Mahsulot nomi"]').press('Enter'); await fp.waitForTimeout(700);
       await fp.locator('nav button', { hasText: 'Xaridlarim' }).first().click(); await fp.waitForTimeout(500);
       const findT = (await fp.locator('main [data-buy]').first().innerText().catch(() => '')).replace(/\s+/g, ' ');
-      check('Topish kartasi: nom, "Do\'kon hali tanlanmagan", "Skrinshot yuklash"', (await fp.locator('main [data-buy]').count()) === 1 && /^krossovka Do'kon hali tanlanmagan Topish/.test(findT) && /Skrinshot yuklash/.test(findT) && /Do'konlarni ko'rsat/.test(findT), findT);
+      check('Topish kartasi: nom, "Do\'kon hali tanlanmagan", "Skrinshot yuklash"', (await fp.locator('main [data-buy]').count()) === 1 && /^krossovka Do'kon hali tanlanmagan Topish/.test(findT) && /Skrinshot yuklash/.test(findT) && /Qidiruv so'zlari/.test(findT), findT);
       await fp.locator('main [data-buy] button').filter({ hasText: /^\s*Skrinshot yuklash\s*$/ }).first().click().catch(() => {});
       await fp.locator('input[type="file"][data-shot]').first().setInputFiles({ name: 'k.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFklEQVR42mP8z8BQz0AEYBxVSF+FAAhKDveksOjmAAAAAElFTkSuQmCC', 'base64') });
       await fp.waitForTimeout(1300);
@@ -1211,7 +1240,7 @@ try {
     await sp.goto(base + '/', { waitUntil: 'load' }); await sp.waitForTimeout(1200);
     await passOnboarding(sp); await sp.waitForTimeout(1300); await sp.keyboard.press('Escape'); await sp.waitForTimeout(300);
     const fld = sp.locator('main input[aria-label="Mahsulot nomi"]');
-    await fld.fill('nike air max'); await fld.press('Enter'); await sp.waitForTimeout(500);
+    await fld.fill('nike air max qayerdan olsam bo\'ladi?'); await fld.press('Enter'); await sp.waitForTimeout(500);
     const th = await sp.evaluate(() => { const d = document.querySelector('main [data-ai-thinking]'); return d ? { role: d.getAttribute('role'), step: (d.querySelector('[data-ai-step]') || {}).textContent || '', orb: !!d.querySelector('.xy-orb'), dots: d.querySelectorAll('.xy-dots i').length } : null; });
     check('AI o\'ylayotganda: "o\'ylayapti" bloki — orb, bosqich nomi, uch nuqta, role=status', !!th && th.role === 'status' && th.step === "Savolni o'qiyapman" && th.orb && th.dots === 3, JSON.stringify(th));
     await sp.waitForTimeout(1800);

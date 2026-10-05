@@ -585,41 +585,43 @@
     <div style="display:flex;flex-direction:column;gap:20px">
 
       <div style="display:flex;flex-direction:column;gap:12px">
-        <h2 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.1;color:#131429;text-wrap:balance">Nima mahsulot <span style="color:#1A1FB0">qidiryapsiz?</span></h2>
+        <sc-if value="{{ aiOn }}" hint-placeholder-val="{{ true }}">
+          <h2 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.1;color:#131429;text-wrap:balance">Menga <span style="color:#1A1FB0">qanchaga tushadi?</span></h2>
+          <button data-tour="camera" sc-camel-on-click="{{ whShot }}" style="display:flex;align-items:center;gap:14px;width:100%;border:none;border-radius:20px;padding:18px 16px;cursor:pointer;text-align:left;font-family:inherit;background:linear-gradient(155deg,#494FE9,#13189D);box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">
+            <span aria-hidden="true" style="width:48px;height:48px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#494FE9"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8.5A2.5 2.5 0 016.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0120 8.5V17a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+              <span style="font-size:17px;font-weight:700;color:#FFFFFF">Skrinshot yuklang</span>
+              <span style="font-size:13px;font-weight:500;color:#DCDDFA;line-height:1.5">Kuryer, boj va jami narx — bir necha soniyada.</span>
+            </span>
+          </button>
+          <div data-guide="1" style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;background:#FFFFFF;border-radius:20px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+            <span style="font-size:13px;font-weight:700;color:#131429">Skrinshot qanday olinadi</span>
+            <sc-for list="{{ whGuide }}" as="gd" hint-placeholder-count="3">
+              <div style="display:flex;align-items:flex-start;gap:10px">
+                <span aria-hidden="true" style="flex:none;width:24px;height:24px;border-radius:999px;background:#E9EAFD;color:#1A1FB0;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ gd.n }}</span>
+                <span style="flex:1;min-width:0;font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5;text-wrap:pretty">{{ gd.t }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <h2 style="margin:12px 0 0;font-size:17px;font-weight:700;letter-spacing:-.02em;color:#131429">Tovar qidiryapsizmi?</h2>
+          <span style="margin-top:-6px;font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5;text-wrap:pretty">Nomini yozing — har do'kon tilida tayyor qidiruv so'zini beraman.</span>
+        </sc-if>
+        <sc-if value="{{ aiOff }}" hint-placeholder-val="{{ false }}">
+          <h2 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.1;color:#131429;text-wrap:balance">Nima mahsulot <span style="color:#1A1FB0">qidiryapsiz?</span></h2>
+        </sc-if>
         <form sc-camel-on-submit="{{ whSubmit }}" style="display:flex;align-items:center;gap:8px">
           <div style="flex:1;min-width:0;height:52px;display:flex;align-items:center;gap:4px;border-radius:20px;background:#FFFFFF;padding:0 6px 0 16px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
             <input data-hero="1" value="{{ whText }}" sc-camel-on-input="{{ onWhText }}" placeholder="{{ whPh }}" type="text" enterkeyhint="go" aria-label="Mahsulot nomi" style="flex:1;min-width:0;height:100%;border:none;background:transparent;padding:0;outline:none;font-family:inherit;font-size:15px;font-weight:500;color:#131429">
-            <button type="button" sc-camel-on-click="{{ whPhoto }}" aria-label="Rasm bilan qidirish" style="flex:none;width:40px;height:40px;border-radius:14px;border:none;background:#E9EAFD;cursor:pointer;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8V6a2 2 0 012-2h2"></path><path d="M16 4h2a2 2 0 012 2v2"></path><path d="M20 16v2a2 2 0 01-2 2h-2"></path><path d="M8 20H6a2 2 0 01-2-2v-2"></path><circle cx="12" cy="12" r="3.5"></circle></svg></button>
+            <sc-if value="{{ aiOn }}" hint-placeholder-val="{{ true }}">
+              <button type="button" data-photo-search="1" sc-camel-on-click="{{ whPhoto }}" aria-label="Rasm bilan qidirish" style="flex:none;width:40px;height:40px;border-radius:14px;border:none;background:#E9EAFD;cursor:pointer;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8V6a2 2 0 012-2h2"></path><path d="M16 4h2a2 2 0 012 2v2"></path><path d="M20 16v2a2 2 0 01-2 2h-2"></path><path d="M8 20H6a2 2 0 01-2-2v-2"></path><circle cx="12" cy="12" r="3.5"></circle></svg></button>
+            </sc-if>
           </div>
           <sc-if value="{{ whGoOn }}" hint-placeholder-val="{{ false }}">
             <button type="submit" aria-label="Yuborish" style="flex:none;width:52px;height:52px;border-radius:20px;border:none;background:linear-gradient(155deg,#494FE9,#13189D);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="M12 6l6 6-6 6"></path></svg></button>
           </sc-if>
         </form>
-        <div data-guide="1" style="display:flex;flex-direction:column;gap:8px;padding:4px 2px">
-          <span style="font-size:13px;font-weight:700;color:#131429">Qanday ishlaydi</span>
-          <sc-for list="{{ whGuide }}" as="gd" hint-placeholder-count="3">
-            <div style="display:flex;align-items:flex-start;gap:10px">
-              <span aria-hidden="true" style="flex:none;width:24px;height:24px;border-radius:999px;background:#E9EAFD;color:#1A1FB0;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ gd.n }}</span>
-              <span style="flex:1;min-width:0;font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5;text-wrap:pretty">{{ gd.t }}</span>
-            </div>
-          </sc-for>
-        </div>
         <sc-if value="{{ aiOn }}" hint-placeholder-val="{{ true }}">
-          <button data-photo-search="1" sc-camel-on-click="{{ whPhoto }}" style="display:flex;align-items:center;gap:12px;width:100%;background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="background:#F6F7FB">
-            <span aria-hidden="true" style="width:40px;height:40px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#E9EAFD"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8V6a2 2 0 012-2h2"></path><path d="M16 4h2a2 2 0 012 2v2"></path><path d="M20 16v2a2 2 0 01-2 2h-2"></path><path d="M8 20H6a2 2 0 01-2-2v-2"></path><circle cx="12" cy="12" r="3.5"></circle></svg></span>
-            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
-              <span style="font-size:15px;font-weight:700;color:#131429">Rasm bilan qidirish</span>
-              <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">Tovar fotosini yuklang — AI taniydi va do'konlardan topadi.</span>
-            </span>
-            <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A6A7BC" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 6l6 6-6 6"></path></svg>
-          </button>
-          <button data-tour="camera" sc-camel-on-click="{{ whShot }}" style="display:flex;align-items:center;gap:12px;width:100%;border:none;border-radius:20px;padding:16px;cursor:pointer;text-align:left;font-family:inherit;background:linear-gradient(155deg,#494FE9,#13189D);box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">
-            <span aria-hidden="true" style="width:40px;height:40px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#494FE9"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8.5A2.5 2.5 0 016.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0120 8.5V17a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></span>
-            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
-              <span style="font-size:15px;font-weight:700;color:#FFFFFF">Topdim — qanchaga tushadi?</span>
-              <span style="font-size:13px;font-weight:500;color:#DCDDFA;line-height:1.5">Skrinshot yuklang: kuryer, boj va jami narx.</span>
-            </span>
-          </button>
+          <span style="margin-top:-4px;font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5;text-wrap:pretty">Rasmi bo'lsa — maydondagi kamera belgisi. Savol bersangiz ("…?") — Pochtam AI javob beradi.</span>
         </sc-if>
         <button data-tour="find" sc-camel-on-click="{{ whManual }}" style="display:flex;align-items:center;gap:12px;width:100%;background:#FFFFFF;border:none;border-radius:20px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)" style-hover="background:#F6F7FB">
           <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
@@ -2376,7 +2378,7 @@
           <sc-if value="{{ b.isFind }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
               <sc-if value="{{ b.hasFindAgain }}" hint-placeholder-val="{{ true }}">
-                <button sc-camel-on-click="{{ b.findAgain }}" style="min-height:40px;background:none;border:none;padding:0;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer">Do'konlarni ko'rsat</button>
+                <button sc-camel-on-click="{{ b.findAgain }}" style="min-height:40px;background:none;border:none;padding:0;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer">Qidiruv so'zlari</button>
               </sc-if>
               <button sc-camel-on-click="{{ b.remove }}" style="margin-left:auto;min-height:40px;background:none;border:none;padding:0;font-family:inherit;font-size:13px;font-weight:700;color:#6B6C85;cursor:pointer">O'chirish</button>
             </div>
@@ -2660,6 +2662,76 @@
           <span style="font-size:13px;color:#B45309;line-height:1.5;font-weight:500">Boj hisobi taxminiy. Yakuniy qaror bojxona organi tomonidan qabul qilinadi.</span>
         </div>
       </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sKw }}" hint-placeholder-val="{{ false }}">
+    <div data-kw="1" style="display:flex;flex-direction:column;gap:14px;padding-top:4px">
+      <input type="file" accept="image/*" data-shot="1" sc-camel-on-change="{{ onShotFile }}" aria-label="Skrinshot tanlash" style="display:none">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <span style="font-size:22px;font-weight:800;letter-spacing:-.025em;color:#131429;line-height:1.2;text-wrap:balance">{{ kwName }}</span>
+        <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5;text-wrap:pretty">Har do'kon o'z tilida yaxshiroq topadi. «Qidirish» — do'kon sahifasi, «Nusxa» — ilovadagi qidiruvga qo'ying.</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85">Kimga</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <sc-for list="{{ kwWho }}" as="c" hint-placeholder-count="4">
+            <button sc-camel-on-click="{{ c.pick }}" aria-pressed="{{ c.on }}" style="flex:none;height:40px;padding:0 14px;border-radius:999px;border:1.5px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ c.t }}</button>
+          </sc-for>
+        </div>
+        <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85">Qanday</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <sc-for list="{{ kwStyle }}" as="c" hint-placeholder-count="3">
+            <button sc-camel-on-click="{{ c.pick }}" aria-pressed="{{ c.on }}" style="flex:none;height:40px;padding:0 14px;border-radius:999px;border:1.5px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">{{ c.t }}</button>
+          </sc-for>
+        </div>
+      </div>
+      <sc-if value="{{ kwBusy }}" hint-placeholder-val="{{ false }}">
+        <div role="status" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:16px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+          <span class="xy-shimmer" style="font-size:15px;font-weight:700">Har do'kon tilida so'z tayyorlanmoqda</span>
+          <span class="xy-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        </div>
+      </sc-if>
+      <sc-if value="{{ kwErr }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:10px;background:#FFFFFF;border-radius:20px;padding:16px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+          <span style="font-size:15px;font-weight:500;color:#4E4F6B;line-height:1.5">{{ kwErrText }}</span>
+          <button sc-camel-on-click="{{ kwRetry }}" style="align-self:flex-start;height:40px;padding:0 16px;border-radius:14px;border:none;background:#E9EAFD;color:#1A1FB0;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer">Qayta urinish</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ kwHas }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ kwRows }}" as="k" hint-placeholder-count="4">
+            <div data-kw-row="1" style="display:flex;flex-direction:column;gap:10px;background:#FFFFFF;border-radius:20px;padding:14px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="flex:1;min-width:0;font-size:15px;font-weight:700;color:#131429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ k.name }} <span style="font-size:13px;font-weight:500;color:#6B6C85">· {{ k.country }}</span></span>
+                <span translate="no" style="flex:none;font-size:11px;font-weight:700;color:#1A1FB0;background:#E9EAFD;border-radius:999px;padding:4px 8px">{{ k.lang }}</span>
+              </div>
+              <span translate="no" style="font-size:15px;font-weight:500;color:#131429;background:#F6F7FB;border-radius:14px;padding:10px 12px;line-height:1.5;overflow-wrap:anywhere">{{ k.query }}</span>
+              <div style="display:flex;gap:8px">
+                <button sc-camel-on-click="{{ k.copy }}" style="flex:1;height:40px;border-radius:14px;border:none;background:#E9EAFD;color:#1A1FB0;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer">Nusxa</button>
+                <sc-if value="{{ k.hasUrl }}" hint-placeholder-val="{{ true }}">
+                  <button sc-camel-on-click="{{ k.go }}" style="flex:1;height:40px;border-radius:14px;border:none;background:#1A1FB0;color:#FFFFFF;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer">Qidirish</button>
+                </sc-if>
+              </div>
+              <sc-if value="{{ k.copyOnly }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">Faqat ilovada: nusxalab, ilovadagi qidiruvga qo'ying.</span>
+              </sc-if>
+            </div>
+          </sc-for>
+          <sc-if value="{{ kwHasTip }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5;background:#E9EAFD;border-radius:14px;padding:10px 12px;text-wrap:pretty">{{ kwTip }}</div>
+          </sc-if>
+          <div style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5;padding:0 2px;text-wrap:pretty">Rasmingiz bo'lsa: Taobao va Pinduoduo ilovasida qidiruv yonidagi kamera belgisi — rasm bilan qidirish.</div>
+        </div>
+      </sc-if>
+      <button sc-camel-on-click="{{ kwShot }}" style="display:flex;align-items:center;gap:12px;width:100%;border:none;border-radius:20px;padding:16px;cursor:pointer;text-align:left;font-family:inherit;background:linear-gradient(155deg,#494FE9,#13189D);box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">
+        <span aria-hidden="true" style="width:40px;height:40px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#494FE9"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8.5A2.5 2.5 0 016.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0120 8.5V17a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></span>
+        <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+          <span style="font-size:15px;font-weight:700;color:#FFFFFF">Topdim — skrinshot yuklash</span>
+          <span style="font-size:13px;font-weight:500;color:#DCDDFA;line-height:1.5">Narx ko'ringan joyni — jami narxni hisoblayman.</span>
+        </span>
+      </button>
+      <button sc-camel-on-click="{{ kwAi }}" style="align-self:center;min-height:44px;background:none;border:none;padding:8px;font-family:inherit;font-size:15px;font-weight:700;color:#1A1FB0;cursor:pointer">AI bilan batafsil maslahat</button>
     </div>
   </sc-if>
 
@@ -3539,13 +3611,13 @@ const toCyr = s => {
 const RU = {
   "Havolani o'qiyapman":'Читаю ссылку', 'Sahifani ochyapman':'Открываю страницу',
   "{0} · odatda 3–15 soniya. Jami narx va uning tarkibi shu yerda chiqadi.":'{0} · обычно 3–15 секунд. Итоговая цена и её состав появятся здесь.',
-  "Havoladan narx o'qilmadi":'Не удалось прочитать цену по ссылке', "Narx ko'ringan sahifani skrinshot qiling":'Сделайте скриншот страницы с ценой', 'Rasmdan tovarni taniy olmadim':'Не удалось узнать товар на фото', 'Skrinshotdagi tovarlar ({0})':'Товары на скриншоте ({0})', '{0} ta tovar':'Товаров: {0}', "Taxminiy og'irlik {0} kg ({1} ta tovar bo'yicha)":'Примерный вес {0} кг (по {1} товарам)', "Hammasi bitta jo'natmada hisoblandi: bojsiz me'yor va kuryer narxi umumiy summa va og'irlik bo'yicha.":'Всё посчитано как одна посылка: беспошлинный лимит и доставка — по общей сумме и весу.', 'Boshqa rasm yuklash':'Загрузить другое фото', 'Rasmdagi tovarni taniyapman':'Узнаю товар на фото', 'Tovarni taniyapman':'Узнаю товар', "Do'konlardan qidirishga o'tyapman":'Перехожу к поиску в магазинах', "Odatda 3–6 soniya. Keyin AI mos do'konlardan qidiradi.":'Обычно 3–6 секунд. Затем ИИ поищет в подходящих магазинах.', "Tovar aniq ko'rinadigan rasm yuklang yoki nomini yozib qidiring.":'Загрузите фото, где товар хорошо виден, или найдите по названию.', 'Rasm bilan qidirish':'Поиск по фото', "Tovar fotosini yuklang — AI taniydi va do'konlardan topadi.":'Загрузите фото товара — ИИ узнает его и найдёт в магазинах.', 'Tovar rasmini tanlash':'Выбрать фото товара', "Boshqa do'kondan topish":'Найти в другом магазине', 'Rasmdagi tovar: {0}':'Товар на фото: {0}', "Pochtam AI'dan so'rash":'Спросить Pochtam AI',
+  "Havoladan narx o'qilmadi":'Не удалось прочитать цену по ссылке', "Narx ko'ringan sahifani skrinshot qiling":'Сделайте скриншот страницы с ценой', 'Rasmdan tovarni taniy olmadim':'Не удалось узнать товар на фото', 'Skrinshotdagi tovarlar ({0})':'Товары на скриншоте ({0})', '{0} ta tovar':'Товаров: {0}', "Taxminiy og'irlik {0} kg ({1} ta tovar bo'yicha)":'Примерный вес {0} кг (по {1} товарам)', "Hammasi bitta jo'natmada hisoblandi: bojsiz me'yor va kuryer narxi umumiy summa va og'irlik bo'yicha.":'Всё посчитано как одна посылка: беспошлинный лимит и доставка — по общей сумме и весу.', 'Boshqa rasm yuklash':'Загрузить другое фото', 'Rasmdagi tovarni taniyapman':'Узнаю товар на фото', 'Tovarni taniyapman':'Узнаю товар', "Do'konlardan qidirishga o'tyapman":'Перехожу к поиску в магазинах', "Odatda 3–6 soniya. Keyin AI mos do'konlardan qidiradi.":'Обычно 3–6 секунд. Затем ИИ поищет в подходящих магазинах.', "Tovar aniq ko'rinadigan rasm yuklang yoki nomini yozib qidiring.":'Загрузите фото, где товар хорошо виден, или найдите по названию.', 'Rasm bilan qidirish':'Поиск по фото', "Tovar fotosini yuklang — AI taniydi va do'konlardan topadi.":'Загрузите фото товара — ИИ узнает его и найдёт в магазинах.', 'Tovar rasmini tanlash':'Выбрать фото товара', "Boshqa do'kondan topish":'Найти в другом магазине', 'Rasmdagi tovar: {0}':'Товар на фото: {0}', "Pochtam AI'dan so'rash":'Спросить Pochtam AI', 'Menga':'Во сколько', 'qanchaga tushadi?':'мне обойдётся?', 'Skrinshot yuklang':'Загрузите скриншот', "Kuryer, boj va jami narx — bir necha soniyada.":'Курьер, пошлина и итог — за несколько секунд.', 'Skrinshot qanday olinadi':'Как сделать скриншот', "Do'kon ilovasida tovarni yoki savatni oching.":'Откройте товар или корзину в приложении магазина.', "Narx ko'ringan joyni skrinshot qiling: iPhone — yon tugma + ovozni oshirish, Android — quvvat + ovozni pasaytirish.":'Сделайте скриншот там, где видна цена: iPhone — боковая кнопка + громкость вверх, Android — питание + громкость вниз.', "Shu yerga yuklang — bir nechta tovar bo'lsa ham jami narxni hisoblayman.":'Загрузите сюда — посчитаю итог, даже если товаров несколько.', 'Tovar qidiryapsizmi?':'Ищете товар?', "Nomini yozing — har do'kon tilida tayyor qidiruv so'zini beraman.":'Напишите название — дам готовый поисковый запрос на языке каждого магазина.', 'Masalan: termos 1 litr':'Например: термос 1 литр', "Do'kon, kuryer yoki tovar nomi":'Магазин, курьер или товар', "Rasmi bo'lsa — maydondagi kamera belgisi. Savol bersangiz (\"…?\") — Pochtam AI javob beradi.":'Есть фото — значок камеры в поле. Зададите вопрос («…?») — ответит Pochtam AI.', "Qidiruv so'zlari":'Поисковые запросы', "Har do'kon o'z tilida yaxshiroq topadi. «Qidirish» — do'kon sahifasi, «Nusxa» — ilovadagi qidiruvga qo'ying.":'Каждый магазин лучше ищет на своём языке. «Искать» — страница магазина, «Копия» — вставьте в поиск приложения.', 'Kimga':'Для кого', 'Qanday':'Какой', 'Erkak':'Мужчине', 'Ayol':'Женщине', 'Bola':'Ребёнку', 'Original':'Оригинал', 'Arzonroq':'Дешевле', "Har do'kon tilida so'z tayyorlanmoqda":'Готовлю запросы на языке каждого магазина', 'Nusxa':'Копия', 'Qidirish':'Искать', "Faqat ilovada: nusxalab, ilovadagi qidiruvga qo'ying.":'Только в приложении: скопируйте и вставьте в поиск.', "Rasmingiz bo'lsa: Taobao va Pinduoduo ilovasida qidiruv yonidagi kamera belgisi — rasm bilan qidirish.":'Есть фото: в приложениях Taobao и Pinduoduo значок камеры рядом с поиском — поиск по фото.', 'Topdim — skrinshot yuklash':'Нашёл — загрузить скриншот', "Narx ko'ringan joyni — jami narxni hisoblayman.":'Там, где видна цена — посчитаю итог.', 'AI bilan batafsil maslahat':'Подробный совет от ИИ', "Qidiruv so'zi":'Поисковый запрос', "Bugungi AI so'rovlari tugadi — ertaga qayta urinib ko'ring.":'Запросы к ИИ на сегодня закончились — попробуйте завтра.', "AI hozir o'chiq — do'kon ro'yxatidan qidiring.":'ИИ сейчас выключен — ищите по списку магазинов.', "So'zlarni olib bo'lmadi — internetni tekshirib, qayta urinib ko'ring.":'Не удалось получить запросы — проверьте интернет и повторите.',
   "Havolani o'qimaymiz: ko'p do'konlar narxni robotlardan yashiradi. Do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang yoki narxni o'zingiz yozing — qolganini ilova hisoblaydi.":'Ссылки мы не читаем: многие магазины скрывают цену от роботов. Сделайте скриншот места с ценой в приложении магазина или введите цену сами — остальное посчитает приложение.',
   "Maslahat: do'kon ilovasidagi «Ulashish» matnini butunligicha tashlang — unda narx bo'lsa, o'zi o'qiladi.":'Совет: вставьте текст из кнопки «Поделиться» в приложении магазина целиком — если в нём есть цена, она прочитается сама.',
   "«{0}» — nom va do'kon topildi, faqat narx yetishmayapti.":'«{0}» — название и магазин найдены, не хватает только цены.',
   "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. Narx do'kon sahifasidan o'qildi, hisob ilovaniki.":'Расчёт примерный — итоговую сумму определят таможня и курьер. Цена прочитана со страницы магазина, расчёт — приложения.',
   'Sahifani ochish':'Открыть страницу',
-  'Qayerdan':'Откуда', 'Arzonroq':'Дешевле', 'Tezroq':'Быстрее',
+  'Qayerdan':'Откуда', 'Tezroq':'Быстрее',
   "{0} kg · {1}: kuryer saytidagi tarif bo'yicha taxminiy narx.":'{0} кг · {1}: примерная цена по тарифу на сайте курьера.',
   "Davlatni tanlang — narx og'irlik bo'yicha hisoblanadi.":'Выберите страну — цена рассчитается по весу.',
   "Rasmni o'qiyapman":'Читаю изображение', 'Narx va valyutani topyapman':'Ищу цену и валюту',
@@ -3900,7 +3972,7 @@ const RU = {
   'KURYER':'КУРЬЕР', /* --- Chuqur ekranlar: qidiruv, kuzatuv, do'kon va kuryer papkalari ---
      Audit shuni ko'rsatdi: bu ekranlar ruscha rejimda o'zbekcha qolib
      ketgan edi, chunki smoke test faqat beshta bo'limni tekshirardi. */
-  'Qidiruv':'Поиск', 'Nusxa':'Копия', 'universal':'универсальный', 'bo\'lim':'разд.',
+  'Qidiruv':'Поиск', 'universal':'универсальный', 'bo\'lim':'разд.',
   "Hech narsa topilmadi. Do'kon nomi, kuryer nomi yoki kategoriya bilan urinib ko'ring.":'Ничего не найдено. Попробуйте название магазина, курьера или категорию.',
   "Holatni o'zingiz belgilaysiz. Hamkor kuryerlarda holat o'zi yangilanadi — xarid kartasida «Kuryer tizimidan» deb yoziladi. Qolganlarida rasmiy holatni kuryer sayti yoki botida ko'ring.":'Статус отмечаете вы сами. У курьеров-партнёров он обновляется сам — в карточке покупки написано «Из системы курьера». У остальных смотрите официальный статус на сайте или в боте курьера.',
   "Rejasiz jo'natma raqamini shu yerda saqlab, quyidagi kuryer saytiga qo'ying.":'Сохраните здесь номер отправления без плана и вставьте его на сайте курьера ниже.',
@@ -4074,8 +4146,8 @@ const RU = {
   'taxminiy kurs':'примерный курс', 'mahsulot':'товар',
   'Pochtam AI':'Pochtam AI',
   'Qayerdan topaman?':'Где найти?', "Nimani qidirayotganingizni yozing — qaysi do'konda borligini, qanday topish va skrinshot qilishni aytaman. Boj, kuryer, taqiq bo'yicha savol ham mumkin.":'Напишите, что ищете — скажу, в каком магазине есть, как найти и как сделать скриншот. Вопросы о пошлине, курьере, запретах тоже можно.', "Do'kon, davlat, kuryer, boj va jami narx bir necha soniyada.":'Магазин, страна, курьер, пошлина и итоговая цена — через несколько секунд.', 'Eng arzon kuryer':'Самый дешёвый курьер', 'Tezroq:':'Быстрее:', 'Boshqa kuryerlar':'Другие курьеры', 'Qanday buyurtma qilaman?':'Как заказать?', 'Vaznni aniqlashtirish':'Уточнить вес', "Rejaga qo'shish":'В план', "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. AI faqat rasmni o'qidi, hisob ilovaniki.":'Расчёт примерный — итоговую сумму определяют таможня и курьер. ИИ только прочитал картинку, расчёт — приложения.', "Do'konda mahsulot sahifasini oching.":'Откройте страницу товара в магазине.', "Narx, nom va (bo'lsa) og'irlik ko'rinadigan joyni skrinshot qiling.":'Сделайте скриншот там, где видны цена, название и (если есть) вес.', "Qayta yuklang — qolganini o'zim qilaman.":'Загрузите снова — остальное сделаю сам.', 'Qayta yuklash':'Загрузить снова', "Qo'lda hisoblash":'Посчитать вручную', 'Qayta urinish':'Попробовать снова', "Kategoriya bo'yicha eslatma":'Заметка по категории', 'Narxga ishonch past':'Уверенность в цене низкая', "Skrinshotda narx aniq ko'rinmagan — kalkulyatorda tekshiring.":'На скриншоте цена видна нечётко — проверьте в калькуляторе.', "Og'irlik {0} kg (sahifadan)":'Вес {0} кг (со страницы)', "Taxminiy og'irlik {0} kg ({1})":'Примерный вес {0} кг ({1})', "Do'kon aniqlanmadi":'Магазин не определён', 'taxmin':'предположительно', "do'kon":'магазин', 'Men {0} ({1}) dan \"{2}\" ({3}) buyurtma qilmoqchiman{4}. Qanday buyurtma qilaman — qadam-baqadam?':'Хочу заказать \"{2}\" ({3}) из {0} ({1}){4}. Как заказать — по шагам?',
-  "Quti bilan kargo og'irligi oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi.":'С коробкой вес для доставки растёт — многие курьеры предлагают отправку без коробки.', "Litiy batareya va powerbank avia bilan yuborilmaydi; telefon O'zbekistonda IMEI ro'yxatidan o'tkaziladi.":'Литиевые батареи и повербанки авиа не отправляются; телефон в Узбекистане регистрируется по IMEI.', "Aerozol va spirtli atirlar avia jo'natmada cheklanadi — kuryerning ro'yxatini tekshiring.":'Аэрозоли и спиртовые духи ограничены в авиаотправке — проверьте список курьера.', "Qanaqasi?":'Какой именно?', 'Byudjet':'Бюджет', "Farqi yo'q":'Не важно', 'gacha':'до', "Do'konlarni ko'rsat":'Показать магазины', '{0} qidiryapman':'Ищу {0}', "Qaysi do'kondan topaman?":'В каком магазине это найти?', "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi shu davlatdan ham yuboradi.":'Под ваш выбор подходит {0} магазинов, последние {1} отправляют и из этой страны.', "Qaysi davlatdan olib kelamiz":'Из какой страны везём', 'Yevropa omborlari':'Европейские склады', 'Texnika va kosmetika':'Техника и косметика', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', 'Mahsulot':'Товар', 'Mahsulot nomi':'Название товара', "Topdim — qanchaga tushadi?":'Нашёл — во сколько обойдётся?', 'Ovoz bilan aytish':'Сказать голосом', "Tinglashni to'xtatish":'Остановить запись', "Shu yerdan boshlang":'Начните отсюда', 'Kuryer':'Курьер', "{0} dan olib keladigan kuryer yo'q":'Нет курьера, который везёт из {0}', "Jami narxda faqat tovar narxi va boj hisoblandi. Boshqa davlatdan olib kelish yo'lini ko'ring.":'В итоговую цену вошли только стоимость товара и пошлина. Посмотрите доставку из другой страны.', "Narxini kuryerdan so'rash kerak: {0}":'Цену нужно уточнить у курьера: {0}', "Bu yo'nalishda kuryerlar bor, lekin narxi jadvalda yo'q — kuryerdan so'rab, kargoni qo'shing.":'На этом направлении курьеры есть, но цены в таблице нет — уточните у курьера и добавьте доставку.', "{0} dan olib keladigan kuryer yo'q — kargo qatorisiz hisoblandi.":'Нет курьера из {0} — расчёт без строки доставки.', "Bu yo'nalishda kuryer bor, lekin narxi jadvalda yo'q ({0}) — narxini so'rab, kargoni qo'shing.":'На этом направлении курьер есть, но цены в таблице нет ({0}) — уточните и добавьте доставку.', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', "Skrinshot yuklang: kuryer, boj va jami narx.":'Загрузите скриншот: курьер, пошлина и итоговая цена.', "Narxni o'zim yozaman":'Введу цену сам', "Narx, davlat va vazn — kalkulyatorda.":'Цена, страна и вес — в калькуляторе.', 'Oxirgi hisob':'Последний расчёт', "Nima qidirayotganingizni yozing yoki tovar fotosini yuklang; topgach, narx ko'ringan sahifani skrinshot qiling — jami narxni o'zim chiqaraman.":'Напишите, что ищете, или загрузите фото товара; когда найдёте — сделайте скриншот страницы с ценой, итоговую цену посчитаю сам.', "Narx, davlat va vaznni o'zingiz yozsangiz ham jami narx chiqadi.":'Итоговая цена появится, даже если ввести цену, страну и вес вручную.', 'taxminan {0}-{1}gacha':'примерно до {0} {1}', 'yanvar':'января', 'fevral':'февраля', 'mart':'марта', 'aprel':'апреля', 'iyun':'июня', 'iyul':'июля', 'avgust':'августа', 'sentabr':'сентября', 'oktabr':'октября', 'noyabr':'ноября', 'dekabr':'декабря', "{0} qo'llanmasi — qadam-baqadam":'Инструкция {0} — по шагам', "Pochtam AI qadam-baqadam tushuntiradi":'Pochtam AI объяснит по шагам', "Topilgan sahifalar · bugun":'Найденные страницы · сегодня', 'Ochish':'Открыть', "Narx va mavjudlik sahifada o'zgarishi mumkin — ochib tekshiring, keyin skrinshot qiling.":'Цена и наличие на странице могут измениться — откройте и проверьте, затем сделайте скриншот.', 'may':'мая', 'Rasm biriktirish':'Прикрепить фото', 'Yuborish':'Отправить', "Bu mahsulot menga qanchaga tushadi?":'Во сколько мне обойдётся этот товар?',
-  'Tushundim:':'Понял:', 'original':'оригинал', '{0} gacha':'до {0}', 'Qidirish':'Искать', 'Yana savol':'Ещё вопрос', "Savol yoki tovar so'rovi":'Вопрос или запрос товара',
+  "Quti bilan kargo og'irligi oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi.":'С коробкой вес для доставки растёт — многие курьеры предлагают отправку без коробки.', "Litiy batareya va powerbank avia bilan yuborilmaydi; telefon O'zbekistonda IMEI ro'yxatidan o'tkaziladi.":'Литиевые батареи и повербанки авиа не отправляются; телефон в Узбекистане регистрируется по IMEI.', "Aerozol va spirtli atirlar avia jo'natmada cheklanadi — kuryerning ro'yxatini tekshiring.":'Аэрозоли и спиртовые духи ограничены в авиаотправке — проверьте список курьера.', "Qanaqasi?":'Какой именно?', 'Byudjet':'Бюджет', "Farqi yo'q":'Не важно', 'gacha':'до', "Do'konlarni ko'rsat":'Показать магазины', '{0} qidiryapman':'Ищу {0}', "Qaysi do'kondan topaman?":'В каком магазине это найти?', "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi shu davlatdan ham yuboradi.":'Под ваш выбор подходит {0} магазинов, последние {1} отправляют и из этой страны.', "Qaysi davlatdan olib kelamiz":'Из какой страны везём', 'Yevropa omborlari':'Европейские склады', 'Texnika va kosmetika':'Техника и косметика', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', 'Mahsulot':'Товар', 'Mahsulot nomi':'Название товара', "Topdim — qanchaga tushadi?":'Нашёл — во сколько обойдётся?', 'Ovoz bilan aytish':'Сказать голосом', "Tinglashni to'xtatish":'Остановить запись', "Shu yerdan boshlang":'Начните отсюда', 'Kuryer':'Курьер', "{0} dan olib keladigan kuryer yo'q":'Нет курьера, который везёт из {0}', "Jami narxda faqat tovar narxi va boj hisoblandi. Boshqa davlatdan olib kelish yo'lini ko'ring.":'В итоговую цену вошли только стоимость товара и пошлина. Посмотрите доставку из другой страны.', "Narxini kuryerdan so'rash kerak: {0}":'Цену нужно уточнить у курьера: {0}', "Bu yo'nalishda kuryerlar bor, lekin narxi jadvalda yo'q — kuryerdan so'rab, kargoni qo'shing.":'На этом направлении курьеры есть, но цены в таблице нет — уточните у курьера и добавьте доставку.', "{0} dan olib keladigan kuryer yo'q — kargo qatorisiz hisoblandi.":'Нет курьера из {0} — расчёт без строки доставки.', "Bu yo'nalishda kuryer bor, lekin narxi jadvalda yo'q ({0}) — narxini so'rab, kargoni qo'shing.":'На этом направлении курьер есть, но цены в таблице нет ({0}) — уточните и добавьте доставку.', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', "Skrinshot yuklang: kuryer, boj va jami narx.":'Загрузите скриншот: курьер, пошлина и итоговая цена.', "Narxni o'zim yozaman":'Введу цену сам', "Narx, davlat va vazn — kalkulyatorda.":'Цена, страна и вес — в калькуляторе.', 'Oxirgi hisob':'Последний расчёт', "Do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang — kuryer, boj va jami narxni o'zim chiqaraman. Bir nechta tovar bo'lsa ham.":'Сделайте скриншот там, где в приложении магазина видна цена, и загрузите — курьер, пошлину и итог посчитаю сам. Даже если товаров несколько.', "Narx, davlat va vaznni o'zingiz yozsangiz ham jami narx chiqadi.":'Итоговая цена появится, даже если ввести цену, страну и вес вручную.', 'taxminan {0}-{1}gacha':'примерно до {0} {1}', 'yanvar':'января', 'fevral':'февраля', 'mart':'марта', 'aprel':'апреля', 'iyun':'июня', 'iyul':'июля', 'avgust':'августа', 'sentabr':'сентября', 'oktabr':'октября', 'noyabr':'ноября', 'dekabr':'декабря', "{0} qo'llanmasi — qadam-baqadam":'Инструкция {0} — по шагам', "Pochtam AI qadam-baqadam tushuntiradi":'Pochtam AI объяснит по шагам', "Topilgan sahifalar · bugun":'Найденные страницы · сегодня', 'Ochish':'Открыть', "Narx va mavjudlik sahifada o'zgarishi mumkin — ochib tekshiring, keyin skrinshot qiling.":'Цена и наличие на странице могут измениться — откройте и проверьте, затем сделайте скриншот.', 'may':'мая', 'Rasm biriktirish':'Прикрепить фото', 'Yuborish':'Отправить', "Bu mahsulot menga qanchaga tushadi?":'Во сколько мне обойдётся этот товар?',
+  'Tushundim:':'Понял:', 'original':'оригинал', '{0} gacha':'до {0}', 'Yana savol':'Ещё вопрос', "Savol yoki tovar so'rovi":'Вопрос или запрос товара',
   'Bugungi savollar chegarasi tugadi':'Лимит вопросов на сегодня исчерпан', "Ertaga davom etamiz. Hozircha kalkulyator va do'konlar ro'yxati ishlaydi.":'Продолжим завтра. Пока работают калькулятор и список магазинов.',
   'Hozir javob bera olmadim':'Сейчас не смог ответить', "Kalkulyator va do'konlar ro'yxati ishlayveradi.":'Калькулятор и список магазинов работают.',
   'Savolingiz':'Ваш вопрос', 'Yuborish':'Отправить', 'Yangi suhbat':'Новый диалог',
@@ -5646,7 +5718,7 @@ class Component extends DCLogic {
   tourSteps() {
     const L = k => tr(this.state.lang, k);
     const all = [
-      { k: 'camera', t: 'Shu yerdan boshlang', x: "Nima qidirayotganingizni yozing yoki tovar fotosini yuklang; topgach, narx ko'ringan sahifani skrinshot qiling — jami narxni o'zim chiqaraman.", need: () => !!this.state.aiOn },
+      { k: 'camera', t: 'Shu yerdan boshlang', x: "Do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang — kuryer, boj va jami narxni o'zim chiqaraman. Bir nechta tovar bo'lsa ham.", need: () => !!this.state.aiOn },
       { k: 'find', t: 'Narxni o\'zim yozaman', x: "Narx, davlat va vaznni o'zingiz yozsangiz ham jami narx chiqadi.", need: () => !this.state.aiOn },
       { k: 'nav', t: "Uch bo'lim", x: "Boshlash — shu savol. Xaridlarim — hisob va jo'natmalaringiz. Ma'lumotnoma — do'konlar, kuryerlar, bojxona va qo'llanmalar." }
     ];
@@ -6032,6 +6104,69 @@ class Component extends DCLogic {
     this._findId = card.id;
     this.setState(x => ({ plans: [card, ...x.plans.filter(p => p.id !== card.id)] }));
   }
+  kwOpen(name, hint) {
+    const q = String(name || '').trim().slice(0, 120);
+    if (!q) return;
+    this.addFind(q);
+    const h = String(hint || '').trim().slice(0, 80);
+    this.setState({ kw: { q, hint: h && h.toLowerCase() !== q.toLowerCase() ? h : '', who: '', style: '', busy: true, err: '', data: null } });
+    if (this.cur() !== 'kw') this.push('kw');
+    this.kwFetch();
+  }
+  kwFetch(patch) {
+    const k = { ...(this.state.kw || {}), ...(patch || {}), busy: true, err: '' };
+    if (!k.q) return;
+    const seq = (this._kwSeq = (this._kwSeq || 0) + 1);
+    this.setState({ kw: k });
+    if (!METRICS_URL) { this.setState({ kw: { ...k, busy: false, err: 'no_key' } }); return; }
+    metrics.hit('ai_question', 'kw');
+    const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = setTimeout(() => { if (ctrl) ctrl.abort(); }, 30000);
+    fetch(METRICS_URL + 'ai', { method: 'POST', headers: { 'content-type': 'text/plain;charset=UTF-8' },
+      body: JSON.stringify({ q: k.hint ? k.q + ' (' + k.hint + ')' : k.q, kw: true, who: k.who, style: k.style, lang: this.state.lang }), signal: ctrl ? ctrl.signal : undefined })
+      .then(async r => {
+        const j = await r.json().catch(() => null);
+        if (!r.ok || !j || !j.kw || !Array.isArray(j.kw.stores)) { const e = new Error('kw'); e.code = (j && j.code) || (r.status === 429 ? 'limit' : 'upstream'); throw e; }
+        return j.kw;
+      })
+      .then(data => { if (seq === this._kwSeq) this.setState(x => ({ kw: { ...x.kw, busy: false, err: '', data } })); })
+      .catch(e => { if (seq === this._kwSeq) this.setState(x => ({ kw: { ...x.kw, busy: false, err: (e && e.code) || 'net' } })); })
+      .then(() => clearTimeout(timer));
+  }
+  kwVm(st) {
+    if (this.cur() !== 'kw') return { sKw: false };
+    const lang = st.lang, L = k => tr(lang, k);
+    const k = st.kw || { q: '' }, d = k.data;
+    const chip = (val, cur, t, key) => {
+      const on = cur === val;
+      return { t: L(t), on: on ? 'true' : 'false', bg: on ? PRI : '#FFFFFF', fg: on ? '#FFFFFF' : '#4E4F6B', bd: on ? PRI : '#DCDDFA',
+        pick: () => { if (!on && !k.busy) { metrics.hit('quick', 'kw:' + key + ':' + (val || '-')); this.kwFetch({ [key]: val }); } } };
+    };
+    const LANG = { zh: '中文', tr: 'TR', en: 'EN' };
+    const rows = d ? d.stores.map(s => ({
+      name: s.name, country: tr(lang, s.country || ''), lang: LANG[s.lang] || 'EN', query: s.query,
+      hasUrl: !!s.url, copyOnly: !s.url,
+      go: () => { metrics.hit('kw_go', s.id); this.addFind(d.name || k.q); openTg(s.url); },
+      copy: () => { metrics.hit('kw_copy', s.id); this.copyText(s.query, L("Qidiruv so'zi")); }
+    })) : [];
+    const errText = { limit: "Bugungi AI so'rovlari tugadi — ertaga qayta urinib ko'ring.", no_key: "AI hozir o'chiq — do'kon ro'yxatidan qidiring." }[k.err] || "So'zlarni olib bo'lmadi — internetni tekshirib, qayta urinib ko'ring.";
+    return {
+      sKw: true, kwName: d ? d.name : k.q, kwBusy: !!k.busy, kwErr: !k.busy && !!k.err, kwErrText: L(errText),
+      kwHas: !k.busy && !k.err && rows.length > 0, kwRows: rows,
+      kwWho: [['', "Farqi yo'q"], ['erkak', 'Erkak'], ['ayol', 'Ayol'], ['bola', 'Bola']].map(([v, t]) => chip(v, k.who || '', t, 'who')),
+      kwStyle: [['', "Farqi yo'q"], ['original', 'Original'], ['arzon', 'Arzonroq']].map(([v, t]) => chip(v, k.style || '', t, 'style')),
+      kwHasTip: !!(d && d.tip), kwTip: d ? d.tip : '',
+      kwRetry: () => this.kwFetch(),
+      kwShot: () => { metrics.hit('quick', 'kw:shot'); this.shotPick(); },
+      kwAi: () => {
+        metrics.hit('quick', 'kw:ai');
+        const nm = (d && d.name) || k.q;
+        this.setState({ aiMsgs: [], aiDone: {} });
+        this.push('ai');
+        setTimeout(() => this.aiAsk(tx(lang, '{0} qidiryapman', nm) + '. ' + L("Qaysi do'kondan topaman?"), { find: true }), 0);
+      }
+    };
+  }
   buyVm(p) {
     const st = this.state, lang = st.lang, L = k => tr(lang, k);
     const si = stageOf(p), done = si >= 4;
@@ -6077,8 +6212,7 @@ class Component extends DCLogic {
       hasFindAgain: si === 0 && !!st.aiOn,
       findAgain: () => {
         this._findId = p.id; metrics.hit('quick', 'buy:find');
-        this.setState({ aiMsgs: [], aiDone: {} }); this.push('ai');
-        this.aiAsk(tx(lang, '{0} qidiryapman', p.name) + '. ' + L("Qaysi do'kondan topaman?"), { find: true });
+        this.kwOpen(p.name);
       },
       hasTrack: si >= 2 && !done, track: p.track || '', trackSet: !!p.track,
       onTrack: e => {
@@ -6346,16 +6480,12 @@ class Component extends DCLogic {
     if (this.cur() !== 'result') this.push('result');
   }
   photoFind(sh) {
-    const st = this.state, lang = st.lang;
     const nm = String(sh.name || sh.query || '').trim().slice(0, 80);
     if (!nm) return;
     metrics.hit('ai_question', 'photo');
-    this.addFind(nm);
-    this.setState({ shotRes: null, aiMsgs: [], aiDone: {} });
+    this.setState({ shotRes: null });
     if (this.cur() === 'result') this.popScreen();
-    this.push('ai');
-    const q = tx(lang, 'Rasmdagi tovar: {0}', nm) + (sh.query && sh.query !== nm ? ' (' + sh.query + ')' : '') + '. ' + tr(lang, "Qaysi do'kondan topaman?");
-    setTimeout(() => this.aiAsk(q, { find: true }), 0);
+    setTimeout(() => this.kwOpen(nm, sh.query), 0);
   }
   async takeShare() {
     let q = '';
@@ -6458,14 +6588,13 @@ class Component extends DCLogic {
       }
       if (st.aiOn && link) { metrics.hit('hero', 'link:?'); this.linkRead(urlIn(t) || (/^https?:\/\//i.test(t) ? t : 'https://' + t), t); return; }
       if (st.aiOn) {
-        this.setState({ aiMsgs: [], aiDone: {} });
-        this.push('ai');
         const plain = t.replace(/[\u2018\u2019`\u02BB\u02BC]/g, "'");
         const asks = /\?\s*$/.test(plain) || /^(qancha|qanday|qaysi|nima|necha|nega|bo'ladimi|mumkinmi|kerakmi|қанча|қандай|қайси|нима|неча|сколько|как|какой|какая|можно|что|почему|нужно)\b/i.test(plain);
-        if (asks) { metrics.hit('hero', 'ai'); this.aiAsk(t); return; }
-        metrics.hit('hero', 'name');
-        this.addFind(t);
-        this.aiAsk(tx(lang, '{0} qidiryapman', t) + '. ' + L("Qaysi do'kondan topaman?"), { find: true });
+        if (!asks) { metrics.hit('hero', 'name'); this.kwOpen(t); return; }
+        this.setState({ aiMsgs: [], aiDone: {} });
+        this.push('ai');
+        metrics.hit('hero', 'ai');
+        this.aiAsk(t);
         return;
       }
       if (link && link.store) {
@@ -6480,15 +6609,11 @@ class Component extends DCLogic {
       this.push('search');
     };
     this._heroRun = run;
-    const G = st.aiOn
-      ? ["Tovar nomini yozing yoki «Rasm bilan qidirish» bilan fotosini yuklang — AI tovarni taniydi va mos do'konlardan aniq mahsulotni topadi.",
-         "Topgach, do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang — kuryer, boj va jami summa hisoblanadi.",
-         "Narxni bilsangiz — «Narxni o'zim yozaman»: hisob AI'siz, bir zumda."]
-      : ["Do'kon, kuryer yoki tovar turini yozing — ro'yxatdan topiladi.",
-         "Do'kon havolasini tashlasangiz — o'sha do'kon sahifasi ochiladi.",
-         "Narxni bilsangiz — \"Narxni o'zim yozaman\": kuryer, boj va jami summa."];
+    const G = ["Do'kon ilovasida tovarni yoki savatni oching.",
+      "Narx ko'ringan joyni skrinshot qiling: iPhone — yon tugma + ovozni oshirish, Android — quvvat + ovozni pasaytirish.",
+      "Shu yerga yuklang — bir nechta tovar bo'lsa ham jami narxni hisoblayman."];
     return {
-      whText: w.text, whPh: L('Tovar nomini yozing yoki rasmini yuklang'),
+      whText: w.text, whPh: L(st.aiOn ? 'Masalan: termos 1 litr' : "Do'kon, kuryer yoki tovar nomi"),
       onWhText: e => set({ text: String(e.target.value || '').slice(0, 1500) }),
       whGuide: G.map((t, i) => ({ n: String(i + 1), t: L(t) })),
       whPhoto: () => { metrics.hit('quick', 'where:photo'); this.photoPick(); },
@@ -6829,7 +6954,7 @@ class Component extends DCLogic {
       return f.indexOf('from:') === 0
         ? (COURIER_ORIGINS.find(d => d[0] === f.slice(5)) || null) : null;
     })();
-    const titles = { ref:"Ma'lumotnoma", landed:'Jami narx', result:'Jami narx', mine:'Xaridlarim', ai:'Pochtam AI', plan:'Xarid', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? tx(st.lang, '{0} yo\'nalishi', tr(st.lang, courierFolderDef[1])) : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_PAGES[SEC_PAGE[st.customsSec] || 0], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Jo\'natmani kuzatish', search:'Qidiruv', wizard:"Do'kon va kuryer tanlash", settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
+    const titles = { ref:"Ma'lumotnoma", landed:'Jami narx', result:'Jami narx', mine:'Xaridlarim', ai:'Pochtam AI', plan:'Xarid', stores:'Do\'konlar', storefolder: folderDef ? folderDef[1] : 'Barcha do\'konlar', store:store.name, couriers:'Kuryerlar', courierfolder: courierFolderDef ? tx(st.lang, '{0} yo\'nalishi', tr(st.lang, courierFolderDef[1])) : 'Barcha kuryerlar', courier:courier.name, customs:'Bojxona', csec: CUSTOMS_PAGES[SEC_PAGE[st.customsSec] || 0], guides:'Qo\'llanmalar', guide:'Qo\'llanma', fullguide: fullG.title, shipments:'Jo\'natmani kuzatish', search:'Qidiruv', kw:"Qidiruv so'zlari", wizard:"Do'kon va kuryer tanlash", settings:'Sozlamalar', compare:'Taqqoslash', services:'Xizmatlar' };
     const showSortBtn = cur === 'courierfolder' ||
       (cur === 'couriers' && (st.courierCountries.length > 0 || !!st.courierMode));
 
@@ -6999,6 +7124,7 @@ class Component extends DCLogic {
       sLanded: cur === 'landed',
       sResult: cur === 'result',
       ...this.whereVm(st),
+      ...this.kwVm(st),
       ...this.resultVm(st),
       sMine: cur === 'mine',
       sAi: cur === 'ai',
