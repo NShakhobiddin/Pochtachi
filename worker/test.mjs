@@ -348,6 +348,33 @@ const nm3 = normalizeShot({ name: '', price: 0, items: [{ name: 'Kurtka', price:
 check('normalizeShot: bitta tovar faqat items da — oddiy natija', nm3.found && !nm3.multi && nm3.name === 'Kurtka' && nm3.price === 45 && nm3.currency === 'EUR');
 check('shot: sxemada items (nom, narx, valyuta, miqdor, kategoriya, vazn)', shotReq.output_config.format.schema.required.includes('items') && shotReq.output_config.format.schema.properties.items.items.required.join() === 'name,price,currency,qty,category,weightKg');
 check('normalizeShot: narx bo\'lsa kind price; nomsiz product — other', normalizeShot({ kind: 'product', price: 10, currency: 'USD' }, 12650).kind === 'price' && normalizeShot({ kind: 'product', name: '' }, 12650).kind === 'other');
+/* --- "Qidiruv so'zlari" (kw): tovar nomidan har do'kon tilida so'z --- */
+{
+  const { kwStores } = await import('./src/ai.js');
+  const pk = parseAiBody(JSON.stringify({ q: 'suv idishi', kw: true, who: 'ayol', style: 'arzon', lang: 'uz' }));
+  const pk2 = parseAiBody(JSON.stringify({ q: 'suv idishi', kw: 'ha', who: 'xxx', style: 'yoq' }));
+  check('parseAiBody: kw true — who/style ro\'yxatdan; boshqa qiymat — kw yo\'q', pk.kw === true && pk.who === 'ayol' && pk.style === 'arzon' && pk2.kw === false && pk2.who === '' && pk2.style === '', JSON.stringify([pk.kw, pk.who, pk.style, pk2.kw]));
+  const words = { en: 'water bottle', zh: '水杯', tr: 'su şişesi' };
+  const ks = kwStores('universal', '', words);
+  const tb = ks.find(s => s.id === 'taobao'), pdd = ks.find(s => s.id === 'pinduoduo'), am = ks.find(s => s.id === 'amazon');
+  check('kwStores: Taobao xitoycha so\'z va qidiruv havolasi; Amazon inglizcha', tb && tb.lang === 'zh' && tb.query === '水杯' && tb.url === 'https://s.taobao.com/search?q=' + encodeURIComponent('水杯') && am && am.query === 'water bottle' && /amazon\.com\/s\?k=water\+bottle/.test(am.url), JSON.stringify([tb, am]));
+  check('kwStores: Pinduoduo — havolasiz, faqat nusxa', pdd && pdd.copyOnly === true && pdd.url === '' && pdd.query === '水杯', JSON.stringify(pdd));
+  check('kwStores: universal — Trendyol turkcha, ko\'pi bilan 6', ks.length <= 6 && ks.find(s => s.id === 'trendyol').query === 'su şişesi', ks.map(s => s.id).join());
+  const ke = kwStores('elektronika', 'arzon', { en: 'wireless earbuds', zh: '蓝牙耳机', tr: 'kablosuz kulaklık' });
+  check('kwStores: elektronika — Trendyol/Shein yo\'q', !ke.some(s => ['trendyol', 'shein'].includes(s.id)) && ke.length > 2, ke.map(s => s.id).join());
+  const ko = kwStores('poyabzal', 'original', { en: 'Nike Air Force 1', zh: 'Nike Air Force 1 正品', tr: 'Nike Air Force 1' });
+  check('kwStores: original poyabzal — brend do\'konlari, Poizon (nusxa) ham', ko.length > 2 && ko.some(s => s.id === 'poizon' && s.copyOnly) && !ko.slice(0, 2).some(s => ['pinduoduo', 'aliexpress'].includes(s.id)), ko.map(s => s.id).join());
+  let kwReq = null;
+  const fakeKw = async (u, i) => { kwReq = JSON.parse(i.body); return new Response(JSON.stringify({ model: 'claude-haiku-4-5', stop_reason: 'end_turn', usage: { input_tokens: 300, output_tokens: 60 },
+    content: [{ type: 'text', text: JSON.stringify({ name: 'Suv idishi', category: 'universal', en: 'water bottle 1L', zh: '水杯 1升', tr: 'su şişesi 1 litre', tip: 'Taobao\'da 销量 bo\'yicha saralang' }) }] }), { status: 200 }); };
+  const kr = await (await ask('suv idishi 1 litr', { AI_FETCH: fakeKw }, { headers: { 'cf-connecting-ip': '3.4.5.6' }, body: { kw: true, who: 'bola' } })).json();
+  check('/ai kw: arzon model, sxema, javob — so\'zlar va do\'konlar, stop kw', kwReq.model === 'claude-haiku-4-5' && kwReq.output_config.format.schema.required.join() === 'name,category,en,zh,tr,tip' && /bolalar uchun/.test(kwReq.messages[0].content)
+    && kr.stop === 'kw' && kr.text === '' && kr.kw.name === 'Suv idishi' && kr.kw.who === 'bola' && kr.kw.words.zh === '水杯 1升' && kr.kw.stores.length > 2 && kr.kw.stores.find(s => s.id === 'taobao').query === '水杯 1升' && /Taobao/.test(kr.kw.tip) && !kwReq.tools, JSON.stringify(kr).slice(0, 300));
+  const kbad = await (await ask('nimadir', { AI_FETCH: async () => claudeText('json emas') }, { headers: { 'cf-connecting-ip': '3.4.5.7' }, body: { kw: true } })).json();
+  check('/ai kw: JSON buzuq — nomi so\'rovdan, inglizcha so\'z so\'rovning o\'zi, kategoriya universal', kbad.kw.name === 'nimadir' && kbad.kw.words.en === 'nimadir' && kbad.kw.category === 'universal' && kbad.kw.stores.length > 0, JSON.stringify(kbad.kw).slice(0, 200));
+  const kerr = await ask('x', { AI_FETCH: () => new Response('{}', { status: 529 }) }, { headers: { 'cf-connecting-ip': '3.4.5.8' }, body: { kw: true } });
+  check('/ai kw: Claude yiqilsa 503', kerr.status === 503);
+}
 /* suggest_stores */
 const sg = runTool('suggest_stores', { category: 'poyabzal', original: true, budgetUsd: 100, query: 'men sneakers size 41' }, tctx);
 check('suggest_stores: original poyabzal $100 — brend poyabzal do\'konlari birinchi, havola bilan', sg.found && sg.stores.length === 5 && sg.stores.slice(0, 3).every(x => x.cat === 'poyabzal' && /Yuqori/.test(x.original)) && sg.stores.every(x => /^https:\/\//.test(x.searchUrl)) && sg.stores.some(x => /men\+sneakers/.test(x.searchUrl)), sg.stores.map(x => x.id).join(','));
@@ -578,6 +605,13 @@ check('parseAiBody: savol + url — url e\'tiborsiz', (() => { const p = parseAi
   const e1 = await (await askC('bo\'sh javob', {}, { AI_FETCH: fakeEmpty })).json();
   const e2 = await (await askC('bo\'sh javob', {}, { AI_FETCH: fakeEmpty })).json();
   check('javob keshi: bo\'sh javob (zaxira matn) saqlanmaydi — keyingisi AI dan', e1.fallback === true && !e2.usage.cached && /^Javob \d+$/.test(e2.text), JSON.stringify([e1.text, e2.text]));
+  const kwF = async () => { n++; return new Response(JSON.stringify({ model: 'claude-haiku-4-5', stop_reason: 'end_turn', usage: { input_tokens: 300, output_tokens: 60 },
+    content: [{ type: 'text', text: JSON.stringify({ name: 'Choynak', category: 'universal', en: 'electric kettle', zh: '电热水壶', tr: 'su ısıtıcı', tip: '' }) }] }), { status: 200 }); };
+  const nk = n;
+  const kc1 = await (await askC('choynak', { kw: true }, { AI_FETCH: kwF })).json();
+  const kc2 = await (await askC('choynak', { kw: true }, { AI_FETCH: kwF })).json();
+  const kc3 = await (await askC('choynak', { kw: true, style: 'original' }, { AI_FETCH: kwF })).json();
+  check('javob keshi: kw — bir xil so\'z keshdan, boshqa tanlov (original) — yangi', n === nk + 2 && kc1.kw && kc2.kw && kc2.usage.cached === true && kc2.kw.words.zh === '电热水壶' && !kc3.usage.cached && kc3.kw.style === 'original', 'n=' + (n - nk));
   const n1 = n;
   await askC('qidiruvli savol', { find: true }, { AI_DAILY_FIND_PER_IP: '1' }, '7.7.7.7');
   await askC('qidiruvli savol 2', { find: true }, { AI_DAILY_FIND_PER_IP: '1' }, '7.7.7.7');
@@ -595,7 +629,7 @@ check('parseAiBody: savol + url — url e\'tiborsiz', (() => { const p = parseAi
   const bad = await (await evalAsk('notogri', '6.6.6.7')).json();
   check('noto\'g\'ri eval paroli — oddiy so\'rov (tayyor javob)', bad.usage && bad.usage.cached === true && n === ne + 2);
   const stC = await (await cC.fetch(new Request('https://counter/stats?days=1'))).json();
-  check('hisobotda cache_hit sanaladi', stC.byName.ai.cache_hit === 3, JSON.stringify(stC.byName.ai));
+  check('hisobotda cache_hit sanaladi', stC.byName.ai.cache_hit === 4, JSON.stringify(stC.byName.ai));
   kv.set('a:eski', { day: '2020-01-01', body: { text: 'x' } });
   await cC.fetch(new Request('https://counter/purge', { method: 'DELETE' }));
   check('purge: eski kunning tayyor javoblari o\'chadi, bugungisi qoladi', !kv.has('a:eski') && [...kv.keys()].some(k => k.startsWith('a:')));

@@ -506,7 +506,12 @@ export function parseAiBody(text) {
   while (hist.length && hist[0].role !== 'user') hist.shift();
   if (hist.length && hist[hist.length - 1].role === 'user') hist.pop();
   const usdRate = num(d.usdRate);
-  return { q, shot, cart: parseCart(d.cart), lang, history: hist,
+  /* kw — "Qidiruv so'zlari": tovar nomidan har do'kon tilida so'z (arzon
+     model, vositasiz). who: erkak|ayol|bola, style: original|arzon. */
+  const kw = d.kw === true && !!q && !shot;
+  const who = ['erkak', 'ayol', 'bola'].includes(d.who) ? d.who : '';
+  const style = ['original', 'arzon'].includes(d.style) ? d.style : '';
+  return { q, shot, kw, who: kw ? who : '', style: kw ? style : '', cart: parseCart(d.cart), lang, history: hist,
     usdRate: usdRate >= 5000 && usdRate <= 50000 ? usdRate : 0, find: d.find === true, stream: d.stream === true };
 }
 
@@ -770,7 +775,7 @@ export async function answerKey(parsed, day, ver = '') {
   const q = parsed.q.toLowerCase().replace(/[‘’`ʻʼ]/g, "'").replace(/[\s]+/g, ' ').replace(/[\s?!.,;:]+$/, '').trim();
   /* ver — model va ko'rsatma: kun o'rtasida yangi Worker joylansa eski
      javoblar ishlatilmaydi. */
-  const src = JSON.stringify([day, ver, parsed.lang, parsed.find ? 1 : 0, Math.round(parsed.usdRate || 0), q, parsed.cart || null]);
+  const src = JSON.stringify([day, ver, parsed.lang, parsed.find ? 1 : 0, Math.round(parsed.usdRate || 0), q, parsed.cart || null].concat(parsed.kw ? ['kw', parsed.who, parsed.style] : []));
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(src));
   return [...new Uint8Array(buf)].slice(0, 16).map(b => b.toString(16).padStart(2, '0')).join('');
 }
@@ -795,7 +800,7 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
   if (akey) {
     let hit = null;
     try { const r = await counter.fetch('https://counter/answer/get', { method: 'POST', body: JSON.stringify({ key: akey }) }); if (r.status === 200) hit = await r.json(); } catch (e) { hit = null; }
-    if (hit && hit.text) {
+    if (hit && (hit.text || hit.kw)) {
       count('cache_hit'); count('ok');
       const body = { ...hit, usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, usd: 0, cached: true } };
       /* Oqim so'ralgan bo'lsa — oqim shaklida (bitta "done" qatori). */
@@ -813,6 +818,20 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
     ctx.waitUntil(counter.fetch('https://counter/answer/put', { method: 'POST', body: JSON.stringify({ key: akey, body: keep }) }).catch(() => {}));
   };
   const limited = await g.limit(parsed); if (limited) return limited;
+  /* Qidiruv so'zlari — asosiy model chaqirilmaydi, oqimsiz. */
+  if (parsed.kw) {
+    const rk = await readKeywords({ q: parsed.q, who: parsed.who, style: parsed.style, env, fetchFn: fetchImpl || globalThis.fetch });
+    if (rk.err) {
+      console.log('ai kw upstream', rk.err.status, rk.err.type || '', rk.err.error);
+      count('kw_err');
+      return json({ error: 'AI vaqtincha mavjud emas', code: rk.err.status === 401 || rk.err.status === 403 ? 'key' : 'upstream' }, 503);
+    }
+    count('kw'); count('ok');
+    const body = { text: '', kw: rk.kw, cards: [], tools: [], model: rk.model || '', usage: rk.usage, stop: 'kw' };
+    spend('kw', rk.usage);
+    if (akey && ctx && rk.kw && rk.kw.stores.length) { const { usage, ...keep } = body; ctx.waitUntil(counter.fetch('https://counter/answer/put', { method: 'POST', body: JSON.stringify({ key: akey, body: keep }) }).catch(() => {})); }
+    return json(body);
+  }
   const kind = parsed.find ? 'find' : parsed.q ? 'chat' : 'shot';
   if (!parsed.stream) {
     const out = await runAi({ parsed, env, count, fetchImpl, emit: null, cfg });
@@ -1081,6 +1100,71 @@ export function normalizeShot(raw, usdRate) {
     weightKg: Math.min(50, Math.max(0, num(o.weightKg))),
     confidence: Math.max(0, Math.min(1, num(o.confidence)))
   };
+}
+
+/* --- "Qidiruv so'zlari" (2026-10-05). Xorijiy do'konda eng katta to'siq —
+   nima deb yozishni bilmaslik: Taobao xitoycha, Trendyol turkcha so'z bilan
+   ancha ko'p topadi (Taobao qo'llanmalari: "water bottle" emas 水杯; brend
+   lotincha qoladi). Arzon model (AI_SHOT_MODEL) tovar nomidan uch tilda
+   qisqa so'z tuzadi, do'konlar bazadan tanlanadi, har biriga o'z tilidagi
+   so'z va qidiruv havolasi (havolasi yo'q ilovalar — faqat nusxa). Narx
+   ≈ $0.001, kunlik javob keshi bilan. --- */
+const KW_SCHEMA = {
+  type: 'object',
+  properties: {
+    name: { type: 'string', description: 'Tovar nomi o\'zbekcha, qisqa (brend va model bo\'lsa saqla)' },
+    category: { type: 'string', enum: ['kiyim va moda', 'poyabzal', 'elektronika', 'kosmetika', 'bolalar', 'universal'], description: 'Kategoriya' },
+    en: { type: 'string', description: 'Amazon/AliExpress uchun inglizcha qidiruv so\'zi, 2–7 so\'z' },
+    zh: { type: 'string', description: 'Taobao/Pinduoduo uchun xitoycha qidiruv so\'zi (soddalashtirilgan ieroglif), brend va model lotincha qoladi' },
+    tr: { type: 'string', description: 'Trendyol uchun turkcha qidiruv so\'zi' },
+    tip: { type: 'string', description: 'O\'zbekcha bitta qisqa maslahat: o\'lcham, material yoki filtr (masalan: "Taobao\'da 旗舰店 — rasmiy do\'kon"); kerak bo\'lmasa bo\'sh' }
+  },
+  required: ['name', 'category', 'en', 'zh', 'tr', 'tip'],
+  additionalProperties: false
+};
+const KW_LANG = { taobao: 'zh', tmall: 'zh', pinduoduo: 'zh', poizon: 'zh', trendyol: 'tr' };
+const KW_WHO = { erkak: 'erkaklar uchun', ayol: 'ayollar uchun', bola: 'bolalar uchun' };
+/* Do'konlar: arzon yoki farqi yo'q — marketplace'lar (Xitoy, Turkiya,
+   AQSh); original — brend va rasmiy do'konlar oldinda. Ko'pi bilan 6. */
+export function kwStores(category, style, kw) {
+  const pick = ids => ids.map(id => KB.STORES.find(s => s.id === id)).filter(Boolean);
+  const fashion = ['kiyim va moda', 'poyabzal', 'kosmetika', 'bolalar', 'universal'].includes(category);
+  let base = style === 'arzon' ? ['pinduoduo', 'taobao', 'aliexpress', 'trendyol', 'shein', 'amazon']
+    : style === 'original' ? [] : ['taobao', 'aliexpress', 'trendyol', 'amazon', 'pinduoduo', 'ebay'];
+  if (category === 'elektronika') base = base.filter(id => !['trendyol', 'shein'].includes(id)).concat(['amazon', 'ebay']);
+  if (!fashion) base = base.filter(id => id !== 'trendyol');
+  if (category !== 'kiyim va moda') base = base.filter(id => id !== 'shein');
+  if (style === 'original') {
+    const top = toolSuggest({ category, original: true, query: kw.en }).stores || [];
+    base = top.map(s => s.id).concat(category === 'poyabzal' ? ['poizon'] : []).concat(['amazon', 'tmall']);
+  }
+  const seen = new Set();
+  return pick(base.filter(id => !seen.has(id) && seen.add(id))).slice(0, 6).map(s => {
+    const lang = KW_LANG[s.id] || 'en';
+    const query = String(kw[lang] || kw.en || '').trim().slice(0, 80);
+    const url = SEARCH_URL[s.id] ? searchUrl(s, query) : '';
+    return { id: s.id, name: s.name, country: s.country, lang, query, url, copyOnly: !url, app: !url ? (s.url || '') : '' };
+  });
+}
+export async function readKeywords({ q, who, style, env, fetchFn }) {
+  const model = env.AI_SHOT_MODEL || 'claude-haiku-4-5';
+  const want = [who ? KW_WHO[who] : '', style === 'original' ? 'original (rasmiy do\'kon, brend)' : style === 'arzon' ? 'arzonroq variant' : ''].filter(Boolean).join(', ');
+  const prompt = 'Foydalanuvchi chet el do\'konidan tovar qidiryapti: "' + String(q).slice(0, 200) + '"' + (want ? ' (' + want + ')' : '') + '. Har do\'kon tilida qisqa, odatiy qidiruv so\'zini tuz: shu do\'kondagi xaridorlar yozadigan iboralar. Brend va model nomi lotincha o\'zgarmaydi. Original so\'ralsa xitoychada 正品 yoki 旗舰店 qo\'sh; jins/yosh so\'ralsa so\'zga qo\'sh (男/女/儿童, erkek/kadın/çocuk, men/women/kids). Javob faqat JSON.';
+  const base = { model, max_tokens: 400, messages: [{ role: 'user', content: prompt }] };
+  let r = await callClaude({ ...base, output_config: { format: { type: 'json_schema', schema: KW_SCHEMA } } }, env, fetchFn);
+  if (r.error && r.status === 400 && /output_config|format|schema/i.test(r.error)) r = await callClaude(base, env, fetchFn);
+  if (r.error) return { err: r };
+  const msg = r.data || {};
+  const text = (Array.isArray(msg.content) ? msg.content : []).filter(b => b.type === 'text').map(b => b.text).join('\n');
+  let raw = null;
+  try { raw = JSON.parse(text); } catch (e) { const m = /\{[\s\S]*\}/.exec(text); if (m) { try { raw = JSON.parse(m[0]); } catch (e2) { raw = null; } } }
+  const u = msg.usage || {};
+  const usage = { input: u.input_tokens || 0, output: u.output_tokens || 0, cacheRead: 0, cacheWrite: 0, usd: costUsd(msg.model || model, u) };
+  const clean = v => String(v || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+  const kw = { en: clean(raw && raw.en) || clean(q), zh: clean(raw && raw.zh), tr: clean(raw && raw.tr) };
+  const category = KB.CATEGORIES.some(c => c.id === (raw && raw.category)) ? raw.category : 'universal';
+  return { model: msg.model || model, usage,
+    kw: { name: clean(raw && raw.name) || clean(q), category, who, style, words: kw, tip: clean(raw && raw.tip).slice(0, 160), stores: kwStores(category, style, kw) } };
 }
 
 /* Rasmni arzon model bilan o'qiydi. Asosiy modelga rasm ko'rsatilmaydi: u to'rt barobar qimmat, vazifa esa oddiy
