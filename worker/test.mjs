@@ -337,6 +337,16 @@ const photo = async () => new Response(JSON.stringify({ model: 'claude-haiku-4-5
 const sp = await (await shot({ image: PNG1, mime: 'image/png', usdRate: 12650 }, { AI_FETCH: photo }, '3.3.3.7')).json();
 check('shot: tovar fotosi — found=false, kind product, nom, brend, query, kartasiz', sp.shot.found === false && sp.shot.kind === 'product' && sp.shot.query === 'Nike Air Force 1 white sneakers' && sp.shot.brand === 'Nike' && sp.shot.category === 'poyabzal' && sp.cards.length === 0 && sp.stop === 'shot', JSON.stringify(sp.shot));
 check('shot: sxemada kind (enum), query, brand', shotReq.output_config.format.schema.properties.kind.enum.join() === 'price,product,other' && ['kind', 'query', 'brand'].every(k => shotReq.output_config.format.schema.required.includes(k)));
+/* Savat skrinshoti: bir nechta tovar — bitta jo'natma. */
+const nm = normalizeShot({ kind: 'price', name: '', price: 0, currency: 'USD', store: 'Amazon', country: 'AQSh', category: '', weightKg: 0, confidence: 0.9,
+  items: [{ name: 'Krossovka', price: 59.99, currency: 'USD', qty: 1, category: 'poyabzal', weightKg: 0 }, { name: 'Futbolka', price: 12.5, currency: 'USD', qty: 2, category: 'kiyim', weightKg: 0 },
+    { name: 'Yetkazish', price: 0, currency: 'USD', qty: 1, category: '', weightKg: 0 }] }, 12650);
+check('normalizeShot: savatda 2 tovar — jami 84.99 USD, "2 ta tovar", items, narxsiz qator tashlanadi', nm.found && nm.multi && nm.items.length === 2 && nm.price === 84.99 && nm.currency === 'USD' && nm.priceUsd === 84.99 && nm.qty === 1 && /^2 ta tovar: Krossovka, Futbolka/.test(nm.name) && nm.category === '' && nm.weightKg === 0 && nm.items[1].qty === 2, JSON.stringify(nm).slice(0, 200));
+const nm2 = normalizeShot({ items: [{ name: 'A', price: 100, currency: 'CNY', qty: 1, category: 'kiyim va moda', weightKg: 0.5 }, { name: 'B', price: 20, currency: 'USD', qty: 1, category: 'kiyim va moda', weightKg: 0.3 }] }, 12650);
+check('normalizeShot: turli valyuta — dollarda jami; vazn hammasida bor — yig\'indi; bir xil kategoriya', nm2.found && nm2.currency === 'USD' && nm2.price > 30 && nm2.price < 40 && nm2.weightKg === 0.8 && nm2.category === 'kiyim va moda', JSON.stringify(nm2).slice(0, 160));
+const nm3 = normalizeShot({ name: '', price: 0, items: [{ name: 'Kurtka', price: 45, currency: 'EUR', qty: 1, category: 'kiyim', weightKg: 0 }] }, 12650);
+check('normalizeShot: bitta tovar faqat items da — oddiy natija', nm3.found && !nm3.multi && nm3.name === 'Kurtka' && nm3.price === 45 && nm3.currency === 'EUR');
+check('shot: sxemada items (nom, narx, valyuta, miqdor, kategoriya, vazn)', shotReq.output_config.format.schema.required.includes('items') && shotReq.output_config.format.schema.properties.items.items.required.join() === 'name,price,currency,qty,category,weightKg');
 check('normalizeShot: narx bo\'lsa kind price; nomsiz product — other', normalizeShot({ kind: 'product', price: 10, currency: 'USD' }, 12650).kind === 'price' && normalizeShot({ kind: 'product', name: '' }, 12650).kind === 'other');
 /* suggest_stores */
 const sg = runTool('suggest_stores', { category: 'poyabzal', original: true, budgetUsd: 100, query: 'men sneakers size 41' }, tctx);

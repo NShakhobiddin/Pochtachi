@@ -2754,6 +2754,18 @@
             </div>
           </div>
           <span style="font-size:22px;font-weight:800;letter-spacing:-.02em;color:#1A1FB0;font-variant-numeric:tabular-nums">{{ rsPrice }}</span>
+          <sc-if value="{{ rsHasItems }}" hint-placeholder-val="{{ false }}">
+            <div data-items="1" style="display:flex;flex-direction:column;gap:8px;border-top:1px solid #F1F1F8;padding-top:12px">
+              <span style="font-size:13px;font-weight:700;color:#6B6C85">{{ rsItemsT }}</span>
+              <sc-for list="{{ rsItems }}" as="it" hint-placeholder-count="2">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+                  <span style="flex:1;min-width:0;font-size:15px;font-weight:500;color:#131429;overflow-wrap:anywhere">{{ it.name }}</span>
+                  <span style="flex:none;font-size:15px;font-weight:700;color:#131429;font-variant-numeric:tabular-nums">{{ it.price }}</span>
+                </div>
+              </sc-for>
+              <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">{{ rsItemsNote }}</span>
+            </div>
+          </sc-if>
           <sc-if value="{{ rsHasUrl }}" hint-placeholder-val="{{ false }}">
             <a data-rs-url="1" class="xy-tap" href="{{ rsUrl }}" target="_blank" rel="noopener noreferrer" style="align-self:flex-start;display:inline-flex;align-items:center;gap:6px;min-height:40px;font-size:13px;font-weight:700;color:#1A1FB0;text-decoration:none">Sahifani ochish<svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1A1FB0" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
           </sc-if>
@@ -3527,7 +3539,7 @@ const toCyr = s => {
 const RU = {
   "Havolani o'qiyapman":'Читаю ссылку', 'Sahifani ochyapman':'Открываю страницу',
   "{0} · odatda 3–15 soniya. Jami narx va uning tarkibi shu yerda chiqadi.":'{0} · обычно 3–15 секунд. Итоговая цена и её состав появятся здесь.',
-  "Havoladan narx o'qilmadi":'Не удалось прочитать цену по ссылке', "Narx ko'ringan sahifani skrinshot qiling":'Сделайте скриншот страницы с ценой', 'Rasmdan tovarni taniy olmadim':'Не удалось узнать товар на фото', 'Boshqa rasm yuklash':'Загрузить другое фото', 'Rasmdagi tovarni taniyapman':'Узнаю товар на фото', 'Tovarni taniyapman':'Узнаю товар', "Do'konlardan qidirishga o'tyapman":'Перехожу к поиску в магазинах', "Odatda 3–6 soniya. Keyin AI mos do'konlardan qidiradi.":'Обычно 3–6 секунд. Затем ИИ поищет в подходящих магазинах.', "Tovar aniq ko'rinadigan rasm yuklang yoki nomini yozib qidiring.":'Загрузите фото, где товар хорошо виден, или найдите по названию.', 'Rasm bilan qidirish':'Поиск по фото', "Tovar fotosini yuklang — AI taniydi va do'konlardan topadi.":'Загрузите фото товара — ИИ узнает его и найдёт в магазинах.', 'Tovar rasmini tanlash':'Выбрать фото товара', "Boshqa do'kondan topish":'Найти в другом магазине', 'Rasmdagi tovar: {0}':'Товар на фото: {0}', "Pochtam AI'dan so'rash":'Спросить Pochtam AI',
+  "Havoladan narx o'qilmadi":'Не удалось прочитать цену по ссылке', "Narx ko'ringan sahifani skrinshot qiling":'Сделайте скриншот страницы с ценой', 'Rasmdan tovarni taniy olmadim':'Не удалось узнать товар на фото', 'Skrinshotdagi tovarlar ({0})':'Товары на скриншоте ({0})', '{0} ta tovar':'Товаров: {0}', "Taxminiy og'irlik {0} kg ({1} ta tovar bo'yicha)":'Примерный вес {0} кг (по {1} товарам)', "Hammasi bitta jo'natmada hisoblandi: bojsiz me'yor va kuryer narxi umumiy summa va og'irlik bo'yicha.":'Всё посчитано как одна посылка: беспошлинный лимит и доставка — по общей сумме и весу.', 'Boshqa rasm yuklash':'Загрузить другое фото', 'Rasmdagi tovarni taniyapman':'Узнаю товар на фото', 'Tovarni taniyapman':'Узнаю товар', "Do'konlardan qidirishga o'tyapman":'Перехожу к поиску в магазинах', "Odatda 3–6 soniya. Keyin AI mos do'konlardan qidiradi.":'Обычно 3–6 секунд. Затем ИИ поищет в подходящих магазинах.', "Tovar aniq ko'rinadigan rasm yuklang yoki nomini yozib qidiring.":'Загрузите фото, где товар хорошо виден, или найдите по названию.', 'Rasm bilan qidirish':'Поиск по фото', "Tovar fotosini yuklang — AI taniydi va do'konlardan topadi.":'Загрузите фото товара — ИИ узнает его и найдёт в магазинах.', 'Tovar rasmini tanlash':'Выбрать фото товара', "Boshqa do'kondan topish":'Найти в другом магазине', 'Rasmdagi tovar: {0}':'Товар на фото: {0}', "Pochtam AI'dan so'rash":'Спросить Pochtam AI',
   "Havolani o'qimaymiz: ko'p do'konlar narxni robotlardan yashiradi. Do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang yoki narxni o'zingiz yozing — qolganini ilova hisoblaydi.":'Ссылки мы не читаем: многие магазины скрывают цену от роботов. Сделайте скриншот места с ценой в приложении магазина или введите цену сами — остальное посчитает приложение.',
   "Maslahat: do'kon ilovasidagi «Ulashish» matnini butunligicha tashlang — unda narx bo'lsa, o'zi o'qiladi.":'Совет: вставьте текст из кнопки «Поделиться» в приложении магазина целиком — если в нём есть цена, она прочитается сама.',
   "«{0}» — nom va do'kon topildi, faqat narx yetishmayapti.":'«{0}» — название и магазин найдены, не хватает только цены.',
@@ -6402,6 +6414,13 @@ class Component extends DCLogic {
       : (CATEGORIES.some(c => c.id === w.cat) ? w.cat : LC_DEFAULT.cat);
     const lc = { ...LC_DEFAULT, name: j.name || String(w.text || '').trim(), price: String(cur === raw ? j.price : (j.priceUsd || j.price)), cur, qty: String(j.qty || 1),
       storeId: store ? store.id : null, country, cat, kg: num(j.weightKg) > 0 ? String(j.weightKg) : '' };
+    if (j.multi && Array.isArray(j.items) && j.items.length > 1) {
+      lc.items = j.items.map(it => ({ name: String(it.name || ''), price: num(it.price), currency: String(it.currency || cur), qty: Math.max(1, Math.round(num(it.qty) || 1)), category: String(it.category || '') }));
+      if (!(num(j.weightKg) > 0)) {
+        const est = j.items.reduce((a, it) => { const cd = CATEGORIES.find(c => c.id === it.category) || CATEGORIES.find(c => c.id === cat); const w = num(it.weightKg) > 0 ? num(it.weightKg) : num(cd && cd.kgPerItem) || 1; return a + w * Math.max(1, Math.round(num(it.qty) || 1)); }, 0);
+        lc.kg = String(Math.round(est * 100) / 100); lc.kgEst = true;
+      }
+    }
     const fx = lcFxOf(cur), live = lcFxLive(cur);
     const usdVal = cur === 'USD' ? num(j.price) : (fx > 0 ? num(j.price) * fx : num(j.priceUsd));
     const priceTxt = j.price + ' ' + cur + (cur !== 'USD' && usdVal > 0
@@ -6535,7 +6554,7 @@ class Component extends DCLogic {
     const parts = [{ c: '#1A1FB0', k: L_('Tovar narxi'), how: qty > 1 ? tx(lang, '{0} dona × {1}', qty, r.priceTxt) : r.priceTxt, usd: L.goodsUsd }];
     if (L.domesticUsd > 0) parts.push({ c: '#9093EE', k: L_("Do'kon ichida yetkazish"), how: L_("Do'kondan kuryer omboriga"), usd: L.domesticUsd });
     parts.push({ c: '#0E8595', k: L_('Xalqaro yetkazish'),
-      how: sel ? tx(lang, '{0} · {1} kg', sel.name, kgTxt) + ' · ' + L_(kgIn > 0 ? 'vazn sahifadan' : 'vazn taxminiy') : L_("Kuryer narxi qo'shilmagan"),
+      how: sel ? tx(lang, '{0} · {1} kg', sel.name, kgTxt) + ' · ' + L_(kgIn > 0 && !r.lc.kgEst ? 'vazn sahifadan' : 'vazn taxminiy') : L_("Kuryer narxi qo'shilmagan"),
       usd: sel ? L.shipUsd : null });
     parts.push({ c: '#B45309', k: L_("Bojxona to'lovi"), usd: L.dutyUsd,
       how: L.basis === 'none' ? tx(lang, "Tovar qiymati ${0} me'yor ichida — boj va yig'im yo'q.", Math.round(freeLeft))
@@ -6550,7 +6569,7 @@ class Component extends DCLogic {
     const orderQ = tx(lang, "Men {0} ({1}) dan \"{2}\" ({3}) buyurtma qilmoqchiman{4}. Qanday buyurtma qilaman — qadam-baqadam?",
       r.storeName || L_("do'kon"), tr(lang, r.lc.country), r.lc.name || L_('mahsulot'), r.priceTxt, sel ? ', ' + L_('kuryer') + ' ' + sel.name : '');
     return { ...base,
-      rsName: r.lc.name || L_('Mahsulot'), rsPrice: r.priceTxt,
+      rsName: r.lc.items && r.lc.items.length > 1 ? tx(lang, '{0} ta tovar', r.lc.items.length) : (r.lc.name || L_('Mahsulot')), rsPrice: r.priceTxt,
       rsStore: r.storeName || L_("Do'kon aniqlanmadi"), rsCountry: tr(lang, r.lc.country) + (r.countryGuessed ? ' · ' + L_('taxmin') : ''),
       rsHasLogo: !!(store && store.logoCss && store.logoCss !== 'none'), rsLogoCss: store && store.logoCss ? store.logoCss : 'none',
       rsHasCourier: !!sel, rsNoCourier: !sel,
@@ -6564,7 +6583,11 @@ class Component extends DCLogic {
       rsDays: sel && sel.days ? trDays(lang, sel.days) : '', rsShip: sel ? '$' + sel.usd.toFixed(2) : '', rsFastOn: !!(fast && sel && fast !== sel),
       rsEta: sel ? [sel.name, sel.days ? trDays(lang, sel.days) : '', etaText(sel.days, lang)].filter(Boolean).join(' · ') : '',
       rsFast: fast ? fast.name + ' — ' + (fast.days ? trDays(lang, fast.days) : '') + ', $' + fast.usd.toFixed(2) : '',
-      rsKg: kgIn > 0 ? tx(lang, 'Og\'irlik {0} kg (sahifadan)', kgTxt) : tx(lang, "Taxminiy og'irlik {0} kg ({1})", kgTxt, tr(lang, catDef.label)),
+      rsKg: r.lc.kgEst ? tx(lang, "Taxminiy og'irlik {0} kg ({1} ta tovar bo'yicha)", kgTxt, (r.lc.items || []).length) : kgIn > 0 ? tx(lang, 'Og\'irlik {0} kg (sahifadan)', kgTxt) : tx(lang, "Taxminiy og'irlik {0} kg ({1})", kgTxt, tr(lang, catDef.label)),
+      rsHasItems: !!(r.lc.items && r.lc.items.length > 1),
+      rsItemsT: tx(lang, 'Skrinshotdagi tovarlar ({0})', (r.lc.items || []).length),
+      rsItems: (r.lc.items || []).map(it => ({ name: (it.qty > 1 ? it.qty + ' × ' : '') + (it.name || L_('Mahsulot')), price: (Math.round(it.price * 100) / 100) + ' ' + it.currency })),
+      rsItemsNote: L_("Hammasi bitta jo'natmada hisoblandi: bojsiz me'yor va kuryer narxi umumiy summa va og'irlik bo'yicha."),
       rsRows: rows, rsBar: bar, rsTotal: '$' + L.totalUsd.toFixed(2), rsTotalUzs: money(Math.round(L.totalUzs)) + " so'm",
       rsRate: tx(lang, "1 USD = {0} so'm, Markaziy bank kursi", money(Math.round(L.usdRate))),
       rsNotes: notes, rsHasNotes: notes.length > 0,

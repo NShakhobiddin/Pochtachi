@@ -149,7 +149,11 @@ Rasm (`image`, ≤ ~1 MB; ilova 1280 px ga kichraytiradi) avval arzon model
 bilan o'qiladi (`readShot`, `AI_SHOT_MODEL`, standart `claude-haiku-4-5`,
 tuzilgan JSON: rasm turi `kind` — `price` (narx ko'ringan sahifa),
 `product` (tovar fotosi, narxsiz: nom, brend va inglizcha qidiruv so'rovi
-`query` — ilova "Topish"ni shu bilan boshlaydi) yoki `other`; nom, narx,
+`query` — ilova "Topish"ni shu bilan boshlaydi) yoki `other`; savat yoki
+buyurtma skrinshotida bir nechta tovar bo'lsa `items` (har biri: nom,
+narx, valyuta, miqdor, kategoriya, og'irlik; ko'pi bilan 10) — javobda
+`multi: true`, umumiy narx (bir valyutada yoki dollarda) va nom
+"N ta tovar: …"; nom, narx,
 valyuta, miqdor, do'kon, kategoriya, davlat, og'irlik, ishonch) va natija
 joriy xaridga qo'shiladi (`mergeCart`); savol bo'lmasa asosiy model
 umuman chaqirilmaydi (`stop: "shot"`, ≈ $0.002). Rasm asosiy modelga

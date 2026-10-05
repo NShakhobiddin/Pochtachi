@@ -988,7 +988,7 @@ async function runAi({ parsed, env, count, fetchImpl, emit, cfg = {} }) {
    ko'rsatma: model faqat rasmda ko'ringan nom, narx, valyuta, miqdor,
    do'konni JSON qilib beradi; hisob-kitob ilovada (core/). Model arzon
    (AI_SHOT_MODEL, standart Haiku 4.5). Rasm saqlanmaydi. --- */
-const SHOT_MAX_TOKENS = 400;
+const SHOT_MAX_TOKENS = 900;
 const SHOT_SCHEMA = {
   type: 'object',
   properties: {
@@ -1003,12 +1003,21 @@ const SHOT_SCHEMA = {
     category: { type: 'string', description: 'Mahsulot kategoriyasi: kiyim va moda, poyabzal, elektronika, kosmetika, bolalar, universal (boshqa yoki noaniq)' },
     country: { type: 'string', description: 'Do\'kon qaysi davlatdan yuboradi — domen, til, valyuta bo\'yicha: Xitoy (.cn, ¥, xitoycha), AQSh (.com AQSh do\'koni, $), Turkiya (.tr, ₺), Angliya (.co.uk, £), Koreya (.kr, ₩), Germaniya (.de, €), BAA (.ae, AED), Rossiya (.ru, ₽); noma\'lum bo\'lsa bo\'sh' },
     weightKg: { type: 'number', description: 'Sahifada mahsulot og\'irligi ko\'rinsa, kilogrammda (800 g = 0.8); ko\'rinmasa 0' },
-    confidence: { type: 'number', description: 'Narx to\'g\'ri o\'qilganiga ishonch 0..1' }
+    confidence: { type: 'number', description: 'Narx to\'g\'ri o\'qilganiga ishonch 0..1' },
+    items: { type: 'array', description: 'Savat, buyurtma yoki ro\'yxat skrinshotida 2 va undan ko\'p tovar ko\'rinsa — har biri alohida (ko\'pi bilan 10); bitta tovar bo\'lsa bo\'sh ro\'yxat',
+      items: { type: 'object', properties: {
+        name: { type: 'string', description: 'Tovar nomi qisqa' },
+        price: { type: 'number', description: 'Bitta dona narxi (chegirmali); ko\'rinmasa 0' },
+        currency: { type: 'string', description: 'Valyuta kodi' },
+        qty: { type: 'integer', description: 'Miqdor, ko\'rinmasa 1' },
+        category: { type: 'string', description: 'Kategoriya (yuqoridagi ro\'yxatdan)' },
+        weightKg: { type: 'number', description: 'Og\'irlik ko\'rinsa kg, aks holda 0' }
+      }, required: ['name', 'price', 'currency', 'qty', 'category', 'weightKg'], additionalProperties: false } }
   },
-  required: ['kind', 'name', 'brand', 'query', 'price', 'currency', 'qty', 'store', 'category', 'country', 'weightKg', 'confidence'],
+  required: ['kind', 'name', 'brand', 'query', 'price', 'currency', 'qty', 'store', 'category', 'country', 'weightKg', 'confidence', 'items'],
   additionalProperties: false
 };
-const SHOT_PROMPT = 'Rasm ikki xil bo\'ladi. (1) Do\'kon sahifasining skrinshoti, narx ko\'rinadi — kind "price". (2) Tovarning o\'zi: foto, ijtimoiy tarmoq yoki katalog rasmi, narx yo\'q — kind "product": nima ekanini ayt (brend faqat yozuv yoki logotipdan aniq bo\'lsa), kategoriya va do\'konda qidirish uchun inglizcha query; narx 0. Tovar yo\'q — kind "other". Skrinshotda faqat rasmda ko\'ringan ma\'lumotni yoz: mahsulot nomi, joriy narx (chegirma bo\'lsa chegirmali narx, eski narx emas), valyuta (belgi yoki kod bo\'yicha: ¥ Xitoy saytida CNY, ₺ TRY, $ USD, € EUR, £ GBP, ₩ KRW, AED, ₽ RUB, so\'m UZS), miqdor, do\'kon nomi, mahsulot kategoriyasi (ro\'yxatdan bittasi), do\'kon qaysi davlatdan yuborishi (domen, til va valyutadan xulosa qil; aniq bo\'lmasa bo\'sh) va sahifada og\'irlik ko\'rinsa kilogrammda (ko\'rinmasa 0). Taxmin qilma: narx ko\'rinmasa price 0 va confidence 0. Javob faqat JSON.';
+const SHOT_PROMPT = 'Savat yoki buyurtma sahifasida bir nechta tovar ko\'rinsa, har birini items ga yoz (nom, bitta dona narxi, valyuta, miqdor, kategoriya, og\'irlik); yetkazish, soliq va chegirma qatorlari tovar emas. Bitta tovar bo\'lsa items bo\'sh. Rasm ikki xil bo\'ladi. (1) Do\'kon sahifasining skrinshoti, narx ko\'rinadi — kind "price". (2) Tovarning o\'zi: foto, ijtimoiy tarmoq yoki katalog rasmi, narx yo\'q — kind "product": nima ekanini ayt (brend faqat yozuv yoki logotipdan aniq bo\'lsa), kategoriya va do\'konda qidirish uchun inglizcha query; narx 0. Tovar yo\'q — kind "other". Skrinshotda faqat rasmda ko\'ringan ma\'lumotni yoz: mahsulot nomi, joriy narx (chegirma bo\'lsa chegirmali narx, eski narx emas), valyuta (belgi yoki kod bo\'yicha: ¥ Xitoy saytida CNY, ₺ TRY, $ USD, € EUR, £ GBP, ₩ KRW, AED, ₽ RUB, so\'m UZS), miqdor, do\'kon nomi, mahsulot kategoriyasi (ro\'yxatdan bittasi), do\'kon qaysi davlatdan yuborishi (domen, til va valyutadan xulosa qil; aniq bo\'lmasa bo\'sh) va sahifada og\'irlik ko\'rinsa kilogrammda (ko\'rinmasa 0). Taxmin qilma: narx ko\'rinmasa price 0 va confidence 0. Javob faqat JSON.';
 
 /* Modelning JSON javobini tekshirib, ilova uchun tayyor obyektga keltiradi. */
 export function normalizeShot(raw, usdRate) {
@@ -1018,7 +1027,40 @@ export function normalizeShot(raw, usdRate) {
   const fx = KB.TARIFFS.fx || {};
   const rate = cur === 'USD' ? 1 : cur === 'UZS' ? (usdRate > 0 ? 1 / usdRate : 0) : num(fx[cur]);
   const priceUsd = price > 0 && rate > 0 ? r2(price * rate) : 0;
-  const name = String(o.name || '').trim().slice(0, 80);
+  let name = String(o.name || '').trim().slice(0, 80);
+  /* Bir nechta tovar (savat skrinshoti): har biri tozalanadi; 2+ bo'lsa
+     bitta jo'natma — umumiy narx (bir valyutada yoki dollarda), nom
+     "N ta tovar: …", vazn hammasida ko'rinsa yig'indisi. */
+  const curOf = v => String(v || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);
+  const rateOf = c => c === 'USD' ? 1 : c === 'UZS' ? (usdRate > 0 ? 1 / usdRate : 0) : num(fx[c]);
+  const catOf = c => { const x = String(c || '').trim().toLowerCase(); return KB.CATEGORIES.some(k => k.id === x) ? x : ''; };
+  const items = (Array.isArray(o.items) ? o.items : []).map(it => {
+    const ic = curOf(it && it.currency) || cur || 'USD', ip = pos(it && it.price), iq = Math.max(1, Math.min(99, Math.round(pos(it && it.qty) || 1)));
+    const rt = rateOf(ic);
+    return { name: String((it && it.name) || '').trim().slice(0, 60), price: ip, currency: ic, qty: iq,
+      priceUsd: ip > 0 && rt > 0 ? r2(ip * rt) : 0, category: catOf(it && it.category), weightKg: Math.min(50, Math.max(0, num(it && it.weightKg))) };
+  }).filter(it => it.price > 0).slice(0, 10);
+  /* Bitta tovar faqat items da kelsa — o'sha asosiy. */
+  if (items.length === 1 && !(pos(o.price) > 0)) return normalizeShot({ ...o, items: [], name: o.name || items[0].name, price: items[0].price, currency: items[0].currency, qty: items[0].qty, category: o.category || items[0].category, weightKg: o.weightKg || items[0].weightKg }, usdRate);
+  if (items.length >= 2) {
+    const curs = [...new Set(items.map(it => it.currency))];
+    const one = curs.length === 1 && rateOf(curs[0]) > 0;
+    const total = one ? items.reduce((a, it) => a + it.price * it.qty, 0) : items.reduce((a, it) => a + it.priceUsd * it.qty, 0);
+    const cats = [...new Set(items.map(it => it.category))];
+    const mcur = one ? curs[0] : 'USD', mrate = rateOf(mcur);
+    return {
+      found: total > 0, kind: 'price', multi: true, items,
+      name: (items.length + ' ta tovar: ' + items.map(it => it.name).filter(Boolean).join(', ')).slice(0, 80),
+      brand: '', query: '',
+      price: r2(total), currency: mcur, priceUsd: mrate > 0 ? r2(total * mrate) : 0,
+      fxApprox: !!(mcur !== 'USD' && mcur !== 'UZS' && mcur !== 'EUR' && mcur !== 'GBP'),
+      qty: 1, store: String(o.store || '').trim().slice(0, 40),
+      category: cats.length === 1 ? cats[0] : '',
+      country: knownCountry(String(o.country || '').trim()) || '',
+      weightKg: items.every(it => it.weightKg > 0) ? Math.min(50, r2(items.reduce((a, it) => a + it.weightKg * it.qty, 0))) : 0,
+      confidence: Math.max(0, Math.min(1, num(o.confidence)))
+    };
+  }
   return {
     found: price > 0,
     /* kind: price — hisob; product — tovar fotosi (ilova "Topish" ni

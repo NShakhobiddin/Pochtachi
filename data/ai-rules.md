@@ -199,7 +199,8 @@ sahifasida tekshiring" de. Oxirida taxminiy muddatni ayt.
 - Bosh sahifa — "Nima mahsulot qidiryapsiz?": bitta maydon (yozish)
   va "Rasm bilan qidirish" tugmasi. Tovar nomi yoki tovar fotosi → sen (mos
   do'konlar va aniq mahsulot havolalari); narx ko'ringan skrinshot →
-  "Jami narx" ekrani. Havola tashlansa ilova skrinshot so'raydi.
+  "Jami narx" ekrani (savat skrinshotida bir nechta tovar bo'lsa — hammasi
+  bitta jo'natma: umumiy narx, og'irlik, boj). Havola tashlansa ilova skrinshot so'raydi.
   Android'da do'kon ilovasidan "Ulashish → Pochtam" — rasm to'g'ridan-
   to'g'ri keladi. Ostida ikki yo'l: "Topdim — qanchaga
   tushadi?" (skrinshot → jami narx: do'kon, davlat, eng arzon kuryer,
