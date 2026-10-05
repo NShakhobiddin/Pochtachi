@@ -305,6 +305,16 @@ jobs:
             CARDS=$(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/ai4','utf8'));process.stdout.write('kartalar='+((j.cards||[]).map(c=>c.type).join(',')||'yo\'q')+' vositalar='+((j.tools||[]).join(',')||'yo\'q')+' kesh='+((j.usage&&j.usage.cacheRead)||0))}catch(e){}")
             [ -n "$CARDS" ] || CARDS='?'
             if [ "$code4" = "200" ]; then echo "::notice::Joriy xarid bilan: $CARDS"; else echo "::warning::cart so'rovi $code4 qaytardi — $(head -c 200 /tmp/ai4)"; fi
+            # "Qidiruv so'zlari" (kw:true): arzon model har do'kon tilida so'z
+            # beradi (xitoycha, turkcha, inglizcha). Kalit bor — 200 va
+            # do'konlar ro'yxati shart. Narxi ≈ $0.001.
+            echo "== POST /ai (kw:true — qidiruv so'zlari)"
+            code5=$(curl -s -m 60 -o /tmp/ai5 -w '%{http_code}' -X POST "${URL}ai" -H 'origin: https://nshakhobiddin.github.io' -H 'content-type: text/plain' \
+              -d '{"q":"termos 1 litr","kw":true,"who":"","style":"","lang":"uz"}')
+            echo "[$code5] $(head -c 600 /tmp/ai5)"
+            KW=$(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/ai5','utf8'));const k=j.kw||{};process.stdout.write((k.stores&&k.stores.length?'ok':'xato')+' | '+(k.name||'')+' | zh='+((k.words||{}).zh||'')+' tr='+((k.words||{}).tr||'')+' en='+((k.words||{}).en||'')+' | dokonlar='+((k.stores||[]).map(s=>s.id).join(','))+' | model='+(j.model||'')+' usd='+((j.usage&&j.usage.usd)||0))}catch(e){process.stdout.write('xato: '+e.message)}")
+            echo "$KW"
+            if [ "$code5" = "200" ]; then case "$KW" in ok*) echo "::notice::Qidiruv so'zlari: $KW";; *) echo "::error::kw javobida do'konlar yo'q: $KW"; exit 1;; esac; else echo "::error::kw so'rovi $code5 qaytardi — $(head -c 200 /tmp/ai5)"; exit 1; fi
           else
             case "$code" in
               503) grep -q no_key /tmp/ai1 \

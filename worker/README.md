@@ -149,7 +149,7 @@ Rasm (`image`, ≤ ~1 MB; ilova 1280 px ga kichraytiradi) avval arzon model
 bilan o'qiladi (`readShot`, `AI_SHOT_MODEL`, standart `claude-haiku-4-5`,
 tuzilgan JSON: rasm turi `kind` — `price` (narx ko'ringan sahifa),
 `product` (tovar fotosi, narxsiz: nom, brend va inglizcha qidiruv so'rovi
-`query` — ilova "Topish"ni shu bilan boshlaydi) yoki `other`; savat yoki
+`query` — ilova "Qidiruv so'zlari"ni shu bilan ochadi) yoki `other`; savat yoki
 buyurtma skrinshotida bir nechta tovar bo'lsa `items` (har biri: nom,
 narx, valyuta, miqdor, kategoriya, og'irlik; ko'pi bilan 10) — javobda
 `multi: true`, umumiy narx (bir valyutada yoki dollarda) va nom
@@ -161,6 +161,19 @@ ko'rsatilmaydi va saqlanmaydi. `find: true` ("Qayerdan topaman") bo'lsa Claude'n
 tomonidagi `web_search_20260209` (ko'pi bilan `AI_WEB_SEARCH_USES`, har
 qidiruv $0.01) va tizim ko'rsatmasiga faqat shu holatda qisqa yo'riqnoma
 qo'shiladi; `usage.search` — qidiruvlar soni, `/stats` da `search`.
+**Qidiruv so'zlari (`kw: true`, 2026-10-05).** `{ q, kw: true, who, style }`
+(`who`: `erkak`/`ayol`/`bola`, `style`: `original`/`arzon`, ikkalasi
+ixtiyoriy) — asosiy model emas, arzon model (`AI_SHOT_MODEL`) sxemali
+javob bilan tovar nomidan qisqa qidiruv so'zi tuzadi: inglizcha (Amazon,
+AliExpress), xitoycha (Taobao, Pinduoduo, Poizon; brend lotincha,
+original so'ralsa 正品/旗舰店) va turkcha (Trendyol). Do'konlar bazadan
+kategoriya va tanlovga qarab olinadi (`kwStores`, ko'pi bilan 6), har
+biriga o'z tilidagi so'z va qidiruv havolasi; havolasi yo'q ilovalar
+(`copyOnly`) — faqat nusxa. Javob: `{ text: "", kw: { name, category,
+words: { en, zh, tr }, tip, stores: [{ id, name, country, lang, query,
+url, copyOnly }] }, stop: "kw" }`; ≈ $0.001, kunlik javob keshi bilan
+(`/stats` da `kw`). Sabab: xorijiy do'konda eng katta to'siq — nima deb
+yozishni bilmaslik; Taobao xitoycha so'z bilan ancha ko'p topadi.
 Xatolar: 400 (kirish), 403 (begona Origin), 429 (`code: "limit"`, `scope`:
 `ip`, `total` yoki `budget` — kunlik chegara), 503 (`no_key`, `key`,
 `billing` — kredit yoki oylik sarf chegarasi, `upstream`).
