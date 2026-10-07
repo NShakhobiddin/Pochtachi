@@ -2774,8 +2774,7 @@ export const SERVICES = [
   "items": [
    "Telegram orqali, ish kunlari ichida javob",
    "Javobda qaysi hujjatga tayanilgani ko'rsatiladi"
-  ],
-  "price": "40 000 so'm"
+  ]
  },
  {
   "icon": "svc-ushlangan",
@@ -2786,8 +2785,7 @@ export const SERVICES = [
    "Sabab aniqlanadi va kerakli hujjatlar ro'yxati beriladi",
    "Ariza matni tayyorlab beriladi",
    "Keyingi qadamlar tartibi"
-  ],
-  "price": "200 000 so'm"
+  ]
  },
  {
   "icon": "svc-hisob",
@@ -2797,8 +2795,7 @@ export const SERVICES = [
   "items": [
    "Me'yor, kurs va stavka qayta hisoblanadi",
    "Ortiqcha to'lov bo'lsa — qaytarish tartibi"
-  ],
-  "price": "60 000 so'm"
+  ]
  },
  {
   "icon": "svc-hujjat",
@@ -2808,8 +2805,7 @@ export const SERVICES = [
   "items": [
    "Tovar tijorat maqsadida emasligi haqidagi tushuntirish",
    "To'ldirilgan namuna beriladi"
-  ],
-  "price": "300 000 so'm"
+  ]
  },
  {
   "icon": "svc-taqiq",
@@ -2819,8 +2815,7 @@ export const SERVICES = [
   "items": [
    "Taqiqlangan va cheklangan ro'yxatlari bo'yicha tekshiruv",
    "Ruxsat/sertifikat kerak bo'lsa — qayerdan olinishi"
-  ],
-  "price": "50 000 so'm"
+  ]
  },
  {
   "icon": "svc-yuridik",
@@ -2830,8 +2825,7 @@ export const SERVICES = [
   "items": [
    "Kerakli ruxsat va ro'yxatdan o'tish hujjatlari",
    "Broker bilan shartnoma shartlari"
-  ],
-  "price": "Loyiha bo'yicha"
+  ]
  },
  {
   "icon": "svc-shartnoma",
@@ -2842,8 +2836,7 @@ export const SERVICES = [
    "Yo'qolgan yoki shikastlangan jo'natma bo'yicha kompensatsiya",
    "Muddat kechikishi va fors-major",
    "Ommaviy oferta matni"
-  ],
-  "price": "1 500 000 so'm"
+  ]
  },
  {
   "icon": "svc-bahs",
@@ -2853,8 +2846,7 @@ export const SERVICES = [
   "items": [
    "Shikoyat va e'tiroz matni",
    "Muddatlar va qaysi organga murojaat qilish"
-  ],
-  "price": "Loyiha bo'yicha"
+  ]
  },
  {
   "icon": "svc-texnik",
@@ -2865,8 +2857,7 @@ export const SERVICES = [
    "Tarif kalkulyatori",
    "Buyurtma qabul qilish va ariza",
    "Telegram Mini App ko'rinishida ham"
-  ],
-  "price": "Loyiha bo'yicha"
+  ]
  },
  {
   "icon": "svc-integratsiya",
@@ -2877,8 +2868,7 @@ export const SERVICES = [
    "Ombor tizimi bilan bog'lash",
    "Status o'zgarganda Telegram/SMS xabarnoma",
    "Mijoz uchun kuzatuv sahifasi"
-  ],
-  "price": "Loyiha bo'yicha"
+  ]
  },
  {
   "icon": "svc-hamkorlik",
@@ -2889,8 +2879,7 @@ export const SERVICES = [
    "Kuryerlar ro'yxatida karta",
    "Tarif va muddatlarni o'z vaqtida yangilash",
    "Yo'nalish bo'yicha ajratib ko'rsatish"
-  ],
-  "price": "oyiga 500 000 so'm"
+  ]
  }
 ];
 export const GUIDES = [

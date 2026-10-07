@@ -37,7 +37,7 @@ bir-biriga bog'lanadi, ustiga aqlli qatlam qo'shiladi.
 | Kuzatuv (jo'natmalar) | `shipments` | trek raqam, reja holati (5 ta: Reja, Buyurtma qilindi, Omborda, Yo'lda, Keldi), qo'lda o'zgartiriladi |
 | Qidiruv | `search` | do'kon, kuryer, qo'llanma; kirill/lotin; oxirgi qidiruvlar |
 | Qo'llanmalar | `guides`, `fullguide` | 7 ta, iframe, har birida kalkulyator va videolar |
-| Xizmatlar | `services` | 11 pullik xizmat, belgilangan narx, Telegram orqali murojaat |
+| Xizmatlar | `services` | 11 pullik xizmat (narx ko'rsatilmaydi, suhbatda kelishiladi), Telegram orqali murojaat |
 | Sozlamalar | `settings` | til, kurs yangilash, xabar berish, hamkorlik |
 | Umumiy | — | offline (SW), Telegram to'liq ekran, o'lchov, kompyuter tartibi (1024 px+) |
 

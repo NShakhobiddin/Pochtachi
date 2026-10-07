@@ -1866,13 +1866,12 @@ try {
   } else {
     await page.getByText('Mutaxassis yordami', { exact: false }).first().click();
     await page.waitForTimeout(700);
-    /* Belgilangan narx: xaridor yo'lagida "Kelishilgan holda" qolmasin —
-       narx ko'rinsa odam yozadi. Tugma Telegram xabariga narxni qo'shadi. */
+    /* Xizmat narxlari ilovada ko'rsatilmaydi — Telegram'da kelishiladi. */
     const svcNarx = await page.evaluate(() => {
       const t = document.querySelector('main').innerText;
-      return { kelishilgan: /Kelishilgan holda/.test(t), som: (t.match(/\d[\d ]+ so'm/g) || []).length };
+      return { som: (t.match(/\d[\d ]+ so'm/g) || []).length, narx: /\bNARX\b|\bNarx\n/.test(t) };
     });
-    check('xizmatlarda belgilangan narx', !svcNarx.kelishilgan && svcNarx.som >= 5, JSON.stringify(svcNarx));
+    check('xizmatlarda narx ko\'rsatilmaydi', svcNarx.som === 0 && !svcNarx.narx, JSON.stringify(svcNarx));
     const svcShaxs = await page.evaluate(() => {
       const b = [...document.querySelectorAll('main button')].filter(x => x.innerText.trim() === "Bog'lanish");
       const ic = [...document.querySelectorAll('main div')]
@@ -2137,8 +2136,9 @@ try {
     ban.qator === 23 && ban.xil >= 20 && ban.yuklandi === ban.xil,
     `${ban.qator} qator, ${ban.xil} xil, ${ban.yuklandi} yuklandi`);
 
-  /* Og'riq nuqtasi: kalkulyatorda me'yor oshganda mutaxassis tugmasi narx
-     bilan, me'yor ichida bo'lsa yo'q; Telegram xabarida kalkulyator raqamlari. */
+  /* Og'riq nuqtasi: kalkulyatorda me'yor oshganda mutaxassis tugmasi bor
+     (narxsiz), me'yor ichida bo'lsa yo'q; Telegram xabarida kalkulyator
+     raqamlari, xizmat narxi yo'q. */
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(500);
   await custRow("Qancha to'layman?").click();
@@ -2156,8 +2156,8 @@ try {
   await page.locator('main input[aria-label*="summa"]').first().fill('150');
   await page.waitForTimeout(300);
   const ctaWithin = await page.locator('main button').filter({ hasText: /Hisobni tekshirtirish/ }).count();
-  check('kalkulyator: me\'yor oshganda mutaxassis tugmasi narx bilan',
-    ctaOverN === 1 && /so'm/.test(ctaOverTxt) && /t\.me\/.*Boj hisobini tekshirish.*so'm.*Kalkulyator: oyda \$320/s.test(ctaUrl) && ctaWithin === 0,
+  check('kalkulyator: me\'yor oshganda mutaxassis tugmasi, narxsiz',
+    ctaOverN === 1 && !/so'm/.test(ctaOverTxt) && /t\.me\/.*Boj hisobini tekshirish» xizmati bo'yicha.*Kalkulyator: oyda \$320/s.test(ctaUrl) && !/\d 000 so'm/.test(ctaUrl.split('Kalkulyator')[0]) && ctaWithin === 0,
     `${ctaOverTxt} · ichida: ${ctaWithin} · ${ctaUrl.slice(0, 90)}`);
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(500);

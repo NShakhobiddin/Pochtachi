@@ -1885,7 +1885,7 @@
               <span style="font-size:15px;font-weight:700;color:#131429">Hisob katta chiqdimi?</span>
               <span style="font-size:13px;color:#6B6C85;line-height:1.5;text-wrap:pretty">Mutaxassis me'yor, kurs va stavkani qayta hisoblaydi; ortiqcha undirilgan bo'lsa qaytarish tartibini aytadi.</span>
             </div>
-            <button sc-camel-on-click="{{ calcAsk }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 16px;border:none;border-radius:14px;background:#E9EAFD;color:#13189D;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:left" style-hover="background:#DCDDFA"><span>Hisobni tekshirtirish</span><span style="flex:none;font-variant-numeric:tabular-nums">{{ svcHisobPrice }}</span></button>
+            <button sc-camel-on-click="{{ calcAsk }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 16px;border:none;border-radius:14px;background:#E9EAFD;color:#13189D;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:left" style-hover="background:#DCDDFA"><span>Hisobni tekshirtirish</span><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#13189D" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg></button>
           </div>
         </sc-if>
 
@@ -2019,7 +2019,7 @@
                     <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5">{{ b.src }}</span>
                   </div>
                   <sc-if value="{{ b.canAsk }}" hint-placeholder-val="{{ false }}">
-                    <button sc-camel-on-click="{{ b.askDoc }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 16px;border:none;border-radius:14px;background:#E9EAFD;color:#13189D;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:left" style-hover="background:#DCDDFA"><span>Qanday hujjat kerak?</span><span style="flex:none;font-variant-numeric:tabular-nums">{{ b.askPrice }}</span></button>
+                    <button sc-camel-on-click="{{ b.askDoc }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 16px;border:none;border-radius:14px;background:#E9EAFD;color:#13189D;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:left" style-hover="background:#DCDDFA"><span>Qanday hujjat kerak?</span><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#13189D" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg></button>
                   </sc-if>
                 </div>
               </sc-if>
@@ -2072,7 +2072,7 @@
               <span style="font-size:15px;font-weight:700;color:#131429">Jo'natmangiz ushlanib qoldimi?</span>
               <span style="font-size:13px;color:#6B6C85;line-height:1.5;text-wrap:pretty">Sabab aniqlanadi, kerakli hujjatlar ro'yxati va ariza matni tayyorlab beriladi.</span>
             </div>
-            <button sc-camel-on-click="{{ holdAsk }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 16px;border:none;border-radius:14px;background:#E9EAFD;color:#13189D;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:left" style-hover="background:#DCDDFA"><span>Mutaxassis yordami</span><span style="flex:none;font-variant-numeric:tabular-nums">{{ svcUshlanganPrice }}</span></button>
+            <button sc-camel-on-click="{{ holdAsk }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 16px;border:none;border-radius:14px;background:#E9EAFD;color:#13189D;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:left" style-hover="background:#DCDDFA"><span>Mutaxassis yordami</span><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#13189D" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 18l6-6-6-6"></path></svg></button>
           </div>
         </sc-if>
             </div>
@@ -3341,12 +3341,8 @@
               </div>
             </sc-for>
           </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid {{ sv.lineColor }};padding-top:12px">
-            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
-              <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85">Narx</span>
-              <span style="font-size:15px;font-weight:700;color:#131429">{{ sv.price }}</span>
-            </div>
-            <button sc-camel-on-click="{{ sv.ask }}" style="flex:none;height:42px;padding:0 20px;border:none;border-radius:14px;background:linear-gradient(155deg,#494FE9,#13189D);color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">Bog'lanish</button>
+          <div style="display:flex;border-top:1px solid {{ sv.lineColor }};padding-top:12px">
+            <button sc-camel-on-click="{{ sv.ask }}" style="flex:1;height:42px;padding:0 20px;border:none;border-radius:14px;background:linear-gradient(155deg,#494FE9,#13189D);color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">Bog'lanish</button>
           </div>
         </div>
       </sc-for>
@@ -3927,7 +3923,6 @@ const RU = {
   "Ilovadagi ma'lumot yetmasa — mutaxassis bilan ishlash. Quyidagilar pullik xizmatlar.":'Если информации в приложении не хватает — работа со специалистом. Ниже платные услуги.',
   'Chet eldan buyurtma qilgan jismoniy shaxslar uchun.':'Для физических лиц, заказывающих из-за рубежа.',
   'Kuryerlik va logistika kompaniyalari uchun yuridik va texnik yordam.':'Юридическая и техническая помощь курьерским и логистическим компаниям.',
-  "Loyiha bo'yicha":'По проекту',
   'YURIDIK':'ЮРИДИЧЕСКОЕ', 'TEXNIK':'ТЕХНИЧЕСКОЕ', 'HAMKORLIK':'ПАРТНЁРСТВО',
   "ENG KO'P SO'RALADI":'СПРАШИВАЮТ ЧАЩЕ ВСЕГО',
   'Dush–Shan, 09:00–19:00':'Пн–Сб, 09:00–19:00',
@@ -4074,7 +4069,6 @@ const RU = {
   "Oy summasini qo'yish":'Сумма месяца', "Jo'natmani o'chirish":'Удалить посылку',
   'Til':'Язык',
   'Mutaxassis yordami':'Помощь специалиста',
-  "oyiga 500 000 so'm":'500 000 сум в месяц', "Assalomu alaykum! «{0}» xizmati ({1}) bo'yicha yozmoqchiman.":'Здравствуйте! Хочу обратиться по услуге «{0}» ({1}).',
   'Hisob katta chiqdimi?':'Расчёт получился большим?', "Mutaxassis me'yor, kurs va stavkani qayta hisoblaydi; ortiqcha undirilgan bo'lsa qaytarish tartibini aytadi.":'Специалист пересчитает лимит, курс и ставку; если удержано лишнее — объяснит порядок возврата.',
   'Hisobni tekshirtirish':'Проверить расчёт', "Kalkulyator: oyda ${0}, {1} kg, yetkazish ${2}/kg — taxminiy to'lov {3} so'm.":'Калькулятор: за месяц ${0}, {1} кг, доставка ${2}/кг — примерный платёж {3} сум.',
   "Jo'natmangiz ushlanib qoldimi?":'Ваше отправление задержали?', "Sabab aniqlanadi, kerakli hujjatlar ro'yxati va ariza matni tayyorlab beriladi.":'Определим причину, подготовим список документов и текст заявления.',
@@ -5208,49 +5202,38 @@ const tgLink = text => CONTACT.tg
 const SERVICES = [
   { lane:'shaxs', icon:'svc-savol', title:'Tezkor savol', tag:'ENG KO\'P SO\'RALADI',
     sub:'Bitta aniq savolga yozma javob — hujjat, me\'yor yoki tartib bo\'yicha.',
-    items:['Telegram orqali, ish kunlari ichida javob', 'Javobda qaysi hujjatga tayanilgani ko\'rsatiladi'],
-    price:'40 000 so\'m' },
+    items:['Telegram orqali, ish kunlari ichida javob', 'Javobda qaysi hujjatga tayanilgani ko\'rsatiladi'] },
   { lane:'shaxs', icon:'svc-ushlangan', title:'Jo\'natma ushlanib qoldi', tag:'',
     sub:'Bojxonada to\'xtatilgan jo\'natma bo\'yicha nima qilish kerakligi.',
-    items:['Sabab aniqlanadi va kerakli hujjatlar ro\'yxati beriladi','Ariza matni tayyorlab beriladi','Keyingi qadamlar tartibi'],
-    price:'200 000 so\'m' },
+    items:['Sabab aniqlanadi va kerakli hujjatlar ro\'yxati beriladi','Ariza matni tayyorlab beriladi','Keyingi qadamlar tartibi'] },
   { lane:'shaxs', icon:'svc-hisob', title:'Boj hisobini tekshirish', tag:'',
     sub:'Sizga yozilgan boj va yig\'im to\'g\'ri hisoblanganmi.',
-    items:['Me\'yor, kurs va stavka qayta hisoblanadi','Ortiqcha to\'lov bo\'lsa — qaytarish tartibi'],
-    price:'60 000 so\'m' },
+    items:['Me\'yor, kurs va stavka qayta hisoblanadi','Ortiqcha to\'lov bo\'lsa — qaytarish tartibi'] },
   { lane:'shaxs', icon:'svc-hujjat', title:'Hujjatlarni tayyorlash', tag:'',
     sub:'Deklaratsiya, xabarnoma va tushuntirish xatlari.',
-    items:['Tovar tijorat maqsadida emasligi haqidagi tushuntirish','To\'ldirilgan namuna beriladi'],
-    price:'300 000 so\'m' },
+    items:['Tovar tijorat maqsadida emasligi haqidagi tushuntirish','To\'ldirilgan namuna beriladi'] },
   { lane:'shaxs', icon:'svc-taqiq', title:'Taqiq va cheklov tekshiruvi', tag:'',
     sub:'Olib kirmoqchi bo\'lgan tovar ruxsat etiladimi, qanday hujjat kerak.',
-    items:['Taqiqlangan va cheklangan ro\'yxatlari bo\'yicha tekshiruv','Ruxsat/sertifikat kerak bo\'lsa — qayerdan olinishi'],
-    price:'50 000 so\'m' },
+    items:['Taqiqlangan va cheklangan ro\'yxatlari bo\'yicha tekshiruv','Ruxsat/sertifikat kerak bo\'lsa — qayerdan olinishi'] },
 
   { lane:'tashkilot', icon:'svc-yuridik', title:'Hujjatlar va litsenziya', tag:'YURIDIK',
     sub:'Kuryerlik faoliyatini rasmiylashtirish va bojxona brokeri bilan ishlash.',
-    items:['Kerakli ruxsat va ro\'yxatdan o\'tish hujjatlari','Broker bilan shartnoma shartlari'],
-    price:'Loyiha bo\'yicha' },
+    items:['Kerakli ruxsat va ro\'yxatdan o\'tish hujjatlari','Broker bilan shartnoma shartlari'] },
   { lane:'tashkilot', icon:'svc-shartnoma', title:'Mijoz bilan shartnoma', tag:'YURIDIK',
     sub:'Javobgarlik chegaralari aniq yozilgan shartnoma.',
-    items:['Yo\'qolgan yoki shikastlangan jo\'natma bo\'yicha kompensatsiya','Muddat kechikishi va fors-major','Ommaviy oferta matni'],
-    price:'1 500 000 so\'m' },
+    items:['Yo\'qolgan yoki shikastlangan jo\'natma bo\'yicha kompensatsiya','Muddat kechikishi va fors-major','Ommaviy oferta matni'] },
   { lane:'tashkilot', icon:'svc-bahs', title:'Bojxona bilan bahs', tag:'YURIDIK',
     sub:'Ushlab qolingan yuk, jarima yoki qaror ustidan shikoyat.',
-    items:['Shikoyat va e\'tiroz matni','Muddatlar va qaysi organga murojaat qilish'],
-    price:'Loyiha bo\'yicha' },
+    items:['Shikoyat va e\'tiroz matni','Muddatlar va qaysi organga murojaat qilish'] },
   { lane:'tashkilot', icon:'svc-texnik', title:'Sayt va Telegram bot', tag:'TEXNIK',
     sub:'Mijoz o\'zi tarif hisoblaydigan va buyurtma qoldiradigan kanal.',
-    items:['Tarif kalkulyatori','Buyurtma qabul qilish va ariza','Telegram Mini App ko\'rinishida ham'],
-    price:'Loyiha bo\'yicha' },
+    items:['Tarif kalkulyatori','Buyurtma qabul qilish va ariza','Telegram Mini App ko\'rinishida ham'] },
   { lane:'tashkilot', icon:'svc-integratsiya', title:'Trek tizimi integratsiyasi', tag:'TEXNIK',
     sub:'Ombor holati mijozga o\'zi yetib boradigan qilib ulanadi.',
-    items:['Ombor tizimi bilan bog\'lash','Status o\'zgarganda Telegram/SMS xabarnoma','Mijoz uchun kuzatuv sahifasi'],
-    price:'Loyiha bo\'yicha' },
+    items:['Ombor tizimi bilan bog\'lash','Status o\'zgarganda Telegram/SMS xabarnoma','Mijoz uchun kuzatuv sahifasi'] },
   { lane:'tashkilot', icon:'svc-hamkorlik', title:'Ilovada joylashish', tag:'HAMKORLIK',
     sub:'Pochtam ro\'yxatida ko\'rinish va tariflarni yangilab turish.',
-    items:['Kuryerlar ro\'yxatida karta','Tarif va muddatlarni o\'z vaqtida yangilash','Yo\'nalish bo\'yicha ajratib ko\'rsatish'],
-    price:'oyiga 500 000 so\'m' }
+    items:['Kuryerlar ro\'yxatida karta','Tarif va muddatlarni o\'z vaqtida yangilash','Yo\'nalish bo\'yicha ajratib ko\'rsatish'] }
 ];
 
 const BANNED = [
@@ -5514,12 +5497,7 @@ class Component extends DCLogic {
 
   contactAbout(title, key, ctx) {
     metrics.hit('svcAsk', key || 'umumiy');
-    const svc = SERVICES.find(v => v.icon === key);
-    const priced = svc && /\d/.test(svc.price);
-    let text = title
-      ? (priced ? tx(this.state.lang, "Assalomu alaykum! «{0}» xizmati ({1}) bo'yicha yozmoqchiman.", tr(this.state.lang, title), tr(this.state.lang, svc.price))
-               : tx(this.state.lang, "Assalomu alaykum! «{0}» xizmati bo'yicha yozmoqchiman.", tr(this.state.lang, title)))
-      : '';
+    let text = title ? tx(this.state.lang, "Assalomu alaykum! «{0}» xizmati bo'yicha yozmoqchiman.", tr(this.state.lang, title)) : '';
     if (text && ctx) text += '\n\n' + ctx;
     const url = tgLink(text);
     if (!url) { this.toast('Aloqa manzili hali kiritilmagan'); return; }
@@ -5529,7 +5507,6 @@ class Component extends DCLogic {
     const v = SERVICES.find(x => x.icon === icon);
     if (v) this.contactAbout(v.title, icon, ctx);
   }
-  svcPrice(icon) { const v = SERVICES.find(x => x.icon === icon); return v ? tr(this.state.lang, v.price) : ''; }
 
   chip(label, on, toggle) {
     return { label, toggle,
@@ -7137,7 +7114,7 @@ class Component extends DCLogic {
         open: st.banOpen === b.name,
         rot: st.banOpen === b.name ? '180deg' : '0deg',
         toggle: () => this.setState({ banOpen: st.banOpen === b.name ? null : b.name }),
-        canAsk: HAS_CONTACT && b.level === 'amber', askPrice: this.svcPrice('svc-taqiq'),
+        canAsk: HAS_CONTACT && b.level === 'amber',
         askDoc: () => this.askSvc('svc-taqiq', tx(st.lang, 'Tovar: {0}', b.name))
       }));
 
@@ -8016,7 +7993,6 @@ class Component extends DCLogic {
       onCalcShip: e => this.setState({ calcShip: e.target.value }),
       calcTotal: money(c.total),
       calcOver: HAS_CONTACT && c.basis !== 'none',
-      svcHisobPrice: this.svcPrice('svc-hisob'),
       calcAsk: () => this.askSvc('svc-hisob', tx(st.lang, "Kalkulyator: oyda ${0}, {1} kg, yetkazish ${2}/kg — taxminiy to'lov {3} so'm.", num(st.calcPrice), num(st.calcWeight), num(st.calcShip), money(c.total))),
       calcHint: (st.calcPrice === '320' && st.calcWeight === '2.5' && st.calcShip === '9')
         ? tx(st.lang, "misol: $320 va 2,5 kg uchun {0} so'm", money(c.total))
@@ -8126,7 +8102,7 @@ class Component extends DCLogic {
         return { normCards: [nc[0]], payCards: [pic(nc[1]), pic(nc[2])] };
       })(), qtyNorms: QTY_NORMS.map(x => ({ ...x, pic: "url('icons/norm/" + x.icon + ".webp')" })), criteria: CRITERIA,
       procSteps: PROC_STEPS, holdReasons: HOLD_REASONS,
-      svcOn: HAS_CONTACT, svcUshlanganPrice: this.svcPrice('svc-ushlangan'), svcTaqiqPrice: this.svcPrice('svc-taqiq'),
+      svcOn: HAS_CONTACT,
       holdAsk: () => this.askSvc('svc-ushlangan'),
       offices: OFFICES.map(o => {
         const tels = o.rows

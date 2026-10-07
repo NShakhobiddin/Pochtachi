@@ -956,19 +956,15 @@ integratsiyasi, ilovada joylashish).
 
 Bo'lim `CONTACT` bilan boshqariladi. `tg` yoki `phone` bo'sh bo'lsa
 `HAS_CONTACT` false bo'ladi va bo'lim butunlay ko'rsatilmaydi — ochilgan
-har bir tugma ogohlantirishga olib borishi o'rniga. Narxlar `SERVICES`
-dagi `price` maydonida; boshqa joyda takrorlanmaydi.
+har bir tugma ogohlantirishga olib borishi o'rniga.
 
-**Belgilangan narx.** Xaridor xizmatlari "kelishilgan holda" emas, aniq
-narx bilan (40 000 dan 300 000 so'mgacha; tashkilotlar uchun shartnoma va
-oylik joylashish ham belgilangan, qolganlari loyiha bo'yicha). Narx
-`price` maydonida raqam bo'lsa u Telegram xabariga ham qo'shiladi
-(`contactAbout`): "«Boj hisobini tekshirish» xizmati (60 000 so'm)
-bo'yicha yozmoqchiman" — ikki tomon ham bir xil raqamni ko'radi.
-Narxni o'zgartirish: faqat `SERVICES[].price`.
+**Narx ko'rsatilmaydi.** Xizmat kartalarida, og'riq nuqtalaridagi
+tugmalarda va Telegram xabarida narx yo'q — u suhbatda kelishiladi.
+Xabar (`contactAbout`): "«Boj hisobini tekshirish» xizmati bo'yicha
+yozmoqchiman" va holat (kalkulyator raqamlari, trek, tovar nomi).
 
-**Og'riq nuqtalaridagi tugmalar** (`askSvc(icon, ctx)`, narx tugmaning
-o'zida, xabarga holat qo'shiladi, `HAS_CONTACT` bo'lmasa ko'rinmaydi):
+**Og'riq nuqtalaridagi tugmalar** (`askSvc(icon, ctx)`, xabarga holat
+qo'shiladi, `HAS_CONTACT` bo'lmasa ko'rinmaydi):
 
 - Kalkulyator, me'yor oshganda — "Hisobni tekshirtirish" (xabarda summa,
   vazn, yetkazish va hisob);
