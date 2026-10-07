@@ -25,10 +25,15 @@ const REFUSE = ['SAFETY', 'RECITATION', 'BLOCKLIST', 'PROHIBITED_CONTENT', 'SPII
 
 /* Claude modeli → Gemini modeli: arzon (Haiku: skrinshot, qidiruv
    so'zlari) va asosiy (suhbat). Ikkalasi ham sozlamada. */
-export function geminiModel(claudeModel, env) {
+/* GEMINI_MODEL — bitta model yoki vergul bilan ro'yxat ("a,b,c"): biri
+   band bo'lsa (429, 5xx — Google "high demand" beradi) keyingisi. */
+export function geminiModels(claudeModel, env) {
   const cheap = /haiku/i.test(String(claudeModel || ''));
-  return String((cheap && env.GEMINI_SHOT_MODEL) || env.GEMINI_MODEL || GEMINI_DEFAULT_MODEL).trim();
+  const raw = String((cheap && env.GEMINI_SHOT_MODEL) || env.GEMINI_MODEL || GEMINI_DEFAULT_MODEL);
+  const list = raw.split(',').map(x => x.trim()).filter(x => /^[a-z0-9][a-z0-9.\-]*$/i.test(x));
+  return (list.length ? list : [GEMINI_DEFAULT_MODEL]).slice(0, 3);
 }
+export function geminiModel(claudeModel, env) { return geminiModels(claudeModel, env)[0]; }
 
 const isServerTool = t => t && !t.input_schema && typeof t.type === 'string' && /^(web_search|web_fetch|code_execution)/.test(t.type);
 const textOf = c => typeof c === 'string' ? c : Array.isArray(c) ? c.filter(b => b && b.type === 'text').map(b => b.text).join('\n') : '';
@@ -217,7 +222,17 @@ export async function readGeminiSse(stream, model, onEvent) {
    { data } yoki { error, status, type }. */
 export async function callGemini(body, env, fetchImpl, onEvent) {
   if (!env.GEMINI_API_KEY) return { error: 'gemini: kalit yo\'q', status: 401, type: 'no_key' };
-  const model = geminiModel(body.model, env);
+  const models = geminiModels(body.model, env);
+  let r = null;
+  for (let i = 0; i < models.length; i++) {
+    r = await callGeminiModel(models[i], body, env, fetchImpl, onEvent);
+    const busy = r.error && (r.status === 0 || r.status === 429 || r.status >= 500);
+    if (!busy || i === models.length - 1) break;
+    console.log('gemini band, keyingi model', models[i], r.status);
+  }
+  return r;
+}
+async function callGeminiModel(model, body, env, fetchImpl, onEvent) {
   const url = GEMINI_URL + encodeURIComponent(model) + (onEvent ? ':streamGenerateContent?alt=sse' : ':generateContent');
   const init = { method: 'POST', headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY }, body: JSON.stringify(toGemini(body, env)) };
   if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) init.signal = AbortSignal.timeout(+env.AI_TIMEOUT_MS || 50000);

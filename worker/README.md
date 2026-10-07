@@ -175,9 +175,11 @@ url, copyOnly }] }, stop: "kw" }`; ≈ $0.001, kunlik javob keshi bilan
 (`/stats` da `kw`). Sabab: xorijiy do'konda eng katta to'siq — nima deb
 yozishni bilmaslik; Taobao xitoycha so'z bilan ancha ko'p topadi.
 **Gemini zaxirasi (2026-10-07).** `GEMINI_API_KEY` (Cloudflare siri;
-workflow GitHub sirini o'zi o'rnatadi va kalitga ochiq eng yangi
-barqaror Flash modelini `GEMINI_MODEL` ga yozadi; repo o'zgaruvchisi
-`GEMINI_MODEL` bo'lsa — o'sha) bo'lsa, Claude ishlamay qolganda —
+workflow GitHub sirini o'zi o'rnatadi; kalitga ochiq barqaror Flash
+modellarga 1 so'zli sinov yuborib, javob berganlarini oldinga qo'yib,
+ko'pi bilan 3 tasini `GEMINI_MODEL` ga ro'yxat qilib yozadi — biri band
+bo'lsa (429, 5xx, "high demand") Worker keyingisiga o'tadi; repo
+o'zgaruvchisi `GEMINI_MODEL` bo'lsa — o'sha) bo'lsa, Claude ishlamay qolganda —
 kredit/oylik chegara (400 "usage limits", "credit balance"), kalit
 (401/403), yuklama (429, 529, 5xx) yoki tarmoq — xuddi shu so'rov
 Gemini'ga ketadi va suhbat shu so'rov oxirigacha Gemini'da qoladi.

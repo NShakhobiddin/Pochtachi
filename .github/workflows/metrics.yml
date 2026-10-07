@@ -205,32 +205,41 @@ jobs:
             echo "::warning::Google Gemini kalitni qabul qilmadi ($code): $(head -c 300 /tmp/gm). aistudio.google.com → Get API key — yangi kalit olib, GitHub sirini almashtiring. Zaxira o'chiq qoladi."
             echo "set=0" >> "$GITHUB_OUTPUT"; exit 0
           fi
-          # Matn yozadigan Flash va Pro modellar (rasm/ovoz/jonli variantlarsiz).
-          # Tanlov: repo o'zgaruvchisi GEMINI_MODEL (Settings → Variables) bo'lsa —
-          # o'sha; bo'lmasa eng yangi barqaror (preview emas) Flash.
-          PICK=$(GM="$GM" node -e '(() => {
+          # Matn yozadigan Flash modellar (rasm/ovoz/jonli variantlarsiz).
+          # Nomzodlar: repo o'zgaruvchisi GEMINI_MODEL (Settings → Variables,
+          # bitta yoki "a,b") bo'lsa — o'sha; bo'lmasa barqaror (preview emas)
+          # Flash'lar, yangisidan eskisiga. Eng yangisi ko'pincha band
+          # ("high demand", 503) — shuning uchun har biriga 1 so'zli sinov
+          # so'rovi, javob berganlari oldinga; Worker'ga ko'pi bilan 3 tasi
+          # ro'yxat bo'lib yoziladi (biri band bo'lsa keyingisi).
+          CANDS=$(GM="$GM" node -e '(() => {
             const j = JSON.parse(require("fs").readFileSync("/tmp/gm", "utf8"));
             const ok = (j.models || []).filter(m => (m.supportedGenerationMethods || []).includes("generateContent")).map(m => String(m.name || "").replace(/^models\//, ""));
             const txt = ok.filter(n => /^gemini-/.test(n) && /(flash|pro)/.test(n) && !/(image|tts|audio|live|embedding|computer|robotics|native)/.test(n));
             console.error("Gemini modellari: " + txt.join(", "));
-            const want = String(process.env.GM || "").trim();
-            if (want && ok.includes(want)) { console.log(want); return; }
+            const want = String(process.env.GM || "").split(",").map(x => x.trim()).filter(x => ok.includes(x));
+            if (want.length) { console.log(want.join(" ")); return; }
             const ver = n => parseFloat((/^gemini-([0-9.]+)/.exec(n) || [0, 0])[1]) || 0;
             const stable = txt.filter(n => /^gemini-[0-9.]+-flash$/.test(n)).sort((a, b) => ver(b) - ver(a));
-            const any = txt.filter(n => /flash/.test(n) && !/lite/.test(n)).sort((a, b) => ver(b) - ver(a));
-            console.log(stable[0] || any[0] || "");
+            const extra = ok.includes("gemini-flash-latest") ? ["gemini-flash-latest"] : [];
+            console.log(stable.slice(0, 5).concat(extra).join(" "));
           })()')
-          if [ -z "$PICK" ]; then echo "::warning::Kalitga mos Gemini Flash modeli topilmadi — zaxira o'chiq qoladi"; echo "set=0" >> "$GITHUB_OUTPUT"; exit 0; fi
-          # 1 so'zli sinov so'rovi: hisob (billing) yoqilganmi — xato matni chiqadi.
-          code=$(curl -s -o /tmp/gt -w '%{http_code}' "https://generativelanguage.googleapis.com/v1beta/models/$PICK:generateContent" \
-            -H "x-goog-api-key: $G" -H 'content-type: application/json' -d '{"contents":[{"role":"user","parts":[{"text":"ok"}]}],"generationConfig":{"maxOutputTokens":8}}')
-          if [ "$code" != "200" ]; then
-            echo "::warning::Gemini sinov so'rovi $code: $(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/gt','utf8'));const e=(Array.isArray(j)?j[0]:j).error||{};process.stdout.write(String(e.status||'')+': '+String(e.message||'').slice(0,240))}catch(e){process.stdout.write('?')}")"
-          fi
+          if [ -z "$CANDS" ]; then echo "::warning::Kalitga mos Gemini Flash modeli topilmadi — zaxira o'chiq qoladi"; echo "set=0" >> "$GITHUB_OUTPUT"; exit 0; fi
+          GOOD=""; BUSY=""; LASTERR=""
+          for M in $CANDS; do
+            code=$(curl -s -m 30 -o /tmp/gt -w '%{http_code}' "https://generativelanguage.googleapis.com/v1beta/models/$M:generateContent" \
+              -H "x-goog-api-key: $G" -H 'content-type: application/json' -d '{"contents":[{"role":"user","parts":[{"text":"ok"}]}],"generationConfig":{"maxOutputTokens":8}}')
+            if [ "$code" = "200" ]; then GOOD="$GOOD $M"; echo "OK — $M javob berdi"
+            else BUSY="$BUSY $M"; LASTERR=$(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/gt','utf8'));const e=(Array.isArray(j)?j[0]:j).error||{};process.stdout.write(String(e.status||'')+': '+String(e.message||'').slice(0,160))}catch(e){process.stdout.write('?')}"); echo "$M — $code $LASTERR"; fi
+          done
+          PICK=$(echo $GOOD $BUSY | tr ' ' '\n' | grep -v '^$' | head -3 | paste -sd, -)
+          [ -n "$GOOD" ] || echo "::warning::Hech bir Gemini modeli hozir javob bermadi ($LASTERR). Ro'yxat baribir yoziladi — band holat odatda vaqtinchalik; billing yoqilganini tekshiring."
+          code=$([ -n "$GOOD" ] && echo 200 || echo "$code")
           printf '%s' "$G" | npx wrangler secret put GEMINI_API_KEY
           printf '%s' "$PICK" | npx wrangler secret put GEMINI_MODEL
           echo "set=1" >> "$GITHUB_OUTPUT"
-          echo "::notice::Gemini zaxirasi yoqildi — model: $PICK (sinov so'rovi: $code)"
+          [ -n "$GOOD" ] || GOOD=" hech biri (hozir band)"
+          echo "::notice::Gemini zaxirasi yoqildi — modellar (tartib bilan): $PICK; javob berganlar:$GOOD"
 
       - name: Hamkor kuryer kalitlarini o'rnatish (PARTNER_KEYS, ixtiyoriy)
         working-directory: worker

@@ -710,6 +710,12 @@ check('parseAiBody: savol + url — url e\'tiborsiz', (() => { const p = parseAi
     return new Response(ev.map(e => 'data: ' + JSON.stringify(e) + '\r\n\r\n').join(''), { status: 200, headers: { 'content-type': 'text/event-stream' } }); }, GEMINI_API_KEY: 'g' }, { headers: { 'cf-connecting-ip': '7.1.1.7' }, body: { stream: true } });
   const gls = await lines(gss); const gdone = gls.find(l => l.t === 'done') || {};
   check('zaxira oqimi: streamGenerateContent?alt=sse, matn bo\'laklari, done (gemini)', /:streamGenerateContent\?alt=sse$/.test(sseUrl) && gls.filter(l => l.t === 'text').map(l => l.d).join('') === 'Boj yo\'q.' && gdone.text === 'Boj yo\'q.' && /gemini/.test(gdone.model), JSON.stringify(gls).slice(0, 240));
+  /* Model ro'yxati: birinchisi band (503 high demand) — keyingisi javob beradi. */
+  const chainUrls = [];
+  const chain = await (await ask('boj?', { AI_FETCH: async (u) => { if (/anthropic/.test(u)) return limitRes(); chainUrls.push(u);
+    if (/gemini-3\.8-flash/.test(u)) return new Response(JSON.stringify({ error: { code: 503, message: 'This model is currently experiencing high demand.', status: 'UNAVAILABLE' } }), { status: 503 });
+    return new Response(JSON.stringify({ modelVersion: 'gemini-3.7-flash', candidates: [{ finishReason: 'STOP', content: { parts: [{ text: 'Javob' }] } }] }), { status: 200 }); }, GEMINI_API_KEY: 'g', GEMINI_MODEL: 'gemini-3.8-flash, gemini-3.7-flash,gemini-2.5-flash' }, { headers: { 'cf-connecting-ip': '7.1.2.1' } })).json();
+  check('Gemini model ro\'yxati: band model (503) — keyingisi; 3 tadan ortiq urinish yo\'q', chain.text === 'Javob' && chain.model === 'gemini-3.7-flash' && chainUrls.length === 2 && /gemini-3\.7-flash:generateContent/.test(chainUrls[1]), JSON.stringify(chainUrls));
   /* Sinov: x-pochtam-provider: gemini (faqat eval paroli bilan) — Claude chaqirilmaydi. */
   let evA = 0, evG = 0;
   const evFake = async u => { if (/anthropic/.test(u)) { evA++; return claudeText('c'); } evG++; return new Response(JSON.stringify({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: 'g' }] } }] }), { status: 200 }); };
