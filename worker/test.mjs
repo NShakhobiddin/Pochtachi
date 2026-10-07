@@ -635,5 +635,88 @@ check('parseAiBody: savol + url — url e\'tiborsiz', (() => { const p = parseAi
   check('purge: eski kunning tayyor javoblari o\'chadi, bugungisi qoladi', !kv.has('a:eski') && [...kv.keys()].some(k => k.startsWith('a:')));
 }
 
+/* --- Gemini zaxirasi (2026-10-07): Claude so'rovi ↔ Gemini, avtomatik o'tish --- */
+{
+  const { toGemini, fromGemini, partsToBlocks } = await import('./src/gemini.js');
+  const { shouldFallback } = await import('./src/ai.js');
+  const PNGg = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+  /* toGemini: tizim bloklari, rollar, rasm, vositalar, Claude chaqiruviga maxsus imzo, natija nom bilan, JSON sxema. */
+  const gb = toGemini({ model: 'claude-sonnet-5', max_tokens: 900,
+    system: [{ type: 'text', text: 'Qoidalar', cache_control: { type: 'ephemeral' } }, { type: 'text', text: 'Bu so\'rov: web_search bilan top' }, { type: 'text', text: 'Bugun: 2026-10-07' }],
+    tools: [{ name: 'customs_duty', description: 'Boj', input_schema: { type: 'object', properties: { goodsUsd: { type: 'number' } }, required: ['goodsUsd'] }, cache_control: { type: 'ephemeral' } }, { type: 'web_search_20260209', name: 'web_search', max_uses: 1 }],
+    messages: [{ role: 'user', content: 'avvalgi savol' }, { role: 'assistant', content: 'avvalgi javob' },
+      { role: 'user', content: [{ type: 'image', source: { type: 'base64', media_type: 'image/png', data: PNGg } }, { type: 'text', text: 'boj?' }] },
+      { role: 'assistant', content: [{ type: 'thinking', thinking: 'x', signature: 's' }, { type: 'tool_use', id: 'toolu_1', name: 'customs_duty', input: { goodsUsd: 320 } }] },
+      { role: 'user', content: [{ type: 'tool_result', tool_use_id: 'toolu_1', content: '{"dutyUsd":36}' }] }],
+    output_config: { format: { type: 'json_schema', schema: { type: 'object', properties: { a: { type: 'string' } } } } } }, {});
+  const fd = gb.tools && gb.tools[0].functionDeclarations;
+  check('toGemini: tizim bitta matn (web_search ko\'rsatmasi qidiruvsiz olib tashlanadi), rollar user/model', gb.systemInstruction.parts[0].text === 'Qoidalar\n\nBugun: 2026-10-07' && gb.contents.map(c => c.role).join() === 'user,model,user,model,user', JSON.stringify(gb.systemInstruction));
+  check('toGemini: rasm inlineData, matn yonida', gb.contents[2].parts[0].inlineData.mimeType === 'image/png' && gb.contents[2].parts[0].inlineData.data === PNGg && gb.contents[2].parts[1].text === 'boj?');
+  check('toGemini: vosita functionDeclarations (parametersJsonSchema), server vositasi (web_search) yo\'q', fd.length === 1 && fd[0].name === 'customs_duty' && fd[0].parametersJsonSchema.required[0] === 'goodsUsd' && !fd[0].cache_control && gb.tools.length === 1, JSON.stringify(gb.tools));
+  check('toGemini: Claude chaqiruvi — thinking tashlanadi, functionCall maxsus imzo bilan; natija functionResponse (nom bilan)', gb.contents[3].parts.length === 1 && gb.contents[3].parts[0].functionCall.name === 'customs_duty' && gb.contents[3].parts[0].functionCall.args.goodsUsd === 320 && gb.contents[3].parts[0].thoughtSignature === 'skip_thought_signature_validator'
+    && gb.contents[4].parts[0].functionResponse.name === 'customs_duty' && gb.contents[4].parts[0].functionResponse.response.dutyUsd === 36 && !gb.contents[4].parts[0].functionResponse.id, JSON.stringify(gb.contents.slice(3)));
+  check('toGemini: JSON sxema responseJsonSchema, max_tokens maxOutputTokens, fikrlash sozlanmasa yuborilmaydi', gb.generationConfig.responseMimeType === 'application/json' && gb.generationConfig.responseJsonSchema.properties.a && gb.generationConfig.maxOutputTokens === 900 && !gb.generationConfig.thinkingConfig);
+  check('toGemini: GEMINI_SEARCH=1 — googleSearch; GEMINI_THINKING=low — thinkingLevel LOW; tool_choice tool — ANY', (() => { const g2 = toGemini({ tools: [{ name: 'a', input_schema: { type: 'object' } }, { type: 'web_search_20260209', name: 'web_search' }], tool_choice: { type: 'tool', name: 'a' }, messages: [{ role: 'user', content: 'x' }] }, { GEMINI_SEARCH: '1', GEMINI_THINKING: 'low' });
+    return g2.tools.length === 2 && !!g2.tools[1].googleSearch && g2.generationConfig.thinkingConfig.thinkingLevel === 'LOW' && g2.toolConfig.functionCallingConfig.mode === 'ANY' && g2.toolConfig.functionCallingConfig.allowedFunctionNames[0] === 'a'; })());
+  /* fromGemini */
+  const fg = fromGemini({ modelVersion: 'gemini-2.5-flash', candidates: [{ finishReason: 'STOP', content: { role: 'model', parts: [{ text: 'Hisob', thoughtSignature: 'S0' }, { text: 'layman' }, { functionCall: { name: 'customs_duty', args: { goodsUsd: 50 } }, thoughtSignature: 'S1' }, { functionCall: { name: 'courier_quotes', args: { kg: 1 } } }] } }],
+    usageMetadata: { promptTokenCount: 1200, cachedContentTokenCount: 200, candidatesTokenCount: 80, thoughtsTokenCount: 20 } }, 'm');
+  check('fromGemini: matn birlashadi (imzo bilan), 2 ta tool_use (birinchisida imzo), stop tool_use, usage', fg.content.length === 3 && fg.content[0].text === 'Hisoblayman' && fg.content[0].gsig === 'S0' && fg.content[1].type === 'tool_use' && fg.content[1].gsig === 'S1' && !fg.content[2].gsig && fg.content[1].gsrc && fg.stop_reason === 'tool_use'
+    && fg.usage.input_tokens === 1000 && fg.usage.cache_read_input_tokens === 200 && fg.usage.output_tokens === 100 && fg.model === 'gemini-2.5-flash', JSON.stringify(fg));
+  check('fromGemini: SAFETY / promptFeedback.blockReason — refusal; MAX_TOKENS — max_tokens', fromGemini({ candidates: [{ finishReason: 'SAFETY', content: { parts: [] } }] }).stop_reason === 'refusal' && fromGemini({ promptFeedback: { blockReason: 'OTHER' } }).stop_reason === 'refusal' && fromGemini({ candidates: [{ finishReason: 'MAX_TOKENS', content: { parts: [{ text: 'a' }] } }] }).stop_reason === 'max_tokens');
+  check('partsToBlocks: fikr qismlari (thought) tashlanadi, bo\'sh qismdagi imzo oxirgi blokka', (() => { const b = partsToBlocks([{ text: 'ichki', thought: true }, { text: 'Javob' }, { text: '', thoughtSignature: 'Z' }]); return b.length === 1 && b[0].text === 'Javob' && b[0].gsig === 'Z'; })());
+  check('shouldFallback: kredit/chegara (400), kalit, 429/529/5xx, tarmoq — ha; oddiy 400 — yo\'q', shouldFallback({ error: 'You have reached your specified API usage limits.', status: 400 }) && shouldFallback({ error: 'x', status: 529 }) && shouldFallback({ error: 'x', status: 0 }) && shouldFallback({ error: 'x', status: 401 }) && !shouldFallback({ error: 'messages: bad', status: 400 }));
+  check('costUsd: Gemini Flash narxi ($0.5/$3), Flash-Lite arzonroq', Math.abs(costUsd('gemini-2.5-flash', { input_tokens: 1e6, output_tokens: 1e6 }) - 3.5) < 1e-9 && costUsd('gemini-2.5-flash-lite', { input_tokens: 1e6, output_tokens: 0 }) === 0.1);
+
+  /* Jonli yo'l: Claude chegarada (400 usage limits) → Gemini, vosita sikli. */
+  const limitRes = () => new Response(JSON.stringify({ type: 'error', error: { type: 'invalid_request_error', message: 'You have reached your specified API usage limits. You will regain access on 2026-11-01 at 00:00 UTC.' } }), { status: 400 });
+  const gsent = []; let gn = 0, aCalls = 0;
+  const gemFake = async (u, i) => {
+    if (/anthropic/.test(u)) { aCalls++; return limitRes(); }
+    gsent.push({ url: u, key: i.headers['x-goog-api-key'], body: JSON.parse(i.body) }); gn++;
+    const parts = gn === 1 ? [{ functionCall: { name: 'customs_duty', args: { goodsUsd: 320, kg: 2.5 } }, thoughtSignature: 'SIG1' }] : [{ text: '**Boj** 36 dollar. Taxminiy.' }];
+    return new Response(JSON.stringify({ modelVersion: 'gemini-2.5-flash', candidates: [{ finishReason: 'STOP', content: { role: 'model', parts } }], usageMetadata: { promptTokenCount: 3000, candidatesTokenCount: 40 } }), { status: 200, headers: { 'content-type': 'application/json' } });
+  };
+  const gr = await (await ask('320 dollarlik 2.5 kg tovar uchun boj qancha?', { AI_FETCH: gemFake, GEMINI_API_KEY: 'g-test' }, { headers: { 'cf-connecting-ip': '7.1.1.1' } })).json();
+  const r2 = gsent[1] && gsent[1].body.contents;
+  check('zaxira: Claude chegarada → Gemini javob beradi (matn markdownsiz, boj kartasi, model gemini)', gr.text === 'Boj 36 dollar. Taxminiy.' && gr.cards[0].type === 'duty' && gr.tools.join() === 'customs_duty' && /gemini/.test(gr.model) && gr.usage.usd > 0 && gr.usage.gemini === 1, JSON.stringify(gr).slice(0, 240));
+  check('zaxira: Gemini so\'rovi — kalit sarlavhada, generateContent; 2-raundda functionCall imzosi (SIG1) va functionResponse', /generativelanguage\.googleapis\.com\/v1beta\/models\/gemini-2\.5-flash:generateContent$/.test(gsent[0].url) && gsent[0].key === 'g-test'
+    && r2 && r2[r2.length - 2].role === 'model' && r2[r2.length - 2].parts[0].thoughtSignature === 'SIG1' && r2[r2.length - 1].parts[0].functionResponse.name === 'customs_duty' && r2[r2.length - 1].parts[0].functionResponse.response.dutyUsd >= 0, JSON.stringify(r2 && r2.slice(-2)).slice(0, 300));
+  check('zaxira: suhbat Gemini\'da qoladi — 2-raundda Claude chaqirilmaydi', aCalls === 1 && gn === 2, 'claude=' + aCalls + ' gemini=' + gn);
+  /* Gemini ham ishlamasa — asl xato kodi (billing). */
+  const both = await ask('x', { AI_FETCH: async u => /anthropic/.test(u) ? limitRes() : new Response(JSON.stringify({ error: { code: 503, message: 'overloaded', status: 'UNAVAILABLE' } }), { status: 503 }), GEMINI_API_KEY: 'g' }, { headers: { 'cf-connecting-ip': '7.1.1.2' } });
+  check('zaxira: Gemini ham yiqilsa — 503 va asl sabab (billing)', both.status === 503 && (await both.json()).code === 'billing');
+  /* AI_GEMINI_FALLBACK=0 — zaxira o'chiq; oddiy 400 — zaxiraga o'tmaydi. */
+  let gTouched = 0;
+  await ask('x', { AI_FETCH: async u => { if (!/anthropic/.test(u)) gTouched++; return limitRes(); }, GEMINI_API_KEY: 'g', AI_GEMINI_FALLBACK: '0' }, { headers: { 'cf-connecting-ip': '7.1.1.3' } });
+  await ask('x', { AI_FETCH: async u => { if (!/anthropic/.test(u)) gTouched++; return new Response(JSON.stringify({ error: { type: 'invalid_request_error', message: 'messages: bad' } }), { status: 400 }); }, GEMINI_API_KEY: 'g' }, { headers: { 'cf-connecting-ip': '7.1.1.4' } });
+  check('zaxira: AI_GEMINI_FALLBACK=0 va oddiy 400 da Gemini chaqirilmaydi', gTouched === 0, 'gemini=' + gTouched);
+  /* Skrinshot: Claude yuklamada (529) → Gemini rasmni JSON sxema bilan o'qiydi. */
+  let shotReqG = null;
+  const shotG = await (await shot({ image: 'data:image/png;base64,' + PNGg, lang: 'uz', usdRate: 12650 }, { AI_FETCH: async (u, i) => { if (/anthropic/.test(u)) return new Response('{"error":{"type":"overloaded_error","message":"Overloaded"}}', { status: 529 }); shotReqG = JSON.parse(i.body);
+    return new Response(JSON.stringify({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify({ kind: 'price', name: 'Nike Air Max 90', brand: 'Nike', query: '', price: 129.99, currency: 'USD', qty: 1, store: 'Nike', category: 'poyabzal', country: 'AQSh', weightKg: 0, confidence: 0.9, items: [] }) }] } }], usageMetadata: { promptTokenCount: 1300, candidatesTokenCount: 90 } }), { status: 200 }); }, GEMINI_API_KEY: 'g', GEMINI_SHOT_MODEL: 'gemini-2.5-flash-lite' }, '7.1.1.5')).json();
+  check('zaxira: skrinshot Gemini\'da — rasm inlineData, sxema, arzon model; narx o\'qildi', shotG.shot && shotG.shot.found && shotG.shot.priceUsd === 129.99 && shotReqG.contents[0].parts.some(p => p.inlineData) && shotReqG.generationConfig.responseJsonSchema && shotG.stop === 'shot', JSON.stringify(shotG.shot || shotG).slice(0, 160));
+  /* Qidiruv so'zlari: Claude kaliti yo'q, faqat Gemini — darhol Gemini. */
+  let kwUrl = '';
+  const kwG = await (await worker.fetch(new Request('https://w/ai', { method: 'POST', headers: { origin: 'https://x', 'cf-connecting-ip': '7.1.1.6' }, body: JSON.stringify({ q: 'termos 1 litr', kw: true, lang: 'uz' }) }),
+    { ...env, GEMINI_API_KEY: 'g', AI_DAILY_PER_IP: '3', AI_DAILY_TOTAL: '100', AI_FETCH: async (u) => { kwUrl = u; return new Response(JSON.stringify({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify({ name: 'Termos', category: 'universal', en: 'thermos 1L', zh: '保温杯 1升', tr: 'termos 1 litre', tip: '' }) }] } }] }), { status: 200 }); } }, ctx)).json();
+  check('faqat Gemini kaliti: qidiruv so\'zlari Gemini\'da (Claude chaqirilmaydi)', /generativelanguage/.test(kwUrl) && kwG.kw && kwG.kw.words.zh === '保温杯 1升' && kwG.kw.stores.length > 2, JSON.stringify(kwG).slice(0, 160));
+  const stG = await worker.fetch(new Request('https://w/ai/status', { headers: { origin: 'https://x' } }), { ...env, GEMINI_API_KEY: 'g' }, ctx);
+  check('/ai/status: faqat Gemini kaliti bo\'lsa ham ai:true', (await stG.json()).ai === true);
+  /* Oqim: Claude 529 → Gemini SSE (alt=sse), matn bo'laklari ilovaga. */
+  let sseUrl = '';
+  const gss = await ask('boj qancha?', { AI_FETCH: async (u) => { if (/anthropic/.test(u)) return new Response('{"error":{"type":"overloaded_error","message":"Overloaded"}}', { status: 529 }); sseUrl = u;
+    const ev = [{ candidates: [{ content: { role: 'model', parts: [{ text: 'Boj ' }] } }] }, { candidates: [{ content: { role: 'model', parts: [{ text: 'yo\'q.' }] }, finishReason: 'STOP' }], usageMetadata: { promptTokenCount: 900, candidatesTokenCount: 5 }, modelVersion: 'gemini-2.5-flash' }];
+    return new Response(ev.map(e => 'data: ' + JSON.stringify(e) + '\r\n\r\n').join(''), { status: 200, headers: { 'content-type': 'text/event-stream' } }); }, GEMINI_API_KEY: 'g' }, { headers: { 'cf-connecting-ip': '7.1.1.7' }, body: { stream: true } });
+  const gls = await lines(gss); const gdone = gls.find(l => l.t === 'done') || {};
+  check('zaxira oqimi: streamGenerateContent?alt=sse, matn bo\'laklari, done (gemini)', /:streamGenerateContent\?alt=sse$/.test(sseUrl) && gls.filter(l => l.t === 'text').map(l => l.d).join('') === 'Boj yo\'q.' && gdone.text === 'Boj yo\'q.' && /gemini/.test(gdone.model), JSON.stringify(gls).slice(0, 240));
+  /* Sinov: x-pochtam-provider: gemini (faqat eval paroli bilan) — Claude chaqirilmaydi. */
+  let evA = 0, evG = 0;
+  const evFake = async u => { if (/anthropic/.test(u)) { evA++; return claudeText('c'); } evG++; return new Response(JSON.stringify({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: 'g' }] } }] }), { status: 200 }); };
+  await ask('salom', { AI_FETCH: evFake, GEMINI_API_KEY: 'g' }, { headers: { 'cf-connecting-ip': '7.1.1.8', 'x-pochtam-eval': 'sir', 'x-pochtam-provider': 'gemini' } });
+  await ask('salom 2', { AI_FETCH: evFake, GEMINI_API_KEY: 'g' }, { headers: { 'cf-connecting-ip': '7.1.1.9', 'x-pochtam-eval': 'notogri', 'x-pochtam-provider': 'gemini' } });
+  check('eval: x-pochtam-provider gemini faqat to\'g\'ri parol bilan', evG === 1 && evA === 1, 'gemini=' + evG + ' claude=' + evA);
+}
+
 console.log(fails ? `\n${fails} ta tekshiruv o'tmadi.` : '\nWorker testlari o\'tdi.');
 process.exit(fails ? 1 : 0);

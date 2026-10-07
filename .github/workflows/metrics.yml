@@ -6,6 +6,8 @@ name: O'lchovni yoqish (Cloudflare Worker)
 #   CLOUDFLARE_ACCOUNT_ID — Cloudflare → Workers & Pages → o'ng ustunda Account ID
 #   METRICS_READ_TOKEN    — o'zingiz o'ylab topgan uzun parol (hisobotni o'qish uchun)
 #   ANTHROPIC_API_KEY     — ixtiyoriy: Pochtam AI uchun Claude API kaliti (console.anthropic.com)
+#   GEMINI_API_KEY        — ixtiyoriy: Gemini zaxirasi (aistudio.google.com, pullik tarif) —
+#                           Claude ishlamasa (chegara, yuklama) AI Gemini'da davom etadi
 #   PARTNER_KEYS          — ixtiyoriy: hamkor kuryer kalitlari "d2d:pk_…,globbing:pk_…"
 #                           (worker/hamkor-kalit.mjs yaratadi; docs/hamkor-api.md)
 # Nima qiladi: worker/ ni Cloudflare'ga joylaydi, READ_TOKEN sirini o'rnatadi,
@@ -17,6 +19,10 @@ on:
     inputs:
       eval:
         description: "AI sifat sinovi (tests/ai-eval.json, 23 savol, ~$0.5–1)"
+        type: boolean
+        default: false
+      gemini_eval:
+        description: "Gemini sifat sinovi: xuddi shu eval Gemini'da (GEMINI_API_KEY kerak)"
         type: boolean
         default: false
       compare:
@@ -91,6 +97,7 @@ jobs:
       - name: Kalitni tekshirish va mavjud modellarni ko'rsatish
         env:
           K: ${{ secrets.ANTHROPIC_API_KEY }}
+          G: ${{ secrets.GEMINI_API_KEY }}
         run: |
           set +e
           K=$(printf '%s' "$K" | tr -d '[:space:]')
@@ -145,6 +152,12 @@ jobs:
               *"usage limit"*) echo "::error::Hisobda o'zingiz qo'ygan oylik sarf chegarasiga yetildi. console.anthropic.com → Settings → Limits → chegarani oshiring (yoki ko'rsatilgan sanani kuting), keyin workflow'ni qayta ishga tushiring.";;
               *credit*|*billing*) echo "::error::Anthropic hisobida kredit tugagan. console.anthropic.com → Settings → Billing → kredit qo'shing, keyin workflow'ni qayta ishga tushiring.";;
             esac
+            # Gemini zaxirasi bo'lsa — joylash davom etadi: AI shu kunlarda
+            # Gemini'da ishlaydi (keyingi qadam kalitni o'rnatadi).
+            G=$(printf '%s' "$G" | tr -d '[:space:]')
+            case "$MSG" in *"usage limit"*|*credit*|*billing*)
+              if [ -n "$G" ]; then echo "::warning::Claude hozir ishlamaydi — AI Gemini zaxirasida davom etadi. Claude'ni qaytarish uchun yuqoridagi sababni tuzating."; exit 0; fi;;
+            esac
             exit 1
           fi
 
@@ -172,6 +185,52 @@ jobs:
             echo "set=0" >> "$GITHUB_OUTPUT"
             echo "ANTHROPIC_API_KEY siri yo'q — AI o'chiq qoladi"
           fi
+
+      - name: Gemini zaxira kalitini o'rnatish (GEMINI_API_KEY, ixtiyoriy)
+        id: gemkey
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          G: ${{ secrets.GEMINI_API_KEY }}
+          GM: ${{ vars.GEMINI_MODEL }}
+        run: |
+          set +e
+          # Kalitning O'ZI hech qayerga chiqmaydi — faqat uzunligi va model nomlari.
+          G=$(printf '%s' "$G" | tr -d '[:space:]')
+          if [ -z "$G" ]; then echo "set=0" >> "$GITHUB_OUTPUT"; echo "GEMINI_API_KEY siri yo'q — Gemini zaxirasi o'chiq"; exit 0; fi
+          echo "Gemini kaliti uzunligi: ${#G} belgi"
+          code=$(curl -s -o /tmp/gm -w '%{http_code}' 'https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000' -H "x-goog-api-key: $G")
+          if [ "$code" != "200" ]; then
+            echo "::warning::Google Gemini kalitni qabul qilmadi ($code): $(head -c 300 /tmp/gm). aistudio.google.com → Get API key — yangi kalit olib, GitHub sirini almashtiring. Zaxira o'chiq qoladi."
+            echo "set=0" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          # Matn yozadigan Flash va Pro modellar (rasm/ovoz/jonli variantlarsiz).
+          # Tanlov: repo o'zgaruvchisi GEMINI_MODEL (Settings → Variables) bo'lsa —
+          # o'sha; bo'lmasa eng yangi barqaror (preview emas) Flash.
+          PICK=$(GM="$GM" node -e '(() => {
+            const j = JSON.parse(require("fs").readFileSync("/tmp/gm", "utf8"));
+            const ok = (j.models || []).filter(m => (m.supportedGenerationMethods || []).includes("generateContent")).map(m => String(m.name || "").replace(/^models\//, ""));
+            const txt = ok.filter(n => /^gemini-/.test(n) && /(flash|pro)/.test(n) && !/(image|tts|audio|live|embedding|computer|robotics|native)/.test(n));
+            console.error("Gemini modellari: " + txt.join(", "));
+            const want = String(process.env.GM || "").trim();
+            if (want && ok.includes(want)) { console.log(want); return; }
+            const ver = n => parseFloat((/^gemini-([0-9.]+)/.exec(n) || [0, 0])[1]) || 0;
+            const stable = txt.filter(n => /^gemini-[0-9.]+-flash$/.test(n)).sort((a, b) => ver(b) - ver(a));
+            const any = txt.filter(n => /flash/.test(n) && !/lite/.test(n)).sort((a, b) => ver(b) - ver(a));
+            console.log(stable[0] || any[0] || "");
+          })()')
+          if [ -z "$PICK" ]; then echo "::warning::Kalitga mos Gemini Flash modeli topilmadi — zaxira o'chiq qoladi"; echo "set=0" >> "$GITHUB_OUTPUT"; exit 0; fi
+          # 1 so'zli sinov so'rovi: hisob (billing) yoqilganmi — xato matni chiqadi.
+          code=$(curl -s -o /tmp/gt -w '%{http_code}' "https://generativelanguage.googleapis.com/v1beta/models/$PICK:generateContent" \
+            -H "x-goog-api-key: $G" -H 'content-type: application/json' -d '{"contents":[{"role":"user","parts":[{"text":"ok"}]}],"generationConfig":{"maxOutputTokens":8}}')
+          if [ "$code" != "200" ]; then
+            echo "::warning::Gemini sinov so'rovi $code: $(node -e "try{const j=JSON.parse(require('fs').readFileSync('/tmp/gt','utf8'));const e=(Array.isArray(j)?j[0]:j).error||{};process.stdout.write(String(e.status||'')+': '+String(e.message||'').slice(0,240))}catch(e){process.stdout.write('?')}")"
+          fi
+          printf '%s' "$G" | npx wrangler secret put GEMINI_API_KEY
+          printf '%s' "$PICK" | npx wrangler secret put GEMINI_MODEL
+          echo "set=1" >> "$GITHUB_OUTPUT"
+          echo "::notice::Gemini zaxirasi yoqildi — model: $PICK (sinov so'rovi: $code)"
 
       - name: Hamkor kuryer kalitlarini o'rnatish (PARTNER_KEYS, ixtiyoriy)
         working-directory: worker
@@ -334,6 +393,17 @@ jobs:
           # Xulosa — ogohlantirish: sifat pasaygan savollar ro'yxati ko'rinadi.
           AI_URL="${URL}ai" AI_ORIGIN="https://nshakhobiddin.github.io" EVAL_TOKEN="$R" node tests/ai.mjs | tee /tmp/eval.log
           echo "::notice::AI sifat sinovi: $(tail -2 /tmp/eval.log | tr '\n' ' ')"
+
+      - name: Gemini sifat sinovi (ixtiyoriy — gemini_eval)
+        if: ${{ inputs.gemini_eval && steps.gemkey.outputs.set == '1' }}
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+          R: ${{ secrets.METRICS_READ_TOKEN }}
+        run: |
+          # Xuddi shu savollar Gemini'da (x-pochtam-provider: gemini — faqat
+          # eval paroli bilan ishlaydi). Natija Claude bilan solishtiriladi.
+          AI_URL="${URL}ai" AI_ORIGIN="https://nshakhobiddin.github.io" EVAL_TOKEN="$R" EVAL_PROVIDER=gemini node tests/ai.mjs | tee /tmp/eval-g.log
+          echo "::notice::Gemini sifat sinovi: $(tail -2 /tmp/eval-g.log | tr '\n' ' ')"
 
       - name: Modellarni solishtirish (ixtiyoriy — compare)
         if: ${{ inputs.compare && steps.aikey.outputs.set == '1' }}

@@ -216,7 +216,7 @@ export default {
        ilova o'chiq AI uchun tugma ko'rsatmaydi. 5 daqiqa keshlanadi. */
     if (request.method === 'GET' && url.pathname === '/ai/status') {
       /* partners — holati o'zi yangilanadigan (hamkor) kuryerlar id'lari. */
-      return new Response(JSON.stringify({ ai: !!env.ANTHROPIC_API_KEY, partners: partnerIds(env) }), { status: 200,
+      return new Response(JSON.stringify({ ai: !!(env.ANTHROPIC_API_KEY || env.GEMINI_API_KEY), partners: partnerIds(env) }), { status: 200,
         headers: cors(env, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300' }, origin) });
     }
 

@@ -32,6 +32,7 @@ import '../../core/tariffs.js';
 import '../../core/landed.js';
 import * as KB from './kb.generated.js';
 import { same } from './track.js';
+import { callGemini } from './gemini.js';
 
 const Core = globalThis.PochtamCore;
 export const AI_LIMITS = { q: 600, hist: 6, histText: 800, body: 1500000, rounds: 4 };
@@ -42,10 +43,16 @@ const FALLBACK_RATE = 12700;
    keshga yozish 1,25× (5 daqiqalik kesh), veb-qidiruv $0.01 dona.
    Hisobotdagi kunlik xarajat va AI_DAILY_USD byudjeti shundan — narx
    o'zgarsa shu yerda. Noma'lum model Sonnet narxida hisoblanadi. */
-const PRICE = [[/haiku/i, 1, 5], [/./, 2, 10]];
+/* Gemini (zaxira): Flash-Lite 0,1/0,4; Flash 0,5/3; Pro 2/12 — eng
+   qimmat Flash versiyasi bo'yicha (byudjet oshib ketmasin). Boshqacha
+   bo'lsa AI_GEMINI_PRICE = "kirish,chiqish". */
+const PRICE = [[/haiku/i, 1, 5], [/gemini.*flash-lite/i, 0.1, 0.4], [/gemini.*flash/i, 0.5, 3], [/gemini/i, 2, 12], [/./, 2, 10]];
+let GEMINI_PRICE = null;
+export function setGeminiPrice(v) { const a = String(v || '').split(',').map(Number); GEMINI_PRICE = a.length === 2 && a.every(x => x >= 0 && isFinite(x)) ? a : null; }
 export function costUsd(model, u) {
   if (!u) return 0;
-  const [, pin, pout] = PRICE.find(p => p[0].test(String(model || '')));
+  let [, pin, pout] = PRICE.find(p => p[0].test(String(model || '')));
+  if (GEMINI_PRICE && /gemini/i.test(String(model || ''))) [pin, pout] = GEMINI_PRICE;
   /* 1 soatlik kesh yozuvi 2× (AI_CACHE_TTL = "1h"), 5 daqiqalik 1,25×. */
   const cc = u.cache_creation || {}, w1h = +cc.ephemeral_1h_input_tokens || 0;
   const write = 2 * w1h + 1.25 * Math.max(0, (u.cache_creation_input_tokens || 0) - w1h);
@@ -582,7 +589,32 @@ async function ipKey(request, env, today) {
    oqim (SSE) bilan olinadi: matn bo'laklari va vosita boshlanishi darhol
    onEvent ga uzatiladi, oxirida esa oqimsiz javob bilan bir xil xabar
    obyekti yig'iladi — vositalar tsikli o'zgarmaydi. */
+/* Provayder tanlash (2026-10-07). Asosiy — Claude. GEMINI_API_KEY bo'lsa
+   Gemini zaxira: Claude kredit/chegara (400 "usage limits", "credit
+   balance"), kalit (401/403), yuklama (429, 529, 5xx) yoki tarmoq xatosi
+   bersa, xuddi shu so'rov Gemini'ga ketadi (AI_GEMINI_FALLBACK = "0" —
+   o'chiq). Zaxiraga o'tgan suhbat shu so'rov oxirigacha Gemini'da qoladi
+   (vosita chaqiruvlari bir provayderda). AI_PROVIDER = "gemini" yoki
+   Claude kaliti yo'q bo'lsa — darhol Gemini. */
+const VIA_GEMINI = new WeakSet();
+export function shouldFallback(r) {
+  if (!r || !r.error) return false;
+  const st = +r.status || 0;
+  if (st === 0 || st === 401 || st === 403 || st === 408 || st === 429 || st >= 500) return true;
+  return st === 400 && /credit balance|billing|usage limit/i.test(r.error || '');
+}
 async function callClaude(body, env, fetchImpl, onEvent) {
+  const gem = !!env.GEMINI_API_KEY;
+  if (gem && (VIA_GEMINI.has(body) || env.AI_PROVIDER === 'gemini' || !env.ANTHROPIC_API_KEY)) return callGemini(body, env, fetchImpl, onEvent);
+  const r = await callAnthropic(body, env, fetchImpl, onEvent);
+  if (!gem || String(env.AI_GEMINI_FALLBACK || '1') === '0' || !shouldFallback(r)) return r;
+  console.log('ai zaxira: gemini', r.status, r.type || '', String(r.error || '').slice(0, 120));
+  const g = await callGemini(body, env, fetchImpl, onEvent);
+  if (g.error) { console.log('ai gemini ham', g.status, g.type || '', String(g.error).slice(0, 160)); return r; }
+  VIA_GEMINI.add(body);
+  return g;
+}
+async function callAnthropic(body, env, fetchImpl, onEvent) {
   const headers = { 'content-type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' };
   const init = { method: 'POST', headers, body: JSON.stringify(onEvent ? { ...body, stream: true } : body) };
   if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) init.signal = AbortSignal.timeout(+env.AI_TIMEOUT_MS || 50000);
@@ -684,7 +716,7 @@ async function gate({ request, env, ctx, origin, originOk, cors, counter, maxBod
     if (rows.length) add(rows);
   };
   if (!originOk) return { res: json({ error: 'ruxsat yo\'q' }, 403) };
-  if (!env.ANTHROPIC_API_KEY) { count('no_key'); return { res: json({ error: 'AI vaqtincha mavjud emas', code: 'no_key' }, 503) }; }
+  if (!env.ANTHROPIC_API_KEY && !env.GEMINI_API_KEY) { count('no_key'); return { res: json({ error: 'AI vaqtincha mavjud emas', code: 'no_key' }, 503) }; }
   const len = +(request.headers.get('content-length') || 0);
   if (len > maxBody) return { res: json({ error: 'so\'rov juda katta', code: 'bad_input' }, 413) };
   const text = await request.text();
@@ -791,6 +823,9 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
   /* Sinovda model va fikrlash rejimini almashtirib solishtirish mumkin
      (faqat ruxsat etilgan qiymatlar): x-pochtam-model, x-pochtam-thinking. */
   const cfg = isEval ? evalCfg(request) : {};
+  /* Sinovda Gemini'ni alohida baholash: x-pochtam-provider: gemini. */
+  if (cfg.provider && env.GEMINI_API_KEY) env = { ...env, AI_PROVIDER: cfg.provider };
+  setGeminiPrice(env.AI_GEMINI_PRICE);
   const parsed = parseAiBody(g.text);
   if (typeof parsed === 'string') return json({ error: parsed, code: 'bad_input' }, 400);
   /* Tayyor javob bo'lsa — chegara ham, xarajat ham yo'q. */
@@ -813,7 +848,9 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
     /* Saqlanmaydi: xato, kesilgan yoki bo'sh (zaxira matn) javob, va
        "Qayerdan topaman" chegarasi tufayli qidiruvsiz berilgan javob —
        u qidiruvli javob kalitida turib qolardi. */
-    if (!akey || out.status !== 200 || !b || !b.text || b.fallback || CACHE_STOP_BAD.includes(b.stop) || parsed.find !== findAsked || !ctx) return;
+    /* Gemini zaxirasi javobi ham saqlanmaydi — Claude qaytgach kunning
+       qolgan qismida asosiy model javob bersin. */
+    if (!akey || out.status !== 200 || !b || !b.text || b.fallback || /gemini/i.test(b.model || '') || CACHE_STOP_BAD.includes(b.stop) || parsed.find !== findAsked || !ctx) return;
     const { usage, ...keep } = b;
     ctx.waitUntil(counter.fetch('https://counter/answer/put', { method: 'POST', body: JSON.stringify({ key: akey, body: keep }) }).catch(() => {}));
   };
@@ -829,7 +866,8 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
     count('kw'); count('ok');
     const body = { text: '', kw: rk.kw, cards: [], tools: [], model: rk.model || '', usage: rk.usage, stop: 'kw' };
     spend('kw', rk.usage);
-    if (akey && ctx && rk.kw && rk.kw.stores.length) { const { usage, ...keep } = body; ctx.waitUntil(counter.fetch('https://counter/answer/put', { method: 'POST', body: JSON.stringify({ key: akey, body: keep }) }).catch(() => {})); }
+    if (/gemini/i.test(rk.model || '')) count('gemini');
+    if (akey && ctx && rk.kw && rk.kw.stores.length && !/gemini/i.test(rk.model || '')) { const { usage, ...keep } = body; ctx.waitUntil(counter.fetch('https://counter/answer/put', { method: 'POST', body: JSON.stringify({ key: akey, body: keep }) }).catch(() => {})); }
     return json(body);
   }
   const kind = parsed.find ? 'find' : parsed.q ? 'chat' : 'shot';
@@ -874,7 +912,8 @@ export const EVAL_MODELS = ['claude-sonnet-5', 'claude-sonnet-5-5'];
 export const THINKING_TYPES = ['adaptive', 'between_tools'];
 export function evalCfg(request) {
   const m = String(request.headers.get('x-pochtam-model') || '').trim(), t = String(request.headers.get('x-pochtam-thinking') || '').trim();
-  return { model: EVAL_MODELS.includes(m) ? m : '', thinking: THINKING_TYPES.includes(t) ? t : '' };
+  const p = String(request.headers.get('x-pochtam-provider') || '').trim();
+  return { model: EVAL_MODELS.includes(m) ? m : '', thinking: THINKING_TYPES.includes(t) ? t : '', provider: p === 'gemini' ? 'gemini' : '' };
 }
 async function runAi({ parsed, env, count, fetchImpl, emit, cfg = {} }) {
   const json = (body, status = 200) => ({ body, status });
@@ -969,6 +1008,7 @@ async function runAi({ parsed, env, count, fetchImpl, emit, cfg = {} }) {
       return json({ error: 'AI vaqtincha mavjud emas', code }, 503);
     }
     const msg = r.data || {};
+    if (msg.provider === 'gemini' && !usage.gemini) { usage.gemini = 1; count('gemini'); }
     model = msg.model || model; stop = msg.stop_reason || '';
     if (msg.usage) { usage.input += msg.usage.input_tokens || 0; usage.output += msg.usage.output_tokens || 0; usage.cacheRead += msg.usage.cache_read_input_tokens || 0; usage.cacheWrite += msg.usage.cache_creation_input_tokens || 0; usage.usd += costUsd(msg.model || body.model, msg.usage); }
     const content = Array.isArray(msg.content) ? msg.content : [];

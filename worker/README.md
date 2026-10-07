@@ -174,6 +174,28 @@ words: { en, zh, tr }, tip, stores: [{ id, name, country, lang, query,
 url, copyOnly }] }, stop: "kw" }`; ≈ $0.001, kunlik javob keshi bilan
 (`/stats` da `kw`). Sabab: xorijiy do'konda eng katta to'siq — nima deb
 yozishni bilmaslik; Taobao xitoycha so'z bilan ancha ko'p topadi.
+**Gemini zaxirasi (2026-10-07).** `GEMINI_API_KEY` (Cloudflare siri;
+workflow GitHub sirini o'zi o'rnatadi va kalitga ochiq eng yangi
+barqaror Flash modelini `GEMINI_MODEL` ga yozadi; repo o'zgaruvchisi
+`GEMINI_MODEL` bo'lsa — o'sha) bo'lsa, Claude ishlamay qolganda —
+kredit/oylik chegara (400 "usage limits", "credit balance"), kalit
+(401/403), yuklama (429, 529, 5xx) yoki tarmoq — xuddi shu so'rov
+Gemini'ga ketadi va suhbat shu so'rov oxirigacha Gemini'da qoladi.
+`src/gemini.js` Claude Messages so'rovini Gemini `generateContent`
+shakliga o'giradi (vositalar — `functionDeclarations.parametersJsonSchema`,
+JSON javob — `responseJsonSchema`, rasm — `inlineData`, oqim —
+`streamGenerateContent?alt=sse`) va javobni yana Claude shakliga
+qaytaradi: vositalar sikli, skrinshot, qidiruv so'zlari va oqim
+o'zgarishsiz ishlaydi. Gemini 3 ning "fikr imzosi" (`thoughtSignature`)
+keyingi raundga qaytariladi. Veb-qidiruv zaxirada standart o'chiq
+(`GEMINI_SEARCH = "1"` — googleSearch). Sozlamalar: `AI_PROVIDER =
+"gemini"` (asosiy provayder), `AI_GEMINI_FALLBACK = "0"` (zaxira o'chiq),
+`GEMINI_SHOT_MODEL` (skrinshot/so'zlar uchun alohida arzon model),
+`GEMINI_THINKING` (MINIMAL/LOW/MEDIUM/HIGH), `AI_GEMINI_PRICE =
+"kirish,chiqish"` ($/1M token; standart Flash $0.5/$3). Zaxira javobi
+tayyor javob keshiga yozilmaydi; `/stats` da `gemini` sanog'i. Sinov:
+workflow `gemini_eval` — xuddi shu eval Gemini'da (`x-pochtam-provider:
+gemini`, faqat eval paroli bilan).
 Xatolar: 400 (kirish), 403 (begona Origin), 429 (`code: "limit"`, `scope`:
 `ip`, `total` yoki `budget` — kunlik chegara), 503 (`no_key`, `key`,
 `billing` — kredit yoki oylik sarf chegarasi, `upstream`).

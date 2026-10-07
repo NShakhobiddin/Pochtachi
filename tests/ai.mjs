@@ -19,6 +19,8 @@ const EVAL = process.env.EVAL_TOKEN || '';
    claude-sonnet-5 / claude-sonnet-5-5, EVAL_THINKING — adaptive /
    between_tools. Bo'sh — worker sozlamasi. */
 const MODEL = process.env.EVAL_MODEL || '', THINK = process.env.EVAL_THINKING || '';
+/* Gemini zaxirasini alohida baholash: EVAL_PROVIDER=gemini. */
+const PROVIDER = process.env.EVAL_PROVIDER || '';
 let usd = 0, secs = 0, outTok = 0;
 const seen = new Set();
 if (!URL_) { console.log('AI_URL berilmagan — AI sinovi o\'tkazib yuborildi.'); process.exit(0); }
@@ -47,7 +49,7 @@ for (const c of cases) {
   try {
     const t0 = Date.now();
     const r = await fetch(URL_, { method: 'POST', headers: { 'content-type': 'text/plain;charset=UTF-8', origin: ORIGIN, ...(EVAL ? { 'x-pochtam-eval': EVAL } : {}),
-      ...(EVAL && MODEL ? { 'x-pochtam-model': MODEL } : {}), ...(EVAL && THINK ? { 'x-pochtam-thinking': THINK } : {}) },
+      ...(EVAL && MODEL ? { 'x-pochtam-model': MODEL } : {}), ...(EVAL && THINK ? { 'x-pochtam-thinking': THINK } : {}), ...(EVAL && PROVIDER ? { 'x-pochtam-provider': PROVIDER } : {}) },
       body: JSON.stringify({ q: c.q, lang: c.lang === 'ru' ? 'ru' : 'uz', usdRate: 12650,
         ...(c.cart ? { cart: c.cart } : {}), ...(c.url ? { url: c.url } : {}), ...(c.find ? { find: true } : {}) }) });
     status = r.status; j = await r.json();
