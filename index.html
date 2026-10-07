@@ -1497,7 +1497,7 @@
           <div style="width:64px;height:64px;flex:none;border-radius:20px;background-color:#FFFFFF;background-size:48px 48px;background-repeat:no-repeat;background-position:center;background-image:url('icons/mutaxassis-3d.webp')"></div>
           <div style="flex:1;display:flex;flex-direction:column;gap:6px;min-width:0">
             <h2 style="margin:0;display:block;font-size:17px;letter-spacing:-.02em;font-weight:700;color:#FFFFFF;line-height:1.3">Mutaxassis konsultatsiyasi</h2>
-            <span style="font-size:13px;color:rgba(255,255,255,.78);font-weight:500;line-height:1.5">Pullik konsultatsiya · ushlangan jo'natma, boj hisobi, hujjatlar</span>
+            <span style="font-size:13px;color:rgba(255,255,255,.78);font-weight:500;line-height:1.5">Ushlangan jo'natma, boj hisobi, hujjatlar</span>
           </div>
           <div style="width:30px;height:30px;border-radius:14px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex:none">
             <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
@@ -3309,7 +3309,7 @@
     <div style="display:flex;flex-direction:column;gap:16px;padding-bottom:8px">
 
       <div style="display:flex;flex-direction:column;gap:8px">
-        <div style="font-size:15px;color:#6B6C85;line-height:1.5;font-weight:500;text-wrap:pretty">Ilovadagi ma'lumot yetmasa — mutaxassis bilan ishlash. Quyidagilar pullik xizmatlar.</div>
+        <div style="font-size:15px;color:#6B6C85;line-height:1.5;font-weight:500;text-wrap:pretty">Ilovadagi ma'lumot yetmasa — mutaxassis bilan ishlash.</div>
       </div>
 
       <div style="display:flex;gap:4px;background:#F1F1F8;border-radius:999px;padding:2px">
@@ -3857,7 +3857,7 @@ const RU = {
   "Bojsiz me'yor, to'lov va taqiqlangan tovarlar":"Беспошлинный лимит, платежи и запрещённые товары",
   "{0} ta do'kondan buyurtma — qadam-baqadam":"Заказ из {0} магазинов — по шагам",
   "Savol bering: boj, kuryer, do'kon":"Спросите: пошлина, курьер, магазин",
-  "Pullik konsultatsiya: bojxona, hujjat, yuridik":"Платная консультация: таможня, документы, юристы",
+  "Bojxona, hujjat va yuridik masalalar":"Таможня, документы и юридические вопросы",
   "Til · kurs {0} so'm":"Язык · курс {0} сум",
   'Nima mahsulot':'Какой товар', 'qidiryapsiz?':'вы ищете?',
   'krossovka, 41 razmer, $100 gacha':'кроссовки, 41 размер, до $100', 'Masalan:':'Например:',
@@ -3919,8 +3919,8 @@ const RU = {
   "ta do'kon":'магазинов', 'ta kuryer':'курьеров', "ta qo'llanma":'инструкций',
   "me'yor":'лимит',
   'Sevimlilar':'Избранное',
-  "Pullik konsultatsiya · ushlangan jo'natma, boj hisobi, hujjatlar":'Платная консультация · задержанная посылка, расчёт пошлины, документы',
-  "Ilovadagi ma'lumot yetmasa — mutaxassis bilan ishlash. Quyidagilar pullik xizmatlar.":'Если информации в приложении не хватает — работа со специалистом. Ниже платные услуги.',
+  "Ushlangan jo'natma, boj hisobi, hujjatlar":'Задержанная посылка, расчёт пошлины, документы',
+  "Ilovadagi ma'lumot yetmasa — mutaxassis bilan ishlash.":'Если информации в приложении не хватает — работа со специалистом.',
   'Chet eldan buyurtma qilgan jismoniy shaxslar uchun.':'Для физических лиц, заказывающих из-за рубежа.',
   'Kuryerlik va logistika kompaniyalari uchun yuridik va texnik yordam.':'Юридическая и техническая помощь курьерским и логистическим компаниям.',
   'YURIDIK':'ЮРИДИЧЕСКОЕ', 'TEXNIK':'ТЕХНИЧЕСКОЕ', 'HAMKORLIK':'ПАРТНЁРСТВО',
@@ -7258,7 +7258,7 @@ class Component extends DCLogic {
         { t: 'Bojxona', sub: tr(st.lang, "Bojsiz me'yor, to'lov va taqiqlangan tovarlar"), img: "url('icons/customs-3d.webp')", k: 'customs' },
         { t: "Qo'llanmalar", sub: tx(st.lang, "{0} ta do'kondan buyurtma — qadam-baqadam", FULL_GUIDES.length), img: "url('icons/guides-3d.webp')", k: 'guides' },
         ...(st.aiOn ? [{ t: 'Pochtam AI', sub: tr(st.lang, "Savol bering: boj, kuryer, do'kon"), glyph: 'ai', k: 'ai' }] : []),
-        ...(HAS_CONTACT ? [{ t: 'Mutaxassis yordami', sub: tr(st.lang, 'Pullik konsultatsiya: bojxona, hujjat, yuridik'), img: "url('icons/mutaxassis-3d.webp')", k: 'services' }] : []),
+        ...(HAS_CONTACT ? [{ t: 'Mutaxassis yordami', sub: tr(st.lang, 'Bojxona, hujjat va yuridik masalalar'), img: "url('icons/mutaxassis-3d.webp')", k: 'services' }] : []),
         { t: 'Sozlamalar', sub: tx(st.lang, "Til · kurs {0} so'm", money(Math.round(USD_RATE))), glyph: 'set', k: 'settings' }
       ].map(r => ({ t: tr(st.lang, r.t), sub: r.sub, hasImg: !!r.img, img: r.img || 'none', isAi: r.glyph === 'ai', isSet: r.glyph === 'set',
         go: () => { metrics.hit('quick', 'ref:' + r.k); this.push(r.k); } })),
