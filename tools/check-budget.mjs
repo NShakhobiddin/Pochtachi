@@ -25,6 +25,9 @@ const BUDGETS = [
   /* Intro logotipining bo'laklari: 11 ta fayl, faqat birinchi ochilishda
      kerak, lekin service worker keshiga tushadi. */
   { name: 'intro bo\'laklari (icons/intro/*.webp)', dir: 'icons/intro', ext: ['.webp'], maxTotalKb: 90, maxFileKb: 30 },
+  /* Namuna skrinshot (bosh sahifa, birinchi kirish hikoyasi, "Namunani
+     ko'rish"): tools/sample-shot.mjs yasaydi. */
+  { name: 'namuna rasmlari (media/*.webp)', dir: 'media', ext: ['.webp'], maxTotalKb: 80, maxFileKb: 50 },
   { name: 'taqiq belgilari (icons/ban/*.webp)', dir: 'icons/ban', ext: ['.webp'], maxTotalKb: 70, maxFileKb: 8 },
   /* Bojxona me'yorlari bo'limi uchun 5 ta belgi. */
   { name: 'me\'yor belgilari (icons/norm/*.webp)', dir: 'icons/norm', ext: ['.webp'], maxTotalKb: 40, maxFileKb: 8 },

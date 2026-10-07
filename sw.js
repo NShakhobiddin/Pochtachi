@@ -17,7 +17,7 @@
  *   - Do'kon logotiplari: versiyadan qat'i nazar saqlanadigan alohida keshda.
  *   - Valyuta kursi kabi API so'rovlari keshlanmaydi.
  */
-const VERSION = '00ed2e5042ac';
+const VERSION = '970cb38c8c2b';
 const CACHE = 'xarid-' + VERSION;
 /* Logotiplar keshi ilova versiyasiga bog'lanmaydi: yangilanish chiqqanda
    ular qaytadan yuklanmaydi. */
@@ -61,6 +61,7 @@ const LATER = [
   "icons/intro/p.webp",
   "icons/intro/t.webp",
   "icons/intro/tagline.webp",
+  "media/shot-sample.webp",
   "icons/dok-bolalar.webp",
   "icons/dok-elektronika.webp",
   "icons/dok-kosmetika.webp",

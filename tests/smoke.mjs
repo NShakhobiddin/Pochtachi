@@ -175,24 +175,22 @@ try {
   check('tanishuv ekranida logotip', !!onbLogo && onbLogo.nat > 0 && onbLogo.w >= 200,
     onbLogo ? `${onbLogo.w}px, manba ${onbLogo.nat}px` : 'topilmadi');
   check('onboarding o\'tadi', await passOnboarding(page));
-  /* Birinchi kirishda tanishtiruv: 2 qadam, yoritilgan joy savol kartasi
-     ustida ("Nima mahsulot qidiryapsiz?"), "Keyingi" → "Tushunarli" →
-     yopiladi, qayta chiqmaydi (xy_tour). */
+  /* Birinchi kirishda (AI yoqiq) — 3 qadamli hikoya: sahna bezak
+     (aria-hidden), real ko'rinishdagi namuna skrinshot, "Keyingi" →
+     "Tushunarli"; oxirgi qadamda "Namunani ko'rish"; yopilgach qayta
+     chiqmaydi (xy_tour). */
   await page.waitForTimeout(1300);
-  const tourDlg = page.locator('[role="dialog"][aria-labelledby="xy-tour-title"]');
-  const tour1 = await page.evaluate(() => {
-    const d = document.querySelector('[role="dialog"][aria-labelledby="xy-tour-title"]'); if (!d) return null;
-    const ring = d.querySelector('div[aria-hidden="true"]').getBoundingClientRect(), f = document.querySelector('[data-tour="camera"]').getBoundingClientRect();
-    const hole = d.querySelector('[data-tour-hole]');
-    return { t: d.innerText.replace(/\s+/g, ' '), fit: Math.abs(ring.left + 6 - f.left) < 2 && Math.abs(ring.top + 6 - f.top) < 2 && +hole.getAttribute('width') > 200 && +hole.getAttribute('y') > 0, focus: document.activeElement && document.activeElement.hasAttribute('data-tour-next') };
-  });
-  check('tanishtiruv: 1-qadam savol kartasi ustida, fokus "Keyingi"da', !!tour1 && /1 \/ 2/.test(tour1.t) && /Shu yerdan boshlang/.test(tour1.t) && tour1.fit && tour1.focus, JSON.stringify(tour1));
-  const tourTitles = [];
-  for (let i = 0; i < 1; i++) { await tourDlg.locator('[data-tour-next]').click(); await page.waitForTimeout(250); tourTitles.push((await tourDlg.locator('#xy-tour-title').innerText()).trim()); }
-  const tourLast = (await tourDlg.locator('[data-tour-next]').innerText()).trim();
-  check('tanishtiruv: 2 qadam — Keyingi → "Uch bo\'lim"; oxirida "Tushunarli"', tourTitles.join('|') === "Uch bo'lim" && tourLast === 'Tushunarli', tourTitles.join('|') + ' · ' + tourLast);
-  await tourDlg.locator('[data-tour-next]').click(); await page.waitForTimeout(250);
-  check('tanishtiruv yopildi va eslab qolindi', await tourDlg.count() === 0 && (await page.evaluate(() => localStorage.getItem('xy_tour'))) === '1');
+  const introDlg = page.locator('[role="dialog"][aria-labelledby="xy-intro-title"]');
+  const in1 = await page.evaluate(() => { const d = document.querySelector('[data-intro]'); if (!d) return null; const sc = d.querySelector('.ix');
+    return { t: d.innerText.replace(/\s+/g, ' '), aria: sc && sc.getAttribute('aria-hidden'), img: !!d.querySelector('img[src*="shot-sample"]'), segs: d.querySelectorAll('[aria-hidden="true"] > div').length,
+      focus: !!(document.activeElement && document.activeElement.hasAttribute('data-intro-next')) }; });
+  check('hikoya: 1-qadam "Do\'kon ilovasida tovarni oching", sahna bezak, namuna rasm, fokus "Keyingi"da', !!in1 && /1 \/ 3/.test(in1.t) && /Do'kon ilovasida tovarni oching/.test(in1.t) && in1.aria === 'true' && in1.img && in1.focus, JSON.stringify(in1));
+  const introTitles = [];
+  for (let i = 0; i < 2; i++) { await introDlg.locator('[data-intro-next]').click(); await page.waitForTimeout(250); introTitles.push((await introDlg.locator('#xy-intro-title').innerText()).trim()); }
+  const introLast = (await introDlg.locator('[data-intro-next]').innerText()).trim();
+  check('hikoya: 3 qadam — skrinshot qiling → Pochtam\'ga yuklang; oxirida "Namunani ko\'rish" va "Tushunarli"', introTitles.join('|') === "Narx ko'ringan joyni skrinshot qiling|Pochtam'ga yuklang — jami narx tayyor" && introLast === 'Tushunarli' && (await introDlg.locator('[data-intro-demo]').count()) === 1 && /\$\d+/.test(await introDlg.locator('.ix').innerText()), introTitles.join('|') + ' · ' + introLast);
+  await introDlg.locator('[data-intro-next]').click(); await page.waitForTimeout(250);
+  check('hikoya yopildi va eslab qolindi', await introDlg.count() === 0 && (await page.evaluate(() => localStorage.getItem('xy_tour'))) === '1');
   const homeLogo = await page.evaluate(() => {
     const im = document.querySelector('header img');
     if (!im) return null;
@@ -758,14 +756,27 @@ try {
        ("Havola yoki tovar nomini yozing"), mikrofon, ostida uch qatorli
        qo'llanma; skrinshot va "Narxni o'zim yozaman". "Hali topmadim"
        bosqichi yo'q: nom yozilsa darhol Pochtam AI (find) ga ketadi. */
-    const camBtn = page.locator('main [data-tour="camera"]').filter({ hasText: 'Skrinshot yuklang' });
+    const camBtn = page.locator('main [data-tour="camera"]').filter({ hasText: 'Tovar skrinshotini yuklang' });
     const whTxt = () => page.locator('main').innerText().then(t => t.replace(/\s+/g, ' '));
     const wh1 = await whTxt();
     const whField = page.locator('main input[aria-label="Mahsulot nomi"]');
-    check('bosh sahifa: skrinshot birinchi (asosiy), yo\'riqnoma, "Tovar qidiryapsizmi?" maydoni, qo\'lda narx', /^Menga qanchaga tushadi\? Skrinshot yuklang/.test(wh1) && /Tovar qidiryapsizmi\?/.test(wh1) && (await whField.count()) === 1 && (await whField.getAttribute('placeholder')) === 'Masalan: termos 1 litr' && await camBtn.count() === 1 && /Narxni o'zim yozaman/.test(wh1) && !/Hali topmadim|Qanaqasi\?/.test(wh1) && (await page.locator('main [data-tour="where"]').count()) === 0, wh1.slice(0, 120));
+    check('bosh sahifa: skrinshot birinchi (asosiy), yo\'riqnoma, "Tovar qidiryapsizmi?" maydoni, qo\'lda narx', /^Menga qanchaga tushadi\? Tovar skrinshotini yuklang Jami narx/.test(wh1) && /Tovar qidiryapsizmi\?/.test(wh1) && (await whField.count()) === 1 && (await whField.getAttribute('placeholder')) === 'Masalan: termos 1 litr' && await camBtn.count() === 1 && /Narxni o'zim yozaman/.test(wh1) && !/Hali topmadim|Qanaqasi\?/.test(wh1) && (await page.locator('main [data-tour="where"]').count()) === 0, wh1.slice(0, 120));
     const guide = (await page.locator('main [data-guide]').first().innerText().catch(() => '')).replace(/\s+/g, ' ');
-    const hs = await page.evaluate(() => { const g = document.querySelector('main [data-guide]'); const sv = g && g.querySelector('.hs svg'); return g ? { aria: (g.querySelector('.hs') || {}).getAttribute && g.querySelector('.hs').getAttribute('aria-hidden'), anims: sv ? sv.querySelectorAll('.hs-tap, .hs-flash, .hs-fly, .hs-a54, .hs-a60, .hs-a66, .hs-a74').length : 0, reduce: matchMedia('(prefers-reduced-motion: reduce)').matches, still: sv ? getComputedStyle(sv.querySelector('.hs-a54')).animationName : '', w: sv ? Math.round(sv.getBoundingClientRect().width) : 0 } : null; });
-    check('jonli yo\'riqnoma: sahna (aria-hidden; harakat kamaytirilsa — jim oxirgi kadr), 3 so\'z, telefonga mos tugmalar qatori', /1 Oching 2 Skrinshot 3 Jami Skrinshot: iPhone — yon tugma \+ ovoz \(\+\), Android — quvvat \+ ovoz \(−\)\.$/.test(guide) && hs && hs.aria === 'true' && hs.anims >= 8 && hs.w > 280 && (!hs.reduce || hs.still === 'none'), guide + ' · ' + JSON.stringify(hs));
+    const smp = await page.evaluate(() => { const g = document.querySelector('main [data-guide]'); const im = g && g.querySelector('img[src*="shot-sample"]'); return g ? { nat: im ? im.naturalWidth : 0, w: im ? Math.round(im.getBoundingClientRect().width) : 0, old: !!document.querySelector('.hs') } : null; });
+    check('namuna kartasi: real ko\'rinishdagi skrinshot (yuklangan), "Mana shunday skrinshot", "Namunani ko\'rish", "Qanday ishlaydi?"; takrorlanuvchi sahna yo\'q', /^Mana shunday skrinshot Do'kon ilovasidagi tovar sahifasi: nom va narx ko'rinib tursin\. Namunani ko'rish Qanday ishlaydi\?$/.test(guide) && smp && smp.nat > 400 && smp.w === 72 && !smp.old, guide + ' · ' + JSON.stringify(smp));
+    /* Hikoya CSS ida "infinite" yo'q — hech narsa takrorlanmaydi. */
+    { const css = src.slice(src.indexOf('/* Birinchi kirish hikoyasi (2026-10-07)'), src.indexOf("/* Pochtam AI o'ylayapti"));
+      check('hikoya animatsiyalari bir marta o\'ynaydi (infinite yo\'q)', css.length > 500 && !/infinite/.test(css), String(css.length)); }
+    /* "Namunani ko'rish" — namunadan haqiqiy hisob, AI'siz, oxirgi hisobga yozilmaydi. */
+    { const nAi = aiBodies.length, last0 = await page.evaluate(() => localStorage.getItem('xy_last'));
+      await page.locator('main [data-guide] button', { hasText: "Namunani ko'rish" }).click(); await page.waitForTimeout(700);
+      const dm = await page.evaluate(() => ({ h: document.querySelector('header').innerText.replace(/\s+/g, ' '), demo: (document.querySelector('main [data-demo]') || {}).innerText || '', total: ((document.querySelector('main [data-total]') || {}).innerText || '').replace(/\s+/g, ' ') }));
+      check('"Namunani ko\'rish" → "Jami narx": Namuna belgisi, Taobao, 699 CNY dan haqiqiy jami; AI so\'rovi yo\'q, oxirgi hisob o\'zgarmaydi', /Jami narx/.test(dm.h) && /NAMUNA/i.test(dm.demo) && /Yuklash/.test(dm.demo) && /\$1\d\d\.\d\d/.test(dm.total) && aiBodies.length === nAi && (await page.evaluate(() => localStorage.getItem('xy_last'))) === last0, JSON.stringify(dm).slice(0, 220));
+      await page.locator('header button[aria-label="Orqaga qaytish"]').first().click(); await page.waitForTimeout(400); }
+    /* "Qanday ishlaydi?" — hikoya qayta ochiladi, Escape yopadi. */
+    await page.locator('main [data-intro-open]').click(); await page.waitForTimeout(500);
+    { const op = await page.locator('[data-intro]').count(); await page.keyboard.press('Escape'); await page.waitForTimeout(300);
+      check('"Qanday ishlaydi?" hikoyani ochadi, Escape yopadi', op === 1 && (await page.locator('[data-intro]').count()) === 0); }
     check('bosh sahifa: do\'kon logotiplari (4 ta) va matn kam', (await page.locator('main [data-logos] span[aria-hidden]').count()) === 4 && !/Nomini yozing|kamera belgisi/.test(wh1), String(await page.locator('main [data-logos] span[aria-hidden]').count()));
     check('ovoz tugmasi yo\'q (2026-10-04)', (await page.locator('main form button[aria-label="Ovoz bilan aytish"]').count()) === 0);
     /* Bo'sh maydonda Enter — maslahat va fokus, AI ga so'rov ketmaydi. */
@@ -1502,7 +1513,7 @@ try {
     if (await tanla.count()) { await tanla.click(); await p.waitForTimeout(500); }
     for (let i = 0; i < 2; i++) {
       const sk = p.getByRole('button', { name: /O'tkazib yuborish|Пропустить|Ўтказиб/ });
-      if (await sk.count() && !(await p.locator('[role="dialog"][aria-labelledby="xy-tour-title"]').count())) { await sk.first().click(); await p.waitForTimeout(350); }
+      if (await sk.count() && !(await p.locator('[role="dialog"][aria-labelledby="xy-tour-title"], [data-intro]').count())) { await sk.first().click(); await p.waitForTimeout(350); }
     }
     await p.waitForTimeout(1300);
     const qoldi = [];
@@ -1530,7 +1541,7 @@ try {
     const bos = async (re) => { const l = p.locator('main button').filter({ hasText: re }).first(); if (await l.count()) { await l.click(); await p.waitForTimeout(600); return true; } return false; };
     /* Tanishtiruv qadamlari (uch tilda) — keyin yopiladi. */
     for (let i = 0; i < 6; i++) {
-      const nx = p.locator('[role="dialog"][aria-labelledby="xy-tour-title"] [data-tour-next]');
+      const nx = p.locator('[role="dialog"][aria-labelledby="xy-tour-title"] [data-tour-next], [data-intro] [data-intro-next]');
       if (!(await nx.count())) break;
       await skan('tanishtiruv-' + (i + 1)); await nx.click(); await p.waitForTimeout(250);
     }

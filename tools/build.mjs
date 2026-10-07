@@ -111,7 +111,7 @@ function precacheList() {
       (SHELL_ICONS.includes(path) ? files : later).push(path);
     }
   };
-  for (const dir of ['icons', 'logos', 'stores', 'flags']) walkIcons(dir);
+  for (const dir of ['icons', 'logos', 'stores', 'flags', 'media']) walkIcons(dir);
   for (const p of SHELL_ICONS) if (!files.includes(p)) throw new Error('Qobiq ikonkasi topilmadi: ' + p);
   /* Isitish tartibi — foydalanuvchi ikkinchi ochilishda avval qayerga
      borishi ehtimoli bo'yicha: intro (har ochilishda), do'kon papkalari
@@ -120,7 +120,7 @@ function precacheList() {
      dvigateli. Isitish sekin tarmoqda o'n soniyalab davom etadi va
      foydalanuvchi shu orada ilovani yopib qo'yishi mumkin. */
   const rank = f =>
-    f.startsWith('icons/intro/') ? 0 : f.startsWith('icons/dok-') ? 1 : f.startsWith('stores/') ? 2 :
+    f.startsWith('icons/intro/') || f.startsWith('media/') ? 0 : f.startsWith('icons/dok-') ? 1 : f.startsWith('stores/') ? 2 :
     f.startsWith('logos/') ? 3 : f.startsWith('flags/') ? 4 : f.startsWith('icons/boj-') ? 5 :
     f.startsWith('icons/svc-') ? 6 : f.startsWith('icons/ban/') ? 7 : f.startsWith('icons/norm/') ? 8 : 9;
   later.sort((a, b) => rank(a) - rank(b) || (a < b ? -1 : 1));

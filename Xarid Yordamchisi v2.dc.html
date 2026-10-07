@@ -564,29 +564,56 @@
   @media (prefers-reduced-motion: reduce) {
     .mo-in, .mo-pop, .mo-grow, .mo-shrink, .mo-rise, .mo-drive, .mo-out, .mo-ring, .mo-tap { animation-delay:0s !important }
   }
-  /* Bosh sahifa jonli yo'riqnomasi (2026-10-05): 6 soniyalik halqa —
-     yon tugmalar bosiladi → ekran "chaq" etadi → rasm o'ngga uchadi →
-     jami narx kartasi qatorma-qator chiqadi. Hammasi bitta davomiylikda,
-     shuning uchun sinxron. Animatsiyasiz holat = oxirgi kadr (karta
-     ko'rinadi, chaqnash va uchuvchi rasm yashirin). */
-  .hs .hs-tap, .hs .hs-flash, .hs .hs-fly { opacity:0 }
-  .hs .hs-tap, .hs .hs-fly { transform-box:fill-box; transform-origin:center }
-  @keyframes hs-tap { 0%, 10% { opacity:0; transform:scale(.5) } 16% { opacity:1; transform:scale(1) } 24%, 100% { opacity:0; transform:scale(1.6) } }
-  @keyframes hs-flash { 0%, 22% { opacity:0 } 25% { opacity:.95 } 32%, 100% { opacity:0 } }
-  @keyframes hs-fly { 0%, 30% { opacity:0; transform:none } 33% { opacity:1; transform:none } 48% { opacity:1; transform:translate(156px,-4px) scale(.3) } 51%, 100% { opacity:0; transform:translate(156px,-4px) scale(.3) } }
-  @keyframes hs-a54 { 0%, 48% { opacity:0; transform:translateY(6px) } 54%, 93% { opacity:1; transform:none } 100% { opacity:0 } }
-  @keyframes hs-a60 { 0%, 56% { opacity:0; transform:translateY(6px) } 62%, 93% { opacity:1; transform:none } 100% { opacity:0 } }
-  @keyframes hs-a66 { 0%, 62% { opacity:0; transform:translateY(6px) } 68%, 93% { opacity:1; transform:none } 100% { opacity:0 } }
-  @keyframes hs-a74 { 0%, 72% { opacity:0; transform:scale(.4) } 78%, 93% { opacity:1; transform:none } 100% { opacity:0 } }
-  @keyframes hs-prog { from { transform:scaleX(0) } 93% { transform:scaleX(1) } to { transform:scaleX(1) } }
-  .hs .hs-tap { animation:hs-tap 6s ease-out infinite }
-  .hs .hs-flash { animation:hs-flash 6s linear infinite }
-  .hs .hs-fly { animation:hs-fly 6s cubic-bezier(.4,0,.2,1) infinite }
-  .hs .hs-a54, .hs .hs-a60, .hs .hs-a66, .hs .hs-a74 { transform-box:fill-box; transform-origin:center; animation:6s cubic-bezier(.22,.9,.3,1) infinite }
-  .hs .hs-a54 { animation-name:hs-a54 } .hs .hs-a60 { animation-name:hs-a60 } .hs .hs-a66 { animation-name:hs-a66 } .hs .hs-a74 { animation-name:hs-a74 }
-  [data-guide] .hs-prog { transform-origin:left center; animation:hs-prog 6s linear infinite }
+  /* Birinchi kirish hikoyasi (2026-10-07): har sahna BIR MARTA o'ynaydi va
+     oxirgi kadrda to'xtaydi (fill-mode both) — hech narsa takrorlanmaydi.
+     Sahna qadam almashganda qayta chiziladi (sc-if), shuning uchun har
+     qadamda boshidan o'ynaydi. Harakat kamaytirilsa — darrov oxirgi kadr. */
+  @property --ixn { syntax:'<integer>'; inherits:false; initial-value:0 }
+  .ix { position:relative; height:288px; border-radius:20px; overflow:hidden; background:linear-gradient(180deg,#F6F7FB,#E9EAFD) }
+  /* !important: har sahna o'z `animation:` qisqa yozuvini ishlatadi va u
+     fill-mode ni "none" ga qaytarardi — oxirgi kadr saqlanmasdi. */
+  .ix * { animation-fill-mode:both !important }
+  .ix-phone { position:absolute; left:50%; top:18px; width:132px; height:270px; margin-left:-66px; border-radius:26px; background:#131429; padding:6px; box-shadow:0 8px 20px -10px rgba(17,21,132,.34) }
+  .ix-scr { position:relative; width:100%; height:100%; border-radius:21px; overflow:hidden; background:#FFFFFF }
+  .ix-scr img { display:block; width:100%; height:auto }
+  .ix-side { position:absolute; width:4px; border-radius:2px; background:#131429 }
+  /* 1-sahna: telefon ko'tariladi → ilovalar → do'kon ilovasiga bosiladi → tovar sahifasi ochiladi */
+  @keyframes ix-rise { from { opacity:0; transform:translateY(28px) scale(.96) } to { opacity:1; transform:none } }
+  @keyframes ix-pop { 0% { opacity:0; transform:scale(.4) } 70% { opacity:1; transform:scale(1.08) } 100% { opacity:1; transform:none } }
+  @keyframes ix-tap { 0% { opacity:0; transform:scale(.3) } 40% { opacity:1; transform:scale(1) } 100% { opacity:0; transform:scale(1.7) } }
+  @keyframes ix-open { from { opacity:0; transform:scale(.18); border-radius:40px } to { opacity:1; transform:none; border-radius:0 } }
+  @keyframes ix-in { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:none } }
+  @keyframes ix-out { from { opacity:1 } to { opacity:0 } }
+  .ix-rise { animation:ix-rise .6s }
+  .ix-home { position:absolute; inset:0; background:linear-gradient(160deg,#494FE9,#13189D); display:grid; grid-template-columns:repeat(3,30px); gap:12px 10px; justify-content:center; align-content:start; padding-top:44px; animation:ix-out .2s 1.75s }
+  .ix-app { width:30px; height:30px; border-radius:9px; background-color:#FFFFFF; background-size:76%; background-repeat:no-repeat; background-position:center; animation:ix-pop .4s }
+  .ix-app:nth-child(2) { animation-delay:.12s } .ix-app:nth-child(3) { animation-delay:.18s } .ix-app:nth-child(4) { animation-delay:.24s } .ix-app:nth-child(5) { animation-delay:.3s } .ix-app:nth-child(6) { animation-delay:.36s }
+  .ix-tap1 { position:absolute; left:4px; top:42px; width:34px; height:34px; border-radius:999px; border:2.5px solid #FFFFFF; animation:ix-tap .7s 1s }
+  .ix-page { position:absolute; inset:0; transform-origin:17% 22%; animation:ix-open .55s 1.35s }
+  /* 2-sahna: yon tugmalar → "chaq" → narx bloki halqaga olinadi */
+  @keyframes ix-press { 0%, 100% { background:#131429 } 30%, 70% { background:#494FE9 } }
+  @keyframes ix-flash { 0% { opacity:0 } 25% { opacity:.95 } 100% { opacity:0 } }
+  @keyframes ix-shrink { from { transform:none } to { transform:scale(.94) } }
+  @keyframes ix-ring { from { opacity:0; transform:scale(1.12) } to { opacity:1; transform:none } }
+  .ix-press { animation:ix-press .9s .35s }
+  .ix-flash { position:absolute; inset:0; background:#FFFFFF; opacity:0; animation:ix-flash .6s 1.15s }
+  .ix-shot { animation:ix-shrink .35s 1.5s }
+  .ix-ring { position:absolute; left:2%; top:50.5%; width:96%; height:20.5%; border-radius:10px; border:2.5px solid #1A1FB0; outline:4px solid #DCDDFA; animation:ix-ring .45s 1.85s }
+  .ix-tag { position:absolute; left:0; right:0; bottom:14px; display:flex; justify-content:center; animation:ix-in .4s 2.15s }
+  /* 3-sahna: skrinshot chapga kichrayadi → jami kartasi, raqam sanaladi */
+  @keyframes ix-aside { from { transform:none } to { transform:translateX(-92px) scale(.7) } }
+  @keyframes ix-count { from { --ixn:0 } to { --ixn:var(--to) } }
+  .ix-aside { animation:ix-aside .6s .1s }
+  .ix-res { position:absolute; right:14px; top:44px; width:178px; animation:ix-rise .55s .55s }
+  .ix-num { --ixn:var(--to); animation:ix-count 1.1s .9s cubic-bezier(.2,.8,.2,1); counter-reset:ixn var(--ixn) }
+  .ix-num::after { content:'$' counter(ixn) }
+  .ix-row { animation:ix-in .35s } .ix-r1 { animation-delay:1.3s } .ix-r2 { animation-delay:1.45s } .ix-r3 { animation-delay:1.6s }
+  .ix-ok { animation:ix-pop .4s 2s }
+  /* Hikoya chizig'i (Stories kabi): joriy qadam 4,6 s da to'ladi. */
+  @keyframes ix-seg { from { width:0 } to { width:100% } }
+  .ix-seg-now { animation:ix-seg 4.6s linear both }
   @media (prefers-reduced-motion: reduce) {
-    .hs *, [data-guide] .hs-prog { animation:none !important }
+    .ix *, .ix-seg-now { animation-delay:0s !important }
   }
   /* Pochtam AI o'ylayapti (2026-09-27): "tirik" nuqta-orb aylanib nafas
      oladi, bosqich nomi ustidan yorug'lik o'tadi, uch nuqta sakraydi;
@@ -735,12 +762,11 @@
   <sc-if value="{{ sHome }}" hint-placeholder-val="{{ true }}">
     <div style="display:flex;flex-direction:column;gap:20px">
 
-      <!-- Bosh sahifa (2026-10-05, 2-tahrir): matn yarmiga qisqardi. Asosiy
-           ish — skrinshotdan jami narx: tepada katta tugma, ostida 6 soniyalik
-           jonli sahna (do'kon ilovasi → yon tugmalar → "chaq" → rasm Pochtam'ga
-           uchadi → jami narx kartasi) va uch so'z: Oching · Skrinshot · Jami.
-           Telefon tugmalari foydalanuvchi telefoniga qarab bitta qatorda.
-           Ostida tovar qidirish: maydon (kamera — rasm bilan) va do'kon
+      <!-- Bosh sahifa (2026-10-07, 3-tahrir): harakatsiz. Asosiy ish —
+           skrinshotdan jami narx: tepada katta tugma, ostida namuna skrinshot
+           (nimaning skrinshoti kerakligi rasm bilan). Takrorlanuvchi sahna
+           olib tashlandi; "qanday ishlaydi" — birinchi kirishda bir marta
+           o'ynaydigan 3 qadamli hikoya. Ostida tovar qidirish: maydon (kamera — rasm bilan) va do'kon
            logotiplari — "har do'kon tilida so'z". Savol ("…?") — Pochtam AI. -->
       <div style="display:flex;flex-direction:column;gap:12px">
         <sc-if value="{{ aiOn }}" hint-placeholder-val="{{ true }}">
@@ -748,61 +774,28 @@
           <button data-tour="camera" sc-camel-on-click="{{ whShot }}" style="display:flex;align-items:center;gap:14px;width:100%;border:none;border-radius:20px;padding:18px 16px;cursor:pointer;text-align:left;font-family:inherit;background:linear-gradient(155deg,#494FE9,#13189D);box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">
             <span aria-hidden="true" style="width:48px;height:48px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:#494FE9"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 8.5A2.5 2.5 0 016.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0120 8.5V17a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></span>
             <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
-              <span style="font-size:17px;font-weight:700;color:#FFFFFF">Skrinshot yuklang</span>
+              <span style="font-size:17px;font-weight:700;color:#FFFFFF">Tovar skrinshotini yuklang</span>
               <span style="font-size:13px;font-weight:500;color:#DCDDFA;line-height:1.5">Jami narx — bir necha soniyada</span>
             </span>
           </button>
-          <!-- Jonli yo'riqnoma. Harakat kamaytirilsa — oxirgi kadr (jami
-               kartasi) jim turadi. Sahna bezak: aria-hidden, matn ostida. -->
-          <div data-guide="1" style="display:flex;flex-direction:column;gap:10px;padding:12px 14px 14px;background:#FFFFFF;border-radius:20px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
-            <div class="hs" aria-hidden="true" style="display:flex;justify-content:center">
-              <svg sc-camel-view-box="0 0 320 160" style="display:block;width:100%;max-width:320px;height:auto">
-                <!-- Telefon: do'kon ilovasidagi tovar sahifasi -->
-                <rect x="18" y="4" width="100" height="152" rx="18" fill="#131429"></rect>
-                <rect x="14" y="34" width="4" height="14" rx="2" fill="#131429"></rect>
-                <rect x="14" y="52" width="4" height="14" rx="2" fill="#131429"></rect>
-                <rect x="118" y="42" width="4" height="22" rx="2" fill="#131429"></rect>
-                <rect x="23" y="10" width="90" height="140" rx="14" fill="#FFFFFF"></rect>
-                <rect x="30" y="18" width="76" height="58" rx="10" fill="#E9EAFD"></rect>
-                <path d="M44 60c8 0 14-10 22-10 6 0 8 4 14 4 5 0 10 3 12 8v3H44z" fill="#494FE9"></path>
-                <rect x="44" y="64" width="48" height="4" rx="2" fill="#FFFFFF"></rect>
-                <rect x="30" y="84" width="62" height="6" rx="3" fill="#DCDDFA"></rect>
-                <rect x="30" y="94" width="44" height="6" rx="3" fill="#DCDDFA"></rect>
-                <text x="30" y="120" font-size="15" font-weight="800" fill="#B45309">¥699</text>
-                <rect x="30" y="130" width="76" height="12" rx="6" fill="#F1F1F8"></rect>
-                <!-- Yon tugmalar bosiladi -->
-                <circle class="hs-tap" cx="120" cy="53" r="9" fill="none" stroke="#494FE9" stroke-width="2"></circle>
-                <circle class="hs-tap" cx="16" cy="44" r="9" fill="none" stroke="#494FE9" stroke-width="2"></circle>
-                <!-- "Chaq" — skrinshot olindi -->
-                <rect class="hs-flash" x="23" y="10" width="90" height="140" rx="14" fill="#FFFFFF"></rect>
-                <!-- Rasm Pochtam'ga uchadi -->
-                <g class="hs-fly">
-                  <rect x="23" y="10" width="90" height="140" rx="14" fill="#FFFFFF" stroke="#1A1FB0" stroke-width="3"></rect>
-                  <rect x="30" y="18" width="76" height="58" rx="10" fill="#E9EAFD"></rect>
-                  <text x="30" y="120" font-size="15" font-weight="800" fill="#B45309">¥699</text>
-                </g>
-                <path d="M132 80h20" stroke="#DCDDFA" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 6"></path>
-                <!-- Jami narx kartasi -->
-                <g class="hs-a54">
-                  <rect x="160" y="14" width="152" height="132" rx="16" fill="#F6F7FB" stroke="#DCDDFA"></rect>
-                  <text x="174" y="36" font-size="11" font-weight="700" fill="#6B6C85">{{ hsJami }}</text>
-                </g>
-                <g class="hs-a60"><text x="174" y="62" font-size="22" font-weight="800" fill="#1A1FB0">$106</text><text x="236" y="62" font-size="11" font-weight="600" fill="#6B6C85">{{ hsUzs }}</text></g>
-                <g class="hs-a66" font-size="11" font-weight="600" fill="#4E4F6B">
-                  <text x="174" y="86">{{ hsTovar }}</text><text x="298" y="86" text-anchor="end">$97</text>
-                  <text x="174" y="104">{{ hsKuryer }}</text><text x="298" y="104" text-anchor="end">$9</text>
-                  <text x="174" y="122">{{ hsBoj }}</text><text x="298" y="122" text-anchor="end" fill="#0F7B3E">$0</text>
-                </g>
-                <g class="hs-a74"><circle cx="300" cy="22" r="11" fill="#0F7B3E"></circle><path d="M295 22l3.5 3.5 6.5-7" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></g>
-              </svg>
+          <!-- Namuna (2026-10-07): "nimaning skrinshoti?" degan savolga rasm
+               bilan javob — real ko'rinishdagi tovar sahifasi, nom va narx
+               bloki halqada. Harakatsiz. Rasmga yoki "Namunani ko'rish"ga
+               bossa — shu skrinshotdan chiqqan haqiqiy hisob (AI'siz);
+               "Qanday ishlaydi?" — 3 qadamli hikoya. -->
+          <div data-guide="1" style="display:flex;align-items:center;gap:14px;padding:12px 14px 12px 12px;background:#FFFFFF;border-radius:20px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+            <button sc-camel-on-click="{{ whDemo }}" aria-label="Namunani ko'rish" style="position:relative;flex:none;width:72px;height:156px;padding:0;border:none;border-radius:14px;overflow:hidden;cursor:pointer;background:#F1F1F8;box-shadow:0 0 0 1px #DCDDFA">
+              <img src="media/shot-sample.webp" alt="" width="72" height="156" decoding="async" style="display:block;width:100%;height:100%;object-fit:cover;object-position:top">
+              <span aria-hidden="true" style="position:absolute;left:2px;right:2px;top:50%;height:21%;border:2px solid #1A1FB0;border-radius:8px;outline:3px solid #DCDDFA"></span>
+            </button>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:15px;font-weight:700;color:#131429">Mana shunday skrinshot</span>
+              <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5;text-wrap:pretty">Do'kon ilovasidagi tovar sahifasi: nom va narx ko'rinib tursin.</span>
+              <div style="display:flex;flex-wrap:wrap;gap:0 16px">
+                <button sc-camel-on-click="{{ whDemo }}" style="min-height:36px;background:none;border:none;padding:0;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer">Namunani ko'rish</button>
+                <button data-intro-open="1" sc-camel-on-click="{{ whIntro }}" style="min-height:36px;background:none;border:none;padding:0;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer">Qanday ishlaydi?</button>
+              </div>
             </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-              <sc-for list="{{ whSteps }}" as="gs" hint-placeholder-count="3">
-                <span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#131429"><span aria-hidden="true" style="flex:none;width:24px;height:24px;border-radius:999px;background:#E9EAFD;color:#1A1FB0;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ gs.n }}</span>{{ gs.t }}</span>
-              </sc-for>
-            </div>
-            <div aria-hidden="true" style="height:4px;border-radius:999px;background:#F1F1F8;overflow:hidden"><div class="hs-prog" style="height:100%;width:100%;border-radius:999px;background:#1A1FB0"></div></div>
-            <span data-keys="1" style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5;text-wrap:pretty">{{ whKeys }}</span>
           </div>
           <h2 style="margin:12px 0 0;font-size:17px;font-weight:700;letter-spacing:-.02em;color:#131429">Tovar qidiryapsizmi?</h2>
         </sc-if>
@@ -3158,6 +3151,17 @@
           </div>
         </div>
       </sc-if>
+      <sc-if value="{{ rsDemo }}" hint-placeholder-val="{{ false }}">
+        <!-- Namuna: bosh sahifadagi namuna skrinshotidan chiqqan hisob. -->
+        <div data-demo="1" style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border-radius:20px;padding:10px 12px 10px 10px;box-shadow:0 2px 8px -4px rgba(16,18,45,.10)">
+          <img src="media/shot-sample.webp" alt="" width="40" height="86" decoding="async" style="flex:none;width:40px;height:86px;border-radius:8px;object-fit:cover;object-position:top;box-shadow:0 0 0 1px #DCDDFA">
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+            <span style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#1A1FB0">Namuna</span>
+            <span style="font-size:13px;font-weight:500;color:#4E4F6B;line-height:1.5">Shu skrinshotdan chiqqan hisob. O'z tovaringizni ham xuddi shunday yuklang.</span>
+          </span>
+          <button sc-camel-on-click="{{ rsDemoShot }}" style="flex:none;height:40px;padding:0 14px;border-radius:14px;border:none;background:#1A1FB0;color:#FFFFFF;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">Yuklash</button>
+        </div>
+      </sc-if>
       <sc-if value="{{ rsOk }}" hint-placeholder-val="{{ false }}">
         <!-- Jami narx — ekranning bosh qahramoni: katta raqam ko'k fonda,
              ostida narx qanday shakllangani: rangli tarkib chizig'i va har
@@ -3906,6 +3910,85 @@
     </div>
   </sc-if>
 
+  <!-- ===== Birinchi kirish hikoyasi (2026-10-07) =====
+       Pastdan chiqadigan varaq: tepada Stories kabi 3 chiziq, sahna (bir
+       marta o'ynaydi), sarlavha, matn, tugmalar. Sahnaga bosish — keyingi
+       qadam. Sahnalar bezak (aria-hidden): ma'no sarlavha va matnda. -->
+  <sc-if value="{{ introOn }}" hint-placeholder-val="{{ false }}">
+    <div role="dialog" aria-modal="true" aria-labelledby="xy-intro-title" data-intro="1" style="position:absolute;inset:0;z-index:31;display:flex;align-items:flex-end;justify-content:center;background:rgba(19,20,41,.62)">
+      <div class="mo-in" style="width:100%;max-width:440px;background:#FFFFFF;border-radius:28px 28px 0 0;padding:14px 18px calc(18px + var(--xy-safe-bottom));display:flex;flex-direction:column;gap:14px">
+        <div aria-hidden="true" style="display:flex;gap:6px">
+          <sc-for list="{{ introSegs }}" as="sg" hint-placeholder-count="3">
+            <div style="flex:1;height:4px;border-radius:999px;background:#E9EAFD;overflow:hidden">
+              <sc-if value="{{ sg.now }}" hint-placeholder-val="{{ true }}"><div class="ix-seg-now" style="height:100%;border-radius:999px;background:#1A1FB0"></div></sc-if>
+              <sc-if value="{{ sg.done }}" hint-placeholder-val="{{ false }}"><div style="height:100%;width:100%;border-radius:999px;background:#1A1FB0"></div></sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <div class="ix" aria-hidden="true" sc-camel-on-click="{{ introTap }}" style="cursor:pointer">
+          <sc-if value="{{ ix0 }}" hint-placeholder-val="{{ true }}">
+            <div class="ix-phone ix-rise">
+              <div class="ix-scr">
+                <div class="ix-page"><img src="media/shot-sample.webp" alt="" width="122" height="264"></div>
+                <div class="ix-home">
+                  <sc-for list="{{ ixLogos }}" as="lg" hint-placeholder-count="6">
+                    <span class="ix-app" style="background-image:{{ lg.logo }}"></span>
+                  </sc-for>
+                </div>
+                <span class="ix-tap1"></span>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ ix1 }}" hint-placeholder-val="{{ false }}">
+            <div class="ix-phone">
+              <span class="ix-side ix-press" style="left:-4px;top:58px;height:22px"></span>
+              <span class="ix-side ix-press" style="left:-4px;top:86px;height:22px"></span>
+              <span class="ix-side ix-press" style="right:-4px;top:72px;height:34px"></span>
+              <div class="ix-scr ix-shot">
+                <img src="media/shot-sample.webp" alt="" width="122" height="264">
+                <span class="ix-ring"></span>
+                <span class="ix-flash"></span>
+              </div>
+            </div>
+            <span class="ix-tag"><span style="display:flex;align-items:center;gap:6px;background:#1A1FB0;color:#FFFFFF;border-radius:999px;padding:8px 12px;font-size:13px;font-weight:700;white-space:nowrap;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 12l5 5 9-10"></path></svg>{{ ixTag }}</span></span>
+          </sc-if>
+          <sc-if value="{{ ix2 }}" hint-placeholder-val="{{ false }}">
+            <div class="ix-phone ix-aside">
+              <div class="ix-scr"><img src="media/shot-sample.webp" alt="" width="122" height="264"><span class="ix-ring" style="animation:none"></span></div>
+            </div>
+            <div class="ix-res" style="border-radius:18px;overflow:hidden;background:#FFFFFF;box-shadow:0 8px 20px -10px rgba(17,21,132,.34)">
+              <div style="background:linear-gradient(155deg,#494FE9,#13189D);padding:12px 14px;display:flex;flex-direction:column;gap:2px;position:relative">
+                <span style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#DCDDFA">{{ ixJami }}</span>
+                <span class="ix-num" style="--to:{{ ixTotal }};font-size:26px;font-weight:800;letter-spacing:-.02em;color:#FFFFFF;font-variant-numeric:tabular-nums"></span>
+                <span style="font-size:11px;font-weight:600;color:#DCDDFA">{{ ixUzs }}</span>
+                <span class="ix-ok" style="position:absolute;right:10px;top:10px;width:24px;height:24px;border-radius:999px;background:#0F7B3E;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+              </div>
+              <div style="padding:10px 14px 12px;display:flex;flex-direction:column;gap:6px">
+                <span class="ix-row ix-r1" style="display:flex;justify-content:space-between;font-size:13px;font-weight:500;color:#4E4F6B"><span>{{ ixTovar }}</span><span style="font-weight:700;color:#131429">{{ ixGoods }}</span></span>
+                <span class="ix-row ix-r2" style="display:flex;justify-content:space-between;font-size:13px;font-weight:500;color:#4E4F6B"><span>{{ ixKuryer }}</span><span style="font-weight:700;color:#131429">{{ ixShip }}</span></span>
+                <span class="ix-row ix-r3" style="display:flex;justify-content:space-between;font-size:13px;font-weight:500;color:#4E4F6B"><span>{{ ixBoj }}</span><span style="font-weight:700;color:#0F7B3E">{{ ixDuty }}</span></span>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:11px;font-weight:700;color:#6B6C85;font-variant-numeric:tabular-nums">{{ introN }}</span>
+          <span id="xy-intro-title" style="font-size:22px;font-weight:800;letter-spacing:-.025em;line-height:1.2;color:#131429;text-wrap:balance">{{ introTitle }}</span>
+          <span style="font-size:15px;font-weight:500;color:#4E4F6B;line-height:1.5;text-wrap:pretty">{{ introText }}</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <sc-if value="{{ introNotLast }}" hint-placeholder-val="{{ true }}">
+            <button sc-camel-on-click="{{ introSkip }}" style="background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;color:#6B6C85;cursor:pointer;padding:8px 2px;min-height:44px">O'tkazib yuborish</button>
+          </sc-if>
+          <sc-if value="{{ introLast }}" hint-placeholder-val="{{ false }}">
+            <button data-intro-demo="1" sc-camel-on-click="{{ introDemo }}" style="height:48px;padding:0 16px;border-radius:14px;border:none;background:#E9EAFD;color:#1A1FB0;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer">Namunani ko'rish</button>
+          </sc-if>
+          <button data-intro-next="1" sc-camel-on-click="{{ introNext }}" style="height:48px;padding:0 24px;border-radius:14px;border:none;background:linear-gradient(155deg,#494FE9,#13189D);color:#FFFFFF;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer">{{ introNextLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
   <!-- Jonli hudud (role=status) doim DOM da turadi: ekran o'quvchi faqat
        oldindan mavjud hududdagi o'zgarishni o'qiydi. Xabar yo'q paytda u
        shaffof va bosilmaydi. -->
@@ -4092,7 +4175,7 @@ const RU = {
   /* Havola orqali o'qish (2026-09-27) */
   "Havolani o'qiyapman":'Читаю ссылку', 'Sahifani ochyapman':'Открываю страницу',
   "{0} · odatda 3–15 soniya. Jami narx va uning tarkibi shu yerda chiqadi.":'{0} · обычно 3–15 секунд. Итоговая цена и её состав появятся здесь.',
-  "Havoladan narx o'qilmadi":'Не удалось прочитать цену по ссылке', "Narx ko'ringan sahifani skrinshot qiling":'Сделайте скриншот страницы с ценой', 'Rasmdan tovarni taniy olmadim':'Не удалось узнать товар на фото', 'Skrinshotdagi tovarlar ({0})':'Товары на скриншоте ({0})', '{0} ta tovar':'Товаров: {0}', "Taxminiy og'irlik {0} kg ({1} ta tovar bo'yicha)":'Примерный вес {0} кг (по {1} товарам)', "Hammasi bitta jo'natmada hisoblandi: bojsiz me'yor va kuryer narxi umumiy summa va og'irlik bo'yicha.":'Всё посчитано как одна посылка: беспошлинный лимит и доставка — по общей сумме и весу.', 'Boshqa rasm yuklash':'Загрузить другое фото', 'Rasmdagi tovarni taniyapman':'Узнаю товар на фото', 'Tovarni taniyapman':'Узнаю товар', "Do'konlardan qidirishga o'tyapman":'Перехожу к поиску в магазинах', "Odatda 3–6 soniya. Keyin AI mos do'konlardan qidiradi.":'Обычно 3–6 секунд. Затем ИИ поищет в подходящих магазинах.', "Tovar aniq ko'rinadigan rasm yuklang yoki nomini yozib qidiring.":'Загрузите фото, где товар хорошо виден, или найдите по названию.', 'Rasm bilan qidirish':'Поиск по фото', "Tovar fotosini yuklang — AI taniydi va do'konlardan topadi.":'Загрузите фото товара — ИИ узнает его и найдёт в магазинах.', 'Tovar rasmini tanlash':'Выбрать фото товара', "Boshqa do'kondan topish":'Найти в другом магазине', 'Rasmdagi tovar: {0}':'Товар на фото: {0}', "Pochtam AI'dan so'rash":'Спросить Pochtam AI', 'Menga':'Во сколько', 'qanchaga tushadi?':'мне обойдётся?', 'Skrinshot yuklang':'Загрузите скриншот', 'Tovar qidiryapsizmi?':'Ищете товар?', "Jami narx — bir necha soniyada":'Итог — за несколько секунд', 'Oching':'Откройте', '≈ 1,34 mln':'≈ 1,34 млн', "iPhone: yon tugma va ovozni oshirishni birga bosing.":'iPhone: одновременно нажмите боковую кнопку и громкость вверх.', "Android: quvvat va ovozni pasaytirishni birga bosing.":'Android: одновременно нажмите питание и громкость вниз.', "Skrinshot: iPhone — yon tugma + ovoz (+), Android — quvvat + ovoz (−).":'Скриншот: iPhone — боковая + громкость (+), Android — питание + громкость (−).', "Har do'kon o'z tilida qidiruv so'zi":'Поисковый запрос на языке каждого магазина', 'Masalan: termos 1 litr':'Например: термос 1 литр', "Do'kon, kuryer yoki tovar nomi":'Магазин, курьер или товар', "Qidiruv so'zlari":'Поисковые запросы', "Har do'kon o'z tilida yaxshiroq topadi. «Qidirish» — do'kon sahifasi, «Nusxa» — ilovadagi qidiruvga qo'ying.":'Каждый магазин лучше ищет на своём языке. «Искать» — страница магазина, «Копия» — вставьте в поиск приложения.', 'Kimga':'Для кого', 'Qanday':'Какой', 'Erkak':'Мужчине', 'Ayol':'Женщине', 'Bola':'Ребёнку', 'Original':'Оригинал', 'Arzonroq':'Дешевле', "Har do'kon tilida so'z tayyorlanmoqda":'Готовлю запросы на языке каждого магазина', 'Nusxa':'Копия', 'Qidirish':'Искать', "Faqat ilovada: nusxalab, ilovadagi qidiruvga qo'ying.":'Только в приложении: скопируйте и вставьте в поиск.', "Rasmingiz bo'lsa: Taobao va Pinduoduo ilovasida qidiruv yonidagi kamera belgisi — rasm bilan qidirish.":'Есть фото: в приложениях Taobao и Pinduoduo значок камеры рядом с поиском — поиск по фото.', 'Topdim — skrinshot yuklash':'Нашёл — загрузить скриншот', "Narx ko'ringan joyni — jami narxni hisoblayman.":'Там, где видна цена — посчитаю итог.', 'AI bilan batafsil maslahat':'Подробный совет от ИИ', "Qidiruv so'zi":'Поисковый запрос', "Bugungi AI so'rovlari tugadi — ertaga qayta urinib ko'ring.":'Запросы к ИИ на сегодня закончились — попробуйте завтра.', "AI hozir o'chiq — do'kon ro'yxatidan qidiring.":'ИИ сейчас выключен — ищите по списку магазинов.', "So'zlarni olib bo'lmadi — internetni tekshirib, qayta urinib ko'ring.":'Не удалось получить запросы — проверьте интернет и повторите.',
+  "Havoladan narx o'qilmadi":'Не удалось прочитать цену по ссылке', "Narx ko'ringan sahifani skrinshot qiling":'Сделайте скриншот страницы с ценой', 'Rasmdan tovarni taniy olmadim':'Не удалось узнать товар на фото', 'Skrinshotdagi tovarlar ({0})':'Товары на скриншоте ({0})', '{0} ta tovar':'Товаров: {0}', "Taxminiy og'irlik {0} kg ({1} ta tovar bo'yicha)":'Примерный вес {0} кг (по {1} товарам)', "Hammasi bitta jo'natmada hisoblandi: bojsiz me'yor va kuryer narxi umumiy summa va og'irlik bo'yicha.":'Всё посчитано как одна посылка: беспошлинный лимит и доставка — по общей сумме и весу.', 'Boshqa rasm yuklash':'Загрузить другое фото', 'Rasmdagi tovarni taniyapman':'Узнаю товар на фото', 'Tovarni taniyapman':'Узнаю товар', "Do'konlardan qidirishga o'tyapman":'Перехожу к поиску в магазинах', "Odatda 3–6 soniya. Keyin AI mos do'konlardan qidiradi.":'Обычно 3–6 секунд. Затем ИИ поищет в подходящих магазинах.', "Tovar aniq ko'rinadigan rasm yuklang yoki nomini yozib qidiring.":'Загрузите фото, где товар хорошо виден, или найдите по названию.', 'Rasm bilan qidirish':'Поиск по фото', "Tovar fotosini yuklang — AI taniydi va do'konlardan topadi.":'Загрузите фото товара — ИИ узнает его и найдёт в магазинах.', 'Tovar rasmini tanlash':'Выбрать фото товара', "Boshqa do'kondan topish":'Найти в другом магазине', 'Rasmdagi tovar: {0}':'Товар на фото: {0}', "Pochtam AI'dan so'rash":'Спросить Pochtam AI', 'Menga':'Во сколько', 'qanchaga tushadi?':'мне обойдётся?', 'Skrinshot yuklang':'Загрузите скриншот', 'Tovar qidiryapsizmi?':'Ищете товар?', "Jami narx — bir necha soniyada":'Итог — за несколько секунд', "iPhone: yon tugma va ovozni oshirishni birga bosing.":'iPhone: одновременно нажмите боковую кнопку и громкость вверх.', "Android: quvvat va ovozni pasaytirishni birga bosing.":'Android: одновременно нажмите питание и громкость вниз.', "iPhone — yon tugma + ovoz (+), Android — quvvat + ovoz (−).":'iPhone — боковая кнопка + громкость (+), Android — питание + громкость (−).', 'Tovar skrinshotini yuklang':'Загрузите скриншот товара', 'Mana shunday skrinshot':'Вот такой скриншот', "Do'kon ilovasidagi tovar sahifasi: nom va narx ko'rinib tursin.":'Страница товара в приложении магазина: чтобы были видны название и цена.', "Namunani ko'rish":'Посмотреть пример', 'Qanday ishlaydi?':'Как это работает?', 'Namuna':'Пример', "Shu skrinshotdan chiqqan hisob. O'z tovaringizni ham xuddi shunday yuklang.":'Расчёт по этому скриншоту. Свой товар загрузите так же.', 'Yuklash':'Загрузить', "Do'kon ilovasida tovarni oching":'Откройте товар в приложении магазина', "Taobao, Trendyol, Amazon yoki boshqa ilovada — o'zingizga yoqqan tovar sahifasini.":'В Taobao, Trendyol, Amazon или другом приложении — страницу нужного товара.', "Narx ko'ringan joyni skrinshot qiling":'Сделайте скриншот там, где видна цена', "Tovar nomi va narxi ekranda ko'rinib tursin.":'Чтобы на экране были видны название и цена.', "Pochtam'ga yuklang — jami narx tayyor":'Загрузите в Pochtam — итог готов', "Kuryer, boj va yig'im bilan birga, bir necha soniyada. Savatda bir nechta tovar bo'lsa ham.":'С курьером, пошлиной и сбором — за несколько секунд. Даже если в корзине несколько товаров.', 'Nom va narx':'Название и цена', "Har do'kon o'z tilida qidiruv so'zi":'Поисковый запрос на языке каждого магазина', 'Masalan: termos 1 litr':'Например: термос 1 литр', "Do'kon, kuryer yoki tovar nomi":'Магазин, курьер или товар', "Qidiruv so'zlari":'Поисковые запросы', "Har do'kon o'z tilida yaxshiroq topadi. «Qidirish» — do'kon sahifasi, «Nusxa» — ilovadagi qidiruvga qo'ying.":'Каждый магазин лучше ищет на своём языке. «Искать» — страница магазина, «Копия» — вставьте в поиск приложения.', 'Kimga':'Для кого', 'Qanday':'Какой', 'Erkak':'Мужчине', 'Ayol':'Женщине', 'Bola':'Ребёнку', 'Original':'Оригинал', 'Arzonroq':'Дешевле', "Har do'kon tilida so'z tayyorlanmoqda":'Готовлю запросы на языке каждого магазина', 'Nusxa':'Копия', 'Qidirish':'Искать', "Faqat ilovada: nusxalab, ilovadagi qidiruvga qo'ying.":'Только в приложении: скопируйте и вставьте в поиск.', "Rasmingiz bo'lsa: Taobao va Pinduoduo ilovasida qidiruv yonidagi kamera belgisi — rasm bilan qidirish.":'Есть фото: в приложениях Taobao и Pinduoduo значок камеры рядом с поиском — поиск по фото.', 'Topdim — skrinshot yuklash':'Нашёл — загрузить скриншот', "Narx ko'ringan joyni — jami narxni hisoblayman.":'Там, где видна цена — посчитаю итог.', 'AI bilan batafsil maslahat':'Подробный совет от ИИ', "Qidiruv so'zi":'Поисковый запрос', "Bugungi AI so'rovlari tugadi — ertaga qayta urinib ko'ring.":'Запросы к ИИ на сегодня закончились — попробуйте завтра.', "AI hozir o'chiq — do'kon ro'yxatidan qidiring.":'ИИ сейчас выключен — ищите по списку магазинов.', "So'zlarni olib bo'lmadi — internetni tekshirib, qayta urinib ko'ring.":'Не удалось получить запросы — проверьте интернет и повторите.',
   "Havolani o'qimaymiz: ko'p do'konlar narxni robotlardan yashiradi. Do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang yoki narxni o'zingiz yozing — qolganini ilova hisoblaydi.":'Ссылки мы не читаем: многие магазины скрывают цену от роботов. Сделайте скриншот места с ценой в приложении магазина или введите цену сами — остальное посчитает приложение.',
   "Maslahat: do'kon ilovasidagi «Ulashish» matnini butunligicha tashlang — unda narx bo'lsa, o'zi o'qiladi.":'Совет: вставьте текст из кнопки «Поделиться» в приложении магазина целиком — если в нём есть цена, она прочитается сама.',
   "«{0}» — nom va do'kon topildi, faqat narx yetishmayapti.":'«{0}» — название и магазин найдены, не хватает только цены.',
@@ -6133,7 +6216,9 @@ class Component extends DCLogic {
     justSaved: false,
     sheetOpen: false, toast: '',
     /* Tanishtiruv: null yoki { i, rect } (rect — yoritilgan joy, shell'ga nisbatan). */
-    tour: null
+    tour: null,
+    /* Birinchi kirish hikoyasi: { i } — joriy qadam (0–2). */
+    intro: null
   };
 
   cur() { return this.state.stack[this.state.stack.length - 1]; }
@@ -6553,6 +6638,7 @@ class Component extends DCLogic {
          ekran orqaga ketar, varaq esa ochiq qolib bosishlarni to'sardi. */
       if (this.state.sheetOpen) { e.preventDefault(); this.setState({ sheetOpen: false }); return; }
       if (this.state.tour) { e.preventDefault(); this.tourEnd(false); return; }
+      if (this.state.intro) { e.preventDefault(); this.introEnd(false); return; }
       if (this.state.stack.length < 2) return;
       const a = document.activeElement;
       if (a && a.tagName === 'INPUT' && a.value) return;
@@ -6588,7 +6674,9 @@ class Component extends DCLogic {
     let seen = true;
     try { seen = localStorage.getItem('xy_tour') === '1'; } catch (e) {}
     if (seen) return;
-    this._tourT = setTimeout(() => { if (this.cur() === 'home' && !this.state.tour) this.tourStart(); }, 700);
+    /* AI yoqiq bo'lsa — 3 qadamli hikoya (skrinshot qanday olinadi);
+       o'chiq bo'lsa — tugmalar ustidagi qisqa tanishtiruv. */
+    this._tourT = setTimeout(() => { if (this.cur() === 'home' && !this.state.tour && !this.state.intro) { if (this.state.aiOn) this.introStart('auto'); else this.tourStart(); } }, 700);
   }
   tourSteps() {
     const L = k => tr(this.state.lang, k);
@@ -6633,6 +6721,85 @@ class Component extends DCLogic {
     metrics.hit('tour', done ? 'done' : 'skip:' + (t ? t.i + 1 : 0));
     this.setState({ tour: null });
     try { localStorage.setItem('xy_tour', '1'); } catch (e) {}
+  }
+  /* --- Birinchi kirish hikoyasi (2026-10-07) ---
+     "Skrinshot yuklang" deganda nimaning skrinshoti? Uch qadam, har biri
+     o'z sahnasi bilan: do'kon ilovasini ochish → narx ko'ringan joyni
+     skrinshot qilish → Pochtam'ga yuklash. Har sahna BIR MARTA o'ynaydi va
+     oxirgi kadrda to'xtaydi (takrorlanuvchi animatsiya asabga tegardi).
+     Qadamlar o'zi almashadi (Stories kabi, 4,6 s); harakat kamaytirilsa —
+     faqat tugma bilan. Bir marta ko'rsatiladi (xy_tour), bosh sahifadagi
+     "Qanday ishlaydi?" va Sozlamalardan qayta ochiladi. */
+  introStart(src) {
+    metrics.hit('intro', src || 'auto');
+    clearTimeout(this._introT);
+    this.setState({ intro: { i: 0 } }, () => { this.introArm(); const b = this._rootRef.current && this._rootRef.current.querySelector('[data-intro-next]'); if (b) b.focus(); });
+  }
+  introArm() {
+    clearTimeout(this._introT);
+    const it = this.state.intro;
+    if (!it || it.i >= 2) return;
+    try { if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) {}
+    this._introT = setTimeout(() => { if (this.state.intro && this.state.intro.i === it.i) this.introGo(it.i + 1); }, 4600);
+  }
+  introGo(i) {
+    if (i > 2) { this.introEnd(true); return; }
+    this.setState({ intro: { i: Math.max(0, i) } }, () => this.introArm());
+  }
+  introEnd(done) {
+    clearTimeout(this._introT);
+    const it = this.state.intro;
+    metrics.hit('intro', done ? 'done' : 'skip:' + (it ? it.i + 1 : 0));
+    this.setState({ intro: null });
+    try { localStorage.setItem('xy_tour', '1'); } catch (e) {}
+  }
+  /* Namuna: media/shot-sample.webp dagi tovar sahifasi va undan chiqadigan
+     haqiqiy hisob (shu kungi kurs va tariflar). AI chaqirilmaydi, "Oxirgi
+     hisob"ga yozilmaydi, AI ga joriy xarid bo'lib ketmaydi. */
+  demoRes() {
+    const sh = { found: true, name: 'Air Run 90 krossovka', price: 699, currency: 'CNY', qty: 1, store: 'Taobao', category: 'poyabzal', country: 'Xitoy', weightKg: 0.8, confidence: 1 };
+    return { state: 'ok', ...this.shotToLc(sh), at: Date.now(), demo: true, prev: 'media/shot-sample.webp' };
+  }
+  demoOpen(src) {
+    metrics.hit('quick', 'demo:' + (src || 'home'));
+    clearTimeout(this._introT);
+    if (this.state.intro) { try { localStorage.setItem('xy_tour', '1'); } catch (e) {} }
+    this.setState({ intro: null, shotRes: this.demoRes() });
+    if (this.cur() !== 'result') this.push('result');
+  }
+  introVm(st) {
+    const it = st.intro;
+    if (!it) return { introOn: false };
+    const lang = st.lang, L = k => tr(lang, k), i = it.i;
+    const ua = (typeof navigator !== 'undefined' && navigator.userAgent) || '';
+    const keys = /iPhone|iPad|iPod/.test(ua) ? "iPhone: yon tugma va ovozni oshirishni birga bosing."
+      : /Android/.test(ua) ? "Android: quvvat va ovozni pasaytirishni birga bosing."
+      : "iPhone — yon tugma + ovoz (+), Android — quvvat + ovoz (−).";
+    const S = [
+      { t: "Do'kon ilovasida tovarni oching", x: "Taobao, Trendyol, Amazon yoki boshqa ilovada — o'zingizga yoqqan tovar sahifasini." },
+      { t: "Narx ko'ringan joyni skrinshot qiling", x: "Tovar nomi va narxi ekranda ko'rinib tursin. " + L(keys) },
+      { t: "Pochtam'ga yuklang — jami narx tayyor", x: "Kuryer, boj va yig'im bilan birga, bir necha soniyada. Savatda bir nechta tovar bo'lsa ham." }
+    ];
+    /* Sahnadagi raqamlar — namunaning haqiqiy hisobi. */
+    let goods = 97, ship = 9, duty = 0, total = 106;
+    try {
+      const C = this.landedCalc(this.demoRes().lc, st);
+      goods = Math.round(C.L.goodsUsd); ship = Math.round(C.L.shipUsd); duty = Math.round(C.L.dutyUsd + C.L.feeUsd); total = Math.round(C.L.totalUsd);
+    } catch (e) {}
+    const last = i >= 2;
+    return {
+      introOn: true, ix0: i === 0, ix1: i === 1, ix2: i === 2,
+      introSegs: [0, 1, 2].map(k => ({ done: k < i, now: k === i, w: k < i ? '100%' : '0%' })),
+      introN: (i + 1) + ' / 3', introTitle: L(S[i].t), introText: i === 1 ? L("Tovar nomi va narxi ekranda ko'rinib tursin.") + ' ' + L(keys) : L(S[i].x),
+      introLast: last, introNotLast: !last,
+      introNextLabel: L(last ? 'Tushunarli' : 'Keyingi'),
+      introNext: () => this.introGo(i + 1), introBack: () => this.introGo(i - 1), introSkip: () => this.introEnd(false),
+      introDemo: () => this.demoOpen('intro'), introTap: () => { if (!last) this.introGo(i + 1); },
+      ixGoods: '$' + goods, ixShip: '$' + ship, ixDuty: '$' + duty, ixTotal: String(total),
+      ixUzs: '≈ ' + money(Math.round(total * USD_RATE / 1000) * 1000) + ' ' + L("so'm"),
+      ixJami: L('Sizga jami tushadi'), ixTovar: L('Tovar'), ixKuryer: L('Kuryer'), ixBoj: L('Boj va yig\'im'), ixTag: L('Nom va narx'),
+      ixLogos: ['taobao', 'trendyol', 'amazon', 'aliexpress', 'shein', 'pinduoduo'].map(id => STORES.find(x => x.id === id)).filter(x => x && x.logoCss && x.logoCss !== 'none').map(x => ({ logo: x.logoCss }))
+    };
   }
   tourVm(st) {
     const t = st.tour;
@@ -7424,7 +7591,8 @@ class Component extends DCLogic {
      so'ramaydi. Hech narsa bo'lmasa null. */
   cartForAi() {
     const st = this.state;
-    const r = (st.shotRes && st.shotRes.state === 'ok' && st.shotRes.lc) ? st.shotRes : st.lastRes;
+    /* Namuna (demo) joriy xarid emas — AI ga ketmaydi. */
+    const r = (st.shotRes && st.shotRes.state === 'ok' && st.shotRes.lc && !st.shotRes.demo) ? st.shotRes : st.lastRes;
     if (!r || !r.lc) return null;
     const lc = r.lc;
     const c = { name: lc.name, store: r.storeName || '', country: lc.country, cat: lc.cat, cur: lc.cur, price: num(lc.price), kg: num(lc.kg), qty: num(lc.qty) || 1 };
@@ -7710,19 +7878,11 @@ class Component extends DCLogic {
     };
     /* «Ulashish → Pochtam» (takeShare) shu yo'ldan yuradi. */
     this._heroRun = run;
-    /* Skrinshot tugmalari — foydalanuvchi telefoniga qarab bitta qator
-       (AI o'chiq bo'lsa yo'riqnoma ko'rinmaydi: skrinshot o'qilmaydi). */
-    const ua = (typeof navigator !== 'undefined' && navigator.userAgent) || '';
-    const keys = /iPhone|iPad|iPod/.test(ua) ? "iPhone: yon tugma va ovozni oshirishni birga bosing."
-      : /Android/.test(ua) ? "Android: quvvat va ovozni pasaytirishni birga bosing."
-      : "Skrinshot: iPhone — yon tugma + ovoz (+), Android — quvvat + ovoz (−).";
     return {
       whText: w.text, whPh: L(st.aiOn ? 'Masalan: termos 1 litr' : "Do'kon, kuryer yoki tovar nomi"),
       onWhText: e => set({ text: String(e.target.value || '').slice(0, 1500) }),
-      whSteps: ['Oching', 'Skrinshot', 'Jami'].map((t, i) => ({ n: String(i + 1), t: L(t) })),
-      whKeys: L(keys),
-      /* Sahnadagi namuna karta (bezak, aria-hidden). */
-      hsJami: L('Jami narx').toUpperCase(), hsTovar: L('Tovar'), hsKuryer: L('Kuryer'), hsBoj: L('Boj'), hsUzs: L('≈ 1,34 mln'),
+      whDemo: () => this.demoOpen('home'),
+      whIntro: () => this.introStart('home'),
       whLogos: ['taobao', 'trendyol', 'amazon', 'pinduoduo'].map(id => STORES.find(x => x.id === id)).filter(x => x && x.logoCss && x.logoCss !== 'none').map(x => ({ logo: x.logoCss })),
       /* Rasm bilan qidirish (Google Lens, Taobao kabi): tovar fotosi →
          AI taniydi → "Qidiruv so'zlari". Skrinshot (jami narx) alohida. */
@@ -7755,7 +7915,8 @@ class Component extends DCLogic {
     const isLink = r.src === 'link', isPhoto = r.src === 'photo';
     /* Havola kartasidan: nom bo'lsa — shu tovarni boshqa do'konlardan topish. */
     const findIt = () => { metrics.hit('quick', 'link:find'); this.addFind(r.name); this.setState({ aiMsgs: [], aiDone: {} }); this.push('ai'); this.aiAsk(tx(lang, '{0} qidiryapman', r.name) + '. ' + L_("Qaysi do'kondan topaman?"), { find: true }); };
-    const base = { rsBusy: r.state === 'busy', rsOk: r.state === 'ok', rsNone: r.state === 'none', rsErr: r.state === 'err',
+    const base = { rsDemo: r.state === 'ok' && !!r.demo, rsDemoShot: () => { metrics.hit('quick', 'demo:shot'); this.shotPick(); },
+      rsBusy: r.state === 'busy', rsOk: r.state === 'ok', rsNone: r.state === 'none', rsErr: r.state === 'err',
       rsErrT: L_(r.code === 'limit' ? (isLink ? 'Bugungi savollar chegarasi tugadi' : 'Bugungi skrinshot chegarasi tugadi') : "Hozir o'qiy olmadim"),
       rsRetry: () => (isPhoto ? this.photoPick() : this.shotPick()), rsManual: () => this.openLanded(r.lc ? { ...r.lc } : {}),
       rsHelper: () => { metrics.hit('quick', 'ai:where'); this.setState({ where: { ...(st.where || {}), find: true } }); this.go('home'); },
@@ -9420,7 +9581,8 @@ class Component extends DCLogic {
 
       sheetOpen: st.sheetOpen,
       ...this.tourVm(st),
-      tourReplay: () => { metrics.hit('tour', 'replay'); this.go('home'); clearTimeout(this._tourT); this._tourT = setTimeout(() => this.tourStart(), 350); },
+      ...this.introVm(st),
+      tourReplay: () => { metrics.hit('tour', 'replay'); this.go('home'); clearTimeout(this._tourT); this._tourT = setTimeout(() => { if (this.state.aiOn) this.introStart('settings'); else this.tourStart(); }, 350); },
       openSheet: () => this.setState({ sheetOpen: true }),
       closeSheet: () => this.setState({ sheetOpen: false }),
       stop: e => e.stopPropagation(),
