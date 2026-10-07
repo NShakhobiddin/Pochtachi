@@ -235,6 +235,11 @@ jobs:
           PICK=$(echo $GOOD $BUSY | tr ' ' '\n' | grep -v '^$' | head -3 | paste -sd, -)
           [ -n "$GOOD" ] || echo "::warning::Hech bir Gemini modeli hozir javob bermadi ($LASTERR). Ro'yxat baribir yoziladi — band holat odatda vaqtinchalik; billing yoqilganini tekshiring."
           code=$([ -n "$GOOD" ] && echo 200 || echo "$code")
+          # Diagnostika: namuna skrinshot har bir modelga (Worker'ning aynan
+          # o'sha so'rovi) — narx o'qildimi, vaqt, xato matni.
+          echo "== Gemini skrinshot sinovi (media/shot-sample.webp, kutilgan narx 699 CNY)"
+          GEMINI_API_KEY="$G" node gemini-probe.mjs "$(echo $CANDS | tr ' ' ',')" | tee /tmp/probe.txt
+          echo "::notice::Gemini skrinshot: $(tr '\n' ' ' < /tmp/probe.txt | cut -c1-900)"
           printf '%s' "$G" | npx wrangler secret put GEMINI_API_KEY
           printf '%s' "$PICK" | npx wrangler secret put GEMINI_MODEL
           echo "set=1" >> "$GITHUB_OUTPUT"

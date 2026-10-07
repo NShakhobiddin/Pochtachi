@@ -610,7 +610,7 @@ async function callClaude(body, env, fetchImpl, onEvent) {
   if (!gem || String(env.AI_GEMINI_FALLBACK || '1') === '0' || !shouldFallback(r)) return r;
   console.log('ai zaxira: gemini', r.status, r.type || '', String(r.error || '').slice(0, 120));
   const g = await callGemini(body, env, fetchImpl, onEvent);
-  if (g.error) { console.log('ai gemini ham', g.status, g.type || '', String(g.error).slice(0, 160)); return r; }
+  if (g.error) { console.log('ai gemini ham', g.status, g.type || '', String(g.error).slice(0, 160)); return { ...r, gemini: { status: g.status, error: String(g.error).slice(0, 200) } }; }
   VIA_GEMINI.add(body);
   return g;
 }
@@ -861,7 +861,7 @@ export async function handleAi({ request, env, ctx, origin, originOk, cors, coun
     if (rk.err) {
       console.log('ai kw upstream', rk.err.status, rk.err.type || '', rk.err.error);
       count('kw_err');
-      return json({ error: 'AI vaqtincha mavjud emas', code: rk.err.status === 401 || rk.err.status === 403 ? 'key' : 'upstream' }, 503);
+      return json({ error: 'AI vaqtincha mavjud emas', code: rk.err.status === 401 || rk.err.status === 403 ? 'key' : 'upstream', ...(rk.err.gemini ? { gemini: rk.err.gemini } : {}) }, 503);
     }
     count('kw'); count('ok');
     const body = { text: '', kw: rk.kw, cards: [], tools: [], model: rk.model || '', usage: rk.usage, stop: 'kw' };
@@ -934,7 +934,7 @@ async function runAi({ parsed, env, count, fetchImpl, emit, cfg = {} }) {
     if (rs.err) {
       console.log('ai shot upstream', rs.err.status, rs.err.type || '', rs.err.error);
       count('shot_err');
-      return json({ error: 'AI vaqtincha mavjud emas', code: rs.err.status === 401 || rs.err.status === 403 ? 'key' : /credit balance|billing|usage limit/i.test(rs.err.error || '') ? 'billing' : 'upstream' }, 503);
+      return json({ error: 'AI vaqtincha mavjud emas', code: rs.err.status === 401 || rs.err.status === 403 ? 'key' : /credit balance|billing|usage limit/i.test(rs.err.error || '') ? 'billing' : 'upstream', ...(rs.err.gemini ? { gemini: rs.err.gemini } : {}) }, 503);
     }
     if (rs.usage) { usage.input += rs.usage.input; usage.output += rs.usage.output; usage.usd += rs.usage.usd || 0; }
     shot = rs.unreadable ? { found: false } : rs.out;
@@ -1005,7 +1005,7 @@ async function runAi({ parsed, env, count, fetchImpl, emit, cfg = {} }) {
       /* Hisobda kredit tugasa Anthropic 400 qaytaradi — alohida kod, jonli
          tekshiruvda sabab darrov ko'rinsin. */
       const code = r.status === 401 || r.status === 403 ? 'key' : /credit balance|billing|usage limit/i.test(r.error || '') ? 'billing' : r.status === 400 ? 'bad_request' : 'upstream';
-      return json({ error: 'AI vaqtincha mavjud emas', code }, 503);
+      return json({ error: 'AI vaqtincha mavjud emas', code, ...(r.gemini ? { gemini: r.gemini } : {}) }, 503);
     }
     const msg = r.data || {};
     if (msg.provider === 'gemini' && !usage.gemini) { usage.gemini = 1; count('gemini'); }
@@ -1209,14 +1209,18 @@ export async function readKeywords({ q, who, style, env, fetchFn }) {
 
 /* Rasmni arzon model bilan o'qiydi. Asosiy modelga rasm ko'rsatilmaydi: u to'rt barobar qimmat, vazifa esa oddiy
    o'qish. Javob: { out, model, usage } yoki { err }. */
-export async function readShot({ image, mime, usdRate, env, fetchFn }) {
-  const base = {
+export function shotBody(image, mime, env = {}) {
+  return {
     model: env.AI_SHOT_MODEL || 'claude-haiku-4-5', max_tokens: SHOT_MAX_TOKENS,
     messages: [{ role: 'user', content: [
       { type: 'image', source: { type: 'base64', media_type: mime, data: image } },
       { type: 'text', text: SHOT_PROMPT }
     ] }]
   };
+}
+export const SHOT_SCHEMA_EXPORT = SHOT_SCHEMA;
+export async function readShot({ image, mime, usdRate, env, fetchFn }) {
+  const base = shotBody(image, mime, env);
   let r = await callClaude({ ...base, output_config: { format: { type: 'json_schema', schema: SHOT_SCHEMA } } }, env, fetchFn);
   /* Tuzilgan chiqish rad etilsa (eski model/proksi) — oddiy matndan JSON. */
   if (r.error && r.status === 400 && /output_config|format|schema/i.test(r.error)) r = await callClaude(base, env, fetchFn);

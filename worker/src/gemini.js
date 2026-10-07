@@ -47,7 +47,7 @@ function responseObj(content) {
 }
 
 /* Anthropic Messages so'rovi → Gemini generateContent tanasi. */
-export function toGemini(body, env = {}) {
+export function toGemini(body, env = {}, opts = {}) {
   const tools = Array.isArray(body.tools) ? body.tools : [];
   const search = String(env.GEMINI_SEARCH || '') === '1' && tools.some(isServerTool);
   /* Tizim ko'rsatmasi: bloklar bitta matnga. Veb-qidiruv o'chiq bo'lsa
@@ -116,8 +116,13 @@ export function toGemini(body, env = {}) {
   if (fmt && fmt.type === 'json_schema' && fmt.schema) { gen.responseMimeType = 'application/json'; gen.responseJsonSchema = fmt.schema; }
   /* Fikrlash darajasi faqat aniq sozlansa (modelga qarab qiymatlar farq
      qiladi): GEMINI_THINKING = MINIMAL | LOW | MEDIUM | HIGH. */
-  const lvl = String(env.GEMINI_THINKING || '').toUpperCase();
-  if (['MINIMAL', 'LOW', 'MEDIUM', 'HIGH'].includes(lvl)) gen.thinkingConfig = { thinkingLevel: lvl };
+  /* Fikrlash darajasi: suhbat — GEMINI_THINKING (bo'sh — model standarti);
+     arzon ishlar (skrinshot, qidiruv so'zlari — Claude'da Haiku) —
+     GEMINI_SHOT_THINKING, standart LOW: rasm bilan uzoq "o'ylab" vaqt
+     chegarasiga urilmasin. opts.noThinking — model sozlamani rad etsa. */
+  const cheap = /haiku/i.test(String(body.model || ''));
+  const lvl = String((cheap ? (env.GEMINI_SHOT_THINKING != null ? env.GEMINI_SHOT_THINKING : 'LOW') : env.GEMINI_THINKING) || '').toUpperCase();
+  if (!opts.noThinking && ['MINIMAL', 'LOW', 'MEDIUM', 'HIGH'].includes(lvl)) gen.thinkingConfig = { thinkingLevel: lvl };
   if (Object.keys(gen).length) out.generationConfig = gen;
   return out;
 }
@@ -232,12 +237,20 @@ export async function callGemini(body, env, fetchImpl, onEvent) {
   }
   return r;
 }
-async function callGeminiModel(model, body, env, fetchImpl, onEvent) {
+async function callGeminiModel(model, body, env, fetchImpl, onEvent, opts = {}) {
+  const r = await callGeminiOnce(model, body, env, fetchImpl, onEvent, opts);
+  /* Model fikrlash sozlamasini qo'llamasa (400 thinking…) — sozlamasiz qayta. */
+  if (r.error && r.status === 400 && !opts.noThinking && /thinking/i.test(r.error)) return callGeminiOnce(model, body, env, fetchImpl, onEvent, { noThinking: true });
+  return r;
+}
+async function callGeminiOnce(model, body, env, fetchImpl, onEvent, opts) {
   const url = GEMINI_URL + encodeURIComponent(model) + (onEvent ? ':streamGenerateContent?alt=sse' : ':generateContent');
-  const init = { method: 'POST', headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY }, body: JSON.stringify(toGemini(body, env)) };
-  if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) init.signal = AbortSignal.timeout(+env.AI_TIMEOUT_MS || 50000);
+  const init = { method: 'POST', headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY }, body: JSON.stringify(toGemini(body, env, opts)) };
+  /* Har urinishga alohida chegara (GEMINI_TIMEOUT_MS, standart 25 s) —
+     sekin model butun so'rovni yeb qo'ymasin, ro'yxatdagi keyingisiga vaqt qolsin. */
+  if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) init.signal = AbortSignal.timeout(+env.GEMINI_TIMEOUT_MS || 25000);
   let res;
-  try { res = await fetchImpl(url, init); } catch (e) { return { error: 'gemini tarmoq: ' + (e && e.message || e), status: 0 }; }
+  try { res = await fetchImpl(url, init); } catch (e) { return { error: 'gemini tarmoq (' + model + '): ' + (e && e.message || e), status: 0 }; }
   const ctype = (res.headers && res.headers.get && res.headers.get('content-type')) || '';
   if (onEvent && res.ok && /event-stream/.test(ctype) && res.body) {
     try { return await readGeminiSse(res.body, model, onEvent); } catch (e) { return { error: 'gemini oqim: ' + (e && e.message || e), status: 0 }; }
@@ -246,7 +259,7 @@ async function callGeminiModel(model, body, env, fetchImpl, onEvent) {
   try { data = await res.json(); } catch (e) { data = null; }
   if (!res.ok) {
     const er = data && (Array.isArray(data) ? data[0] && data[0].error : data.error) || {};
-    return { error: 'gemini: ' + (er.message || ('HTTP ' + res.status)), status: res.status, type: er.status || '' };
+    return { error: 'gemini (' + model + '): ' + (er.message || ('HTTP ' + res.status)), status: res.status, type: er.status || '' };
   }
   /* Oqim so'ralgan, lekin oddiy JSON keldi — matn bitta bo'lak bo'lib chiqadi. */
   const msg = fromGemini(Array.isArray(data) ? data[data.length - 1] : data, model);
