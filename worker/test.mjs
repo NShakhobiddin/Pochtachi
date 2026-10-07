@@ -78,6 +78,7 @@ check('/hisobot indekslanmaydi', hs.headers.get('x-robots-tag') === 'noindex');
 const { runTool, buildSystem, TOOLS, parseAiBody, buildCards, mergeCart, toolAsk, parseCart, parseUrl, plainText, orderRules, costUsd, answerKey } = await import('./src/ai.js');
 check('plainText: markdown belgilari olib tashlanadi, raqamli qadamlar qoladi', plainText('**Nike.com** — rasmiy.\n## Sarlavha\n- birinchi\n1. Qadam *muhim* `kod`') === 'Nike.com — rasmiy.\nSarlavha\n— birinchi\n1. Qadam muhim kod', JSON.stringify(plainText('**Nike.com** — rasmiy.\n## Sarlavha\n- birinchi\n1. Qadam *muhim* `kod`')));
 check('plainText: egri apostrof → ASCII, "43 $" → "$43", "---" chizig\'i yo\'q', plainText('Yo‘q, to‘lanmaydi. Jami 43 $ (12 650 so‘m)\n\n---\nKo‘ylak 40,5 $, poyabzal $59') === "Yo'q, to'lanmaydi. Jami $43 (12 650 so'm)\n\nKo'ylak $40,5, poyabzal $59", JSON.stringify(plainText('Yo‘q, to‘lanmaydi. Jami 43 $ (12 650 so‘m)\n\n---\nKo‘ylak 40,5 $, poyabzal $59')));
+check('plainText: markdown havola [nom](url) — faqat nom', plainText('1. [Nike Official](https://www.nike.com/w/x) — rasmiy') === '1. Nike Official — rasmiy');
 import '../core/customs.js';
 const Core = globalThis.PochtamCore;
 /* AI_LINK_FETCH: havola testlari web_fetch zaxirasini ham tekshiradi (ishlab chiqarishda standart o'chiq — alohida test). */
@@ -651,7 +652,7 @@ check('parseAiBody: savol + url — url e\'tiborsiz', (() => { const p = parseAi
       { role: 'user', content: [{ type: 'tool_result', tool_use_id: 'toolu_1', content: '{"dutyUsd":36}' }] }],
     output_config: { format: { type: 'json_schema', schema: { type: 'object', properties: { a: { type: 'string' } } } } } }, {});
   const fd = gb.tools && gb.tools[0].functionDeclarations;
-  check('toGemini: tizim bitta matn (web_search ko\'rsatmasi qidiruvsiz olib tashlanadi), rollar user/model', gb.systemInstruction.parts[0].text === 'Qoidalar\n\nBugun: 2026-10-07' && gb.contents.map(c => c.role).join() === 'user,model,user,model,user', JSON.stringify(gb.systemInstruction));
+  check('toGemini: tizim bitta matn (web_search ko\'rsatmasi qidiruvsiz olib tashlanadi, oxirida qat\'iy eslatma), rollar user/model', /^Qoidalar\n\nBugun: 2026-10-07\n\nEslatma \(qat'iy\)/.test(gb.systemInstruction.parts[0].text) && gb.contents.map(c => c.role).join() === 'user,model,user,model,user', JSON.stringify(gb.systemInstruction));
   check('toGemini: rasm inlineData, matn yonida', gb.contents[2].parts[0].inlineData.mimeType === 'image/png' && gb.contents[2].parts[0].inlineData.data === PNGg && gb.contents[2].parts[1].text === 'boj?');
   check('toGemini: vosita functionDeclarations (parametersJsonSchema), server vositasi (web_search) yo\'q', fd.length === 1 && fd[0].name === 'customs_duty' && fd[0].parametersJsonSchema.required[0] === 'goodsUsd' && !fd[0].cache_control && gb.tools.length === 1, JSON.stringify(gb.tools));
   check('toGemini: Claude chaqiruvi — thinking tashlanadi, functionCall maxsus imzo bilan; natija functionResponse (nom bilan)', gb.contents[3].parts.length === 1 && gb.contents[3].parts[0].functionCall.name === 'customs_duty' && gb.contents[3].parts[0].functionCall.args.goodsUsd === 320 && gb.contents[3].parts[0].thoughtSignature === 'skip_thought_signature_validator'

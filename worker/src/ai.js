@@ -572,6 +572,8 @@ const LANG_NAME = { uz: 'o\'zbek (lotin)', uzc: 'o\'zbek (kirill)', ru: 'rus' };
    # sarlavha va "- " ro'yxat belgisi o'rniga "— ". Raqamli qadamlar qoladi. */
 export function plainText(t) {
   return String(t || '')
+    /* Havolalar ilovada karta bo'lib chiqadi; matndagi [nom](https://…) — faqat nom. */
+    .replace(/\[([^\]\n]+)\]\((?:https?:)?\/\/[^)\s]+\)/g, '$1')
     .replace(/\*\*(.+?)\*\*/g, '$1').replace(/(^|[^*])\*(?!\s)([^*\n]+?)\*(?!\*)/g, '$1$2').replace(/`([^`\n]+)`/g, '$1')
     .replace(/^#{1,6}\s+/gm, '').replace(/^\s*[-*_]{3,}\s*$/gm, '').replace(/^\s*[-*•]\s+/gm, '— ')
     /* Ilova hamma joyda ASCII apostrof (o', g') ishlatadi; ba'zi modellar

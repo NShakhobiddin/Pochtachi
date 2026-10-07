@@ -21,6 +21,7 @@
 export const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/';
 export const GEMINI_DEFAULT_MODEL = 'gemini-2.5-flash';
 const SKIP_SIG = 'skip_thought_signature_validator';
+export const GEMINI_REMIND = 'Eslatma (qat\'iy): javob 2–5 gap, ro\'yxat bo\'lsa ko\'pi bilan 5 qadam. URL, havola, emoji, markdown va kod yozma. Mavzudan tashqari savol (dasturlash, ob-havo va h.k.) — bir gapda rad et, javob berma. Bazada yo\'q fakt yoki kelajak (qonun o\'zgarishi, narx) haqida taxmin qilma — "Bu haqda aniq ma\'lumotim yo\'q" de. Havola berilsa — narx ko\'ringan joyni skrinshot qilib yuklashni so\'ra.';
 const REFUSE = ['SAFETY', 'RECITATION', 'BLOCKLIST', 'PROHIBITED_CONTENT', 'SPII', 'IMAGE_SAFETY', 'IMAGE_PROHIBITED_CONTENT', 'LANGUAGE'];
 
 /* Claude modeli → Gemini modeli: arzon (Haiku: skrinshot, qidiruv
@@ -54,6 +55,11 @@ export function toGemini(body, env = {}, opts = {}) {
      u haqidagi ko'rsatma olib tashlanadi — model yo'q vositani "chaqirmasin". */
   let sys = typeof body.system === 'string' ? [body.system] : (Array.isArray(body.system) ? body.system.map(b => b && b.text || '') : []);
   if (!search) sys = sys.filter(t => !/web_search/.test(t));
+  /* Gemini sinovda Claude'dan ko'ra qoidadan ko'proq chiqdi: mavzudan
+     tashqari savolga (dasturlash) javob berdi, kelajak qonun haqida
+     taxmin qildi, matnga URL va emoji qo'ydi, javob 4 barobar uzun edi.
+     Shu sababli qoidalar oxiriga qisqa eslatma (faqat suhbatda). */
+  if (!/haiku/i.test(String(body.model || '')) && sys.length) sys.push(String(env.GEMINI_SYSTEM_EXTRA || GEMINI_REMIND));
   const out = {};
   if (sys.filter(Boolean).length) out.systemInstruction = { parts: [{ text: sys.filter(Boolean).join('\n\n') }] };
 
