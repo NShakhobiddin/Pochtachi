@@ -573,7 +573,11 @@ const LANG_NAME = { uz: 'o\'zbek (lotin)', uzc: 'o\'zbek (kirill)', ru: 'rus' };
 export function plainText(t) {
   return String(t || '')
     .replace(/\*\*(.+?)\*\*/g, '$1').replace(/(^|[^*])\*(?!\s)([^*\n]+?)\*(?!\*)/g, '$1$2').replace(/`([^`\n]+)`/g, '$1')
-    .replace(/^#{1,6}\s+/gm, '').replace(/^\s*[-*•]\s+/gm, '— ')
+    .replace(/^#{1,6}\s+/gm, '').replace(/^\s*[-*_]{3,}\s*$/gm, '').replace(/^\s*[-*•]\s+/gm, '— ')
+    /* Ilova hamma joyda ASCII apostrof (o', g') ishlatadi; ba'zi modellar
+       (Gemini) ‘ ’ ʻ ʼ yozadi. Summa "43 $" emas, "$43" (qoidadagi shakl). */
+    .replace(/([A-Za-zА-Яа-яЎўҚқҒғҲҳ])[\u2018\u2019\u02BB\u02BC]/g, "$1'")
+    .replace(/(^|[^\d$])(\d(?:[\d\u00a0 ]*\d)?(?:[.,]\d+)?)\s?\$(?![\d\w])/g, '$1$$$2')
     .replace(/[ \t]+$/gm, '').replace(/\n{3,}/g, '\n\n').trim();
 }
 

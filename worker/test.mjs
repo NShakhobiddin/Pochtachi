@@ -77,6 +77,7 @@ check('/hisobot indekslanmaydi', hs.headers.get('x-robots-tag') === 'noindex');
 /* --- Pochtam AI (/ai): soxta Claude API (env.AI_FETCH), haqiqiy vositalar --- */
 const { runTool, buildSystem, TOOLS, parseAiBody, buildCards, mergeCart, toolAsk, parseCart, parseUrl, plainText, orderRules, costUsd, answerKey } = await import('./src/ai.js');
 check('plainText: markdown belgilari olib tashlanadi, raqamli qadamlar qoladi', plainText('**Nike.com** — rasmiy.\n## Sarlavha\n- birinchi\n1. Qadam *muhim* `kod`') === 'Nike.com — rasmiy.\nSarlavha\n— birinchi\n1. Qadam muhim kod', JSON.stringify(plainText('**Nike.com** — rasmiy.\n## Sarlavha\n- birinchi\n1. Qadam *muhim* `kod`')));
+check('plainText: egri apostrof → ASCII, "43 $" → "$43", "---" chizig\'i yo\'q', plainText('Yo‘q, to‘lanmaydi. Jami 43 $ (12 650 so‘m)\n\n---\nKo‘ylak 40,5 $, poyabzal $59') === "Yo'q, to'lanmaydi. Jami $43 (12 650 so'm)\n\nKo'ylak $40,5, poyabzal $59", JSON.stringify(plainText('Yo‘q, to‘lanmaydi. Jami 43 $ (12 650 so‘m)\n\n---\nKo‘ylak 40,5 $, poyabzal $59')));
 import '../core/customs.js';
 const Core = globalThis.PochtamCore;
 /* AI_LINK_FETCH: havola testlari web_fetch zaxirasini ham tekshiradi (ishlab chiqarishda standart o'chiq — alohida test). */
