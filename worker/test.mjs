@@ -79,6 +79,7 @@ const { runTool, buildSystem, TOOLS, parseAiBody, buildCards, mergeCart, toolAsk
 check('plainText: markdown belgilari olib tashlanadi, raqamli qadamlar qoladi', plainText('**Nike.com** — rasmiy.\n## Sarlavha\n- birinchi\n1. Qadam *muhim* `kod`') === 'Nike.com — rasmiy.\nSarlavha\n— birinchi\n1. Qadam muhim kod', JSON.stringify(plainText('**Nike.com** — rasmiy.\n## Sarlavha\n- birinchi\n1. Qadam *muhim* `kod`')));
 check('plainText: egri apostrof → ASCII, "43 $" → "$43", "---" chizig\'i yo\'q', plainText('Yo‘q, to‘lanmaydi. Jami 43 $ (12 650 so‘m)\n\n---\nKo‘ylak 40,5 $, poyabzal $59') === "Yo'q, to'lanmaydi. Jami $43 (12 650 so'm)\n\nKo'ylak $40,5, poyabzal $59", JSON.stringify(plainText('Yo‘q, to‘lanmaydi. Jami 43 $ (12 650 so‘m)\n\n---\nKo‘ylak 40,5 $, poyabzal $59')));
 check('plainText: markdown havola [nom](url) — faqat nom', plainText('1. [Nike Official](https://www.nike.com/w/x) — rasmiy') === '1. Nike Official — rasmiy');
+check('plainText: "11 dollar" → "$11", "150 dollarlik" o\'zgarmaydi', plainText('Narxi taxminan 11 dollar (20 kun), 11.76 dollar. 150 dollarlik krossovka') === 'Narxi taxminan $11 (20 kun), $11.76. 150 dollarlik krossovka');
 import '../core/customs.js';
 const Core = globalThis.PochtamCore;
 /* AI_LINK_FETCH: havola testlari web_fetch zaxirasini ham tekshiradi (ishlab chiqarishda standart o'chiq — alohida test). */
@@ -116,7 +117,7 @@ const fakeClaude = async (url, init) => {
 };
 const a1 = await ask('320 dollarlik 2.5 kg tovar uchun boj qancha?', { AI_FETCH: fakeClaude });
 const j1 = await a1.json();
-check('/ai vosita bilan javob — 200, matn, vosita nomi va boj kartasi (kirish bilan)', a1.status === 200 && /Boj 38\.53/.test(j1.text) && j1.tools.join() === 'customs_duty' && j1.cards.length === 1 && j1.cards[0].type === 'duty' && j1.cards[0].got.goodsUsd === 320 && j1.cards[0].duty.dutyUsd > 0 && j1.usage.input === 110, JSON.stringify(j1).slice(0, 200));
+check('/ai vosita bilan javob — 200, matn, vosita nomi va boj kartasi (kirish bilan)', a1.status === 200 && /Boj \$38\.53/.test(j1.text) && j1.tools.join() === 'customs_duty' && j1.cards.length === 1 && j1.cards[0].type === 'duty' && j1.cards[0].got.goodsUsd === 320 && j1.cards[0].duty.dutyUsd > 0 && j1.usage.input === 110, JSON.stringify(j1).slice(0, 200));
 /* Vositalarda kesh nuqtasi: statik ro'yxatning oxirgisida, server vositalari undan keyin. */
 check('vositalar: oxirgi statik vositada cache_control, tizim blokida ham', calls[0].tools[calls[0].tools.length - 1].cache_control && calls[0].tools[calls[0].tools.length - 1].cache_control.type === 'ephemeral' && calls[0].system[0].cache_control && calls[0].system[0].cache_control.type === 'ephemeral');
 check('/ai tarixi Claude\'ga o\'tadi (navbat bilan)', calls[0].messages.length === 1 && calls[1].messages.length === 3 && calls[1].messages[1].role === 'assistant');
@@ -443,7 +444,7 @@ const lines = async res => (await res.text()).split('\n').filter(Boolean).map(l 
   const ls = await lines(rs);
   const done = ls.find(l => l.t === 'done') || {};
   check('oqim: NDJSON, holat (vosita nomi), matn bo\'laklari raund bilan, oxirida done', /ndjson/.test(rs.headers.get('content-type') || '') && ls.some(l => l.t === 'status' && l.s === 'customs_duty') && ls.filter(l => l.t === 'text' && l.r === 0).map(l => l.d).join('') === 'Hisoblayman.' && ls.filter(l => l.t === 'text' && l.r === 1).map(l => l.d).join('') === '**Boj** 38.53 dollar. Taxminiy.' && ls[ls.length - 1].t === 'done', JSON.stringify(ls.map(l => l.t)));
-  check('oqim: done — oqimsiz javob bilan bir xil (markdownsiz matn, boj kartasi, vosita, sarf)', done.text === 'Boj 38.53 dollar. Taxminiy.' && done.cards && done.cards[0].type === 'duty' && done.cards[0].got.goodsUsd === 320 && done.tools.join() === 'customs_duty' && done.usage.input === 100 && done.usage.cacheRead === 80, JSON.stringify(done).slice(0, 200));
+  check('oqim: done — oqimsiz javob bilan bir xil (markdownsiz matn, boj kartasi, vosita, sarf)', done.text === 'Boj $38.53. Taxminiy.' && done.cards && done.cards[0].type === 'duty' && done.cards[0].got.goodsUsd === 320 && done.tools.join() === 'customs_duty' && done.usage.input === 100 && done.usage.cacheRead === 80, JSON.stringify(done).slice(0, 200));
   const as = (sent[1] && sent[1].messages[1]) || {};
   check('oqim: Claude\'ga stream:true; 2-raundda thinking imzosi va vosita kirishi (JSON bo\'laklaridan) o\'zgarishsiz', sent[0].stream === true && as.role === 'assistant' && as.content[0].type === 'thinking' && as.content[0].signature === 'sig-abc' && as.content[2].type === 'tool_use' && JSON.stringify(as.content[2].input) === '{"goodsUsd":320,"shipUsd":22.5,"kg":2.5}', JSON.stringify(as).slice(0, 200));
   check('tezlik: oddiy savolda effort low', sent[0].output_config && sent[0].output_config.effort === 'low', JSON.stringify(sent[0].output_config));
@@ -637,6 +638,15 @@ check('parseAiBody: savol + url — url e\'tiborsiz', (() => { const p = parseAi
   check('purge: eski kunning tayyor javoblari o\'chadi, bugungisi qoladi', !kv.has('a:eski') && [...kv.keys()].some(k => k.startsWith('a:')));
 }
 
+/* Oxirgi raundda vosita taqiqlanadi — model javob yozishga majbur. */
+{
+  const loopSent = [];
+  const loopFake = async (u, i) => { const b = JSON.parse(i.body); loopSent.push(b);
+    if (b.tool_choice && b.tool_choice.type === 'none') return claudeText('Powerbank avia bilan yuborilmaydi.');
+    return new Response(JSON.stringify({ model: 'claude-test', stop_reason: 'tool_use', content: [{ type: 'tool_use', id: 't' + loopSent.length, name: 'check_banned', input: { item: 'powerbank' } }], usage: { input_tokens: 10, output_tokens: 5 } }), { status: 200 }); };
+  const lr = await (await ask('Powerbank buyurtma qilsam bo\'ladimi?', { AI_FETCH: loopFake }, { headers: { 'cf-connecting-ip': '7.2.1.1' } })).json();
+  check('oxirgi raund: tool_choice none — vosita aylanmasi o\'rniga javob', loopSent.length === 4 && !loopSent[2].tool_choice && loopSent[3].tool_choice.type === 'none' && lr.text === 'Powerbank avia bilan yuborilmaydi.', loopSent.length + ' · ' + lr.text);
+}
 /* --- Gemini zaxirasi (2026-10-07): Claude so'rovi ↔ Gemini, avtomatik o'tish --- */
 {
   const { toGemini, fromGemini, partsToBlocks } = await import('./src/gemini.js');
@@ -681,7 +691,7 @@ check('parseAiBody: savol + url — url e\'tiborsiz', (() => { const p = parseAi
   };
   const gr = await (await ask('320 dollarlik 2.5 kg tovar uchun boj qancha?', { AI_FETCH: gemFake, GEMINI_API_KEY: 'g-test' }, { headers: { 'cf-connecting-ip': '7.1.1.1' } })).json();
   const r2 = gsent[1] && gsent[1].body.contents;
-  check('zaxira: Claude chegarada → Gemini javob beradi (matn markdownsiz, boj kartasi, model gemini)', gr.text === 'Boj 36 dollar. Taxminiy.' && gr.cards[0].type === 'duty' && gr.tools.join() === 'customs_duty' && /gemini/.test(gr.model) && gr.usage.usd > 0 && gr.usage.gemini === 1, JSON.stringify(gr).slice(0, 240));
+  check('zaxira: Claude chegarada → Gemini javob beradi (matn markdownsiz, boj kartasi, model gemini)', gr.text === 'Boj $36. Taxminiy.' && gr.cards[0].type === 'duty' && gr.tools.join() === 'customs_duty' && /gemini/.test(gr.model) && gr.usage.usd > 0 && gr.usage.gemini === 1, JSON.stringify(gr).slice(0, 240));
   check('zaxira: Gemini so\'rovi — kalit sarlavhada, generateContent; 2-raundda functionCall imzosi (SIG1) va functionResponse', /generativelanguage\.googleapis\.com\/v1beta\/models\/gemini-2\.5-flash:generateContent$/.test(gsent[0].url) && gsent[0].key === 'g-test'
     && r2 && r2[r2.length - 2].role === 'model' && r2[r2.length - 2].parts[0].thoughtSignature === 'SIG1' && r2[r2.length - 1].parts[0].functionResponse.name === 'customs_duty' && r2[r2.length - 1].parts[0].functionResponse.response.dutyUsd >= 0, JSON.stringify(r2 && r2.slice(-2)).slice(0, 300));
   check('zaxira: suhbat Gemini\'da qoladi — 2-raundda Claude chaqirilmaydi', aCalls === 1 && gn === 2, 'claude=' + aCalls + ' gemini=' + gn);

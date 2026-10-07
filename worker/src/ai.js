@@ -580,6 +580,8 @@ export function plainText(t) {
        (Gemini) ‘ ’ ʻ ʼ yozadi. Summa "43 $" emas, "$43" (qoidadagi shakl). */
     .replace(/([A-Za-zА-Яа-яЎўҚқҒғҲҳ])[\u2018\u2019\u02BB\u02BC]/g, "$1'")
     .replace(/(^|[^\d$])(\d(?:[\d\u00a0 ]*\d)?(?:[.,]\d+)?)\s?\$(?![\d\w])/g, '$1$$$2')
+    /* "11 dollar" (qo'shimchasiz) → "$11"; "150 dollarlik" o'zgarmaydi. */
+    .replace(/(^|[^\d$])(\d(?:[\d\u00a0 ]*\d)?(?:[.,]\d+)?)\s+dollar(?=[\s.,;:!?)]|$)/g, '$1$$$2')
     .replace(/[ \t]+$/gm, '').replace(/\n{3,}/g, '\n\n').trim();
 }
 
@@ -1004,6 +1006,10 @@ async function runAi({ parsed, env, count, fetchImpl, emit, cfg = {} }) {
       if (ev.kind === 'text') emit({ t: 'text', d: ev.text, r: round });
       else if (ev.kind === 'tool') emit({ t: 'status', s: ev.name });
     } : null;
+    /* Oxirgi raund: vosita chaqirish taqiqlanadi — model javob yozishga
+       majbur (Gemini sinovda check_banned ni 4 marta ketma-ket chaqirib,
+       foydalanuvchi "Javob tayyorlab bo'lmadi" olgan edi). */
+    if (round === AI_LIMITS.rounds - 1) body.tool_choice = { type: 'none' };
     const r = await callClaude(body, env, fetchFn, onEvent);
     if (r.error) {
       console.log('ai upstream', r.status, r.type || '', r.error);
