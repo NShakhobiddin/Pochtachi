@@ -1213,14 +1213,14 @@
                 </div>
               </div>
             </sc-if>
-            <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85">Eng arzon uchta kuryer</div>
+            <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B6C85">{{ store.topTitle }}</div>
             <sc-for list="{{ store.topCouriers }}" as="k" hint-placeholder-count="3">
               <button sc-camel-on-click="{{ k.open }}" style="display:flex;align-items:center;gap:12px;background:#F1F1F8;border:none;border-radius:14px;padding:10px 12px;cursor:pointer;text-align:left;width:100%;box-shadow:inset 0 0 0 1px #E3E4EE" style-hover="background:#F1F1F8">
                 <div style="width:34px;height:34px;border-radius:12px;flex:none;position:relative;background:{{ k.logoBg }}">
                   <div style="position:absolute;inset:0;background-size:{{ k.logoFit }};background-repeat:no-repeat;background-position:center;background-image:{{ k.logoCss }}"></div>
                 </div>
                 <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
-                  <span style="font-size:15px;font-weight:700;color:#131429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ k.name }}</span>
+                  <span style="display:flex;align-items:center;gap:6px;min-width:0"><span style="font-size:15px;font-weight:700;color:#131429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ k.name }}</span><sc-if value="{{ k.isRec }}" hint-placeholder-val="{{ false }}"><span style="flex:none;font-size:11px;font-weight:600;color:#FFFFFF;background:#1A1FB0;padding:2px 8px;border-radius:999px;white-space:nowrap">Tavsiya</span></sc-if></span>
                   <span style="font-size:13px;color:#6B6C85;font-weight:500">{{ k.days }}</span>
                 </div>
                 <span style="flex:none;font-size:13px;font-weight:700;color:#1A1FB0;font-variant-numeric:tabular-nums">{{ k.rate }}</span>
@@ -3252,6 +3252,9 @@
           <sc-if value="{{ rsFastOn }}" hint-placeholder-val="{{ false }}">
             <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">Tezroq: {{ rsFast }}</span>
           </sc-if>
+          <sc-if value="{{ rsCheapOn }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">Arzonroq: {{ rsCheap }}</span>
+          </sc-if>
           <span style="font-size:13px;font-weight:500;color:#6B6C85;line-height:1.5">{{ rsKg }}</span>
           <button sc-camel-on-click="{{ rsCouriers }}" style="align-self:flex-start;min-height:40px;background:none;border:none;padding:0;font-family:inherit;font-size:13px;font-weight:700;color:#1A1FB0;cursor:pointer">Boshqa kuryerlar</button>
         </div>
@@ -4735,7 +4738,7 @@ const RU = {
   /* Pochtam AI (7-bosqich) */
   'Pochtam AI':'Pochtam AI',
   /* Skrinshot natija ekrani va do'kon tanlash yordamchisi */
-  'Qayerdan topaman?':'Где найти?', "Nimani qidirayotganingizni yozing — qaysi do'konda borligini, qanday topish va skrinshot qilishni aytaman. Boj, kuryer, taqiq bo'yicha savol ham mumkin.":'Напишите, что ищете — скажу, в каком магазине есть, как найти и как сделать скриншот. Вопросы о пошлине, курьере, запретах тоже можно.', "Do'kon, davlat, kuryer, boj va jami narx bir necha soniyada.":'Магазин, страна, курьер, пошлина и итоговая цена — через несколько секунд.', 'Eng arzon kuryer':'Самый дешёвый курьер', 'Tezroq:':'Быстрее:', 'Boshqa kuryerlar':'Другие курьеры', 'Qanday buyurtma qilaman?':'Как заказать?', 'Vaznni aniqlashtirish':'Уточнить вес', "Rejaga qo'shish":'В план', "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. AI faqat rasmni o'qidi, hisob ilovaniki.":'Расчёт примерный — итоговую сумму определяют таможня и курьер. ИИ только прочитал картинку, расчёт — приложения.', "Do'konda mahsulot sahifasini oching.":'Откройте страницу товара в магазине.', "Narx, nom va (bo'lsa) og'irlik ko'rinadigan joyni skrinshot qiling.":'Сделайте скриншот там, где видны цена, название и (если есть) вес.', "Qayta yuklang — qolganini o'zim qilaman.":'Загрузите снова — остальное сделаю сам.', 'Qayta yuklash':'Загрузить снова', "Qo'lda hisoblash":'Посчитать вручную', 'Qayta urinish':'Попробовать снова', "Kategoriya bo'yicha eslatma":'Заметка по категории', 'Narxga ishonch past':'Уверенность в цене низкая', "Skrinshotda narx aniq ko'rinmagan — kalkulyatorda tekshiring.":'На скриншоте цена видна нечётко — проверьте в калькуляторе.', "Og'irlik {0} kg (sahifadan)":'Вес {0} кг (со страницы)', "Taxminiy og'irlik {0} kg ({1})":'Примерный вес {0} кг ({1})', "Do'kon aniqlanmadi":'Магазин не определён', 'taxmin':'предположительно', "do'kon":'магазин', 'Men {0} ({1}) dan \"{2}\" ({3}) buyurtma qilmoqchiman{4}. Qanday buyurtma qilaman — qadam-baqadam?':'Хочу заказать \"{2}\" ({3}) из {0} ({1}){4}. Как заказать — по шагам?',
+  'Qayerdan topaman?':'Где найти?', "Nimani qidirayotganingizni yozing — qaysi do'konda borligini, qanday topish va skrinshot qilishni aytaman. Boj, kuryer, taqiq bo'yicha savol ham mumkin.":'Напишите, что ищете — скажу, в каком магазине есть, как найти и как сделать скриншот. Вопросы о пошлине, курьере, запретах тоже можно.', "Do'kon, davlat, kuryer, boj va jami narx bir necha soniyada.":'Магазин, страна, курьер, пошлина и итоговая цена — через несколько секунд.', 'Eng arzon kuryer':'Самый дешёвый курьер', 'Tavsiya etilgan kuryer':'Рекомендуемый курьер', 'Tavsiya':'Рекомендуем', 'Arzonroq:':'Дешевле:', 'Tezroq:':'Быстрее:', 'Boshqa kuryerlar':'Другие курьеры', 'Qanday buyurtma qilaman?':'Как заказать?', 'Vaznni aniqlashtirish':'Уточнить вес', "Rejaga qo'shish":'В план', "Hisob taxminiy — yakuniy summani bojxona va kuryer belgilaydi. AI faqat rasmni o'qidi, hisob ilovaniki.":'Расчёт примерный — итоговую сумму определяют таможня и курьер. ИИ только прочитал картинку, расчёт — приложения.', "Do'konda mahsulot sahifasini oching.":'Откройте страницу товара в магазине.', "Narx, nom va (bo'lsa) og'irlik ko'rinadigan joyni skrinshot qiling.":'Сделайте скриншот там, где видны цена, название и (если есть) вес.', "Qayta yuklang — qolganini o'zim qilaman.":'Загрузите снова — остальное сделаю сам.', 'Qayta yuklash':'Загрузить снова', "Qo'lda hisoblash":'Посчитать вручную', 'Qayta urinish':'Попробовать снова', "Kategoriya bo'yicha eslatma":'Заметка по категории', 'Narxga ishonch past':'Уверенность в цене низкая', "Skrinshotda narx aniq ko'rinmagan — kalkulyatorda tekshiring.":'На скриншоте цена видна нечётко — проверьте в калькуляторе.', "Og'irlik {0} kg (sahifadan)":'Вес {0} кг (со страницы)', "Taxminiy og'irlik {0} kg ({1})":'Примерный вес {0} кг ({1})', "Do'kon aniqlanmadi":'Магазин не определён', 'taxmin':'предположительно', "do'kon":'магазин', 'Men {0} ({1}) dan \"{2}\" ({3}) buyurtma qilmoqchiman{4}. Qanday buyurtma qilaman — qadam-baqadam?':'Хочу заказать \"{2}\" ({3}) из {0} ({1}){4}. Как заказать — по шагам?',
   "Quti bilan kargo og'irligi oshadi — ko'p kuryer qutisiz yuborishni taklif qiladi.":'С коробкой вес для доставки растёт — многие курьеры предлагают отправку без коробки.', "Litiy batareya va powerbank avia bilan yuborilmaydi; telefon O'zbekistonda IMEI ro'yxatidan o'tkaziladi.":'Литиевые батареи и повербанки авиа не отправляются; телефон в Узбекистане регистрируется по IMEI.', "Aerozol va spirtli atirlar avia jo'natmada cheklanadi — kuryerning ro'yxatini tekshiring.":'Аэрозоли и спиртовые духи ограничены в авиаотправке — проверьте список курьера.', "Qanaqasi?":'Какой именно?', 'Byudjet':'Бюджет', "Farqi yo'q":'Не важно', 'gacha':'до', "Do'konlarni ko'rsat":'Показать магазины', '{0} qidiryapman':'Ищу {0}', "Qaysi do'kondan topaman?":'В каком магазине это найти?', "Tanlovingizga mos {0} ta do'kon, oxirgi {1} tasi shu davlatdan ham yuboradi.":'Под ваш выбор подходит {0} магазинов, последние {1} отправляют и из этой страны.', "Qaysi davlatdan olib kelamiz":'Из какой страны везём', 'Yevropa omborlari':'Европейские склады', 'Texnika va kosmetika':'Техника и косметика', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', 'Mahsulot':'Товар', 'Mahsulot nomi':'Название товара', "Topdim — qanchaga tushadi?":'Нашёл — во сколько обойдётся?', 'Ovoz bilan aytish':'Сказать голосом', "Tinglashni to'xtatish":'Остановить запись', "Shu yerdan boshlang":'Начните отсюда', 'Kuryer':'Курьер', "{0} dan olib keladigan kuryer yo'q":'Нет курьера, который везёт из {0}', "Jami narxda faqat tovar narxi va boj hisoblandi. Boshqa davlatdan olib kelish yo'lini ko'ring.":'В итоговую цену вошли только стоимость товара и пошлина. Посмотрите доставку из другой страны.', "Narxini kuryerdan so'rash kerak: {0}":'Цену нужно уточнить у курьера: {0}', "Bu yo'nalishda kuryerlar bor, lekin narxi jadvalda yo'q — kuryerdan so'rab, kargoni qo'shing.":'На этом направлении курьеры есть, но цены в таблице нет — уточните у курьера и добавьте доставку.', "{0} dan olib keladigan kuryer yo'q — kargo qatorisiz hisoblandi.":'Нет курьера из {0} — расчёт без строки доставки.', "Bu yo'nalishda kuryer bor, lekin narxi jadvalda yo'q ({0}) — narxini so'rab, kargoni qo'shing.":'На этом направлении курьер есть, но цены в таблице нет ({0}) — уточните и добавьте доставку.', "Nima mahsulot qidiryapsiz?":'Какой товар вы ищете?', "Skrinshot yuklang: kuryer, boj va jami narx.":'Загрузите скриншот: курьер, пошлина и итоговая цена.', "Narxni o'zim yozaman":'Введу цену сам', "Narx, davlat va vazn — kalkulyatorda.":'Цена, страна и вес — в калькуляторе.', 'Oxirgi hisob':'Последний расчёт', "Do'kon ilovasida narx ko'ringan joyni skrinshot qilib yuklang — kuryer, boj va jami narxni o'zim chiqaraman. Bir nechta tovar bo'lsa ham.":'Сделайте скриншот там, где в приложении магазина видна цена, и загрузите — курьер, пошлину и итог посчитаю сам. Даже если товаров несколько.', "Narx, davlat va vaznni o'zingiz yozsangiz ham jami narx chiqadi.":'Итоговая цена появится, даже если ввести цену, страну и вес вручную.', 'taxminan {0}-{1}gacha':'примерно до {0} {1}', 'yanvar':'января', 'fevral':'февраля', 'mart':'марта', 'aprel':'апреля', 'iyun':'июня', 'iyul':'июля', 'avgust':'августа', 'sentabr':'сентября', 'oktabr':'октября', 'noyabr':'ноября', 'dekabr':'декабря', "{0} qo'llanmasi — qadam-baqadam":'Инструкция {0} — по шагам', "Pochtam AI qadam-baqadam tushuntiradi":'Pochtam AI объяснит по шагам', "Topilgan sahifalar · bugun":'Найденные страницы · сегодня', 'Ochish':'Открыть', "Narx va mavjudlik sahifada o'zgarishi mumkin — ochib tekshiring, keyin skrinshot qiling.":'Цена и наличие на странице могут измениться — откройте и проверьте, затем сделайте скриншот.', 'may':'мая', 'Rasm biriktirish':'Прикрепить фото', 'Yuborish':'Отправить', "Bu mahsulot menga qanchaga tushadi?":'Во сколько мне обойдётся этот товар?',
   'Tushundim:':'Понял:', 'original':'оригинал', '{0} gacha':'до {0}', 'Yana savol':'Ещё вопрос', "Savol yoki tovar so'rovi":'Вопрос или запрос товара',
   'Bugungi savollar chegarasi tugadi':'Лимит вопросов на сегодня исчерпан', "Ertaga davom etamiz. Hozircha kalkulyator va do'konlar ro'yxati ishlaydi.":'Продолжим завтра. Пока работают калькулятор и список магазинов.',
@@ -4771,6 +4774,8 @@ const RU = {
   "Narxni bilsangiz — \"Narxni o'zim yozaman\": kuryer, boj va jami summa.":"Знаете цену — «Введу цену сам»: курьер, пошлина и итог.",
   // Audit (2026-09-26): Reja sehrgari, do'kon papkalari, davlatlar — ruscha tarjimasi yo'q edi
   "Shu yo'nalishda ishlaydigan {0} ta kuryer, arzonidan boshlab.":"Курьеров на этом направлении: {0}, от самого дешёвого.",
+  "Shu yo'nalishda ishlaydigan {0} ta kuryer: birinchisi — tavsiya etilgani, keyin arzonidan.":"Курьеров на этом направлении: {0}: первый — рекомендуемый, дальше от самого дешёвого.",
+  'Tavsiya va eng arzon kuryerlar':'Рекомендуемый и самые дешёвые курьеры',
   "Yetkazish · {0} ({1} kg × {2})":"Доставка · {0} ({1} кг × {2})",
   "Narx ${0} me'yordan oshgani uchun ortiqcha qiymatdan boj hisoblandi. Yakuniy summani bojxona organi belgilaydi.":"Цена выше лимита ${0}, поэтому пошлина начислена на превышение. Итоговую сумму определяет таможня.",
   "${0} gacha bo'lgan jo'natmada boj ham, yig'im ham undirilmaydi.":"С посылки до ${0} не берут ни пошлину, ни сбор.",
@@ -5717,6 +5722,14 @@ const CC_COUNTRIES = ['Xitoy', 'AQSh', 'Turkiya', 'Angliya', 'Germaniya', 'Korey
    cheklaymiz: Xitoy tanlansa Xitoydan olib kelmaydigan kuryer chiqmaydi). */
 const CC_ORIGIN = { Xitoy: 'Xitoy', AQSh: 'AQSH', Turkiya: 'Turkiya', Angliya: 'Yevropa', Germaniya: 'Yevropa', Koreya: 'Koreya', BAA: 'BAA', Rossiya: 'Rossiya' };
 const LC_COUNTRIES = ['Xitoy', 'AQSh', 'Turkiya', 'Angliya', 'Koreya', 'Germaniya', 'BAA'];
+/* Kuryerlar ro'yxatida yo'nalishning asosiy tavsiyasi (core recommendedId:
+   AQSh — Globbing, Xitoy — Tez-Tez, Turkiya — ASE, Yevropa — MYMEEST)
+   birinchi turadi; qolganlarning tartibi o'zgarmaydi. */
+const recCourierId = country => (window.PochtamCore && PochtamCore.recommendedId ? PochtamCore.recommendedId(country || '') : '');
+const recFirst = (list, country) => {
+  const id = recCourierId(country), i = id ? list.findIndex(k => k.id === id) : -1;
+  return i > 0 ? [list[i], ...list.slice(0, i), ...list.slice(i + 1)] : list;
+};
 /* Kalkulyator valyutalari (chip yorlig'i bilan); skrinshotdan kelgan valyuta
    shu ro'yxatda bo'lsa o'zi, aks holda dollar. */
 const LC_CURS = [['USD', '$'], ['EUR', '€'], ['GBP', '£'], ['CNY', '¥'], ['TRY', '₺'], ['UZS', "so'm"]];
@@ -7461,14 +7474,19 @@ class Component extends DCLogic {
     const keyOf = q => q.id + '|' + q.country + '|' + q.text;
     const fast = PochtamCore.rankQuotes(quotes, 'fast')[0] || null;
     const optq = PochtamCore.rankQuotes(quotes, 'optimal')[0] || null;
-    const top = quotes.slice(0, 3);
+    /* Asosiy tavsiya (core recommendFirst): AQSh — Globbing, Xitoy —
+       Tez-Tez, Turkiya — ASE, Yevropa — MYMEEST. U birinchi turadi va
+       standart tanlanadi; eng arzoni (quotes[0]) ro'yxatda qoladi. */
+    const recQ = PochtamCore.recommendFirst(quotes, lc.country);
+    const rec = recQ[0] && recQ[0].id === PochtamCore.recommendedId(lc.country) ? recQ[0] : null;
+    const top = recQ.slice(0, 3);
     if (fast && !top.includes(fast)) top.push(fast);
     const sel = top.find(q => keyOf(q) === lc.courierKey) || top[0] || null;
     /* Oylik me'yor qoldig'i (monthAllowance) — izohda ham ko'rsatiladi,
        shunda raqam kutilmagan bo'lmaydi. */
     const { monthUsd, norms: NL, freeLeft } = this.monthAllowance(st);
     const L = PochtamCore.landedCost({ priceUsd, qty, domesticUsd: num(lc.domestic), kg, dims, shipUsd: sel ? sel.usd : 0, freeUsd: freeLeft, norms: NL, usdRate: USD_RATE, localPriceUzs: num(lc.local) });
-    return { priceUsd, qty, catDef, kgIn, kg, dims, volKg, billKg, store, quotes, keyOf, fast, optq, top, sel, monthUsd, NL, freeLeft, L,
+    return { priceUsd, qty, catDef, kgIn, kg, dims, volKg, billKg, store, quotes, keyOf, fast, optq, rec, top, sel, monthUsd, NL, freeLeft, L,
       noCourier: quotes.length === 0 && fromCouriers.length === 0,
       askCourier: quotes.length === 0 ? fromCouriers.slice(0, 3).map(c => c.name) : [] };
   }
@@ -7920,7 +7938,8 @@ class Component extends DCLogic {
     }
     if (r.state !== 'ok') return base;
     const C = this.landedCalc(r.lc, st);
-    const { priceUsd, qty, catDef, kgIn, kg, billKg, store, quotes, sel, fast, NL, freeLeft, monthUsd, L, noCourier, askCourier } = C;
+    const { priceUsd, qty, catDef, kgIn, kg, billKg, store, quotes, rec, sel, fast, NL, freeLeft, monthUsd, L, noCourier, askCourier } = C;
+    const cheapQ = quotes[0] || null;
     const kgTxt = billKg.toFixed(1).replace('.', ',');
     /* Eslatmalar: taqiq/cheklov (nom bo'yicha), kategoriya ogohlantirishi,
        oylik me'yor, past ishonch, davlat taxmini. */
@@ -7956,7 +7975,7 @@ class Component extends DCLogic {
       rsStore: r.storeName || L_("Do'kon aniqlanmadi"), rsCountry: tr(lang, r.lc.country) + (r.countryGuessed ? ' · ' + L_('taxmin') : ''),
       rsHasLogo: !!(store && store.logoCss && store.logoCss !== 'none'), rsLogoCss: store && store.logoCss ? store.logoCss : 'none',
       rsHasCourier: !!sel, rsNoCourier: !sel,
-      rsCourierTitle: L_(sel ? 'Eng arzon kuryer' : 'Kuryer'),
+      rsCourierTitle: L_(sel && sel === rec ? 'Tavsiya etilgan kuryer' : sel && sel === cheapQ ? 'Eng arzon kuryer' : 'Kuryer'),
       rsCourier: sel ? sel.name
         : noCourier ? tx(lang, "{0} dan olib keladigan kuryer yo'q", tr(lang, r.lc.country))
         : tx(lang, "Narxini kuryerdan so'rash kerak: {0}", askCourier.join(', ')),
@@ -7967,6 +7986,9 @@ class Component extends DCLogic {
       /* Tepadagi javob qatori: kuryer · muddat · taxminiy sana. */
       rsEta: sel ? [sel.name, sel.days ? trDays(lang, sel.days) : '', etaText(sel.days, lang)].filter(Boolean).join(' · ') : '',
       rsFast: fast ? fast.name + ' — ' + (fast.days ? trDays(lang, fast.days) : '') + ', $' + fast.usd.toFixed(2) : '',
+      /* Tavsiya etilgan kuryer tanlangan bo'lsa, eng arzoni ham ko'rinsin. */
+      rsCheapOn: !!(cheapQ && sel && cheapQ !== sel && cheapQ.usd < sel.usd - 0.005 && cheapQ !== fast),
+      rsCheap: cheapQ ? cheapQ.name + ' — ' + (cheapQ.days ? trDays(lang, cheapQ.days) + ', ' : '') + '$' + cheapQ.usd.toFixed(2) : '',
       rsKg: r.lc.kgEst ? tx(lang, "Taxminiy og'irlik {0} kg ({1} ta tovar bo'yicha)", kgTxt, (r.lc.items || []).length) : kgIn > 0 ? tx(lang, 'Og\'irlik {0} kg (sahifadan)', kgTxt) : tx(lang, "Taxminiy og'irlik {0} kg ({1})", kgTxt, tr(lang, catDef.label)),
       /* Savat skrinshoti: tovarlar ro'yxati (bitta jo'natma). */
       rsHasItems: !!(r.lc.items && r.lc.items.length > 1),
@@ -8276,6 +8298,7 @@ class Component extends DCLogic {
     /* Belgilar tanlangan og'irlik narxi bo'yicha bo'lsa — o'sha hisobdan
        (ch/fa); aks holda umumiy tarif va muddatdan. */
     const badgeOf = (k, ch = cheapest, fa = fastest) => {
+      if (k._rec) return { badge:'Tavsiya', badgeBg:'#1A1FB0', badgeFg:'#FFFFFF' };
       if (k.id === ch) return { badge:'Eng arzon', badgeBg:'#E9F8EF', badgeFg:'#0F7B3E' };
       if (k.id === fa) return { badge:'Eng tez', badgeBg:'#E9EAFD', badgeFg:'#2456C8' };
       if (k.trusted) return { badge:'Ishonchli', badgeBg:'#E9EAFD', badgeFg:'#1A1FB0' };
@@ -8298,9 +8321,10 @@ class Component extends DCLogic {
     const wizStores = wizInCountry.filter(wizCatOk);
     /* Qo'shimcha yo'nalish sifatida kelganlar soni — izoh uchun. */
     const wizGlobalN = cKey === 'Global' ? 0 : wizStores.filter(s => storeFrom(s)[0] !== cKey).length;
-    const wizCouriers = !onWizard ? [] : [...COURIERS].filter(k =>
+    const wizCouriers = !onWizard ? [] : recFirst([...COURIERS].filter(k =>
       cKey === 'Global' ? true : (CUR_MATCH[cKey].test(k.countries || '') || (k.from || []).some(x => CUR_MATCH[cKey].test(x)))
-    ).sort((a, b) => a.price - b.price);
+    ).sort((a, b) => a.price - b.price), cKey === 'Global' ? '' : cKey);
+    const wizRecId = wizCouriers.length && wizCouriers[0].id === recCourierId(cKey === 'Global' ? '' : cKey) ? wizCouriers[0].id : '';
 
     const wizOpts = () => {
       if (!onWizard) return [];
@@ -8328,7 +8352,7 @@ class Component extends DCLogic {
         logoCss:s.logoCss, logoFit:'contain', logoBg:'transparent', boxW:'48px', logoInset:'0',
         logoOff:s.logoOn === false, price:s.price }));
       if (st.wizStep === 3) return (wizCouriers.length ? wizCouriers : COURIERS).map(k => ({
-        label:k.name, note:trDays(st.lang, k.days) + ' · ' + tr(st.lang, k.mode) + ' · ' + tr(st.lang, k.nRoutes + ' ta yo\'nalish'),
+        label:k.name, note:(k.id === wizRecId ? tr(st.lang, 'Tavsiya') + ' · ' : '') + trDays(st.lang, k.days) + ' · ' + tr(st.lang, k.mode) + ' · ' + tr(st.lang, k.nRoutes + ' ta yo\'nalish'),
         pick:() => this.setState({ wizCourier:k.name, wizStep:4 }),
         hasMono:true, hasPrice:true, plain:false, color:k.color, ink:k.color, mono:k.mono,
         logoCss:k.logoCss, logoFit:k.logoFit, logoBg:k.logoBg, boxW:'48px', logoInset:'0',
@@ -8350,7 +8374,8 @@ class Component extends DCLogic {
           ? 'Bu kategoriyada mos do\'kon yo\'q — shu yo\'nalishdagi qolganlari.'
           : 'Bu yo\'nalishda do\'kon topilmadi — barchasi ko\'rsatilmoqda.'),
       wizCouriers.length
-        ? tx(st.lang, "Shu yo'nalishda ishlaydigan {0} ta kuryer, arzonidan boshlab.", wizCouriers.length)
+        ? (wizRecId ? tx(st.lang, "Shu yo'nalishda ishlaydigan {0} ta kuryer: birinchisi — tavsiya etilgani, keyin arzonidan.", wizCouriers.length)
+          : tx(st.lang, "Shu yo'nalishda ishlaydigan {0} ta kuryer, arzonidan boshlab.", wizCouriers.length))
         : 'Bu yo\'nalishda kuryer topilmadi — barchasi ko\'rsatilmoqda.',
       'Ikkalasini yozing — yetkazish, boj va yig\'imni hisoblab beraman.'
     ];
@@ -8602,7 +8627,7 @@ class Component extends DCLogic {
         /* Hisobning o'zi landedCalc() da — natija ekrani (skrinshot) ham
            aynan shu hisobni ishlatadi, ikki joyda ikki xil raqam chiqmaydi. */
         const C = this.landedCalc(lc, st);
-        const { priceUsd, qty, catDef, kgIn, kg, dims, volKg, billKg, store, quotes, keyOf, fast, optq, top, sel, monthUsd, NL, freeLeft, L } = C;
+        const { priceUsd, qty, catDef, kgIn, kg, dims, volKg, billKg, store, quotes, keyOf, fast, optq, rec, top, sel, monthUsd, NL, freeLeft, L } = C;
         const rows = [
           { k: qty > 1 ? tx(st.lang, '{0} dona × {1}', qty, usd(priceUsd)) : tr(st.lang, 'Mahsulot narxi'), v: usd(L.goodsUsd), c: '#131429' }
         ];
@@ -8616,7 +8641,7 @@ class Component extends DCLogic {
           : L.basis === 'none' ? tx(st.lang, "Tovar qiymati ${0} me'yor ichida — boj va yig'im yo'q.", Math.round(freeLeft))
           : L.basis === 'weight' ? tx(st.lang, "Me'yordan oshgan qism uchun vazn bo'yicha hisob (har kg ${0}) ustun keldi.", N.minPerKg)
           : tx(st.lang, "Me'yordan (${0}) oshgan qismdan {1}% boj va {2} so'm qat'iy yig'im.", Math.round(freeLeft), Math.round(N.dutyPct * 100), money(Math.round(N.bhm * N.feeShare)))) + monthNote;
-        const badgeOf = q => q === quotes[0] ? ['Eng arzon', '#E9F8EF', '#0F7B3E'] : q === fast ? ['Eng tez', '#E9EAFD', '#1A1FB0'] : q === optq ? ['Optimal', '#FDF3E3', '#B45309'] : null;
+        const badgeOf = q => q === rec ? ['Tavsiya', '#1A1FB0', '#FFFFFF'] : q === quotes[0] ? ['Eng arzon', '#E9F8EF', '#0F7B3E'] : q === fast ? ['Eng tez', '#E9EAFD', '#1A1FB0'] : q === optq ? ['Optimal', '#FDF3E3', '#B45309'] : null;
         /* Skrinshot banneri matnlari — holatga qarab. */
         const sh = st.lcShot;
         const shotVm = !sh ? { lcShotOn: false } : (() => {
@@ -8998,7 +9023,9 @@ class Component extends DCLogic {
           : 'Do\'kon O\'zbekistonga yubormaydi. Chetdagi ombor manzilini beruvchi kuryer tanlanadi, tovar o\'sha manzilga keladi va u yerdan sizga jo\'natiladi.',
         hasCouriers: storeCouriers.length > 0,
         courierCount: storeCouriers.length,
-        topCouriers: storeCouriers.slice(0, 3).map(k => ({
+        topTitle: tr(st.lang, recCourierId(storeOrigin) && storeCouriers.some(k => k.id === recCourierId(storeOrigin)) ? 'Tavsiya va eng arzon kuryerlar' : 'Eng arzon uchta kuryer'),
+        topCouriers: recFirst(storeCouriers, storeOrigin).slice(0, 3).map(k => ({
+          isRec: k.id === recCourierId(storeOrigin),
           name: k.name, days: trDays(st.lang, k.days), logoCss: k.logoCss, logoFit: k.logoFit, logoBg: k.logoBg,
           rate: k.price && k.price < 900 ? '$' + k.price.toFixed(2) + '/kg' : 'so\'rov bo\'yicha',
           open: () => this.openCourierId(k.id)
@@ -9149,7 +9176,8 @@ class Component extends DCLogic {
         /* Har kuryerning eng yaxshi (birinchi kelgan) taklifi; taklifsizlar oxirida. */
         const best = new Map(), allQ = new Map();
         ranked.forEach(q => { if (!q.ok) return; if (!best.has(q.id)) best.set(q.id, q); (allQ.get(q.id) || allQ.set(q.id, []).get(q.id)).push(q); });
-        const order = [...best.keys()];
+        const recId = recCourierId(country);
+        const order = recFirst([...best.keys()].map(id => ({ id })), country).map(x => x.id);
         const rest = list.filter(k => !best.has(k.id));
         const bq = [...best.values()];
         const qCheap = bq.length ? bq.reduce((a, b) => (b.usd < a.usd ? b : a)).id : null;
@@ -9160,7 +9188,7 @@ class Component extends DCLogic {
              "Tezroq"da — arzonrog'i. */
           const others = q ? (allQ.get(k.id) || []).filter(x => x !== q && x.days && x.days !== q.days) : [];
           const altQ = st.sort === 'days' ? others.sort((a, b) => a.usd - b.usd)[0] : others.filter(x => x.dnum != null && (q.dnum == null || x.dnum < q.dnum)).sort((a, b) => a.dnum - b.dnum)[0];
-          return { ...k, _best: [qCheap, qFast ? qFast.id : null], _ccDays: q && q.days,
+          return { ...k, _rec: !!q && k.id === recId, _best: [qCheap, qFast ? qFast.id : null], _ccDays: q && q.days,
             _alt: altQ ? { usd: altQ.usd, days: altQ.days, fast: st.sort !== 'days' } : null, _cc: q ? { priceLabel: '$' + q.usd.toFixed(2) + (q.from ? ' ' + tr(st.lang, 'dan') : ''), priceSub: tx(st.lang, '{0} kg · {1}', kg, tr(st.lang, country)) }
             : { priceLabel: '—', priceSub: tr(st.lang, 'narx so\'raladi') } };
         });

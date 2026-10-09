@@ -887,8 +887,10 @@ try {
     await page.waitForTimeout(1500); shotDelay = 0;
     const mainBtns = () => page.evaluate(() => [...document.querySelectorAll('main button')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).filter(Boolean));
     const shotRes = { h: (await page.locator('header').innerText()).replace(/\s+/g, ' '), t: await aiMain(), b: await mainBtns() };
-    check('Skrinshot: yagona /ai manziliga rasm va joriy xarid, narx Markaziy bank kursi bo\'yicha', shotBodies.length === 1 && /^data:image\/jpeg;base64,/.test(shotBodies[0].image) && shotBodies[0].usdRate > 1000 && 'cart' in shotBodies[0] && /Jami narx/.test(shotRes.h) && /Nike Air Max 90/.test(shotRes.t) && /699 CNY ≈ \$97\.80/.test(shotRes.t) && !/taxminiy kurs/.test(shotRes.t) && /Taobao · Xitoy/.test(shotRes.t) && /eng arzon kuryer/i.test(shotRes.t) && /Og'irlik 0,8 kg \(sahifadan\)/.test(shotRes.t), shotRes.t.slice(0, 160));
-    check('Skrinshot natijasi: jami tepada (ko\'k karta), kuryer · muddat · taxminiy sana, so\'mda ham', /^SIZGA JAMI TUSHADI Taxminiy \$102\.20 1 292 890 so'm D2D · 20–25 kun · taxminan \d{1,2}-\w+gacha/.test(shotRes.t) && (await page.locator('main [data-busy], main [data-shot-busy]').count()) === 0 && !/Topildi|Skrinshotdan o'qildi/.test(shotRes.t), shotRes.t.slice(0, 160));
+    check('Skrinshot: yagona /ai manziliga rasm va joriy xarid, narx Markaziy bank kursi bo\'yicha', shotBodies.length === 1 && /^data:image\/jpeg;base64,/.test(shotBodies[0].image) && shotBodies[0].usdRate > 1000 && 'cart' in shotBodies[0] && /Jami narx/.test(shotRes.h) && /Nike Air Max 90/.test(shotRes.t) && /699 CNY ≈ \$97\.80/.test(shotRes.t) && !/taxminiy kurs/.test(shotRes.t) && /Taobao · Xitoy/.test(shotRes.t) && /tavsiya etilgan kuryer Tez-Tez delivery/i.test(shotRes.t) && /Arzonroq: D2D — 20–25 kun, \$4\.40/.test(shotRes.t) && /Og'irlik 0,8 kg \(sahifadan\)/.test(shotRes.t), shotRes.t.slice(0, 160));
+    /* Xitoy — asosiy tavsiya Tez-Tez delivery (muddati e'lon qilinmagan,
+       shuning uchun taxminiy sana yo'q); eng arzoni (D2D) alohida qatorda. */
+    check('Skrinshot natijasi: jami tepada (ko\'k karta), tavsiya kuryer · muddat, so\'mda ham', /^SIZGA JAMI TUSHADI Taxminiy \$102\.51 1 296 736 so'm Tez-Tez delivery · muddat e'lon qilinmagan NARX/.test(shotRes.t) && (await page.locator('main [data-busy], main [data-shot-busy]').count()) === 0 && !/Topildi|Skrinshotdan o'qildi/.test(shotRes.t), shotRes.t.slice(0, 160));
     /* Narx tarkibi: rangli chiziq (faqat noldan katta bo'laklar) va har
        bo'lak — nomi, qanday hisoblangani, summasi, ulushi; oxirida jami
        va kurs. */
@@ -898,7 +900,7 @@ try {
         bar: b.querySelector('.mo-grow').children.length } : null;
     });
     check('narx qanday shakllandi: tovar, xalqaro yetkazish, boj, yig\'im — har biri izoh va ulush bilan, oxirida jami va kurs', !!bd && bd.parts === 4 && bd.bar === 2
-      && /^NARX QANDAY SHAKLLANDI Tovar narxi 699 CNY ≈ \$97\.80 \$97\.80 9\d% Xalqaro yetkazish D2D · 0,8 kg · vazn sahifadan \$4\.40 \d% Bojxona to'lovi Tovar qiymati \$200 me'yor ichida — boj va yig'im yo'q\. \$0\.00 Bojxona yig'imi Me'yor ichida — yig'im yo'q \$0\.00 Jami \$102\.20 1 292 890 so'm · 1 USD = [\d ]+ so'm, Markaziy bank kursi$/.test(bd.t), bd && bd.t);
+      && /^NARX QANDAY SHAKLLANDI Tovar narxi 699 CNY ≈ \$97\.80 \$97\.80 9\d% Xalqaro yetkazish Tez-Tez delivery · 0,8 kg · vazn sahifadan \$4\.70 \d% Bojxona to'lovi Tovar qiymati \$200 me'yor ichida — boj va yig'im yo'q\. \$0\.00 Bojxona yig'imi Me'yor ichida — yig'im yo'q \$0\.00 Jami \$102\.51 1 296 736 so'm · 1 USD = [\d ]+ so'm, Markaziy bank kursi$/.test(bd.t), bd && bd.t);
     check('Skrinshot natijasi tugmalari: Qanday buyurtma qilaman? · Vaznni aniqlashtirish · Xaridlarimga qo\'shish · Boshqa kuryerlar', ['Qanday buyurtma qilaman?', 'Vaznni aniqlashtirish', "Xaridlarimga qo'shish", 'Boshqa kuryerlar'].every(t => shotRes.b.some(b => b.indexOf(t) === 0)), shotRes.b.join(' | '));
     /* Kuryer siz uchun sotib oladi: Xitoy uchun "Buy for me" kuryerlari,
        "Yozish" kuryer Telegramini tayyor xabar bilan ochadi (tovar, do'kon,
@@ -930,9 +932,9 @@ try {
     /* Oxirgi hisob bosh sahifada saqlanadi va qayta ochiladi. */
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(500);
     const lastCard = page.locator('main button').filter({ hasText: /Oxirgi hisob/ });
-    check('bosh sahifada "Oxirgi hisob" kartasi: nom, do\'kon, jami', (await lastCard.count()) === 1 && /Nike Air Max 90/.test(await lastCard.innerText()) && /Taobao · Xitoy/.test(await lastCard.innerText()) && /\$102\.20/.test(await lastCard.innerText()) && (await page.evaluate(() => !!localStorage.getItem('xy_last'))), (await lastCard.innerText()).replace(/\s+/g, ' '));
+    check('bosh sahifada "Oxirgi hisob" kartasi: nom, do\'kon, jami', (await lastCard.count()) === 1 && /Nike Air Max 90/.test(await lastCard.innerText()) && /Taobao · Xitoy/.test(await lastCard.innerText()) && /\$102\.51/.test(await lastCard.innerText()) && (await page.evaluate(() => !!localStorage.getItem('xy_last'))), (await lastCard.innerText()).replace(/\s+/g, ' '));
     await lastCard.first().click(); await page.waitForTimeout(500);
-    check('"Oxirgi hisob" → natija ekrani qayta ochiladi', /Jami narx/.test(await page.locator('header').innerText()) && /JAMI TUSHADI Taxminiy \$102\.20/.test(await aiMain()));
+    check('"Oxirgi hisob" → natija ekrani qayta ochiladi', /Jami narx/.test(await page.locator('header').innerText()) && /JAMI TUSHADI Taxminiy \$102\.51/.test(await aiMain()));
     /* Qo'llanmasi yo'q do'kon: buyurtma savoli Pochtam AI ga ketadi va
        raqamli qadamlar belgilanadigan ro'yxat bo'lib chiqadi. */
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
@@ -1098,8 +1100,11 @@ try {
       const m = /\$(\d+(?:\.\d+)?)/.exec(b.innerText); return m ? +m[1] : null; }));
     const nXitoy = +((await page.locator('main [data-cc-count]').innerText()).match(/\d+/) || [0])[0];
     const firstBadge = await page.evaluate(() => { const b = [...document.querySelectorAll('main button')].find(x => /kg · Xitoy/.test(x.innerText)); return b ? b.innerText.trim().split('\n')[0] : ''; });
-    check('kuryerlar: "Eng arzon" belgisi tanlangan og\'irlik narxidagi eng arzonida (birinchi kartada)', firstBadge === 'Eng arzon', firstBadge);
-    check('kuryerlar: Xitoy · 2 kg — faqat Xitoydan olib keladiganlar, kartalarda summa, arzonidan', /Barcha kuryerlar/.test(ccHead) && nXitoy > 0 && nXitoy < 20 && ccCards.length >= 5 && ccCards.every(v => v != null) && ccCards.every((v, i) => i === 0 || v >= ccCards[i - 1]), ccHead + ' · ' + nXitoy + ' · ' + JSON.stringify(ccCards.slice(0, 5)));
+    /* Xitoy — birinchi kartada asosiy tavsiya (Tez-Tez delivery), qolganlari
+       tanlangan og'irlik narxi bo'yicha arzonidan; "Eng arzon" belgisi ham bor. */
+    const ccNames = await page.evaluate(() => [...document.querySelectorAll('main button')].filter(b => /kg · Xitoy/.test(b.innerText)).map(b => b.innerText));
+    check('kuryerlar: Xitoy — birinchi kartada "Tavsiya" (Tez-Tez delivery), "Eng arzon" belgisi keyingilarda', firstBadge === 'Tavsiya' && /Tez-Tez delivery/.test(ccNames[0] || '') && ccNames.slice(1).some(t => /^Eng arzon/.test(t.trim())), firstBadge + ' · ' + (ccNames[0] || '').replace(/\s+/g, ' ').slice(0, 60));
+    check('kuryerlar: Xitoy · 2 kg — faqat Xitoydan olib keladiganlar, kartalarda summa, tavsiyadan keyin arzonidan', /Barcha kuryerlar/.test(ccHead) && nXitoy > 0 && nXitoy < 20 && ccCards.length >= 5 && ccCards.every(v => v != null) && ccCards.slice(1).every((v, i, a) => i === 0 || v >= a[i - 1]), ccHead + ' · ' + nXitoy + ' · ' + JSON.stringify(ccCards.slice(0, 5)));
     await ccCard.getByRole('button', { name: 'Tezroq', exact: true }).click(); await page.waitForTimeout(300);
     const ccDays = await page.evaluate(() => [...document.querySelectorAll('main button')].filter(b => /kg · Xitoy/.test(b.innerText)).map(b => b.innerText));
     check('kuryerlar: "Tezroq" — tanlangan, ro\'yxat qayta tartiblangan', (await ccCard.getByRole('button', { name: 'Tezroq', exact: true }).getAttribute('aria-pressed')) === 'true' && ccDays.length >= 3, ccDays.length + ' ta');

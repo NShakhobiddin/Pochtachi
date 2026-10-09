@@ -343,9 +343,20 @@ dagi zaxira kurslar, so'm — joriy kurs), miqdor, kategoriya
 (`data/categories.json`, build `CATEGORIES` ga yozadi), yo'nalish (7 davlat),
 og'irlik (yozilmasa kategoriya bo'yicha taxmin), do'kon ichida yetkazish,
 quti o'lchami (hajmiy og'irlik = uzunlik×kenglik×balandlik/5000, kattasi
-olinadi). Kuryer: yo'nalish va hisob og'irligi bo'yicha uchta eng arzon
-taklif + eng tez (`courierQuotes`, `rankQuotes`), "Eng arzon / Eng tez /
-Optimal" belgilari, birinchisi tanlangan. Natija: `landedCost` — mahsulot,
+olinadi). Kuryer: yo'nalish va hisob og'irligi bo'yicha uchta taklif + eng
+tez (`courierQuotes`, `rankQuotes`); birinchisi — yo'nalishning asosiy
+tavsiyasi (`recommendFirst`, pastda), keyin arzonidan; "Tavsiya / Eng arzon
+/ Eng tez / Optimal" belgilari, birinchisi tanlangan.
+
+**Asosiy tavsiya** (`core/tariffs.js` → `RECOMMENDED`): AQSh — Globbing,
+Xitoy — Tez-Tez delivery, Turkiya — ASE, Yevropa davlatlari — MYMEEST.
+Tarifi shu og'irlik uchun hisoblansa u birinchi turadi va standart
+tanlanadi: Jami narx va skrinshot natijasi ("Tavsiya etilgan kuryer",
+arzonrog'i bo'lsa "Arzonroq: …" qatori), kuryerlar ro'yxati (davlat
+tanlanganda, "Tavsiya" belgisi), do'kon sahifasi, reja sehrgari va AI
+(`courier_quotes` da `recommended: true`, `landed_cost` kargoni shu bilan
+hisoblaydi, `cheapestCourier` — eng arzoni). Tarifi hisoblanmasa (masalan
+ASE 2 kg dan og'ir) — tartib arzonidan. O'zgartirish: faqat `RECOMMENDED`. Natija: `landedCost` — mahsulot,
 ichki yetkazish, kargo, boj, yig'im, jami ($ va so'm), boj sababi.
 "Olish foydalimi?" — O'zbekistondagi narx kiritilsa tejash so'm va foizda.
 Bojsiz me'yor kalendar oyga beriladi, shuning uchun shu oyda rejalardan
@@ -545,8 +556,8 @@ taxminiy — `fxApprox`). **Jami hisob faqat skrinshot orqali** (2026-09-17,
 `result` ekrani, `resultVm`): kamera bosilishi bilan "Jami narx" natija
 ekrani ochiladi ("o'qilmoqda"), javob kelgach karta — mahsulot, narx,
 do'kon · davlat (do'kon bazadan nomi/domeni bo'yicha; davlat — do'konniki,
-bo'lmasa AI taxmini, bo'lmasa valyutadan — "taxmin" belgisi bilan), **eng
-arzon kuryer** va muddati (tezroq variant bir qatorda), og'irlik (sahifadan
+bo'lmasa AI taxmini, bo'lmasa valyutadan — "taxmin" belgisi bilan), **tavsiya
+etilgan kuryer** va muddati (tezroq va arzonroq variant bir qatorda), og'irlik (sahifadan
 yoki kategoriya taxmini), qatorlar (narx, kargo, boj, yig'im), jami
 dollar va so'mda, boj eslatmasi; ostida taqiq/cheklov (nom bo'yicha
 `bannedHits`), kategoriya ogohlantirishi, oylik me'yor, past ishonch.

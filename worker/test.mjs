@@ -243,12 +243,15 @@ check('/stats da IP xeshi yo\'q', !('ai_ip' in stA.byName));
 /* Vositalar (core orqali) va tizim ko'rsatmasi. */
 const tctx = { usdRate: 12650, today: '2026-09-15' };
 const cq = runTool('courier_quotes', { country: 'USA', kg: 2, priority: 'cheap' }, tctx);
-check('courier_quotes: davlat taxallusi (USA → AQSh), arzonidan', cq.country === 'AQSh' && cq.quotes.length >= 3 && cq.quotes.every((q, i) => i === 0 || q.usd >= cq.quotes[i - 1].usd), JSON.stringify(cq.quotes.slice(0, 2)));
+check('courier_quotes: davlat taxallusi (USA → AQSh), Globbing tavsiya birinchi, qolgani arzonidan', cq.country === 'AQSh' && cq.quotes.length >= 3
+  && cq.quotes[0].courier === 'GLOBBING' && cq.quotes[0].recommended === true && cq.quotes.slice(1).every(q => !q.recommended)
+  && cq.quotes.slice(1).every((q, i, a) => i === 0 || q.usd >= a[i - 1].usd), JSON.stringify(cq.quotes.slice(0, 2)));
 const cqUzs = runTool('courier_quotes', { country: 'Turkiya', kg: 1 }, tctx);
 check('courier_quotes: so\'mdagi tariflar kurs bilan dollarga o\'giriladi', cqUzs.quotes.some(q => /so'm|UZS/i.test(q.tariff)) && cqUzs.quotes.every(q => q.usd > 0), JSON.stringify(cqUzs.quotes.map(q => q.courier + ':' + q.usd)));
 check('courier_quotes: noma\'lum davlat — xato va ro\'yxat', !!runTool('courier_quotes', { country: 'Mars', kg: 1 }, tctx).error);
 const lc = runTool('landed_cost', { priceUsd: 100, country: 'Xitoy', category: 'poyabzal', localPriceUzs: 3000000 }, tctx);
-check('landed_cost: vazn kategoriya bo\'yicha, eng arzon kuryer, foydalimi', lc.kgGuessed && lc.kgPerItem === 1.2 && lc.courier && lc.totalUsd > 100 && lc.worth === true, JSON.stringify(lc).slice(0, 140));
+check('landed_cost: vazn kategoriya bo\'yicha, tavsiya kuryer (Xitoy — Tez-Tez), foydalimi', lc.kgGuessed && lc.kgPerItem === 1.2 && lc.courier && lc.courier.name === 'Tez-Tez delivery' && lc.courier.recommended === true
+  && (!lc.cheapestCourier || lc.cheapestCourier.usd < lc.courier.usd) && lc.totalUsd > 100 && lc.worth === true, JSON.stringify(lc).slice(0, 140));
 const lcCore = Core.landedCost({ priceUsd: 100, qty: 1, kg: 1.2, shipUsd: lc.shipUsd, norms: Core.normsAt((await import('./src/kb.generated.js')).NORMS, '2026-09-15'), usdRate: 12650 });
 check('landed_cost jami core bilan bir xil', Math.abs(lcCore.totalUsd - lc.totalUsd) < 0.01);
 check('check_banned: rus so\'zi ham topadi (наркотик → taqiqlangan)', runTool('check_banned', { query: 'наркотик' }, tctx).items[0].level === 'taqiqlangan');

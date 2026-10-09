@@ -125,6 +125,21 @@ check('optimal: narxi ma\'lumlar oldinda', opt1.length === q.length && opt1[0].o
 const noC = core.courierQuotes({ couriers: COURIERS, tariffs: TAR, country: 'Marsdan', kg: 1, usdRate: RATE });
 check('noma\'lum davlat → bo\'sh', noC.length === 0);
 
+/* Asosiy tavsiya: AQSh — Globbing, Xitoy — Tez-Tez, Turkiya — ASE,
+   Yevropa — MYMEEST; tavsiya birinchi, qolgan tartib o'zgarmaydi. */
+check('tavsiya: yo\'nalish → kuryer', core.recommendedId('AQSh') === 'globbing' && core.recommendedId('USA') === 'globbing'
+  && core.recommendedId('Xitoy') === 'teztezdelivery' && core.recommendedId('Turkiya') === 'ase'
+  && ['Angliya', 'Germaniya', 'Italiya', 'Ispaniya', 'Fransiya', 'Polsha'].every(c => core.recommendedId(c) === 'mymeest')
+  && core.recommendedId('Koreya') === '' && COURIERS.some(c => c.id === 'globbing') && COURIERS.some(c => c.id === 'teztezdelivery'));
+for (const [c, id, kg] of [['AQSh', 'globbing', 2], ['Xitoy', 'teztezdelivery', 2], ['Turkiya', 'ase', 1.2], ['Germaniya', 'mymeest', 2]]) {
+  const r = core.recommendFirst(core.rankQuotes(core.courierQuotes({ couriers: COURIERS, tariffs: TAR, country: c, kg, usdRate: RATE }), 'cheap'), c);
+  const rest = r.slice(1);
+  check(`tavsiya: ${c} ${kg} kg → ${id} birinchi, qolgani arzonidan`, r[0] && r[0].id === id && r[0].ok
+    && rest.every((x, i) => i === 0 || !x.ok || x.usd >= rest[i - 1].usd), r.slice(0, 3).map(x => x.name + ' $' + (x.usd || 0).toFixed(2)).join(', '));
+}
+const asOver = core.rankQuotes(core.courierQuotes({ couriers: COURIERS, tariffs: TAR, country: 'Turkiya', kg: 3, usdRate: RATE }), 'cheap');
+check('tavsiya: narxi hisoblanmasa (ASE 3 kg) — tartib o\'zgarmaydi', JSON.stringify(core.recommendFirst(asOver, 'Turkiya').map(x => x.id)) === JSON.stringify(asOver.map(x => x.id)));
+
 /* ---- Jami tannarx (core/landed.js) ---- */
 const L = core.landedCost({ priceUsd: 320, qty: 1, domesticUsd: 0, kg: 2.5, shipPerKg: 9, norms: N, usdRate: RATE });
 check('landed: misol — kargo $22,5, boj $38,53, yig\'im $8,70', near(L.shipUsd, 22.5) && near(L.dutyUsd, 38.53125) && near(L.feeUsd, 110000 / RATE), `${L.shipUsd} ${L.dutyUsd.toFixed(3)} ${L.feeUsd.toFixed(3)}`);

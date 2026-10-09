@@ -391,11 +391,18 @@ function knownCountry(country) {
 }
 
 /* usdRate — so'mda yozilgan tariflar (UZS) dollarga o'girilishi uchun;
-   bo'lmasa o'sha kuryerlar "so'rov bo'yicha" ro'yxatiga tushib qolardi. */
+   bo'lmasa o'sha kuryerlar "so'rov bo'yicha" ro'yxatiga tushib qolardi.
+   Yo'nalishning asosiy tavsiyasi (Core.recommendFirst: AQSh — Globbing,
+   Xitoy — Tez-Tez, Turkiya — ASE, Yevropa — MYMEEST) birinchi turadi;
+   `cheapest` — narx bo'yicha eng arzoni (taqqoslash uchun). */
 function quotesFor(country, kg, priority, usdRate) {
   const all = Core.courierQuotes({ couriers: KB.COURIERS, tariffs: KB.TARIFFS, country, kg, usdRate, minKg: 0.5 });
   const ranked = Core.rankQuotes(all, priority || 'cheap');
-  return { ok: ranked.filter(q => q.ok), rest: ranked.filter(q => !q.ok) };
+  const ok = ranked.filter(q => q.ok);
+  const recId = Core.recommendedId(country);
+  const first = Core.recommendFirst(ok, country);
+  return { ok: first, rest: ranked.filter(q => !q.ok), rec: first[0] && first[0].id === recId ? first[0] : null,
+    cheapest: Core.rankQuotes(ok, 'cheap')[0] || null };
 }
 
 function toolQuotes(inp, ctx) {
@@ -403,10 +410,11 @@ function toolQuotes(inp, ctx) {
   if (!country || !(kg > 0)) return { error: 'davlat va og\'irlik kerak' };
   const known = knownCountry(country);
   if (!known) return { error: 'bu davlat uchun tarif yo\'q', countries: KB.COUNTRIES };
-  const { ok, rest } = quotesFor(known, kg, inp.priority, ctx.usdRate);
+  const { ok, rest, rec } = quotesFor(known, kg, inp.priority, ctx.usdRate);
   return {
     country: known, kg, priority: inp.priority || 'cheap',
-    quotes: ok.slice(0, 6).map(q => ({ courier: q.name, usd: r2(q.usd), days: q.days || null, mode: q.mode, tracking: q.tracking, tariff: q.text })),
+    quotes: ok.slice(0, 6).map(q => ({ courier: q.name, usd: r2(q.usd), days: q.days || null, mode: q.mode, tracking: q.tracking, tariff: q.text,
+      ...(q === rec ? { recommended: true } : {}) })),
     onRequest: [...new Set(rest.map(q => q.name))],
     note: 'Kuryer saytidagi tarif bo\'yicha taxminiy summa; ombor xizmati, qadoqlash va sug\'urta alohida.'
   };
@@ -422,7 +430,7 @@ function toolLanded(inp, ctx) {
   const dims = inp.dims && pos(inp.dims.l) > 0 ? { l: pos(inp.dims.l), w: pos(inp.dims.w), h: pos(inp.dims.h) } : null;
   const volKg = dims ? Core.volumetricKg(dims.l, dims.w, dims.h) : 0;
   const billKg = Core.billableKg(kg * qty, volKg);
-  const { ok } = quotesFor(known, billKg, 'cheap', ctx.usdRate);
+  const { ok, rec, cheapest } = quotesFor(known, billKg, 'cheap', ctx.usdRate);
   const best = ok[0] || null;
   const norms = Core.normsAt(KB.NORMS, ctx.today) || {};
   const freeLeft = Math.max(0, num(norms.freeUsd) - pos(inp.monthUsd));
@@ -430,10 +438,11 @@ function toolLanded(inp, ctx) {
     freeUsd: freeLeft, norms, usdRate: ctx.usdRate, localPriceUzs: pos(inp.localPriceUzs) || null });
   const out = {
     country: known, qty, kgPerItem: kg, kgGuessed: kgGuess, billableKg: r2(L.billKg), volumetricKg: r2(L.volKg),
-    courier: best ? { name: best.name, usd: r2(best.usd), days: best.days || null } : null,
+    courier: best ? { name: best.name, usd: r2(best.usd), days: best.days || null, ...(best === rec ? { recommended: true } : {}) } : null,
+    ...(best && cheapest && cheapest !== best && cheapest.usd < best.usd - 0.005 ? { cheapestCourier: { name: cheapest.name, usd: r2(cheapest.usd), days: cheapest.days || null } } : {}),
     goodsUsd: r2(L.goodsUsd), domesticUsd: r2(L.domesticUsd), shipUsd: r2(L.shipUsd), dutyUsd: r2(L.dutyUsd), feeUzs: r0(L.feeUzs),
     totalUsd: r2(L.totalUsd), totalUzs: r0(L.totalUzs), usdRate: ctx.usdRate,
-    note: best ? 'Kargo — eng arzon kuryer tarifi bo\'yicha.' : 'Bu yo\'nalishda tarifli kuryer topilmadi — kargo 0 deb olindi.'
+    note: best ? (best === rec ? 'Kargo — tavsiya etilgan kuryer tarifi bo\'yicha.' : 'Kargo — eng arzon kuryer tarifi bo\'yicha.') : 'Bu yo\'nalishda tarifli kuryer topilmadi — kargo 0 deb olindi.'
   };
   const catRow = inp.category && KB.CATEGORIES.find(c => c.id === inp.category);
   if (catRow && catRow.caution) out.caution = catRow.caution;

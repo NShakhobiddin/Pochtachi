@@ -113,5 +113,25 @@
     return ok.slice().sort(cmp).concat(rest);
   }
 
-  return { countryKey: countryKey, toUsd: toUsd, tariffCost: tariffCost, courierQuotes: courierQuotes, rankQuotes: rankQuotes };
+  /* Asosiy tavsiya (2026-10-09, loyiha egasi belgilagan): yo'nalish
+     bo'yicha birinchi taklif qilinadigan kuryer. AQSh — Globbing, Xitoy —
+     Tez-Tez delivery, Turkiya — ASE, Yevropa davlatlari — MYMEEST.
+     Qolgan kuryerlar narx/muddat tartibida keyin turadi. */
+  var RECOMMENDED = { aqsh: 'globbing', xitoy: 'teztezdelivery', turkiya: 'ase', yevropa: 'mymeest' };
+  ['angliya', 'germaniya', 'italiya', 'ispaniya', 'fransiya', 'polsha', 'portugaliya', 'gretsiya', 'chexiya', 'ukraina']
+    .forEach(function (c) { RECOMMENDED[c] = 'mymeest'; });
+  function recommendedId(country) { return RECOMMENDED[countryKey(country)] || ''; }
+
+  /* Tavsiya etilgan kuryerning birinchi (berilgan tartibda eng yaxshi)
+     narxi ma'lum taklifi boshiga chiqadi; qolganlarning tartibi
+     o'zgarmaydi. Tavsiya yo'q yoki tarifi hisoblanmasa — avvalgidek. */
+  function recommendFirst(quotes, country) {
+    var id = recommendedId(country), top = null;
+    for (var i = 0; id && i < quotes.length; i++) if (quotes[i].id === id && quotes[i].ok) { top = quotes[i]; break; }
+    if (!top) return quotes.slice();
+    return [top].concat(quotes.filter(function (q) { return q !== top; }));
+  }
+
+  return { countryKey: countryKey, toUsd: toUsd, tariffCost: tariffCost, courierQuotes: courierQuotes, rankQuotes: rankQuotes,
+    recommendedId: recommendedId, recommendFirst: recommendFirst };
 });
