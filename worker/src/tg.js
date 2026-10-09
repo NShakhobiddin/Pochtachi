@@ -5,10 +5,9 @@
  *   kalitidan hosil qilinadi (tgSecret) va workflow setWebhook da
  *   o'rnatadi — boshqa hech kim /tg ga yozolmaydi.
  *
- * Bot ikki tilda (o'zbek va rus). Til: chatda tanlangani (/start va /til
- * dagi 🇺🇿/🇷🇺 tugmalari, Tracks omborida "l:<chat xeshi>"), bo'lmasa
- * Telegram tili (language_code), bo'lmasa xabar kirillcha-ruscha bo'lsa —
- * rus. Mini App ham shu tilda ochiladi (?lang=).
+ * Bot ikki tilda (o'zbek va rus), asosiy til — o'zbek. Rus tili faqat
+ * chatda tanlansa (/start va /til dagi 🇺🇿/🇷🇺 tugmalari, Tracks omborida
+ * "l:<chat xeshi>"). Mini App ham shu tilda ochiladi (?lang=).
  *
  * Bot nima qiladi (faqat shaxsiy chatda):
  *   /start, /help   — qisqa yo'riqnoma, til tugmalari va "Pochtam'ni ochish"
@@ -128,14 +127,10 @@ async function setLang(env, chatId, lang) {
   if (!env.TRACKS) return;
   try { await env.TRACKS.get(env.TRACKS.idFromName('main')).fetch('https://tracks/kv/put', { method: 'POST', body: JSON.stringify({ key: await langKey(env, chatId), value: lang }) }); } catch (e) {}
 }
-/* Saqlangan til → Telegram tili → xabar matni (kirill, o'zbekcha harflarsiz — rus). */
-export function guessLang(stored, code, text) {
-  if (stored === 'uz' || stored === 'ru') return stored;
-  if (/^ru|^be|^uk|^kk/i.test(code || '')) return 'ru';
-  if (/^uz/i.test(code || '')) return 'uz';
-  const t = String(text || '');
-  if (/[а-яё]{3}/i.test(t) && !/[ўқғҳ]/i.test(t)) return 'ru';
-  return 'uz';
+/* Til: chatda tanlangani, aks holda o'zbekcha (Telegram tili yoki xabar
+   tili e'tiborga olinmaydi — asosiy til o'zbek). */
+export function guessLang(stored) {
+  return stored === 'ru' ? 'ru' : 'uz';
 }
 
 /* --- Kurs (Markaziy bank, 6 soat keshda) ------------------------------- */
@@ -272,7 +267,7 @@ export async function processUpdate(update, env, { counter, ctx, fetchFn = globa
   if (!msg || !msg.chat || msg.chat.type !== 'private') return { skip: 'chat' };
   const chatId = msg.chat.id;
   const text = String(msg.text || msg.caption || '').trim();
-  const lang = guessLang(await getLang(env, chatId), msg.from && msg.from.language_code, text);
+  const lang = guessLang(await getLang(env, chatId));
   const L = T[lang];
   const send = (text, extra = {}) => tg(env, 'sendMessage', { chat_id: chatId, text, parse_mode: 'HTML', link_preview_options: { is_disabled: true }, ...extra }, fetchFn);
   setGeminiPrice(env.AI_GEMINI_PRICE);

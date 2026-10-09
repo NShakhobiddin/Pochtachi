@@ -802,8 +802,11 @@ check('parseAiBody: savol + url — url e\'tiborsiz', (() => { const p = parseAi
   check('tg: ruscha skrinshot javobi (Курьер, рекомендуем, Итого … сум)', /Курьер: Tez-Tez delivery \(рекомендуем\)/.test(ruShot.text || '') && /Итого: \$\d+\.\d\d ≈ [\d ]+ сум/.test(ruShot.text || ''), (ruShot.text || '').replace(/\n/g, ' | ').slice(0, 200));
   await upd({ text: '/til' });
   check('tg: /til — tanlov tugmalari', ((sent.pop() || {}).reply_markup || { inline_keyboard: [[]] }).inline_keyboard[0].length === 2);
-  check('tg: til taxmini — saqlangan > Telegram tili > ruscha matn', guessLang('', 'ru', '') === 'ru' && guessLang('uz', 'ru', '') === 'uz' && guessLang('', 'en', 'Сколько стоит доставка?') === 'ru'
-    && guessLang('', 'en', 'Қанча туради?') === 'uz' && guessLang('', '', 'Xitoydan qancha?') === 'uz');
+  check('tg: asosiy til o\'zbek — rus faqat tanlansa', guessLang('') === 'uz' && guessLang('ru') === 'ru' && guessLang('uz') === 'uz');
+  await worker.fetch(new Request('https://w/tg', { method: 'POST', headers: { 'x-telegram-bot-api-secret-token': sec },
+    body: JSON.stringify({ update_id: 92, message: { message_id: 9, chat: { id: 888, type: 'private' }, from: { id: 888, language_code: 'ru' }, text: '/start' } }) }), tgEnv(), ctx);
+  const ruTg = sent.pop() || {};
+  check('tg: ruscha Telegramda ham /start o\'zbekcha (tanlov tugmalari bilan)', /Assalomu alaykum/.test(ruTg.text || '') && /lang=uz$/.test(ruTg.reply_markup.inline_keyboard[0][0].web_app.url), (ruTg.text || '').slice(0, 60));
   check('tg: davlat — ko\'p davlatli do\'konda valyutadan (Amazon € → Germaniya)', shotCountry({ store: 'Amazon', currency: 'EUR', country: '' }) === 'Germaniya' && shotCountry({ store: 'Taobao', currency: 'CNY' }) === 'Xitoy' && shotCountry({ store: '', currency: 'TRY' }) === 'Turkiya');
   check('tg: fxFromCbu nominal bilan', fxFromCbu([{ Ccy: 'KRW', Rate: '91.5', Nominal: '10' }]).KRW === 9.15);
   check('tg: webhook siri barqaror va Telegram belgilarida', sec === await tgSecret(TOK) && /^[0-9a-f]{48}$/.test(sec));

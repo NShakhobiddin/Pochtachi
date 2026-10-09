@@ -291,6 +291,9 @@ jobs:
           SEC=$(printf '%s' "pochtam-tg-webhook:$T" | sha256sum | cut -c1-48)
           APP="https://nshakhobiddin.github.io/Pochtachi/"
           if [ -s ../CNAME ]; then APP="https://$(tr -d '[:space:]' < ../CNAME)/"; fi
+          # Asosiy til — o'zbek: menyu tugmasi ilovani o'zbekcha ochadi
+          # (chatda rus tili tanlansa, bot shu chat uchun ?lang=ru qo'yadi).
+          APP="${APP}?lang=uz"
           sleep 3
           R1=$(curl -s "$API/setWebhook" -H 'content-type: application/json' \
             -d "{\"url\":\"${URL}tg\",\"secret_token\":\"$SEC\",\"allowed_updates\":[\"message\",\"callback_query\"],\"max_connections\":20}")

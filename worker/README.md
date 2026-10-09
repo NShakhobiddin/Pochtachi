@@ -331,8 +331,9 @@ emas. Kod: `src/tg.js`.
 - **Ikki til** (o'zbek, rus): `/start` va `/til` da 🇺🇿/🇷🇺 tugmalari;
   tanlov chat bo'yicha eslab qolinadi (Tracks ombori, kalit — chat id
   xeshi), chat menyu tugmasi va Mini App shu tilda ochiladi (`?lang=`).
-  Tanlov bo'lmasa — Telegram tili, u ham bo'lmasa ruscha yozilgan xabarga
-  ruscha. Buyruqlar va bot tavsifi ham ikki tilda (workflow).
+  Asosiy til — o'zbek: rus tili tanlanmaguncha bot (Telegram tili qanday
+  bo'lmasin) o'zbekcha javob beradi, menyu tugmasi ilovani `?lang=uz` bilan
+  ochadi. Buyruqlar va bot tavsifi ham ikki tilda (workflow).
 
 Xavfsizlik va chegara: Telegram har so'rovda `X-Telegram-Bot-Api-Secret-Token`
 yuboradi — u kalitdan hosil qilinadi (`tgSecret`: SHA-256, 48 belgi), boshqa
