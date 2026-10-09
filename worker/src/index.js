@@ -26,12 +26,15 @@
  *                        kunlik chegara shu Durable Object'da sanaladi
  *   POST /partner/status — hamkor kuryer jo'natma holatini yozadi (src/track.js)
  *   POST /track        — ilova hamkor kuryerdagi holatni o'qiydi (src/track.js)
+ *   POST /tg           — Telegram bot webhook (src/tg.js): skrinshot → jami narx,
+ *                        savol → Pochtam AI; TELEGRAM_BOT_TOKEN siri bo'lsa ishlaydi
  *   GET  /             — "ok"
  */
 
 import { hisobotHtml } from './hisobot.js';
 import { handleAi } from './ai.js';
 import { handlePartnerStatus, handleTrack, partnerIds, same } from './track.js';
+import { handleTelegram } from './tg.js';
 export { Tracks } from './track.js';
 
 const NAMES = new Set(['screen', 'store', 'courier', 'guide', 'wizard', 'svcAsk', 'hamkor',
@@ -224,6 +227,11 @@ export default {
       return handleAi({ request, env, ctx, origin, originOk: originOk(env, origin), cors, counter,
         /* Testda soxta Claude: env.AI_FETCH funksiyasi. Ishlab chiqarishda yo'q. */
         fetchImpl: typeof env.AI_FETCH === 'function' ? env.AI_FETCH : undefined });
+    }
+
+    /* Telegram bot (webhook): skrinshot → jami narx, savol → Pochtam AI. */
+    if (request.method === 'POST' && url.pathname === '/tg') {
+      return handleTelegram({ request, env, ctx, counter, fetchImpl: typeof env.TG_FETCH === 'function' ? env.TG_FETCH : undefined });
     }
 
     /* Hamkor kuryer holat API: kuryer yozadi, ilova o'qiydi. */

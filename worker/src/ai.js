@@ -932,7 +932,7 @@ export function evalCfg(request) {
   const p = String(request.headers.get('x-pochtam-provider') || '').trim();
   return { model: EVAL_MODELS.includes(m) ? m : '', thinking: THINKING_TYPES.includes(t) ? t : '', provider: p === 'gemini' ? 'gemini' : '' };
 }
-async function runAi({ parsed, env, count, fetchImpl, emit, cfg = {} }) {
+export async function runAi({ parsed, env, count, fetchImpl, emit, cfg = {} }) {
   const json = (body, status = 200) => ({ body, status });
   const say = emit || (() => {});
   const today = isoDay();

@@ -739,5 +739,55 @@ check('parseAiBody: savol + url — url e\'tiborsiz', (() => { const p = parseAi
   check('eval: x-pochtam-provider gemini faqat to\'g\'ri parol bilan', evG === 1 && evA === 1, 'gemini=' + evG + ' claude=' + evA);
 }
 
+/* --- Telegram bot (/tg): soxta Telegram API, Markaziy bank va Claude --- */
+{
+  const { tgSecret, shotCountry, fxFromCbu } = await import('./src/tg.js');
+  const TOK = '123456:test-token-abcdefghijklmnopqrstuv';
+  const sec = await tgSecret(TOK);
+  const sent = [];
+  const SHOT = { found: true, kind: 'price', name: 'Air Run 90', brand: '', query: '', price: 699, currency: 'CNY', qty: 1, store: 'Taobao', category: 'poyabzal', country: 'Xitoy', weightKg: 0.8, confidence: 0.95, items: [] };
+  const tgFake = async (u, init = {}) => {
+    u = String(u);
+    if (/cbu\.uz/.test(u)) return new Response(JSON.stringify([{ Ccy: 'USD', Rate: '12650.00', Nominal: '1' }, { Ccy: 'CNY', Rate: '1770.00', Nominal: '1' }]), { status: 200 });
+    if (/api\.telegram\.org\/file\//.test(u)) return new Response(new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3]), { status: 200 });
+    if (/api\.telegram\.org\/bot/.test(u)) {
+      const m = u.split('/').pop(), body = JSON.parse(init.body || '{}');
+      if (m === 'getFile') return new Response(JSON.stringify({ ok: true, result: { file_id: body.file_id, file_path: 'photos/f1.jpg' } }));
+      if (m === 'sendMessage') sent.push(body);
+      return new Response(JSON.stringify({ ok: true, result: true }));
+    }
+    if (/anthropic/.test(u)) {
+      const b = JSON.parse(init.body || '{}');
+      const isShot = (b.messages || []).some(x => Array.isArray(x.content) && x.content.some(c => c.type === 'image'));
+      return isShot ? claudeText(JSON.stringify(SHOT)) : claudeText('Xitoydan 2 kg — **taxminan** 12 dollar.');
+    }
+    return new Response('?', { status: 404 });
+  };
+  const tgEnv = (extra = {}) => ({ ...env, ANTHROPIC_API_KEY: 'sk-test', AI_DAILY_PER_IP: '50', AI_DAILY_TOTAL: '100', TELEGRAM_BOT_TOKEN: TOK, TG_FETCH: tgFake, ...extra });
+  const upd = (msg, headers = { 'x-telegram-bot-api-secret-token': sec }, e = tgEnv()) =>
+    worker.fetch(new Request('https://w/tg', { method: 'POST', headers, body: JSON.stringify({ update_id: Math.floor(Math.random() * 1e9), message: { message_id: 1, chat: { id: 777, type: 'private' }, from: { id: 777, language_code: 'uz' }, ...msg } }) }), e, ctx);
+
+  check('tg: kalitsiz bot — 404', (await upd({ text: '/start' }, {}, { ...env })).status === 404);
+  check('tg: noto\'g\'ri webhook siri — 403, javob yuborilmaydi', (await upd({ text: '/start' }, { 'x-telegram-bot-api-secret-token': 'x' })).status === 403 && sent.length === 0);
+  await upd({ text: '/start' });
+  const st = sent.pop() || {};
+  check('tg: /start — yo\'riqnoma va Mini App tugmasi (pochtam.uz)', /skrinshot/i.test(st.text || '') && st.reply_markup && st.reply_markup.inline_keyboard[0][0].web_app.url === 'https://pochtam.uz/', JSON.stringify(st).slice(0, 160));
+  await upd({ photo: [{ file_id: 'small', width: 90, height: 160, file_size: 2000 }, { file_id: 'big', width: 720, height: 1280, file_size: 90000 }] });
+  const ph = sent.pop() || {};
+  check('tg: skrinshot → jami narx: tavsiya kuryer (Tez-Tez), boj, so\'mda, Mini App tugmasi', /Air Run 90/.test(ph.text || '') && /699 CNY ≈ \$97\.80/.test(ph.text || '') && /Tez-Tez delivery \(tavsiya\)/.test(ph.text || '') && /Jami: \$\d+\.\d\d ≈ [\d ]+ so'm/.test(ph.text || '') && ph.parse_mode === 'HTML' && !!ph.reply_markup.inline_keyboard[0][0].web_app,
+    (ph.text || '').replace(/\n/g, ' | ').slice(0, 240));
+  await upd({ text: 'Xitoydan 2 kg qancha?' });
+  const tx1 = sent.pop() || {};
+  check('tg: savol → Pochtam AI javobi (markdownsiz, "$12"), Mini App tugmasi', /taxminan \$12/.test(tx1.text || '') && !/\*\*/.test(tx1.text || '') && tx1.reply_markup.inline_keyboard.some(r => r[0].web_app), JSON.stringify(tx1).slice(0, 200));
+  const before = sent.length;
+  await worker.fetch(new Request('https://w/tg', { method: 'POST', headers: { 'x-telegram-bot-api-secret-token': sec }, body: JSON.stringify({ update_id: 5, message: { message_id: 2, chat: { id: -100, type: 'group' }, text: 'salom' } }) }), tgEnv(), ctx);
+  check('tg: guruh chatida javob bermaydi', sent.length === before);
+  await upd({ text: '/kurs' });
+  check('tg: /kurs — Markaziy bank kursi', /1 USD = 12 650 so'm/.test((sent.pop() || {}).text || ''));
+  check('tg: davlat — ko\'p davlatli do\'konda valyutadan (Amazon € → Germaniya)', shotCountry({ store: 'Amazon', currency: 'EUR', country: '' }) === 'Germaniya' && shotCountry({ store: 'Taobao', currency: 'CNY' }) === 'Xitoy' && shotCountry({ store: '', currency: 'TRY' }) === 'Turkiya');
+  check('tg: fxFromCbu nominal bilan', fxFromCbu([{ Ccy: 'KRW', Rate: '91.5', Nominal: '10' }]).KRW === 9.15);
+  check('tg: webhook siri barqaror va Telegram belgilarida', sec === await tgSecret(TOK) && /^[0-9a-f]{48}$/.test(sec));
+}
+
 console.log(fails ? `\n${fails} ta tekshiruv o'tmadi.` : '\nWorker testlari o\'tdi.');
 process.exit(fails ? 1 : 0);

@@ -10,6 +10,9 @@ name: O'lchovni yoqish (Cloudflare Worker)
 #                           Claude ishlamasa (chegara, yuklama) AI Gemini'da davom etadi
 #   PARTNER_KEYS          — ixtiyoriy: hamkor kuryer kalitlari "d2d:pk_…,globbing:pk_…"
 #                           (worker/hamkor-kalit.mjs yaratadi; docs/hamkor-api.md)
+#   TELEGRAM_BOT_TOKEN    — ixtiyoriy: Telegram bot kaliti (@BotFather → /newbot). Bo'lsa
+#                           bot shu Worker'ga ulanadi (webhook /tg), buyruqlar va
+#                           "Pochtam" menyu tugmasi (Mini App — sayt Telegram ichida)
 # Nima qiladi: worker/ ni Cloudflare'ga joylaydi, READ_TOKEN sirini o'rnatadi,
 # chiqqan manzilni ilovadagi METRICS_URL ga yozadi, index.html ni qayta quradi
 # va commit qilib push qiladi — shundan keyin sayt sanoqni yubora boshlaydi.
@@ -263,6 +266,49 @@ jobs:
             echo "PARTNER_KEYS siri yo'q — hamkor kuryer hali yo'q; holat API ishlaydi, faqat egasi (READ_TOKEN) yoza oladi"
           fi
 
+      # Telegram bot: kalit Worker siriga yoziladi, webhook shu Worker'ning /tg
+      # manziliga ulanadi. Webhook siri kalitdan hosil qilinadi (worker/src/tg.js
+      # dagi tgSecret bilan bir xil) — alohida sir kerak emas. Kalit logga
+      # chiqmaydi: faqat bot nomi (@username) va webhook holati.
+      - name: Telegram botini ulash (TELEGRAM_BOT_TOKEN, ixtiyoriy)
+        id: tgbot
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          T: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          T=$(printf '%s' "$T" | tr -d '[:space:]')
+          if [ -z "$T" ]; then echo "set=0" >> "$GITHUB_OUTPUT"; echo "TELEGRAM_BOT_TOKEN siri yo'q — Telegram bot o'chiq"; exit 0; fi
+          API="https://api.telegram.org/bot$T"
+          ME=$(curl -s "$API/getMe")
+          if ! printf '%s' "$ME" | grep -q '"ok":true'; then
+            echo "::error::Telegram bot kaliti ishlamadi (getMe): $(printf '%s' "$ME" | grep -o '"description":"[^"]*"')"; exit 1
+          fi
+          BOT=$(printf '%s' "$ME" | grep -o '"username":"[^"]*"' | cut -d'"' -f4)
+          printf '%s' "$T" | npx wrangler secret put TELEGRAM_BOT_TOKEN
+          SEC=$(printf '%s' "pochtam-tg-webhook:$T" | sha256sum | cut -c1-48)
+          APP="https://nshakhobiddin.github.io/Pochtachi/"
+          if [ -s ../CNAME ]; then APP="https://$(tr -d '[:space:]' < ../CNAME)/"; fi
+          sleep 3
+          R1=$(curl -s "$API/setWebhook" -H 'content-type: application/json' \
+            -d "{\"url\":\"${URL}tg\",\"secret_token\":\"$SEC\",\"allowed_updates\":[\"message\"],\"max_connections\":20}")
+          printf '%s' "$R1" | grep -q '"ok":true' || { echo "::error::setWebhook: $(printf '%s' "$R1" | grep -o '"description":"[^"]*"')"; exit 1; }
+          curl -s "$API/setMyCommands" -H 'content-type: application/json' \
+            -d '{"commands":[{"command":"start","description":"Boshlash va yo‘riqnoma"},{"command":"kurs","description":"Markaziy bank dollar kursi"},{"command":"help","description":"Qanday ishlaydi"}]}' > /dev/null
+          curl -s "$API/setMyCommands" -H 'content-type: application/json' \
+            -d '{"language_code":"ru","commands":[{"command":"start","description":"Начать и инструкция"},{"command":"kurs","description":"Курс доллара ЦБ"},{"command":"help","description":"Как это работает"}]}' > /dev/null
+          curl -s "$API/setChatMenuButton" -H 'content-type: application/json' \
+            -d "{\"menu_button\":{\"type\":\"web_app\",\"text\":\"Pochtam\",\"web_app\":{\"url\":\"$APP\"}}}" > /dev/null
+          curl -s "$API/setMyShortDescription" -H 'content-type: application/json' \
+            -d '{"short_description":"Chet eldan xarid: skrinshot yuboring — kuryer, boj va jami narx."}' > /dev/null
+          curl -s "$API/setMyDescription" -H 'content-type: application/json' \
+            -d '{"description":"Do‘kon ilovasidan tovar skrinshotini yuboring — Pochtam narxni o‘qiydi va tavsiya etilgan kuryer, boj, yig‘im bilan jami summani so‘mda hisoblaydi. Savol ham yozishingiz mumkin. To‘liq ilova — Pochtam tugmasida."}' > /dev/null
+          INFO=$(curl -s "$API/getWebhookInfo")
+          echo "set=1" >> "$GITHUB_OUTPUT"
+          echo "::notice::Telegram bot ulandi — @$BOT · webhook ${URL}tg · Mini App $APP · navbatda $(printf '%s' "$INFO" | grep -o '"pending_update_count":[0-9]*' | cut -d: -f2) ta $(printf '%s' "$INFO" | grep -o '"last_error_message":"[^"]*"')"
+
       - name: Serverni sinash
         env:
           URL: ${{ steps.deploy.outputs.url }}
@@ -287,6 +333,10 @@ jobs:
           done
           [ "$ok" = "1" ] || { echo "::error::Hisobot o'qilmadi (GET /stats -> $code). Parol (METRICS_READ_TOKEN) to'g'rimi?"; exit 1; }
           echo "Server javob beryapti."
+          # Telegram webhook: sirsiz so'rov rad etiladi (bot ulangan bo'lsa 403, yo'q bo'lsa 404).
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST "${URL}tg" -d '{"update_id":1}')
+          echo "== POST /tg (sirsiz) [$code]"
+          case "$code" in 403|404) ;; *) echo "::error::/tg sirsiz so'rovni qabul qildi ($code)"; exit 1;; esac
           # Hamkor holat API: kalitsiz — 401; egasi "sinov" kuryeri nomidan
           # yozadi, ilova yo'li (POST /track, o'z Origin) o'qiydi.
           echo "== POST /partner/status (kalitsiz)"

@@ -304,6 +304,44 @@ kartasini o'zi oldinga suradi. To'liq tavsif kuryerlar uchun:
   kuryerlar uchun `POST /track` so'raydi (20 tagacha, faqat ALLOW_ORIGIN
   dan).
 
+## Telegram bot (`POST /tg`)
+
+Bot shu Worker ichida ishlaydi (serverless, webhook) — alohida server kerak
+emas. Kod: `src/tg.js`.
+
+**Ulash (bir marta):**
+1. Telegramda @BotFather → `/newbot` → bot nomi va username (`..._bot`) →
+   BotFather kalit beradi (`123456:ABC…`). Kalitni chatga, kodga yoki
+   commit'ga yozmang.
+2. GitHub → Settings → Secrets and variables → Actions → New repository
+   secret: nomi `TELEGRAM_BOT_TOKEN`, qiymati — o'sha kalit.
+3. Actions → "O'lchovni yoqish" → Run workflow. Workflow kalitni Worker
+   siriga yozadi, webhook'ni `/tg` ga ulaydi, buyruqlarni (/start, /kurs,
+   /help, uz va ru) va chat pastidagi **"Pochtam"** menyu tugmasini (Mini
+   App — sayt Telegram ichida ochiladi) o'rnatadi. Logda faqat `@username`.
+
+**Bot nima qiladi** (faqat shaxsiy chatda):
+- skrinshot (rasm yoki fayl) → narx o'qiladi (`readShot`, ilovadagi bilan
+  bir xil) → tavsiya etilgan kuryer, arzonrog'i, boj, yig'im va jami $ va
+  so'mda (Markaziy bank kursi, 6 soat keshda); "Batafsil — Pochtam'da"
+  tugmasi Mini App'ni ochadi;
+- matn → Pochtam AI javobi (`runAi`, vositalar bilan), do'kon havolalari
+  tugmada;
+- `/kurs` — dollar kursi; `/start`, `/help` — yo'riqnoma.
+
+Xavfsizlik va chegara: Telegram har so'rovda `X-Telegram-Bot-Api-Secret-Token`
+yuboradi — u kalitdan hosil qilinadi (`tgSecret`: SHA-256, 48 belgi), boshqa
+hech kim `/tg` ga yozolmaydi (403). Kunlik chegara ilova bilan bir xil
+(`AI_DAILY_PER_IP`, umumiy `AI_DAILY_TOTAL` va `AI_DAILY_USD`), kalit — chat
+id xeshi. Telegram qayta yuborgan yangilanish (update_id) ikki marta
+javoblanmaydi. Rasm va matn saqlanmaydi; xarajat hisobotda `tg_shot`,
+`tg_chat` bo'lib ko'rinadi. Bot oylik me'yorni bilmaydi — hisob "shu oyda
+boshqa jo'natma bo'lmasa" deb yoziladi; to'liq hisob Mini App'da.
+
+Mini App manzili: `TG_APP_URL` (bo'lmasa `https://pochtam.uz/`). Sayt
+Telegram ichida o'zi moslashadi (to'liq ekran, Telegram "Orqaga" tugmasi,
+xavfsiz chegaralar).
+
 ## Oqim (`POST /ai` + `stream: true`)
 
 `stream: true` bo'lsa, javob `application/x-ndjson` bo'ladi. Qatorlar
