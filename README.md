@@ -359,10 +359,23 @@ hisoblaydi, `cheapestCourier` — eng arzoni). Tarifi hisoblanmasa (masalan
 ASE 2 kg dan og'ir) — tartib arzonidan. O'zgartirish: faqat `RECOMMENDED`. Natija: `landedCost` — mahsulot,
 ichki yetkazish, kargo, boj, yig'im, jami ($ va so'm), boj sababi.
 "Olish foydalimi?" — O'zbekistondagi narx kiritilsa tejash so'm va foizda.
-Bojsiz me'yor kalendar oyga beriladi, shuning uchun shu oyda rejalardan
-yozilgan jo'natmalar ("Bu oyda" bloki, `st.monthly`) qoldiqni kamaytiradi
-va izohda ko'rsatiladi: "Bu oyda $320 kelgan — bojsiz qoldiq $0". Reja
-o'chirilsa uning oylik yozuvi ham o'chadi.
+Bojsiz me'yor kalendar oyga — tovar O'zbekiston bojxonasidan o'tgan oyga —
+beriladi. `monthEntries(st, oy)`: qo'lda qo'shilgan jo'natmalar
+(`st.monthly`, "Bu oyda" bloki) va Xaridlarimdagi **buyurtma qilingan**
+xaridlar (`step >= 1`). Xarid sanasi — bojxonaga kelgan kun (`customsAt`,
+"Bojxonaga keldi" bosilganda yoki hamkor kuryer holatidan yoziladi), kelmagan
+bo'lsa buyurtma kuni + kuryer muddati (`etaDays`, noma'lum — 14 kun), o'tib
+ketgan bo'lsa bugun. Reja bosqichidagi xarid sanalmaydi. Qoldiq izohda:
+"Bu oyda $320 kelgan — bojsiz qoldiq $0". Eski `monthly[].plan` yozuvlari
+hisobga olinmaydi.
+
+**Reja sehrgari** kargoni "Jami narx" bilan bir xil hisoblaydi: tanlangan
+davlat va og'irlik bo'yicha kuryerning tarif jadvali (`courierQuotes`);
+jadvalda yo'nalish bo'lmasa — kartadagi $/kg.
+
+**Skrinshot davlati** (`shotToLc`): bir nechta davlatdan sotadigan do'konda
+(Amazon, Nike…) avval valyuta (€ → Germaniya, £ → Angliya), keyin AI aytgan
+davlat — faqat do'kon yuboradigan davlatlar ichidan; aks holda asosiy davlat.
 
 **Rejaga qo'shish** — `savePlanFrom()`: sehrgar va kalkulyator uchun bitta
 yo'l. Reja obyektining eski maydonlari o'zgarmagan; kalkulyator qo'shimcha

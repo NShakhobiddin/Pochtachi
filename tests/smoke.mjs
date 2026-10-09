@@ -658,13 +658,30 @@ try {
     const planSaved = await page.evaluate(() => { const p = (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || [])[0] || {}; return { id: p.id, name: p.name, source: p.source, qty: p.qty, total: p.total, kg: p.kg }; });
     const plansAfter = await page.evaluate(() => (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || []).length);
     check('jami narx → Xaridlarim (name, qty, source, 16 kg), menyuda Xaridlarim', /Xarid/.test(planHead) && (await page.evaluate(() => [...document.querySelectorAll('nav button[aria-current="page"]')].map(b => b.innerText.trim()).join('|'))) === 'Xaridlarim' && plansAfter === plansBefore + 1 && planSaved.name === 'Sinov mahsulot' && planSaved.source === 'landed' && planSaved.qty === 1 && planSaved.total > 320 && Math.abs(planSaved.kg - 16) < 0.01, JSON.stringify(planSaved));
-    /* Oylik me'yor: yangi reja "Bu oyda" ga yozildi, endi jami narx qoldiqni
-       hisobga oladi — $100 lik tovar ham bojli chiqadi va izohda qoldiq turadi. */
+    /* Oylik me'yor: reja (hali buyurtma qilinmagan) me'yorni kamaytirmaydi —
+       $100 lik tovar bojsiz. Xarid bojxonaga kelgach ("Buyurtma qildim" …
+       "Bojxonaga keldi") shu oyga yoziladi va $100 lik tovar ham bojli. */
+    const lcHundred = async () => {
+      await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
+      await page.locator('main button').filter({ hasText: /Narxni o'zim yozaman/ }).first().click(); await page.waitForTimeout(500);
+      await lcFill('Mahsulot narxi', 100); await lcFill("Og'irligi, kilogrammda", 1); return lcText();
+    };
+    lt = await lcHundred();
+    const mDuty0 = /Bojxona to'lovi \$(\d+(?:\.\d\d)?)/.exec(lt);
+    await page.waitForTimeout(600);
+    const mStore0 = await page.evaluate(() => (JSON.parse(localStorage.getItem('xy_state_v1') || '{}').monthly || []).length);
+    check('jami narx: buyurtma qilinmagan reja oylik me\'yorni kamaytirmaydi', !/Bu oyda \$/.test(lt) && mDuty0 && +mDuty0[1] === 0 && mStore0 === 0, (lt.match(/Bu oyda[^.]*\./) || ['—'])[0] + ' · boj ' + (mDuty0 && mDuty0[1]) + ' · monthly ' + mStore0);
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
-    await page.locator('main button').filter({ hasText: /Narxni o'zim yozaman/ }).first().click(); await page.waitForTimeout(500);
-    await lcFill('Mahsulot narxi', 100); await lcFill("Og'irligi, kilogrammda", 1); lt = await lcText();
+    await page.locator('nav button', { hasText: 'Xaridlarim' }).first().click(); await page.waitForTimeout(500);
+    await page.locator('main button').filter({ hasText: 'Sinov mahsulot' }).first().click(); await page.waitForTimeout(500);
+    for (const t of ['Buyurtma qildim', 'Omborga yetib keldi', "Yo'lga chiqdi", 'Bojxonaga keldi']) {
+      await page.locator('main button').filter({ hasText: new RegExp('^\\s*' + t) }).first().click(); await page.waitForTimeout(350);
+    }
+    await page.waitForTimeout(700);
+    const custAt = await page.evaluate(() => ((JSON.parse(localStorage.getItem('xy_state_v1') || '{}').plans || []).find(p => p.name === 'Sinov mahsulot') || {}).customsAt || '');
+    lt = await lcHundred();
     const mDuty = /Bojxona to'lovi \$(\d+\.\d\d)/.exec(lt);
-    check('jami narx: shu oyda kelgan reja bojsiz qoldiqni kamaytiradi', /Bu oyda \$\d+ kelgan — bojsiz qoldiq \$0\./.test(lt) && mDuty && +mDuty[1] > 0, (lt.match(/Bu oyda[^.]*\./) || [''])[0] + ' · boj ' + (mDuty && mDuty[1]));
+    check('jami narx: bojxonaga kelgan xarid shu oyning qoldig\'ini kamaytiradi (customsAt)', /^\d{4}-\d{2}-\d{2}$/.test(custAt) && /Bu oyda \$\d+ kelgan — bojsiz qoldiq \$0\./.test(lt) && mDuty && +mDuty[1] > 0, custAt + ' · ' + (lt.match(/Bu oyda[^.]*\./) || [''])[0] + ' · boj ' + (mDuty && mDuty[1]));
     /* Sinov rejasi o'chiriladi (Xaridlarim → reja → o'chirish) — keyingi
        tekshiruvlar bo'sh holatga tayanadi. */
     await page.locator('nav button', { hasText: 'Boshlash' }).first().click(); await page.waitForTimeout(400);
@@ -1964,7 +1981,7 @@ try {
      ko'rmasdi. */
   const yakun = await page.evaluate(() => {
     const t = document.body.innerText;
-    return { tayyor: /Xaridlarimga qo'shildi/.test(t), meyor: /me'yoriga ham qo'shildi/.test(t),
+    return { tayyor: /Xaridlarimga qo'shildi/.test(t), meyor: /Buyurtma qilganingizda bojxonaning oylik me'yoriga o'zi qo'shiladi/.test(t),
       jami: /TAXMINIY JAMI/.test(t),
       yol: (t.match(/Xaridlarimga qo'shildi\n([^\n]+)/) || [])[1] || '' };
   });
@@ -1972,9 +1989,17 @@ try {
     yakun.tayyor && yakun.meyor && yakun.jami && yakun.yol.split('·').length >= 3,
     yakun.yol || JSON.stringify(yakun));
 
-  /* Bojxona: "Oy summasini qo'yish" summani kalkulyatorga qo'yib, uni ochadi. */
+  /* Bojxona: reja hali buyurtma qilinmagan — "Bu oyda" bo'sh, me'yorni
+     kamaytirmaydi. Qo'lda jo'natma qo'shilgach "Oy summasini qo'yish"
+     summani kalkulyatorga qo'yib, uni ochadi. */
   await refGo('Bojxona');
   await page.waitForTimeout(500);
+  const oyBosh = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
+  check('Bu oyda: buyurtma qilinmagan reja sanalmaydi (bo\'sh holat izohi)', /Bu oyda hali jo'natma yo'q\. Xaridlarimdagi buyurtma qilingan xarid kelish oyiga qarab/.test(oyBosh),
+    (oyBosh.match(/Bu oyda hali[^.]*\./) || ['—'])[0]);
+  await page.evaluate(() => { const app = (() => { const el = document.querySelector('nav button'); const k = Object.keys(el).find(x => x.startsWith('__reactFiber')); let f = el[k]; while (f && !(f.stateNode && f.stateNode.logic)) f = f.return; return f && f.stateNode.logic; })();
+    if (app) app.setState(s => ({ monthly: [...(s.monthly || []), { id: 'mtest', date: new Date().toISOString().slice(0, 10), usd: 150, kg: 1.5 }] })); });
+  await page.waitForTimeout(400);
   await page.locator('main button', { hasText: "Oy summasini qo'yish" }).first().click();
   await page.waitForTimeout(600);
   const oyKalk = await page.evaluate(() => ({
@@ -1982,6 +2007,8 @@ try {
     narx: (document.querySelector('main input') || {}).value
   }));
   check('oy summasi kalkulyatorni ochadi', /Qancha to'layman/.test(oyKalk.sarlavha) && +oyKalk.narx > 0, JSON.stringify(oyKalk));
+  await page.evaluate(() => { const el = document.querySelector('nav button'); const k = Object.keys(el).find(x => x.startsWith('__reactFiber')); let f = el[k]; while (f && !(f.stateNode && f.stateNode.logic)) f = f.return;
+    if (f) f.stateNode.logic.setState(s => ({ monthly: (s.monthly || []).filter(m => m.id !== 'mtest') })); });
   await page.locator('button[aria-label="Orqaga qaytish"]').first().click();
   await page.waitForTimeout(400);
 
