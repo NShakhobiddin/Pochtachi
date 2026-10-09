@@ -5,9 +5,15 @@
  *   kalitidan hosil qilinadi (tgSecret) va workflow setWebhook da
  *   o'rnatadi — boshqa hech kim /tg ga yozolmaydi.
  *
+ * Bot ikki tilda (o'zbek va rus). Til: chatda tanlangani (/start va /til
+ * dagi 🇺🇿/🇷🇺 tugmalari, Tracks omborida "l:<chat xeshi>"), bo'lmasa
+ * Telegram tili (language_code), bo'lmasa xabar kirillcha-ruscha bo'lsa —
+ * rus. Mini App ham shu tilda ochiladi (?lang=).
+ *
  * Bot nima qiladi (faqat shaxsiy chatda):
- *   /start, /help   — qisqa yo'riqnoma va "Pochtam'ni ochish" (Mini App —
- *                      saytning o'zi Telegram ichida ochiladi);
+ *   /start, /help   — qisqa yo'riqnoma, til tugmalari va "Pochtam'ni ochish"
+ *                      (Mini App — saytning o'zi Telegram ichida ochiladi);
+ *   /til (/lang)    — tilni almashtirish;
  *   rasm/skrinshot  — narx o'qiladi (readShot, ilovadagi bilan bir xil) va
  *                      jami narx: tavsiya etilgan kuryer, boj, yig'im, so'mda;
  *   matn            — Pochtam AI javobi (runAi), do'kon havolalari tugmada;
@@ -37,7 +43,10 @@ export async function tgSecret(token) {
   return hex(h).slice(0, 48);
 }
 
-export const appUrl = env => String(env.TG_APP_URL || 'https://pochtam.uz/');
+export const appUrl = (env, lang) => {
+  const base = String(env.TG_APP_URL || 'https://pochtam.uz/');
+  return lang ? base + (base.includes('?') ? '&' : '?') + 'lang=' + lang : base;
+};
 
 /* --- Matnlar (uz / ru) ------------------------------------------------- */
 const T = {
@@ -45,7 +54,7 @@ const T = {
     start: "Assalomu alaykum! Men Pochtam — chet eldan xarid yordamchisiman.\n\n" +
       "📸 Do'kon ilovasidan tovar skrinshotini yuboring — narx, kuryer, boj va jami summani hisoblayman.\n" +
       "💬 Yoki savol yozing: «Xitoydan 2 kg qancha turadi?», «Nike krossovkani qayerdan olsam bo'ladi?»\n" +
-      "💱 /kurs — Markaziy bank dollar kursi.\n\nTo'liq ilova — pastdagi tugmada.",
+      "💱 /kurs — Markaziy bank dollar kursi.\n🌐 /til — tilni almashtirish (Русский).\n\nTo'liq ilova — pastdagi tugmada.",
     open: "📦 Pochtam'ni ochish", more: "Batafsil — Pochtam'da",
     reading: "Skrinshotni o'qiyapman…",
     noPrice: "Rasmdan narx o'qilmadi. Do'kon ilovasida narx va tovar nomi ko'rinadigan joyni skrinshot qilib yuboring.",
@@ -58,6 +67,7 @@ const T = {
     other: "Skrinshot (rasm) yoki savol (matn) yuboring.",
     rate: "💱 Markaziy bank kursi: 1 USD = {0} so'm",
     rateNo: "Kursni hozir olib bo'lmadi.",
+    pick: "Tilni tanlang · Выберите язык", picked: "Til: o'zbekcha. Endi skrinshot yoki savol yuboring.",
     goods: "🛍 Tovar", courier: "🚚 Kuryer", rec: "tavsiya", cheaper: "arzonroq", duty: "🛃 Boj", fee: "yig'im", free: "me'yor ichida — boj yo'q",
     total: "💰 Jami", kg: "kg", kgGuess: "taxminiy vazn", note: "Taxminiy hisob: shu oyda boshqa jo'natma bo'lmasa (bojsiz me'yor $200/oy). Yakuniy summani bojxona va kuryer belgilaydi."
   },
@@ -65,7 +75,7 @@ const T = {
     start: "Здравствуйте! Я Pochtam — помощник по покупкам за рубежом.\n\n" +
       "📸 Пришлите скриншот товара из приложения магазина — посчитаю цену, курьера, пошлину и итог.\n" +
       "💬 Или задайте вопрос: «Сколько стоит доставка 2 кг из Китая?»\n" +
-      "💱 /kurs — курс доллара ЦБ.\n\nПолное приложение — по кнопке ниже.",
+      "💱 /kurs — курс доллара ЦБ.\n🌐 /til — сменить язык (O'zbekcha).\n\nПолное приложение — по кнопке ниже.",
     open: "📦 Открыть Pochtam", more: "Подробнее — в Pochtam",
     reading: "Читаю скриншот…",
     noPrice: "Цена на изображении не найдена. Сделайте скриншот, где видны цена и название товара.",
@@ -78,6 +88,7 @@ const T = {
     other: "Пришлите скриншот (фото) или вопрос (текст).",
     rate: "💱 Курс ЦБ: 1 USD = {0} сум",
     rateNo: "Не удалось получить курс.",
+    pick: "Tilni tanlang · Выберите язык", picked: "Язык: русский. Теперь пришлите скриншот или вопрос.",
     goods: "🛍 Товар", courier: "🚚 Курьер", rec: "рекомендуем", cheaper: "дешевле", duty: "🛃 Пошлина", fee: "сбор", free: "в пределах лимита — без пошлины",
     total: "💰 Итого", kg: "кг", kgGuess: "примерный вес", note: "Примерный расчёт: если в этом месяце не было других посылок (лимит $200/мес). Итоговую сумму определяют таможня и курьер."
   }
@@ -97,7 +108,35 @@ async function tg(env, method, payload, fetchFn) {
     return j && j.ok ? j.result : null;
   } catch (e) { console.log('tg', method, 'tarmoq', e && e.message); return null; }
 }
-const appButton = (env, text) => ({ inline_keyboard: [[{ text, web_app: { url: appUrl(env) } }]] });
+const appButton = (env, text, lang) => ({ inline_keyboard: [[{ text, web_app: { url: appUrl(env, lang) } }]] });
+const LANG_ROW = [{ text: "🇺🇿 O'zbekcha", callback_data: 'lang:uz' }, { text: '🇷🇺 Русский', callback_data: 'lang:ru' }];
+
+/* --- Chat tili (Tracks ombori; ulanmagan bo'lsa — eslab qolinmaydi) ---- */
+async function langKey(env, chatId) {
+  const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('tg-lang|' + chatId + '|' + (env.TELEGRAM_BOT_TOKEN || '')));
+  return 'l:' + hex(h).slice(0, 32);
+}
+async function getLang(env, chatId) {
+  if (!env.TRACKS) return '';
+  try {
+    const r = await env.TRACKS.get(env.TRACKS.idFromName('main')).fetch('https://tracks/kv/get', { method: 'POST', body: JSON.stringify({ key: await langKey(env, chatId) }) });
+    const v = (await r.json()).value;
+    return v === 'uz' || v === 'ru' ? v : '';
+  } catch (e) { return ''; }
+}
+async function setLang(env, chatId, lang) {
+  if (!env.TRACKS) return;
+  try { await env.TRACKS.get(env.TRACKS.idFromName('main')).fetch('https://tracks/kv/put', { method: 'POST', body: JSON.stringify({ key: await langKey(env, chatId), value: lang }) }); } catch (e) {}
+}
+/* Saqlangan til → Telegram tili → xabar matni (kirill, o'zbekcha harflarsiz — rus). */
+export function guessLang(stored, code, text) {
+  if (stored === 'uz' || stored === 'ru') return stored;
+  if (/^ru|^be|^uk|^kk/i.test(code || '')) return 'ru';
+  if (/^uz/i.test(code || '')) return 'uz';
+  const t = String(text || '');
+  if (/[а-яё]{3}/i.test(t) && !/[ўқғҳ]/i.test(t)) return 'ru';
+  return 'uz';
+}
 
 /* --- Kurs (Markaziy bank, 6 soat keshda) ------------------------------- */
 export function fxFromCbu(rows) {
@@ -137,6 +176,18 @@ export function shotCountry(shot) {
   return shot.country || BY_CUR[cur] || '';
 }
 
+/* Kuryer muddati bazada o'zbekcha erkin matn: ruscha javobda asosiy
+   shakllar o'giriladi ("5–10 ish kuni" → "5–10 раб. дн."). */
+export function daysText(d, lang) {
+  const s = String(d || '');
+  if (lang !== 'ru') return s;
+  if (/e'lon qilinmagan|noma'lum/i.test(s)) return 'срок не указан';
+  const b = /(\d+)\s*kundan boshlab/i.exec(s);
+  if (b) return 'от ' + b[1] + ' дн.';
+  const m = /(\d+(?:\s*[–-]\s*\d+)?)\s*(ish\s+kuni|kun)/i.exec(s);
+  return m ? m[1].replace(/\s+/g, '') + (/ish/i.test(m[2]) ? ' раб. дн.' : ' дн.') : s;
+}
+
 /* Natija matni (HTML). lc — landed_cost vositasi natijasi. */
 export function shotReply(shot, lc, lang, priceUsd) {
   const L = T[lang] || T.uz;
@@ -146,7 +197,7 @@ export function shotReply(shot, lc, lang, priceUsd) {
   const lines = [`<b>${esc(name)}</b>`, `${L.goods}: ${esc(priceTxt)}${shot.qty > 1 && !shot.multi ? ' × ' + shot.qty : ''}${shot.store ? ' · ' + esc(shot.store) : ''}`];
   if (lc.courier) {
     const kgTxt = String(lc.billableKg).replace('.', ',') + ' ' + L.kg + (lc.kgGuessed ? ' (' + L.kgGuess + ')' : '');
-    lines.push(`${L.courier}: ${esc(lc.courier.name)}${lc.courier.recommended ? ' (' + L.rec + ')' : ''} — ${usd(lc.shipUsd)} · ${kgTxt}${lc.courier.days ? ' · ' + esc(lc.courier.days) : ''}`);
+    lines.push(`${L.courier}: ${esc(lc.courier.name)}${lc.courier.recommended ? ' (' + L.rec + ')' : ''} — ${usd(lc.shipUsd)} · ${kgTxt}${lc.courier.days ? ' · ' + esc(daysText(lc.courier.days, lang)) : ''}`);
     if (lc.cheapestCourier) lines.push(`   ${L.cheaper}: ${esc(lc.cheapestCourier.name)} — ${usd(lc.cheapestCourier.usd)}`);
   }
   lines.push(lc.dutyUsd > 0 || lc.feeUzs > 0
@@ -196,18 +247,42 @@ function counterOps(env, counter, ctx) {
 }
 
 /* --- Bitta yangilanish ------------------------------------------------- */
+/* Til tanlangach: chatning menyu tugmasi ham shu tildagi Mini App'ni ochadi. */
+async function applyLang(env, chatId, lang, fetchFn) {
+  await setLang(env, chatId, lang);
+  await tg(env, 'setChatMenuButton', { chat_id: chatId, menu_button: { type: 'web_app', text: 'Pochtam', web_app: { url: appUrl(env, lang) } } }, fetchFn);
+}
+
 export async function processUpdate(update, env, { counter, ctx, fetchFn = globalThis.fetch } = {}) {
+  const ops = counterOps(env, counter, ctx);
+  /* Til tugmasi bosildi (callback_query, data "lang:uz" | "lang:ru"). */
+  const cb = update && update.callback_query;
+  if (cb) {
+    const m = /^lang:(uz|ru)$/.exec(String(cb.data || ''));
+    const chat = cb.message && cb.message.chat;
+    await tg(env, 'answerCallbackQuery', { callback_query_id: cb.id, text: m ? (m[1] === 'ru' ? 'Русский' : "O'zbekcha") : '' }, fetchFn);
+    if (!m || !chat || chat.type !== 'private') return { skip: 'callback' };
+    await applyLang(env, chat.id, m[1], fetchFn);
+    ops.count('tg_lang_' + m[1]);
+    const L2 = T[m[1]];
+    await tg(env, 'sendMessage', { chat_id: chat.id, text: esc(L2.picked + '\n\n' + L2.start), parse_mode: 'HTML', reply_markup: appButton(env, L2.open, m[1]) }, fetchFn);
+    return { done: 'lang', lang: m[1] };
+  }
   const msg = update && (update.message || update.edited_message);
   if (!msg || !msg.chat || msg.chat.type !== 'private') return { skip: 'chat' };
   const chatId = msg.chat.id;
-  const lang = /^ru/i.test((msg.from && msg.from.language_code) || '') ? 'ru' : 'uz';
+  const text = String(msg.text || msg.caption || '').trim();
+  const lang = guessLang(await getLang(env, chatId), msg.from && msg.from.language_code, text);
   const L = T[lang];
   const send = (text, extra = {}) => tg(env, 'sendMessage', { chat_id: chatId, text, parse_mode: 'HTML', link_preview_options: { is_disabled: true }, ...extra }, fetchFn);
-  const ops = counterOps(env, counter, ctx);
   setGeminiPrice(env.AI_GEMINI_PRICE);
-  const text = String(msg.text || msg.caption || '').trim();
 
-  if (/^\/(start|help|yordam)\b/i.test(text)) { ops.count('tg_start'); await send(esc(L.start), { reply_markup: appButton(env, L.open) }); return { done: 'start' }; }
+  if (/^\/(start|help|yordam)\b/i.test(text)) {
+    ops.count('tg_start');
+    await send(esc(L.start), { reply_markup: { inline_keyboard: [[{ text: L.open, web_app: { url: appUrl(env, lang) } }], LANG_ROW] } });
+    return { done: 'start', lang };
+  }
+  if (/^\/(til|lang|language)\b/i.test(text)) { await send(esc(L.pick), { reply_markup: { inline_keyboard: [LANG_ROW] } }); return { done: 'pick' }; }
   if (/^\/(kurs|rate)\b/i.test(text)) {
     const fx = await cbuRates(fetchFn);
     await send(fx.USD > 0 ? fill(L.rate, money(fx.USD)) : L.rateNo);
@@ -216,8 +291,8 @@ export async function processUpdate(update, env, { counter, ctx, fetchFn = globa
 
   const file = await photoFileId(msg);
   if (!file && !text) { await send(L.other); return { done: 'other' }; }
-  if (!env.ANTHROPIC_API_KEY && !env.GEMINI_API_KEY) { await send(L.down, { reply_markup: appButton(env, L.open) }); return { done: 'no_key' }; }
-  if (!(await ops.limit(chatId))) { ops.count('tg_limit'); await send(L.limit, { reply_markup: appButton(env, L.open) }); return { done: 'limit' }; }
+  if (!env.ANTHROPIC_API_KEY && !env.GEMINI_API_KEY) { await send(L.down, { reply_markup: appButton(env, L.open, lang) }); return { done: 'no_key' }; }
+  if (!(await ops.limit(chatId))) { ops.count('tg_limit'); await send(L.limit, { reply_markup: appButton(env, L.open, lang) }); return { done: 'limit' }; }
   await tg(env, 'sendChatAction', { chat_id: chatId, action: file ? 'upload_photo' : 'typing' }, fetchFn);
   const fx = await cbuRates(fetchFn);
   const usdRate = fx.USD > 0 ? fx.USD : 0;
@@ -241,7 +316,7 @@ export async function processUpdate(update, env, { counter, ctx, fetchFn = globa
     const shot = rs.unreadable ? { found: false } : rs.out;
     if (!shot.found || !(shot.price > 0)) {
       ops.count('tg_shot_empty');
-      await send(shot.kind === 'product' && shot.name ? fill(L.product, esc(shot.name)) : L.noPrice, { reply_markup: appButton(env, L.open) });
+      await send(shot.kind === 'product' && shot.name ? fill(L.product, esc(shot.name)) : L.noPrice, { reply_markup: appButton(env, L.open, lang) });
       return { done: 'shot_empty' };
     }
     /* Dollar: Markaziy bank kursi bo'lsa — o'sha (ilovadagi kabi), bo'lmasa
@@ -252,9 +327,9 @@ export async function processUpdate(update, env, { counter, ctx, fetchFn = globa
     const country = shotCountry(shot);
     const lc = runTool('landed_cost', { priceUsd, qty: shot.multi ? 1 : shot.qty, country, category: shot.category, kg: shot.weightKg > 0 ? shot.weightKg : 0 },
       { usdRate: usdRate || 12700, today: isoDay() });
-    if (lc.error) { await send(fill(L.noCountry, esc(shot.price + ' ' + cur)), { reply_markup: appButton(env, L.open) }); return { done: 'no_country' }; }
+    if (lc.error) { await send(fill(L.noCountry, esc(shot.price + ' ' + cur)), { reply_markup: appButton(env, L.open, lang) }); return { done: 'no_country' }; }
     ops.count('tg_shot');
-    await send(shotReply(shot, lc, lang, priceUsd), { reply_markup: appButton(env, L.more) });
+    await send(shotReply(shot, lc, lang, priceUsd), { reply_markup: appButton(env, L.more, lang) });
     return { done: 'shot', country, total: lc.totalUsd };
   }
 
@@ -274,7 +349,7 @@ export async function processUpdate(update, env, { counter, ctx, fetchFn = globa
     if (c.type === 'links') for (const l of (c.links || []).slice(0, 3)) if (/^https:\/\//.test(l.url || '')) rows.push([{ text: String(l.title || l.host).slice(0, 40), url: l.url }]);
   }
   rows.splice(3);
-  rows.push([{ text: L.open, web_app: { url: appUrl(env) } }]);
+  rows.push([{ text: L.open, web_app: { url: appUrl(env, lang) } }]);
   const body = esc(plainText(out.body.text)).slice(0, 3900);
   await send(body, { reply_markup: { inline_keyboard: rows } });
   return { done: 'chat' };

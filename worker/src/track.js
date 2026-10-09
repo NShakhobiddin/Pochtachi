@@ -116,6 +116,15 @@ export class Tracks {
       for (const part of chunks(keys)) for (const [k, v] of await this.storage.get(part)) got.set(k, v);
       return new Response(JSON.stringify(keys.map(k => got.get(k) || null)), { headers: { 'content-type': 'application/json' } });
     }
+    /* Kichik sozlamalar (Telegram botida chat tili): kalit "l:<xesh>",
+       qiymat qisqa satr. Jo'natma yozuvlaridan (t:) alohida, purge tegmaydi. */
+    if (request.method === 'POST' && (url.pathname === '/kv/get' || url.pathname === '/kv/put')) {
+      const { key, value } = await request.json();
+      if (!/^l:[0-9a-f]{16,64}$/.test(String(key || ''))) return new Response('bad key', { status: 400 });
+      if (url.pathname === '/kv/put') { await this.storage.put({ [key]: String(value || '').slice(0, 16) }); return new Response('{"ok":true}'); }
+      const got = await this.storage.get([key]);
+      return new Response(JSON.stringify({ value: got.get(key) || null }), { headers: { 'content-type': 'application/json' } });
+    }
     if (request.method === 'DELETE' && url.pathname === '/purge') {
       const old = Date.now() - KEEP_DAYS * 86400000;
       let startAfter, removed = 0;

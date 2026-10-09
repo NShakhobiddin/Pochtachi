@@ -293,18 +293,22 @@ jobs:
           if [ -s ../CNAME ]; then APP="https://$(tr -d '[:space:]' < ../CNAME)/"; fi
           sleep 3
           R1=$(curl -s "$API/setWebhook" -H 'content-type: application/json' \
-            -d "{\"url\":\"${URL}tg\",\"secret_token\":\"$SEC\",\"allowed_updates\":[\"message\"],\"max_connections\":20}")
+            -d "{\"url\":\"${URL}tg\",\"secret_token\":\"$SEC\",\"allowed_updates\":[\"message\",\"callback_query\"],\"max_connections\":20}")
           printf '%s' "$R1" | grep -q '"ok":true' || { echo "::error::setWebhook: $(printf '%s' "$R1" | grep -o '"description":"[^"]*"')"; exit 1; }
           curl -s "$API/setMyCommands" -H 'content-type: application/json' \
-            -d '{"commands":[{"command":"start","description":"Boshlash va yo‘riqnoma"},{"command":"kurs","description":"Markaziy bank dollar kursi"},{"command":"help","description":"Qanday ishlaydi"}]}' > /dev/null
+            -d '{"commands":[{"command":"start","description":"Boshlash va yo‘riqnoma"},{"command":"kurs","description":"Markaziy bank dollar kursi"},{"command":"til","description":"Tilni almashtirish · Язык"},{"command":"help","description":"Qanday ishlaydi"}]}' > /dev/null
           curl -s "$API/setMyCommands" -H 'content-type: application/json' \
-            -d '{"language_code":"ru","commands":[{"command":"start","description":"Начать и инструкция"},{"command":"kurs","description":"Курс доллара ЦБ"},{"command":"help","description":"Как это работает"}]}' > /dev/null
+            -d '{"language_code":"ru","commands":[{"command":"start","description":"Начать и инструкция"},{"command":"kurs","description":"Курс доллара ЦБ"},{"command":"til","description":"Сменить язык · Til"},{"command":"help","description":"Как это работает"}]}' > /dev/null
           curl -s "$API/setChatMenuButton" -H 'content-type: application/json' \
             -d "{\"menu_button\":{\"type\":\"web_app\",\"text\":\"Pochtam\",\"web_app\":{\"url\":\"$APP\"}}}" > /dev/null
           curl -s "$API/setMyShortDescription" -H 'content-type: application/json' \
             -d '{"short_description":"Chet eldan xarid: skrinshot yuboring — kuryer, boj va jami narx."}' > /dev/null
           curl -s "$API/setMyDescription" -H 'content-type: application/json' \
             -d '{"description":"Do‘kon ilovasidan tovar skrinshotini yuboring — Pochtam narxni o‘qiydi va tavsiya etilgan kuryer, boj, yig‘im bilan jami summani so‘mda hisoblaydi. Savol ham yozishingiz mumkin. To‘liq ilova — Pochtam tugmasida."}' > /dev/null
+          curl -s "$API/setMyShortDescription" -H 'content-type: application/json' \
+            -d '{"language_code":"ru","short_description":"Покупки за рубежом: пришлите скриншот — курьер, пошлина и итоговая цена."}' > /dev/null
+          curl -s "$API/setMyDescription" -H 'content-type: application/json' \
+            -d '{"language_code":"ru","description":"Пришлите скриншот товара из приложения магазина — Pochtam прочитает цену и посчитает итог в сумах: рекомендуемый курьер, пошлина и сбор. Можно задать вопрос. Полное приложение — кнопка Pochtam. Язык: /til."}' > /dev/null
           INFO=$(curl -s "$API/getWebhookInfo")
           echo "set=1" >> "$GITHUB_OUTPUT"
           echo "::notice::Telegram bot ulandi — @$BOT · webhook ${URL}tg · Mini App $APP · navbatda $(printf '%s' "$INFO" | grep -o '"pending_update_count":[0-9]*' | cut -d: -f2) ta $(printf '%s' "$INFO" | grep -o '"last_error_message":"[^"]*"')"

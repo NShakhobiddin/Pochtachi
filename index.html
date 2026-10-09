@@ -3639,6 +3639,9 @@ const autoLang = () => {
     return /^ru/i.test(String(code)) ? 'ru' : 'uz';
   } catch (e) { return 'uz'; }
 };
+const urlLang = () => {
+  try { const v = new URLSearchParams(location.search).get('lang'); return ['uz', 'ru', 'uzc'].includes(v) ? v : ''; } catch (e) { return ''; }
+};
 const openTg = url => {
   const tg = tgApp();
   if (tg && /t\.me\//.test(url) && typeof tg.openTelegramLink === 'function') {
@@ -5446,7 +5449,7 @@ class Component extends DCLogic {
           ? (TABS.indexOf(SAVED.lastTab) >= 0 ? SAVED.lastTab : (this.props.startScreen || 'home'))
           : 'onboard')],
     lastTab: TABS.indexOf(SAVED.lastTab) >= 0 ? SAVED.lastTab : 'home',
-    lang: SAVED.lang || autoLang(),
+    lang: urlLang() || SAVED.lang || autoLang(),
     onboarded: !!SAVED.onboarded,
     monthly: SAVED.monthly || [],
     storeQuery: '',

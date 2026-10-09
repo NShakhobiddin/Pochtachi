@@ -741,10 +741,12 @@ check('parseAiBody: savol + url — url e\'tiborsiz', (() => { const p = parseAi
 
 /* --- Telegram bot (/tg): soxta Telegram API, Markaziy bank va Claude --- */
 {
-  const { tgSecret, shotCountry, fxFromCbu } = await import('./src/tg.js');
+  const { tgSecret, shotCountry, fxFromCbu, guessLang, daysText } = await import('./src/tg.js');
+  check('tg: kuryer muddati ruschada', daysText("muddat e'lon qilinmagan", 'ru') === 'срок не указан' && daysText('5–10 ish kuni', 'ru') === '5–10 раб. дн.' && daysText('20–25 kun', 'ru') === '20–25 дн.'
+    && daysText('5 kundan boshlab', 'ru') === 'от 5 дн.' && daysText('2–3 ish kuni', 'uz') === '2–3 ish kuni');
   const TOK = '123456:test-token-abcdefghijklmnopqrstuv';
   const sec = await tgSecret(TOK);
-  const sent = [];
+  const sent = [], menu = [];
   const SHOT = { found: true, kind: 'price', name: 'Air Run 90', brand: '', query: '', price: 699, currency: 'CNY', qty: 1, store: 'Taobao', category: 'poyabzal', country: 'Xitoy', weightKg: 0.8, confidence: 0.95, items: [] };
   const tgFake = async (u, init = {}) => {
     u = String(u);
@@ -754,6 +756,7 @@ check('parseAiBody: savol + url — url e\'tiborsiz', (() => { const p = parseAi
       const m = u.split('/').pop(), body = JSON.parse(init.body || '{}');
       if (m === 'getFile') return new Response(JSON.stringify({ ok: true, result: { file_id: body.file_id, file_path: 'photos/f1.jpg' } }));
       if (m === 'sendMessage') sent.push(body);
+      if (m === 'setChatMenuButton') menu.push(body);
       return new Response(JSON.stringify({ ok: true, result: true }));
     }
     if (/anthropic/.test(u)) {
@@ -763,7 +766,7 @@ check('parseAiBody: savol + url — url e\'tiborsiz', (() => { const p = parseAi
     }
     return new Response('?', { status: 404 });
   };
-  const tgEnv = (extra = {}) => ({ ...env, ANTHROPIC_API_KEY: 'sk-test', AI_DAILY_PER_IP: '50', AI_DAILY_TOTAL: '100', TELEGRAM_BOT_TOKEN: TOK, TG_FETCH: tgFake, ...extra });
+  const tgEnv = (extra = {}) => ({ ...env, TRACKS: tEnv.TRACKS, ANTHROPIC_API_KEY: 'sk-test', AI_DAILY_PER_IP: '50', AI_DAILY_TOTAL: '100', TELEGRAM_BOT_TOKEN: TOK, TG_FETCH: tgFake, ...extra });
   const upd = (msg, headers = { 'x-telegram-bot-api-secret-token': sec }, e = tgEnv()) =>
     worker.fetch(new Request('https://w/tg', { method: 'POST', headers, body: JSON.stringify({ update_id: Math.floor(Math.random() * 1e9), message: { message_id: 1, chat: { id: 777, type: 'private' }, from: { id: 777, language_code: 'uz' }, ...msg } }) }), e, ctx);
 
@@ -771,7 +774,8 @@ check('parseAiBody: savol + url — url e\'tiborsiz', (() => { const p = parseAi
   check('tg: noto\'g\'ri webhook siri — 403, javob yuborilmaydi', (await upd({ text: '/start' }, { 'x-telegram-bot-api-secret-token': 'x' })).status === 403 && sent.length === 0);
   await upd({ text: '/start' });
   const st = sent.pop() || {};
-  check('tg: /start — yo\'riqnoma va Mini App tugmasi (pochtam.uz)', /skrinshot/i.test(st.text || '') && st.reply_markup && st.reply_markup.inline_keyboard[0][0].web_app.url === 'https://pochtam.uz/', JSON.stringify(st).slice(0, 160));
+  check('tg: /start — yo\'riqnoma, Mini App (?lang=uz) va 🇺🇿/🇷🇺 til tugmalari', /skrinshot/i.test(st.text || '') && st.reply_markup && st.reply_markup.inline_keyboard[0][0].web_app.url === 'https://pochtam.uz/?lang=uz'
+    && st.reply_markup.inline_keyboard[1].map(b => b.callback_data).join() === 'lang:uz,lang:ru', JSON.stringify(st.reply_markup).slice(0, 200));
   await upd({ photo: [{ file_id: 'small', width: 90, height: 160, file_size: 2000 }, { file_id: 'big', width: 720, height: 1280, file_size: 90000 }] });
   const ph = sent.pop() || {};
   check('tg: skrinshot → jami narx: tavsiya kuryer (Tez-Tez), boj, so\'mda, Mini App tugmasi', /Air Run 90/.test(ph.text || '') && /699 CNY ≈ \$97\.80/.test(ph.text || '') && /Tez-Tez delivery \(tavsiya\)/.test(ph.text || '') && /Jami: \$\d+\.\d\d ≈ [\d ]+ so'm/.test(ph.text || '') && ph.parse_mode === 'HTML' && !!ph.reply_markup.inline_keyboard[0][0].web_app,
@@ -784,6 +788,22 @@ check('parseAiBody: savol + url — url e\'tiborsiz', (() => { const p = parseAi
   check('tg: guruh chatida javob bermaydi', sent.length === before);
   await upd({ text: '/kurs' });
   check('tg: /kurs — Markaziy bank kursi', /1 USD = 12 650 so'm/.test((sent.pop() || {}).text || ''));
+  /* Til: tugma bosilsa (callback) — eslab qolinadi, menyu tugmasi shu tilda,
+     keyingi javoblar ruscha; /til — tanlov tugmalari. */
+  await worker.fetch(new Request('https://w/tg', { method: 'POST', headers: { 'x-telegram-bot-api-secret-token': sec },
+    body: JSON.stringify({ update_id: 91, callback_query: { id: 'cb1', data: 'lang:ru', from: { id: 777 }, message: { message_id: 3, chat: { id: 777, type: 'private' } } } }) }), tgEnv(), ctx);
+  const ru1 = sent.pop() || {};
+  check('tg: til tugmasi (ru) — ruscha yo\'riqnoma, menyu tugmasi ?lang=ru', /Язык: русский/.test(ru1.text || '') && ru1.reply_markup.inline_keyboard[0][0].web_app.url === 'https://pochtam.uz/?lang=ru'
+    && (menu.pop() || {}).menu_button.web_app.url === 'https://pochtam.uz/?lang=ru', JSON.stringify(ru1).slice(0, 160));
+  await upd({ text: '/kurs' });
+  check('tg: tanlangan til eslab qolinadi (uz Telegram tilida ham ruscha)', /Курс ЦБ: 1 USD = 12 650 сум/.test((sent.pop() || {}).text || ''));
+  await upd({ photo: [{ file_id: 'big', width: 720, height: 1280, file_size: 90000 }] });
+  const ruShot = sent.pop() || {};
+  check('tg: ruscha skrinshot javobi (Курьер, рекомендуем, Итого … сум)', /Курьер: Tez-Tez delivery \(рекомендуем\)/.test(ruShot.text || '') && /Итого: \$\d+\.\d\d ≈ [\d ]+ сум/.test(ruShot.text || ''), (ruShot.text || '').replace(/\n/g, ' | ').slice(0, 200));
+  await upd({ text: '/til' });
+  check('tg: /til — tanlov tugmalari', ((sent.pop() || {}).reply_markup || { inline_keyboard: [[]] }).inline_keyboard[0].length === 2);
+  check('tg: til taxmini — saqlangan > Telegram tili > ruscha matn', guessLang('', 'ru', '') === 'ru' && guessLang('uz', 'ru', '') === 'uz' && guessLang('', 'en', 'Сколько стоит доставка?') === 'ru'
+    && guessLang('', 'en', 'Қанча туради?') === 'uz' && guessLang('', '', 'Xitoydan qancha?') === 'uz');
   check('tg: davlat — ko\'p davlatli do\'konda valyutadan (Amazon € → Germaniya)', shotCountry({ store: 'Amazon', currency: 'EUR', country: '' }) === 'Germaniya' && shotCountry({ store: 'Taobao', currency: 'CNY' }) === 'Xitoy' && shotCountry({ store: '', currency: 'TRY' }) === 'Turkiya');
   check('tg: fxFromCbu nominal bilan', fxFromCbu([{ Ccy: 'KRW', Rate: '91.5', Nominal: '10' }]).KRW === 9.15);
   check('tg: webhook siri barqaror va Telegram belgilarida', sec === await tgSecret(TOK) && /^[0-9a-f]{48}$/.test(sec));
