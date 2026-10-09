@@ -1,9 +1,7 @@
 /* Pochtam Core — ulashish matni va havoladan mahsulot nomi va narxi.
  * Do'kon ilovasidagi "Ulashish" matni: "US $5.89 | Erkaklar krossovkasi
  * https://a.aliexpress.com/_x", "1.299,90 TL Ceket https://ty.gl/…".
- * Ilova buni o'zi (serversiz, AI'siz) o'qiydi; Worker esa havola sahifasi
- * narx bermasa shu funksiyani ishlatadi. Bitta funksiya — ikki joyda bir
- * xil natija.
+ * Ilova buni o'zi (serversiz, AI'siz) o'qiydi.
  *
  * Oddiy skript (brauzer: PochtamCore) va modul (Node, Worker) sifatida ishlaydi.
  */
@@ -22,7 +20,10 @@
     var lc = s.lastIndexOf(','), ld = s.lastIndexOf('.');
     if (lc >= 0 && ld >= 0) s = lc > ld ? s.replace(/\./g, '').replace(',', '.') : s.replace(/,/g, '');
     else if (lc >= 0) s = /,\d{1,2}$/.test(s) && (s.match(/,/g) || []).length === 1 ? s.replace(',', '.') : s.replace(/,/g, '');
-    else if ((s.match(/\./g) || []).length > 1) s = s.replace(/\./g, '');
+    /* Bitta nuqta va undan keyin aynan 3 raqam — minglik ajratgich
+       ("1.299 TL", "12.999 TL" — Turkiya do'konlarida odatiy): ilgari
+       1,299 lira bo'lib o'qilardi. Narxda 3 xonali kasr bo'lmaydi. */
+    else if ((s.match(/\./g) || []).length > 1 || /^\d{1,3}\.\d{3}$/.test(s)) s = s.replace(/\./g, '');
     var n = parseFloat(s);
     return isFinite(n) && n > 0 ? n : 0;
   }

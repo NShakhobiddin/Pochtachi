@@ -176,6 +176,10 @@ check('ko\'p davlatdan yuboradigan do\'konlar belgilangan', kopDavlat >= 10, kop
   const sh2 = core.shareHint('1.299,90 TL Derimod Erkek Sneaker https://ty.gl/abc');
   const sh3 = core.shareHint("Bu ürünü Trendyol'da gördüm, beğeneceğini düşündüm! https://ty.gl/x");
   const sh4 = core.shareHint('79,99руб. | Кроссовки мужские https://a.aliexpress.ru/_x');
+  /* "1.299 TL" — minglik nuqta (ilgari 1,299 lira bo'lib o'qilardi). */
+  check('shareHint: "1.299 TL" → 1299, "12.999 TL" → 12999, "€12.50" → 12.5',
+    core.shareHint('1.299 TL Ceket').price === 1299 && core.shareHint('12.999 TL telefon').price === 12999
+    && core.shareHint('€12.50 t-shirt').price === 12.5 && core.sharePrice('1.299') === 1299 && core.sharePrice('5.89') === 5.89);
   check('shareHint: "US $5.89 | nom", "1.299,90 TL nom", rubl; reklama iborasi nom emas',
     sh1.price === 5.89 && sh1.currency === 'USD' && sh1.name === 'Li-Ning RED HARE 9 Running Shoes'
     && sh2.price === 1299.9 && sh2.currency === 'TRY' && sh2.name === 'Derimod Erkek Sneaker'

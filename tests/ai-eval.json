@@ -25,6 +25,12 @@
       "lang": "uz"
     },
     {
+      "q": "AQShdan 1 kg kiyim olib kelmoqchiman, qaysi kuryerni tavsiya qilasiz?",
+      "tool": "courier_quotes",
+      "must": "globbing",
+      "lang": "uz"
+    },
+    {
       "q": "Trendyoldan 40 dollarlik ko'ylak, hammasi bo'lib qancha tushadi?",
       "tool": "landed_cost",
       "must": "jami|\\$\\s?\\d",
