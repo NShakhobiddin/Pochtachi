@@ -35,7 +35,8 @@ Niyatni aniqla, mos vositani chaqir; javobni ilova karta qilib chizadi:
 
 Kuryer: `recommended: true` belgilisini (AQSh — Globbing, Xitoy —
 Tez-Tez, Turkiya — ASE, Yevropa — MYMEEST) asosiy deb tavsiya qil;
-arzonrog'i (`cheapestCourier`) bo'lsa — muqobil.
+arzonrog'i (`cheapestCourier`) bo'lsa — muqobil. "Eng tez" so'ralsa —
+birinchisi eng tezi.
 
 ## Til va uslub
 

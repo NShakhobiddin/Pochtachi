@@ -142,16 +142,22 @@ export function fxFromCbu(rows) {
   }
   return out;
 }
+/* Kesh xotirada (izolyat yashaguncha, 6 soat): *.workers.dev manzilida
+   Cache API hech narsa saqlamaydi, shuning uchun u faqat qo'shimcha. */
+let CBU_MEM = { at: 0, fx: null };
 async function cbuRates(fetchFn) {
+  if (CBU_MEM.fx && Date.now() - CBU_MEM.at < 21600000) return CBU_MEM.fx;
   const cache = typeof caches !== 'undefined' ? caches.default : null;
   const key = 'https://pochtam.internal/cbu';
-  try { if (cache) { const hit = await cache.match(key); if (hit) return await hit.json(); } } catch (e) {}
+  try { if (cache) { const hit = await cache.match(key); if (hit) { const fx = await hit.json(); CBU_MEM = { at: Date.now(), fx }; return fx; } } } catch (e) {}
   try {
-    const r = await fetchFn(CBU_URL, { headers: { accept: 'application/json' } });
+    const r = await fetchFn(CBU_URL, { headers: { accept: 'application/json' }, signal: typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(6000) : undefined });
     const fx = fxFromCbu(await r.json());
-    if (fx.USD > 0 && cache) await cache.put(key, new Response(JSON.stringify(fx), { headers: { 'cache-control': 'max-age=21600', 'content-type': 'application/json' } }));
-    return fx.USD > 0 ? fx : {};
-  } catch (e) { return {}; }
+    if (!(fx.USD > 0)) return CBU_MEM.fx || {};
+    CBU_MEM = { at: Date.now(), fx };
+    if (cache) await cache.put(key, new Response(JSON.stringify(fx), { headers: { 'cache-control': 'max-age=21600', 'content-type': 'application/json' } })).catch(() => {});
+    return fx;
+  } catch (e) { return CBU_MEM.fx || {}; }
 }
 
 /* --- Skrinshot → jami narx -------------------------------------------- */
@@ -269,7 +275,14 @@ export async function processUpdate(update, env, { counter, ctx, fetchFn = globa
   const text = String(msg.text || msg.caption || '').trim();
   const lang = guessLang(await getLang(env, chatId));
   const L = T[lang];
-  const send = (text, extra = {}) => tg(env, 'sendMessage', { chat_id: chatId, text, parse_mode: 'HTML', link_preview_options: { is_disabled: true }, ...extra }, fetchFn);
+  /* HTML rad etilsa (formatlash xatosi) — o'sha matn oddiy ko'rinishda:
+     foydalanuvchi javobsiz qolmasin. */
+  const send = async (text, extra = {}) => {
+    const r = await tg(env, 'sendMessage', { chat_id: chatId, text, parse_mode: 'HTML', link_preview_options: { is_disabled: true }, ...extra }, fetchFn);
+    if (r) return r;
+    const plain = String(text).replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').slice(0, 4000);
+    return tg(env, 'sendMessage', { chat_id: chatId, text: plain, link_preview_options: { is_disabled: true }, ...extra }, fetchFn);
+  };
   setGeminiPrice(env.AI_GEMINI_PRICE);
 
   if (/^\/(start|help|yordam)\b/i.test(text)) {
@@ -345,10 +358,14 @@ export async function processUpdate(update, env, { counter, ctx, fetchFn = globa
   }
   rows.splice(3);
   rows.push([{ text: L.open, web_app: { url: appUrl(env, lang) } }]);
-  const body = esc(plainText(out.body.text)).slice(0, 3900);
+  /* Avval qisqartiriladi, keyin HTML belgilari: aks holda kesish "&amp;"
+     o'rtasiga tushib, Telegram xabarni rad etardi (javob kelmasdi). */
+  const body = esc(plainText(out.body.text).slice(0, 3800));
   await send(body, { reply_markup: { inline_keyboard: rows } });
   return { done: 'chat' };
 }
+
+const SEEN = new Set();
 
 /* POST /tg — webhook. */
 export async function handleTelegram({ request, env, ctx, counter, fetchImpl }) {
@@ -358,12 +375,18 @@ export async function handleTelegram({ request, env, ctx, counter, fetchImpl }) 
   if (got.length !== want.length || got !== want) return new Response('forbidden', { status: 403 });
   let update;
   try { update = JSON.parse((await request.text()).slice(0, 200000)); } catch (e) { return new Response('ok'); }
-  if (update && Number.isFinite(update.update_id) && typeof caches !== 'undefined') {
-    const key = 'https://pochtam.internal/tg-update/' + update.update_id;
-    try {
-      if (await caches.default.match(key)) return new Response('ok');
-      await caches.default.put(key, new Response('1', { headers: { 'cache-control': 'max-age=600' } }));
-    } catch (e) {}
+  /* Takror (Telegram qayta yuborgan) yangilanish: xotiradagi oxirgi 500 ta
+     update_id (*.workers.dev da Cache API ishlamaydi) + Cache API. */
+  if (update && Number.isFinite(update.update_id)) {
+    if (SEEN.has(update.update_id)) return new Response('ok');
+    SEEN.add(update.update_id); if (SEEN.size > 500) SEEN.delete(SEEN.values().next().value);
+    if (typeof caches !== 'undefined') {
+      const key = 'https://pochtam.internal/tg-update/' + update.update_id;
+      try {
+        if (await caches.default.match(key)) return new Response('ok');
+        await caches.default.put(key, new Response('1', { headers: { 'cache-control': 'max-age=600' } }));
+      } catch (e) {}
+    }
   }
   try { await processUpdate(update, env, { counter, ctx, fetchFn: fetchImpl || globalThis.fetch }); }
   catch (e) { console.log('tg', e && e.message || e); }

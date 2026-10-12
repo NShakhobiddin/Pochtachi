@@ -120,6 +120,8 @@ const cheap = core.rankQuotes(q, 'cheap');
 check('eng arzon birinchi', cheap[0].ok && cheap.every((x, i) => i === 0 || !x.ok || x.usd >= cheap[i - 1].usd), cheap.slice(0, 3).map(x => x.name + ' $' + x.usd.toFixed(2)).join(', '));
 const fast = core.rankQuotes(q, 'fast');
 check('eng tez birinchi', fast[0].dnum != null && fast.every((x, i) => i === 0 || !x.ok || x.dnum == null || x.dnum >= (fast[i - 1].dnum ?? -1)), fast.slice(0, 3).map(x => x.name + ' ' + x.dnum + 'k').join(', '));
+check('daysNum: muddat bir xil o\'lchovda (yuqori chegara, ish kuni × 7/5)', core.daysNum('4–7 kun') === 7 && core.daysNum('5–10 ish kuni') === 14 && core.daysNum('8 kundan boshlab') === 11 && core.daysNum("muddat e'lon qilinmagan") === null);
+check('eng tez: tarifsiz muddatli kuryer ham bir xil o\'lchovda (D2D 4–7 kun Globbing 5–10 ish kunidan oldin)', (() => { const f = core.rankQuotes(q, 'fast').filter(x => x.ok); const i = id => f.findIndex(x => x.id === id); return i('d2d') >= 0 && i('globbing') >= 0 && i('d2d') < i('globbing'); })());
 const opt1 = core.rankQuotes(q, 'optimal');
 check('optimal: narxi ma\'lumlar oldinda', opt1.length === q.length && opt1[0].ok);
 const noC = core.courierQuotes({ couriers: COURIERS, tariffs: TAR, country: 'Marsdan', kg: 1, usdRate: RATE });

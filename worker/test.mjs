@@ -246,6 +246,9 @@ const cq = runTool('courier_quotes', { country: 'USA', kg: 2, priority: 'cheap' 
 check('courier_quotes: davlat taxallusi (USA → AQSh), Globbing tavsiya birinchi, qolgani arzonidan', cq.country === 'AQSh' && cq.quotes.length >= 3
   && cq.quotes[0].courier === 'GLOBBING' && cq.quotes[0].recommended === true && cq.quotes.slice(1).every(q => !q.recommended)
   && cq.quotes.slice(1).every((q, i, a) => i === 0 || q.usd >= a[i - 1].usd), JSON.stringify(cq.quotes.slice(0, 2)));
+const cqFast = runTool('courier_quotes', { country: 'Xitoy', kg: 2, priority: 'fast' }, tctx);
+check('courier_quotes fast: tartib muddat bo\'yicha (tavsiya faqat belgi)', cqFast.quotes.length >= 3 && cqFast.quotes[0].courier !== 'Tez-Tez delivery' && cqFast.quotes.some(q => q.recommended && q.courier === 'Tez-Tez delivery') && !!cqFast.quotes[0].days,
+  cqFast.quotes.slice(0, 3).map(q => q.courier + ' ' + q.days).join(', '));
 const cqUzs = runTool('courier_quotes', { country: 'Turkiya', kg: 1 }, tctx);
 check('courier_quotes: so\'mdagi tariflar kurs bilan dollarga o\'giriladi', cqUzs.quotes.some(q => /so'm|UZS/i.test(q.tariff)) && cqUzs.quotes.every(q => q.usd > 0), JSON.stringify(cqUzs.quotes.map(q => q.courier + ':' + q.usd)));
 check('courier_quotes: noma\'lum davlat — xato va ro\'yxat', !!runTool('courier_quotes', { country: 'Mars', kg: 1 }, tctx).error);
@@ -802,6 +805,27 @@ check('parseAiBody: savol + url — url e\'tiborsiz', (() => { const p = parseAi
   check('tg: ruscha skrinshot javobi (Курьер, рекомендуем, Итого … сум)', /Курьер: Tez-Tez delivery \(рекомендуем\)/.test(ruShot.text || '') && /Итого: \$\d+\.\d\d ≈ [\d ]+ сум/.test(ruShot.text || ''), (ruShot.text || '').replace(/\n/g, ' | ').slice(0, 200));
   await upd({ text: '/til' });
   check('tg: /til — tanlov tugmalari', ((sent.pop() || {}).reply_markup || { inline_keyboard: [[]] }).inline_keyboard[0].length === 2);
+  /* Takror update_id — ikkinchi marta javob yo'q. */
+  const dupBody = JSON.stringify({ update_id: 4242, message: { message_id: 5, chat: { id: 999, type: 'private' }, from: { id: 999 }, text: '/kurs' } });
+  const nDup = sent.length;
+  for (let i = 0; i < 2; i++) await worker.fetch(new Request('https://w/tg', { method: 'POST', headers: { 'x-telegram-bot-api-secret-token': sec }, body: dupBody }), tgEnv(), ctx);
+  check('tg: takror update_id bir marta javoblanadi', sent.length === nDup + 1);
+  sent.pop();
+  /* Uzun javob: avval kesiladi, keyin HTML — "&amp;" yarim qolmaydi. */
+  const longFake = async (u, init) => /anthropic/.test(String(u)) ? claudeText('A&B '.repeat(1200)) : tgFake(u, init);
+  await worker.fetch(new Request('https://w/tg', { method: 'POST', headers: { 'x-telegram-bot-api-secret-token': sec },
+    body: JSON.stringify({ update_id: 4243, message: { message_id: 6, chat: { id: 999, type: 'private' }, from: { id: 999 }, text: 'uzun savol' } }) }), tgEnv({ TG_FETCH: longFake }), ctx);
+  const lg = (sent.pop() || {}).text || '';
+  /* Telegram 4096 belgi chegarasi — HTML belgilari ochilgandan keyingi matnga. */
+  const lgPlain = lg.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+  check('tg: uzun javob kesilganda HTML belgisi butun qoladi', lgPlain.length > 3000 && lgPlain.length <= 4096 && !/&(?!amp;|lt;|gt;)/.test(lg), lgPlain.length + ' · ' + lg.slice(-12));
+  /* HTML rad etilsa — oddiy matn bilan qayta yuboriladi. */
+  let htmlTries = 0;
+  const rejectHtml = async (u, init) => { if (/sendMessage$/.test(String(u)) && JSON.parse(init.body).parse_mode === 'HTML') { htmlTries++; return new Response(JSON.stringify({ ok: false, description: "Bad Request: can't parse entities" }), { status: 400 }); } return tgFake(u, init); };
+  await worker.fetch(new Request('https://w/tg', { method: 'POST', headers: { 'x-telegram-bot-api-secret-token': sec },
+    body: JSON.stringify({ update_id: 4244, message: { message_id: 7, chat: { id: 999, type: 'private' }, from: { id: 999 }, text: '/kurs' } }) }), tgEnv({ TG_FETCH: rejectHtml }), ctx);
+  const plainMsg = sent.pop() || {};
+  check('tg: HTML rad etilsa oddiy matn bilan qayta yuboriladi', htmlTries === 1 && !plainMsg.parse_mode && /1 USD/.test(plainMsg.text || ''), JSON.stringify(plainMsg).slice(0, 120));
   check('tg: asosiy til o\'zbek — rus faqat tanlansa', guessLang('') === 'uz' && guessLang('ru') === 'ru' && guessLang('uz') === 'uz');
   await worker.fetch(new Request('https://w/tg', { method: 'POST', headers: { 'x-telegram-bot-api-secret-token': sec },
     body: JSON.stringify({ update_id: 92, message: { message_id: 9, chat: { id: 888, type: 'private' }, from: { id: 888, language_code: 'ru' }, text: '/start' } }) }), tgEnv(), ctx);

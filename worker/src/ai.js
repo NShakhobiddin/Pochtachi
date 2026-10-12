@@ -400,8 +400,9 @@ function quotesFor(country, kg, priority, usdRate) {
   const ranked = Core.rankQuotes(all, priority || 'cheap');
   const ok = ranked.filter(q => q.ok);
   const recId = Core.recommendedId(country);
-  const first = Core.recommendFirst(ok, country);
-  return { ok: first, rest: ranked.filter(q => !q.ok), rec: first[0] && first[0].id === recId ? first[0] : null,
+  /* "Eng tez" so'ralsa tartib muddat bo'yicha qoladi — tavsiya faqat belgi. */
+  const first = priority === 'fast' ? ok : Core.recommendFirst(ok, country);
+  return { ok: first, rest: ranked.filter(q => !q.ok), rec: first.find(q => q.id === recId) || null,
     cheapest: Core.rankQuotes(ok, 'cheap')[0] || null };
 }
 
@@ -413,7 +414,8 @@ function toolQuotes(inp, ctx) {
   const { ok, rest, rec } = quotesFor(known, kg, inp.priority, ctx.usdRate);
   return {
     country: known, kg, priority: inp.priority || 'cheap',
-    quotes: ok.slice(0, 6).map(q => ({ courier: q.name, usd: r2(q.usd), days: q.days || null, mode: q.mode, tracking: q.tracking, tariff: q.text,
+    /* Tavsiya etilgan kuryer birinchi oltitaga kirmasa ("eng tez") — oxirida. */
+    quotes: [...ok.slice(0, 6), ...(rec && !ok.slice(0, 6).includes(rec) ? [rec] : [])].map(q => ({ courier: q.name, usd: r2(q.usd), days: q.days || null, mode: q.mode, tracking: q.tracking, tariff: q.text,
       ...(q === rec ? { recommended: true } : {}) })),
     onRequest: [...new Set(rest.map(q => q.name))],
     note: 'Kuryer saytidagi tarif bo\'yicha taxminiy summa; ombor xizmati, qadoqlash va sug\'urta alohida.'

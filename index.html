@@ -4264,7 +4264,7 @@ const RU = {
   "Qo'shimcha hujjat yoki ma'lumot talab qilinib, tekshiruv tugamaganda.":'Когда запрошены дополнительные документы или сведения, а проверка не завершена.',
   "Bojxona ko'rigi yoki ekspertizasi yakunlanmaganda.":'Когда таможенный досмотр или экспертиза не завершены.',
   '"Toshkent-AERO" IBK':'СТК «Ташкент-АЭРО»', 'E-manzil':'Эл. почта', 'Xaritada':'На карте',
-  "me'yordan {0} ortiq":'на {0} сверх лимита', '{0} qoldi':'осталось {0}',
+  "me'yordan {0} ortiq":'на {0} сверх лимита', "me'yordan ${0} ortiq":'на ${0} сверх лимита', '{0} qoldi':'осталось {0}', '${0} qoldi':'осталось ${0}',
   "{0} ta jo'natma · {1} kg · {2}":'{0} отправл. · {1} кг · {2}',
   "Kalendar oyda kelgan barcha jo'natmalar summasi qo'shiladi, undan ${0} imtiyoz ayriladi.":'Складывается сумма всех отправлений за календарный месяц, из неё вычитается льгота ${0}.',
   "Ortiqcha qismga to'g'ri keladigan vazn nisbat bo'yicha ajratiladi: {0} kg.":'Вес, приходящийся на часть сверх лимита, выделяется пропорционально: {0} кг.',
@@ -6542,7 +6542,13 @@ class Component extends DCLogic {
 
   monthEntries(st, key) {
     const today = todayIso();
-    const addDays = (iso, d) => { const t = new Date(String(iso).slice(0, 10) + 'T00:00:00'); return Number.isFinite(t.getTime()) ? new Date(t.getTime() + d * 86400000 + 43200000).toISOString().slice(0, 10) : today; };
+    const addDays = (iso, d) => {
+      const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso));
+      if (!m) return today;
+      const t = new Date(+m[1], +m[2] - 1, +m[3] + d);
+      const p2 = n => (n < 10 ? '0' : '') + n;
+      return t.getFullYear() + '-' + p2(t.getMonth() + 1) + '-' + p2(t.getDate());
+    };
     const manual = (st.monthly || []).filter(x => !x.plan);
     const fromPlans = (st.plans || []).filter(p => !p.find && p.step >= 1 && num(p.price) > 0).map(p => {
       let date = p.customsAt || (p.step >= 4 ? (p.ordered || today) : addDays(p.ordered || today, etaDays(p.days) || 14));
@@ -7944,7 +7950,7 @@ class Component extends DCLogic {
         const best = new Map(), allQ = new Map();
         ranked.forEach(q => { if (!q.ok) return; if (!best.has(q.id)) best.set(q.id, q); (allQ.get(q.id) || allQ.set(q.id, []).get(q.id)).push(q); });
         const recId = recCourierId(country);
-        const order = recFirst([...best.keys()].map(id => ({ id })), country).map(x => x.id);
+        const order = st.sort === 'days' ? [...best.keys()] : recFirst([...best.keys()].map(id => ({ id })), country).map(x => x.id);
         const rest = list.filter(k => !best.has(k.id));
         const bq = [...best.values()];
         const qCheap = bq.length ? bq.reduce((a, b) => (b.usd < a.usd ? b : a)).id : null;

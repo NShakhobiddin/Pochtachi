@@ -73,6 +73,21 @@
      tariffs — data/tariffs.json ({ fx, couriers: { id: [qatorlar] } }).
      Har kuryer uchun mos tarif qatorlari (davlat bo'yicha) hisoblanadi;
      bir kuryerda bir necha variant bo'lsa (avia/avto) har biri alohida. */
+  /* Muddat matnidan kun soni — tarif jadvalidagi dnum bilan bir xil o'lchov
+     (oraliqning yuqori chegarasi): "4–7 kun" → 7, "5–10 ish kuni" → 14
+     (ish kuni × 7/5), "8 kundan boshlab" → 11. Ilgari zaxira sifatida
+     kuryerning dnum (pastki chegara, 5) olinardi va "eng tez" tartibida
+     "5–10 ish kuni" "4–7 kun"dan oldin turardi. */
+  function daysNum(days) {
+    var str = String(days || '');
+    var nums = (str.match(/\d+/g) || []).map(Number).filter(function (x) { return x > 0 && x < 120; });
+    if (!nums.length) return null;
+    var d = nums[nums.length - 1];
+    if (/boshlab|dan\b/i.test(str) && nums.length === 1) d = nums[0] + 3;
+    if (/ish kuni/i.test(str)) d = Math.ceil(d * 7 / 5);
+    return d;
+  }
+
   function courierQuotes(o) {
     var ck = countryKey(o.country), kg = pos(o.kg), out = [];
     var data = o.tariffs || {}, fx = data.fx || {}, rate = pos(o.usdRate);
@@ -83,7 +98,7 @@
         var cost = tariffCost(t, kg, { fx: fx, usdRate: rate, minKg: o.minKg });
         out.push({
           id: c.id, name: c.name, country: t.c, text: t.text, days: t.days || c.days || '',
-          dnum: t.dnum != null ? t.dnum : (c.dnum < 90 ? c.dnum : null),
+          dnum: t.dnum != null ? t.dnum : daysNum(t.days || c.days),
           mode: c.mode || '', tracking: !!c.tracking,
           ok: cost.ok, usd: cost.usd, amount: cost.amount, currency: cost.currency,
           kind: cost.kind, from: cost.from, over: cost.over, note: cost.note, tariff: t
@@ -133,5 +148,5 @@
   }
 
   return { countryKey: countryKey, toUsd: toUsd, tariffCost: tariffCost, courierQuotes: courierQuotes, rankQuotes: rankQuotes,
-    recommendedId: recommendedId, recommendFirst: recommendFirst };
+    recommendedId: recommendedId, recommendFirst: recommendFirst, daysNum: daysNum };
 });
